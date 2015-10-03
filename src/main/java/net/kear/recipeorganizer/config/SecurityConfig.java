@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.config;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,24 +23,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 
+import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
+import net.kear.recipeorganizer.security.LoginSuccessHandler;
+import net.kear.recipeorganizer.security.RedirectInvalidSession;
+import net.kear.recipeorganizer.security.RememberMeSuccessHandler;
 import net.kear.recipeorganizer.security.UserSecurityService;
-import net.kear.recipeorganizer.util.AuthCookie;
 
 @Configuration
 @EnableWebSecurity
 @ComponentScan(basePackageClasses=UserSecurityService.class)
-/*@ComponentScan(basePackageClasses= {UserSecurityService.class,AuthCookie.class})*/
 @EnableGlobalMethodSecurity( prePostEnabled = true )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -53,11 +54,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.passwordEncoder(encoder());
 	}
 	
-	/*@Bean
-	public AuthCookie authCookie() {
-		return new AuthCookie();
-	}*/
-
 	@Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
@@ -77,43 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		db.setDataSource(dataSource);
 		return db;
 	}
-	
+
 	@Bean
-	public SessionRegistry sessionRegistry(){
-		return new SessionRegistryImpl();
-	}
-	
-	@Bean
-	public ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlStrategy() {
-		ConcurrentSessionControlAuthenticationStrategy concurrentSessionControlStrategy  = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
-		concurrentSessionControlStrategy.setMaximumSessions(1);
-		concurrentSessionControlStrategy.setExceptionIfMaximumExceeded(true);
-		return concurrentSessionControlStrategy;
-	}
-	
-	@Bean
-	public ConcurrentSessionFilter concurrentSessionFilter() {
-		ConcurrentSessionFilter sessionFilter = new ConcurrentSessionFilter(sessionRegistry(), "/errors/expiredSession");
-		return sessionFilter;
-	}
-	
-	@Bean
-	public SecurityContextPersistenceFilter securityContextPersistenceFilter() {
-		SecurityContextPersistenceFilter securityContextPersistenceFilter = new SecurityContextPersistenceFilter(httpSessionSecurityContextRepository());
-		return securityContextPersistenceFilter;
-	}
-	
-	@Bean
-	public HttpSessionSecurityContextRepository httpSessionSecurityContextRepository() {
-		return new HttpSessionSecurityContextRepository();
-	}
-	
-	@Bean
-	public SessionManagementFilter sessionManagementFilter() {
-		SessionManagementFilter sessionManagementFilter = new SessionManagementFilter(httpSessionSecurityContextRepository(), concurrentSessionControlStrategy());
-		sessionManagementFilter.setInvalidSessionStrategy(new RedirectInvalidSession("/errors/invalidSession"));
-		sessionManagementFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/errors/402"));
-		return sessionManagementFilter;
+	public SessionManagementBeanPostProcessor sessionManagementBeanPostProcessor() {
+		return new SessionManagementBeanPostProcessor();
 	}
 	
 	@Bean
@@ -128,7 +91,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public CustomLogoutSuccessHandler logoutSuccessHandler() {
-		return new CustomLogoutSuccessHandler();
+		CustomLogoutSuccessHandler handler = new CustomLogoutSuccessHandler();
+		handler.setTargetUrlParameter("/thankyou");
+		return handler;
 	}
 
 	@Override
@@ -137,9 +102,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		web
 		.ignoring()
 			.antMatchers("/resources/**")
-			//.antMatchers("/", "/home", "/about", "/login**", "/thankyou", "/user/signup**", "/errors/**", "/getSessionTimeout", "/setSessionTimeout")
-			;
+		;
 	}
+
+	//.antMatchers("/resources/**")	
 	
     //Note: the regexMatcher is required because signup uses an AJAX call to check if the email is already registered and
 	//antMatcher does not handle the /?{} parameter to the url
@@ -150,13 +116,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
     	http
-    	//.headers()
-    	//	.and()
-    	//.anonymous()
-    	//	.and()
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/login**", "/thankyou", "/user/signup**", "/errors/**", "/getSessionTimeout", "/setSessionTimeout").permitAll() 
-			//.antMatchers("/**", "/login**", "/user/signup**", "/errors/**").permitAll()
 			.regexMatchers("/user/signup/.*").permitAll()
 			.antMatchers("/recipe/listRecipes*").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
@@ -172,8 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.successHandler(loginSuccessHandler())
 			.and()
 		.logout()
-			.logoutSuccessUrl("/thankyou")
-			.deleteCookies( "JSESSIONID" )
+			.deleteCookies("JSESSIONID")
 			.invalidateHttpSession(false)
 			.logoutSuccessHandler(logoutSuccessHandler())
 			.and()
@@ -184,34 +144,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
 			.key("recipeOrganizer")
 			.tokenRepository(persistentTokenRepository())
-			.tokenValiditySeconds(180)		//.tokenValiditySeconds(1209600)
+			.tokenValiditySeconds(180)		//TODO: figure out proper expiration length e.g. tokenValiditySeconds(1209600)
 			.rememberMeParameter("rememberMe")
-		;
-
-    	/*http
+			.and()
     	.sessionManagement()
     		.sessionAuthenticationErrorUrl("/errors/402")
-    		.invalidSessionUrl("/errors/invalidSession")
     		.maximumSessions(1)
     		.maxSessionsPreventsLogin(true)
     		.expiredUrl("/errors/expiredSession")
-    		//.and()
-   		//.sessionFixation().changeSessionId()
-   		;*/
-    		
-    		//.migrateSession();	//not necessary - no HTTP/HTTPS issues
-    	
-    	http.removeConfigurer(SessionManagementConfigurer.class);
-    	http.addFilter(sessionManagementFilter());
-		http.addFilter(concurrentSessionFilter());
-		
-	}
+   		;
+    }
 
+	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
+	protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
+
+	    @Override
+	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
+	        if (bean instanceof SessionManagementFilter) {
+	            SessionManagementFilter filter = (SessionManagementFilter) bean;
+	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/errors/invalidSession"));
+	        }
+	        return bean;
+	    }
+
+	    @Override
+	    public Object postProcessAfterInitialization(Object bean, String beanName) {
+	        return bean;
+	    }
+	}
+	
+	//sets the hierarchy of roles
 	private SecurityExpressionHandler<FilterInvocation> secExpressionHandler() {
         DefaultWebSecurityExpressionHandler defaultHandler = new DefaultWebSecurityExpressionHandler();
         defaultHandler.setRoleHierarchy(roleHierarchy());
         return defaultHandler;
     }
 }
-
-

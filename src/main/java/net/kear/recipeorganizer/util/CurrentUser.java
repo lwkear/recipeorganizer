@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.security;
+package net.kear.recipeorganizer.util;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -30,4 +30,4 @@
     <link href="<c:url value="/resources/css/theme.css" />" rel="stylesheet">
     <%-- <link href="<c:url value="/resources/css/signin.css" />" rel="stylesheet"> --%>
     
-    
+    <sec:csrfMetaTags />

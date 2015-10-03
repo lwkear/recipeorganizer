@@ -1,9 +1,17 @@
 <%@include file="head.jsp"%>
 
 <script>
-	function submitForm() {
-	    document.forms["logoutForm"].submit();
+	function submitLogoutForm() {
+		document.forms["logoutForm"].submit();
 	}
+
+	$(window).on('load', function() {
+		getSessionTimeout();
+	});
+
+	/* $(window).on('unload', function() {
+		 
+	}); */	
 </script>
 
 <!-- Fixed navbar -->
@@ -28,7 +36,7 @@
 					<form:form id="logoutForm" action="${logoutUrl}" method="post">
 						<ul class="nav navbar-nav navbar-right">
 					        <li><a href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${secUser}</a></li>
-					        <li><a href="javascript:submitForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
+					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
 					    </ul>
 					</form:form>
 				</c:when>
@@ -59,19 +67,9 @@
 		</div>
 	</div>
 </nav>
-<div>
-</div>
-<div>
-</div>
-<div>
-</div>
-<div>
-</div>
-<div>
-</div>
-<div>
+<%-- <div>
 <h3>Session ID: ${pageContext.session.id}</h3>
-</div>
+</div> --%>
 
 <div class="modal fade" id="sessionTimeout" role="dialog">
 	<div class="modal-dialog modal-sm">

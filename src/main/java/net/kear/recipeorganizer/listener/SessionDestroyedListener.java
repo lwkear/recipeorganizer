@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.config;
+package net.kear.recipeorganizer.listener;
 
 import java.util.Collection;
 import java.util.Date;
@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.session.HttpSessionDestroyedEvent;
 import org.springframework.stereotype.Component;
 
-@Component
 public class SessionDestroyedListener implements ApplicationListener<HttpSessionDestroyedEvent> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SessionDestroyedListener.class);

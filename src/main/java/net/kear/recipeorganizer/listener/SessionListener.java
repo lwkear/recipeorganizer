@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.config;
+package net.kear.recipeorganizer.listener;
 
 import java.util.Collection;
 import java.util.Date;
@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -25,6 +24,9 @@ public class SessionListener implements HttpSessionListener {
 
 		logger.debug("Checking event.session...");
 		HttpSession session = event.getSession();
+
+		//session.setMaxInactiveInterval(30);
+		
 		Date createTime = new Date(session.getCreationTime());
 		Date lastAccess = new Date(session.getLastAccessedTime());
 		int maxInactive = session.getMaxInactiveInterval();
@@ -70,9 +72,6 @@ public class SessionListener implements HttpSessionListener {
 		}
 		else
 			logger.debug("SecurityContext is null");
-
-		/*logger.debug("Setting authUser attribute...");
-		session.setAttribute("authUser", principal);*/
 	}
 
 	@Override
@@ -125,21 +124,5 @@ public class SessionListener implements HttpSessionListener {
 		}
 		else
 			logger.debug("SecurityContext is null");
-		
 	}
 }
-
-
-//SessionManagementFilter
-//AnonymousAuthenticationFilter
-//SecurityContextPersistenceFilter
-//HeaderWriterFilter
-//SimpleRedirectInvalidSessionStrategy
-//DefaultRedirectStrategy
-//SimpleUrlAuthenticationFailureHandler
-//PersistentTokenBasedRememberMeServices
-//AuthenticationTrustResolver
-//AnonymousAuthenticationFilter
-//HttpSessionEventPublisher
-//HttpServletRequest
-//SimpleUrlLogoutSuccessHandler
