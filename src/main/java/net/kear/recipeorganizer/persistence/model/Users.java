@@ -1,18 +1,13 @@
 package net.kear.recipeorganizer.persistence.model;
 
 import java.io.Serializable;
-//import java.util.Collection;
 
-
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -80,26 +75,8 @@ public class Users implements Serializable {
 	@Column(name = "TOKEN_EXPIRED")
 	private int tokenExpired;
 
-	@Column(name = "CITY")
-	@Size(max=75)	//75
-	private String city;
-
-	@Column(name = "STATE")
-	@Size(max=30)	//30
-	private String state;
-
-	@Column(name = "AGE")
-	private int age;
-
-	@Column(name = "INTERESTS")
-	@Size(max=500)	//500
-	private String interests;
-
-    //@ManyToMany
-    //@JoinTable(name = "USERS_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
-    //private Collection<Role> roles;
 	@ManyToOne(fetch=FetchType.EAGER)
-    @JoinTable(name = "USERS_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
+    @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
     	inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
     private Role role;
 	
@@ -113,16 +90,11 @@ public class Users implements Serializable {
 		this.password = user.password;
 		this.enabled = user.enabled;
 		this.tokenExpired = user.tokenExpired;
-		this.city = user.city;
-		this.state = user.state;
-		this.age = user.age;
-		this.interests = user.interests;
 		this.role = user.role;
 	}
 	
 	public Users(String firstName, String lastName, String email,
-			String password, int enabled, int tokenExpired, String city, String state, int age,
-			String interests, Role role) {
+			String password, int enabled, int tokenExpired, Role role) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -130,10 +102,6 @@ public class Users implements Serializable {
 		this.password = password;
 		this.enabled = enabled;
 		this.tokenExpired = tokenExpired;
-		this.city = city;
-		this.state = state;
-		this.age = age;
-		this.interests = interests;
 		this.role = role;
 	}
 
@@ -209,14 +177,6 @@ public class Users implements Serializable {
 		this.confirmPassword = confirmPassword;
 	}
 
-	/*public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(final Collection<Role> roles) {
-        this.roles = roles;
-    }*/
-    
     public Role getRole() {
         return role;
     }
@@ -225,50 +185,10 @@ public class Users implements Serializable {
         this.role = role;
     }
 
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public String getInterests() {
-		return interests;
-	}
-
-	public void setInterests(String interests) {
-		this.interests = interests;
-	}
-
     @Override
     public int hashCode() {
         return email.hashCode();
     }	
-
-    /*@Override
-    public boolean equals(Object user) {
-        if (user instanceof Users) {
-            return email.equals(((Users) user).email);
-        }
-        return false;
-    }*/    
 
     @Override
     public boolean equals(final Object obj) {
@@ -292,10 +212,6 @@ public class Users implements Serializable {
 	public String toString() {
 		return "Users [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", email=" + email + ", password=" + password
-				+ ", enabled=" + enabled + ", " + ", tokenExpired=" + tokenExpired + ", "
-				+ "city=" + city + ", state=" + state + ", age=" + age 
-				+ ", interests=" + interests + "]";
+				+ ", enabled=" + enabled + ", " + ", tokenExpired=" + tokenExpired + "]";
 	}
-
-	
 }

@@ -63,7 +63,7 @@ public class SignupController {
 
 	//TODO: EXCEPTION: consider using an exception handler instead?
 	//AJAX/JSON request for checking user (email) duplication
-	@RequestMapping(value="user/lookupUser")
+	@RequestMapping(value="/ajax/all/lookupUser")
 	@ResponseBody 
 	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
 		

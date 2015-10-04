@@ -124,7 +124,7 @@ public class HomeController {
 	}
 	
 	//AJAX/JSON request for getting the timeout interval for the current user
-	@RequestMapping(value="/getSessionTimeout")
+	@RequestMapping(value="/ajax/all/getSessionTimeout")
 	@ResponseBody 
 	public Integer getSessionTimeout(HttpSession session, HttpServletResponse response) {
 		
@@ -137,7 +137,7 @@ public class HomeController {
 
 	//AJAX/JSON request for resetting the session timeout
 	//TODO: this should be a POST
-	@RequestMapping(value="/setSessionTimeout", method = RequestMethod.POST)
+	@RequestMapping(value="/ajax/auth/setSessionTimeout", method = RequestMethod.POST)
 	@ResponseBody 
 	public String setSessionTimeout(HttpSession session, HttpServletResponse response) {
 		

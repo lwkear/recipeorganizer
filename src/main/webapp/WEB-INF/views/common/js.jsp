@@ -37,7 +37,7 @@ function setSessionTimeout() {
 
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/setSessionTimeout',
+		url: '/recipeorganizer/ajax/auth/setSessionTimeout',
 		dataType: 'json',
 		data: token,
 		beforeSend: function(xhr) {
@@ -63,7 +63,7 @@ function getSessionTimeout() {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/getSessionTimeout',
+		url: '/recipeorganizer/ajax/all/getSessionTimeout',
 		dataType: 'json'
 	})
 	.done(function(data) {

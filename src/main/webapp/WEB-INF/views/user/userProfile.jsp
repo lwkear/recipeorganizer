@@ -28,7 +28,7 @@ $(function() {
 		//allow jquery to create the query string from the data parameters to handle special characters
 		$.ajax({
 			type: 'GET',
-			url: '/recipeorganizer/ajax/all/lookupUser',
+			url: '/recipeorganizer/user/lookupUser',
 			dataType: 'json',
 			data: {
 				email : emailStr
@@ -72,6 +72,9 @@ $(function() {
 	<spring:bind path="users.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="users.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="users.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="users.city"><c:set var="cityError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="users.state"><c:set var="stateError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="users.interests"><c:set var="interestsError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container">
 	
@@ -114,7 +117,9 @@ $(function() {
 						<label class="control-label" for="password">*Password:&nbsp;&nbsp;${passwordError}</label>
 						<form:input class="form-control" type="text" id="password" placeholder="Password" path="password" autocomplete="off"/>
 					</div>
-					<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
+				</div>
+				<div class="col-sm-12">
+					<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty confirmError}">has-error</c:if>">
 						<label class="control-label" for="confirmpassword">*Confirm Password:&nbsp;&nbsp;${confirmError}</label>
 						<form:input class="form-control" type="text" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
 					</div>
@@ -127,6 +132,49 @@ $(function() {
 		        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
 						<label class="control-label" for="lastname">Last Name:&nbsp;&nbsp;${lastNameError}</label>
 						<form:input class="form-control" type="text" id="lastname" placeholder="Last name" path="lastName" autocomplete="off"/>
+					</div>
+				</div>
+				<div class="col-sm-12">
+		        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
+						<label class="control-label" for="firstname">City:&nbsp;&nbsp;${cityError}</label>
+						<form:input class="form-control" type="text" id="city" placeholder="City" path="city" autocomplete="off"/>
+					</div>
+		        	<div class="form-group col-sm-2 <c:if test="${not empty stateError}">has-error</c:if>">
+						<label class="control-label" for="lastname">State:&nbsp;&nbsp;${stateError}</label>
+						<form:input class="form-control" type="text" id="state" path="state" autocomplete="off"/>
+					</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="form-group col-sm-8 col-sm-offset-2">
+						<label class="control-label">Age:</label>
+					</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="form-group col-sm-8 col-sm-offset-2">
+						<div class="radio-inline">
+							<form:radiobutton value="1" path="age"/>&lt;18
+						</div>
+						<div class="radio-inline">
+							<form:radiobutton value="2" path="age"/>18-30
+						</div>
+						<div class="radio-inline">
+							<form:radiobutton value="3" path="age"/>31-50
+						</div>
+						<div class="radio-inline">
+							<form:radiobutton value="4" path="age"/>51-70
+						</div>
+						<div class="radio-inline">
+							<form:radiobutton value="5" path="age"/>>70
+						</div>
+						<div class="radio-inline">
+							<form:radiobutton value="0" path="age" checked="true"/>Never mind
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12">
+		        	<div class="form-group col-sm-8 col-sm-offset-2 <c:if test="${not empty interestsError}">has-error</c:if>">
+						<label class="control-label" for="interests">Culinary Interests:&nbsp;&nbsp;${interestsError}</label>
+						<form:textarea class="form-control" rows="4" id="interests" placeholder="Enter your interests" path="interests"></form:textarea>				
 					</div>
 				</div>
 				<div class="form-group col-sm-12">
