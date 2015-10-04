@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="net/kear/recipeorganizer/validation/DuplicateEmail.java|net/kear/recipeorganizer/validation/DuplicateEmailValidator.java|net/kear/recipeorganizer/exception/EmailExistsException.java|net/kear/recipeorganizer/exception/UserExistsException.java|net/kear/recipeorganizer/persistence/model/UserRoles.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>

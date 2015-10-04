@@ -9,13 +9,16 @@
 <script src="<c:url value="/resources/js/js.cookie.js" />"></script>
 
 <script>
-var tiemout;
+var timeout;
+var displayModalTimer;
+var closeModalTimer;
 var maxInactiveInterval;
 var remainTime = 30;
 
 function closeTimeout() {
-	$("#sessionTimeout").modal('hide');	
-	window.location.href = "<c:url value='/errors/expiredSession'/>";
+	$("#sessionTimeout").modal('hide');
+	submitLogoutForm();
+	/* window.location.href = "<c:url value='/errors/expiredSession'/>"; */
 }
 
 function displayTimeout() {
@@ -23,10 +26,12 @@ function displayTimeout() {
 	var msg = "Your session will expire in " + remainTime + " seconds";
 	$("#timeoutText").text(msg);
 	$("#sessionTimeout").modal();
-	/* setTimeout(closeTimeout, (remainTime-5)*1000); */	
+	closeModalTimer = setTimeout(closeTimeout, ((remainTime-15)*1000));	
 }
 
 function setSessionTimeout() {
+	clearTimeout(closeModalTimer);
+	
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
 
@@ -65,7 +70,7 @@ function getSessionTimeout() {
 		console.log('getSessionTimeout() done');
 		maxInactiveInterval = data;
 		timeout = (maxInactiveInterval-remainTime)*1000; 
-		setTimeout(displayTimeout, timeout);
+		displayModalTimer = setTimeout(displayTimeout, timeout);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -73,16 +78,7 @@ function getSessionTimeout() {
 	});
 }
 
-
 $( document ).ready(function() {
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
 });  
-
-/* $(function () {
-    var token = $("input[name='_csrf']").val();
-    var header = "X-CSRF-TOKEN";
-    $(document).ajaxSend(function(e, xhr, options) {
-        xhr.setRequestHeader(header, token);
-    });
-}); */
 </script>
