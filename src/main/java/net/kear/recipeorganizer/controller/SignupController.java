@@ -2,15 +2,18 @@ package net.kear.recipeorganizer.controller;
 
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import net.kear.recipeorganizer.persistence.model.Users;
 import net.kear.recipeorganizer.persistence.service.UsersService;
+import net.kear.recipeorganizer.registration.OnRegistrationCompleteEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -23,9 +26,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * Handles requests for the signup page.
- */
 @Controller
 public class SignupController {
 	
@@ -36,6 +36,9 @@ public class SignupController {
 
 	@Autowired
 	private MessageSource messages;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 	
 	@RequestMapping(value = "user/signup", method = RequestMethod.GET)
 	public String loadSignup(Model model) {
@@ -48,7 +51,7 @@ public class SignupController {
 	}
 	
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
-	public String submitSignup(Model model, @ModelAttribute @Valid Users user, BindingResult result) {
+	public String submitSignup(Model model, @ModelAttribute @Valid Users user, BindingResult result, HttpServletRequest request) {
 		logger.info("login POST");
 
 		if (result.hasErrors()) {
@@ -58,6 +61,15 @@ public class SignupController {
 		
         usersService.addUser(user);
 		
+        try {
+        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+        } catch (Exception ex) {
+        	//TODO: redisplay the signup page with an error message
+        	logger.debug("error encountered");
+        }
+        
+        //TODO: send to a registration page explaining the email
 		return "redirect:/home";
 	}
 

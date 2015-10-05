@@ -15,4 +15,5 @@ public interface UsersService {
     public List<Users> listUsers();
     public String getUserName(Long id);
     public Users getUser(Long id);
+    public void createUserVerificationToken(final Users user, final String token);
 }

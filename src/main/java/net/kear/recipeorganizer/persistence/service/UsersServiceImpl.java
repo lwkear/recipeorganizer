@@ -3,8 +3,10 @@ package net.kear.recipeorganizer.persistence.service;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.model.Users;
+import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.repository.RoleRepository;
 import net.kear.recipeorganizer.persistence.repository.UsersRepository;
+import net.kear.recipeorganizer.persistence.repository.VerificationTokenRepository;
 import net.kear.recipeorganizer.persistence.service.UsersService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,10 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
+    
     public void addUser(Users user) {
-    	//TODO: SECURITY: should enabled be set to 0 pending email confirmation?
-    	
     	//Note: by this point the initial validation of password=confirmPassword has been completed;
     	//	however, Spring or Hibernate appear to perform the validation again so the encoded password
     	//	must be copied to confirmPassword; an alternative would be to use a DTO for sign-up purposes,
@@ -35,7 +38,7 @@ public class UsersServiceImpl implements UsersService {
     	String encodedPsswd = passwordEncoder.encode(user.getPassword()); 
     	user.setPassword(encodedPsswd);
     	user.setConfirmPassword(encodedPsswd);
-    	user.setEnabled(1);
+    	user.setEnabled(0);
     	user.setTokenExpired(0);
     	user.setRole(roleRepository.getDefaultRole());
     	usersRepository.addUser(user);
@@ -71,5 +74,11 @@ public class UsersServiceImpl implements UsersService {
     
     public Users getUser(Long id) {
     	return usersRepository.getUser(id);
+    }
+
+    @Override
+    public void createUserVerificationToken(final Users user, final String token) {
+        final VerificationToken newToken = new VerificationToken(token, user);
+        tokenRepository.saveToken(newToken);
     }
 }

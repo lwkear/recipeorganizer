@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "VERIFICATIONTOKEN")
@@ -29,12 +31,15 @@ public class VerificationToken implements Serializable {
 	@SequenceGenerator(name = "VERIFICATIONTOKEN_SEQ", sequenceName = "VERIFICATIONTOKEN_SEQ", allocationSize = 1)
 	private long id;
 	
-    private String token;
+	@Column(name = "TOKEN")
+	private String token;
 
     @OneToOne(targetEntity = Users.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "USER_ID")
     private Users user;
 
+    @Column(name = "EXPIRY_DATE")
+    @Temporal(TemporalType.DATE)
     private Date expiryDate;
 
     public VerificationToken() {
