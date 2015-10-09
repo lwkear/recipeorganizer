@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.config;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -43,6 +46,21 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
+    }
+	
+	//this is required in order to return a String as a JSON response to an AJAX method;
+	//by default the first converter in the array returns the String as text/javascript, not JSON, so removing
+	//the Jasckson converter from its place later in the list and adding it back as the first converter seems
+	//to fix this problem 
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.remove(msgConverter());
+        converters.add(0, msgConverter());
+	}
+	
+	@Bean
+    public MappingJackson2HttpMessageConverter msgConverter() {
+		return new MappingJackson2HttpMessageConverter();
     }
 	
 	@Bean
@@ -89,4 +107,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         return mailSenderImpl;
     }
+	
+	/*@Override
+	protected void configureMessageConverters(
+	        List<HttpMessageConverter<?>> converters) {
+	    // put the jackson converter to the front of the list so that application/json content-type strings will be treated as JSON
+	    converters.add(new MappingJackson2HttpMessageConverter());
+	    // and probably needs a string converter too for text/plain content-type strings to be properly handled
+	    converters.add(new StringHttpMessageConverter());
+	}*/
 }

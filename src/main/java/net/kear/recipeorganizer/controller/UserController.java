@@ -86,7 +86,7 @@ public class UserController {
         	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         } catch (Exception ex) {
-        	//TODO: redisplay the signup page with an error message
+        	//TODO: GUI: redisplay the signup page with an error message
         	logger.debug("error encountered: " + ex.getMessage());
         }
         
@@ -132,26 +132,32 @@ public class UserController {
 		return "user/password";
 	}
 
-	/*@RequestMapping(value = "ajax/auth/changepassword", method = RequestMethod.POST)*/
-	@RequestMapping(value = "user/changepassword", method = RequestMethod.POST)
+	//TODO: SECURITY: consider changing this to a standard form POST; 
+	//advantage: server validation instead of client; ease of sending internationalized messages back to client
+	//disadvantage: must create a DTO for just 3 fields
+	@RequestMapping(value = "user/changepassword", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	/*public String postPassword(@RequestParam("newpassword") final String newPassword, @RequestParam("oldpassword") final String oldPassword, HttpServletResponse response) {*/
-	public String postPassword(@RequestBody Map<String, String> map, HttpServletResponse response) {
+	public String postPassword(@RequestParam("oldpassword") final String oldPassword, @RequestParam("newpassword") final String newPassword, HttpServletResponse response) {
 		logger.info("password POST");
-		
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			logger.info("key:" + entry.getKey() + " value:" + entry.getValue());
-		}
 		
 		String msg = "Success";
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		/*User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if ((oldPassword == null) || (newPassword == null)) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			msg = "Empty password";
+			return msg;
+		}
+		
+		//TODO: SECURITY: consider throwing an error (see Baeldung example)
+		User user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!userService.isPasswordValid(oldPassword, user)) {
-            msg = "{Current password is incorrect}";
+        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            msg = "Current password is incorrect";
+            return msg;
         }
         
-        userService.changePassword(newPassword, user);*/
+        userService.changePassword(newPassword, user);
 				
 		return msg;
 	}
@@ -162,23 +168,21 @@ public class UserController {
 		
         final VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
-        	//TODO: figure out how to set messages on the generic errorData page
+        	//TODO: GUI: figure out how to set messages on the generic errorData page
             //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             //model.addAttribute("message", message);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	
         	return "redirect:/errors/errorData";        	
         }
 
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	//TODO: figure out how to set messages on the generic errorData page
+        	//TODO: GUI: figure out how to set messages on the generic errorData page
             //model.addAttribute("message", messages.getMessage("auth.message.expired", null, locale));
             //model.addAttribute("expired", true);
             //model.addAttribute("token", token);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-
         	return "redirect:/errors/errorData";        	
         }
 
@@ -187,7 +191,7 @@ public class UserController {
         
         logger.info("user updated");
         
-      //TODO: figure out how to set messages on the login page
+        //TODO: GUI: figure out how to set messages on the login page
         //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
         //return "redirect:/login.html?lang=" + locale.getLanguage();
         return "redirect:/login";

@@ -65,11 +65,7 @@ public class UserSecurityService implements UserDetailsService {
 			return getEmail();
 		}
 		
-		public long getUserId() {
-			return getId();
-		}
-		
-		//TODO: return correct values for these 3 methods
+		//TODO: SECURITY: return correct values for these 3 methods
 		public boolean isAccountNonExpired() {
 			return true;
 		}

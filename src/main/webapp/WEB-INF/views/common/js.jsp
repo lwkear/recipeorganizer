@@ -17,7 +17,7 @@ var remainTime = 30;
 
 function closeTimeout() {
 	$("#sessionTimeout").modal('hide');
-	//TODO: check if already logged out (more than one tab/window expires at once)
+	//TODO: SECURITY: check if already logged out (more than one tab/window expires at once)
 	submitLogoutForm();
 }
 

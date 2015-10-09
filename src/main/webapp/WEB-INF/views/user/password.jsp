@@ -9,54 +9,49 @@
 <script type="text/javascript">
 
 function postPassword() {
-	var oldpassword = $("#currentpassword").val();
-	var newpassword = $("#password").val();
-	var valid = newpassword == $("#confirmpassword").val();
+	var oldpass = $("#currentpassword").val();
+	var newpass = $("#password").val();
+	var valid = newpass == $("#confirmpassword").val();
 	if(!valid) {
 		$("confirmError").show();
 		return;
 	}
 
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
+	var passData = {"oldpassword":oldpass,"newpassword":newpass};
 
-	var data = {"oldpassword":oldpassword,"newpassword":newpassword};
-	
+	//NOTE:  this posting method works when you want to send just a couple
+	//	of data items; the @Controller method can then include each datum
+	//	as a @RequestParam; the data cannot(!) use the JSON.stringify(data)
+	//	method;
  	$.ajax({
-		headers: { 
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json' 
-	    },
 	    type: 'POST',
-		//url: '/recipeorganizer/ajax/auth/changepassword',
 		url: '/recipeorganizer/user/changepassword',
 		dataType: 'json',
-		data: JSON.stringify(data)
-		/* beforeSend: function(xhr) {
-		   	xhr.setRequestHeader(header, token);
-		} */
- 	})
-	.success(function(data) {
-		console.log('postPassword() done');
-		window.location.href = "<c:url value='/home'></c:url>";
+		data: {
+			oldpassword : oldpass,
+			newpassword : newpass				 
+		}
 	})
-	
-	/* .success(function(data) {
+	.done(function(data) {
 		console.log('postPassword() done');
-		window.location.href = "<c:url value='/home'></c:url>";
-	})*/
+		$("#errormsg").show().html(data);
+		//window.location.href = "<c:url value='/home'></c:url>";
+	})
 	.fail(function(jqXHR, status, error) {
-		//$("#errormsg").show().html(data.responseJSON.error);
-		$("#errormsg").show().html("ajax error");
+		console.log('postPassword() fail');
 		console.log('fail status: '+ jqXHR.status);
 		console.log('fail error: '+ error);
+		var respText = jqXHR.responseText;
+		console.log('respText: '+ respText);
+		$("#errormsg").show().html(respText);		
 	})
 };
 
+//NOTE: this routine appends the csrf info to an AJAX call
+//TODO: GUI: make this available to all .jsp's
 $(document).ready(function() {
-
-	var token = $("input[name='_csrf']").val();
-    var header = "X-CSRF-TOKEN";
+	var token = $("meta[name='_csrf']").attr("content");
+	var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend(function(e, xhr, options) {
         xhr.setRequestHeader(header, token);
     });

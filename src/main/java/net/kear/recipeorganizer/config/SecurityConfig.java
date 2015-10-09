@@ -139,7 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
 			.key("recipeOrganizer")
 			.tokenRepository(persistentTokenRepository())
-			.tokenValiditySeconds(180)		//TODO: figure out proper expiration length e.g. tokenValiditySeconds(1209600)
+			.tokenValiditySeconds(180)		//TODO: SECURITY: figure out proper expiration length e.g. tokenValiditySeconds(1209600)
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()

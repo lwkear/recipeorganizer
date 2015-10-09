@@ -847,3 +847,18 @@ http://stackoverflow.com/questions/30465618/spring-security-invalid-session-redi
 http://a4academics.com/blog/380-j2ee-user-authentication-using-java-servlet-filters
 http://www.javaworld.com/article/2073096/don-t-trust-cookie-setmaxage.html
 http://www.javaworld.com/article/2073234/tracking-session-expiration-in-browser.html
+
+
+***********************
+*** some AJAX stuff ***
+
+a way to get a set of Strings from a .jsp using a MAP; the JSON.stringify(data) must be used in the AJAX call;
+this was one of the attempts to get the old and new passwords back to the controller
+
+public String postPassword(@RequestBody Map<String, String> map, HttpServletResponse response) {
+
+	for (Map.Entry<String, String> entry : map.entrySet()) {
+		logger.info("key:" + entry.getKey() + " value:" + entry.getValue());
+	}
+	String oldPassword = map.get("oldpassword");
+	String newPassword = map.get("newpassword");

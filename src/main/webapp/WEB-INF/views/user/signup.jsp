@@ -35,7 +35,7 @@ $(function() {
 			}
 		})
 		.done(function(data) {
-			//TODO: probably need to check for a success status?
+			//TODO: GUI: probably need to check for a success status?
 			console.log('Email ok (not found)');
 			//fix the appearance in case a name was entered in error
 			username.parent('div').removeClass('has-error');
