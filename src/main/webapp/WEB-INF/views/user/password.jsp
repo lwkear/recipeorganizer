@@ -8,14 +8,6 @@
 <%@include file="../common/js.jsp" %>
 <script type="text/javascript">
 
-$(document).ready(function() {
-
-	var token = $("input[name='_csrf']").val();
-    var header = "X-CSRF-TOKEN";
-    $(document).ajaxSend(function(e, xhr, options) {
-        xhr.setRequestHeader(header, token);
-    });
-
 function postPassword() {
 	var oldpassword = $("#currentpassword").val();
 	var newpassword = $("#password").val();
@@ -29,14 +21,6 @@ function postPassword() {
 	var header = $("meta[name='_csrf_header']").attr("content");
 
 	var data = {"oldpassword":oldpassword,"newpassword":newpassword};
-
-
-/* $.post("<c:url value="/user/changePassword"></c:url>",data ,function(data){
-window.location.href = "<c:url value="/home"></c:url>";
-})
-.fail(function(data) {
-$("#errormsg").show().html("ajax error");
-}); */
 	
  	$.ajax({
 		headers: { 
@@ -51,10 +35,11 @@ $("#errormsg").show().html("ajax error");
 		/* beforeSend: function(xhr) {
 		   	xhr.setRequestHeader(header, token);
 		} */
-		.success(function(data) {
-			console.log('postPassword() done');
-			window.location.href = "<c:url value='/home'></c:url>";
-		})
+ 	})
+	.success(function(data) {
+		console.log('postPassword() done');
+		window.location.href = "<c:url value='/home'></c:url>";
+	})
 	
 	/* .success(function(data) {
 		console.log('postPassword() done');
@@ -66,9 +51,15 @@ $("#errormsg").show().html("ajax error");
 		console.log('fail status: '+ jqXHR.status);
 		console.log('fail error: '+ error);
 	})
- 	});
+};
 
-	}
+$(document).ready(function() {
+
+	var token = $("input[name='_csrf']").val();
+    var header = "X-CSRF-TOKEN";
+    $(document).ajaxSend(function(e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
 });
 
 </script>
@@ -76,7 +67,7 @@ $("#errormsg").show().html("ajax error");
 </head>
 
 <!-- <body role="document" onload="document.passswordForm.currentpassword.focus();"> -->
-<body role="document" onload="document.currentpassword.focus();">
+<body role="document"> <!--  onload="document.currentpassword.focus();"> -->
 
 	<%@include file="../common/nav.jsp" %>
 

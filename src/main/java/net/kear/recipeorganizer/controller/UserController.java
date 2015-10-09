@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.controller;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -133,18 +135,23 @@ public class UserController {
 	/*@RequestMapping(value = "ajax/auth/changepassword", method = RequestMethod.POST)*/
 	@RequestMapping(value = "user/changepassword", method = RequestMethod.POST)
 	@ResponseBody
-	public String postPassword(@RequestParam("oldpassword") String oldPassword, @RequestParam("newpassword") String newPassword, HttpServletResponse response) {
+	/*public String postPassword(@RequestParam("newpassword") final String newPassword, @RequestParam("oldpassword") final String oldPassword, HttpServletResponse response) {*/
+	public String postPassword(@RequestBody Map<String, String> map, HttpServletResponse response) {
 		logger.info("password POST");
 		
-		String msg = "{}";
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			logger.info("key:" + entry.getKey() + " value:" + entry.getValue());
+		}
+		
+		String msg = "Success";
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		/*User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!userService.isPasswordValid(oldPassword, user)) {
             msg = "{Current password is incorrect}";
         }
         
-        userService.changePassword(newPassword, user);
+        userService.changePassword(newPassword, user);*/
 				
 		return msg;
 	}
