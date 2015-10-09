@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
@@ -10,7 +11,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 
 
 
-import net.kear.recipeorganizer.util.RecipeList;
+
 
 
 //import org.slf4j.Logger;
@@ -24,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RecipeServiceImpl implements RecipeService {
 	
-	//private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
- 
     @Autowired
     private RecipeRepository recipeRepository;
       
@@ -42,11 +41,10 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     public Recipe getRecipe(Long id) {
-    	Recipe recipe = recipeRepository.getRecipe(id);
-    	return recipe;
+    	return recipeRepository.getRecipe(id);
     }
 
-    public List<RecipeList> listRecipes() {
+    public List<RecipeListDto> listRecipes() {
     	return recipeRepository.listRecipes();
     }
     
@@ -61,5 +59,4 @@ public class RecipeServiceImpl implements RecipeService {
     public boolean lookupName(String lookupName, Long userId) {
     	return recipeRepository.lookupName(lookupName, userId);
     }
- 
 }

@@ -13,24 +13,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.kear.recipeorganizer.persistence.model.Role;
-import net.kear.recipeorganizer.persistence.model.Users;
-import net.kear.recipeorganizer.persistence.service.UsersService;
+import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.service.UserService;
 
 @Service
 @Transactional
 public class UserSecurityService implements UserDetailsService {
 
 	//@Autowired
-	private UsersService usersService;
+	private UserService userService;
 
     @Autowired
-	public UserSecurityService(UsersService usersService) {
-		this.usersService = usersService;
+	public UserSecurityService(UserService userService) {
+		this.userService = userService;
 	}
     
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		Users user = usersService.findUserByEmail(username);
+		User user = userService.findUserByEmail(username);
 		if (user == null) {
 			throw new UsernameNotFoundException("Could not find user " + username);
 		}
@@ -38,12 +38,12 @@ public class UserSecurityService implements UserDetailsService {
 		return new CustomUserDetails(user);
 	}
 
-	private final static class CustomUserDetails extends Users implements UserDetails, Serializable {
+	private final static class CustomUserDetails extends User implements UserDetails, Serializable {
 
 		private static final long serialVersionUID = 1L;		
 		
 		//Note: super(user) calls the parameterized constructor!  super() will call the empty constructor
-		private CustomUserDetails(Users user) {
+		private CustomUserDetails(User user) {
 			super(user);
 		}
 		
@@ -64,7 +64,12 @@ public class UserSecurityService implements UserDetailsService {
 		public String getUsername() {
 			return getEmail();
 		}
-
+		
+		public long getUserId() {
+			return getId();
+		}
+		
+		//TODO: return correct values for these 3 methods
 		public boolean isAccountNonExpired() {
 			return true;
 		}

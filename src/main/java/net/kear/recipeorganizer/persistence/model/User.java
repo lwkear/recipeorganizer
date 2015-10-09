@@ -9,24 +9,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import net.kear.recipeorganizer.validation.PasswordMatch;
-
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "USERS")
-@PasswordMatch
-public class Users implements Serializable {
+public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -37,37 +28,16 @@ public class Users implements Serializable {
 	private long id;
 
 	@Column(name = "FIRSTNAME")
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(max=50)	//50
 	private String firstName;
 
 	@Column(name = "LASTNAME")
-	@Size(max=50)	//50
 	private String lastName;
 
 	@Column(name = "EMAIL", nullable = false)
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(max=50)	//50
-	@Email
 	private String email;
 
 	@Column(name = "PASSWORD", nullable = false)
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(min=6)
 	private String password;
-	
-	@Transient
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(min=6)
-	private String confirmPassword;
 	
 	@Column(name = "ENABLED")
 	private int enabled;
@@ -79,10 +49,13 @@ public class Users implements Serializable {
     @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
     	inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
     private Role role;
+
+    @OneToOne(mappedBy = "user", orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
 	
-	public Users() {}
+	public User() {}
 	
-	public Users(Users user) {
+	public User(User user) {
 		this.id = user.id;
 		this.firstName = user.firstName;
 		this.lastName = user.lastName;
@@ -93,7 +66,7 @@ public class Users implements Serializable {
 		this.role = user.role;
 	}
 	
-	public Users(String firstName, String lastName, String email,
+	public User(String firstName, String lastName, String email,
 			String password, int enabled, int tokenExpired, Role role) {
 		super();
 		this.firstName = firstName;
@@ -169,14 +142,6 @@ public class Users implements Serializable {
 		this.password = password;
 	}
 	
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
-
     public Role getRole() {
         return role;
     }
@@ -184,7 +149,15 @@ public class Users implements Serializable {
     public void setRole(final Role role) {
         this.role = role;
     }
-
+    
+    public UserProfile getUserProfile() {
+    	return userProfile;
+    }
+    
+    public void setUserProfile(UserProfile userProfile) {
+    	this.userProfile = userProfile;
+    }
+    
     @Override
     public int hashCode() {
         return email.hashCode();
@@ -201,7 +174,7 @@ public class Users implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Users user = (Users) obj;
+        final User user = (User) obj;
         if (!email.equals(user.email)) {
             return false;
         }
@@ -210,7 +183,7 @@ public class Users implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Users [id=" + id + ", firstName=" + firstName + ", lastName="
+		return "UserDto [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", email=" + email + ", password=" + password
 				+ ", enabled=" + enabled + ", " + ", tokenExpired=" + tokenExpired + "]";
 	}

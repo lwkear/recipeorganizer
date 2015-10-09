@@ -34,12 +34,12 @@ public class VerificationToken implements Serializable {
 	@Column(name = "TOKEN")
 	private String token;
 
-    @OneToOne(targetEntity = Users.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "USER_ID")
-    private Users user;
+    private User user;
 
     @Column(name = "EXPIRY_DATE")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
 
     public VerificationToken() {
@@ -53,7 +53,7 @@ public class VerificationToken implements Serializable {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    public VerificationToken(final String token, final Users user) {
+    public VerificationToken(final String token, final User user) {
         super();
 
         this.token = token;
@@ -69,11 +69,11 @@ public class VerificationToken implements Serializable {
         this.token = token;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(final Users user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 

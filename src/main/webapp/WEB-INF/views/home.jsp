@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<%@include file="common/js.jsp" %>
-	<%-- <%@include file="common/head.jsp" %> --%>
 	
-	<title>Home</title>
+<title>Home</title>
 
-<%-- <%@ page session="false" %> --%>
+<%@include file="common/head.jsp" %>
+<%@include file="common/js.jsp" %>
 	
 </head>
 
 <body role="document">
-<body>
 
     <%@include file="common/nav.jsp" %>
 

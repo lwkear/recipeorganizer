@@ -63,7 +63,7 @@ function getSessionTimeout() {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/ajax/all/getSessionTimeout',
+		url: '/recipeorganizer/ajax/anon/getSessionTimeout',
 		dataType: 'json'
 	})
 	.done(function(data) {
@@ -78,7 +78,7 @@ function getSessionTimeout() {
 	});
 }
 
-$( document ).ready(function() {
+$(document).ready(function() {
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
 });  
 </script>

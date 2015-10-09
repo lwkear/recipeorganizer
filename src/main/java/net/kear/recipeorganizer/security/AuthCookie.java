@@ -6,15 +6,17 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 @Component
 public class AuthCookie implements Serializable {
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	private static final long serialVersionUID = 1L;
-	private final Log logger = LogFactory.getLog(getClass());
 	private HttpServletRequest request = null;
 	private HttpServletResponse response = null;
 	private boolean anonymous = false;

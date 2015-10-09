@@ -2,11 +2,9 @@
 <html>
 <head>
 
-	<%@include file="common/head.jsp" %>
-	
-	<title>ThankYou</title>
+<title>Thankyou</title>
 
-<!-- Placed at the end of the document so the pages load faster -->
+<%@include file="common/head.jsp" %>
 <%@include file="common/js.jsp" %>
 
 </head>

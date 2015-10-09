@@ -2,9 +2,10 @@ package net.kear.recipeorganizer.persistence.repository;
  
 import java.util.List;
 
-import net.kear.recipeorganizer.persistence.model.Users;
-import net.kear.recipeorganizer.persistence.repository.UsersRepository;
+import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.repository.UserRepository;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Criteria;
@@ -14,45 +15,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UsersRepositoryImpl implements UsersRepository {
+public class UserRepositoryImpl implements UserRepository {
  
     @Autowired
     private SessionFactory sessionFactory;
  
-    public void addUser(Users user) {
-    	
+    public void addUser(User user) {
     	getSession().save(user);
     }
 
-    public void updateUser(Users user) {
-    	
-        if (null != user) {
+    public void updateUser(User user) {
+        if (user != null) {
         	getSession().merge(user);
         }
     }
     
     public void deleteUser(Long id) {
-    	
-    	Users user = (Users) getSession().load(Users.class, id);
-        if (null != user) {
+    	User user = (User) getSession().load(User.class, id);
+        if (user != null) {
         	getSession().delete(user);
         }
     }
     
-    public Users findUserByEmail(String email) {
-    
-    	Criteria criteria = getSession().createCriteria(Users.class)
+    public User findUserByEmail(String email) {
+    	Criteria criteria = getSession().createCriteria(User.class)
        		.add(Restrictions.eq("email", email).ignoreCase());
     	Object result = criteria.uniqueResult();
     	if (result != null)
-    		return (Users) result;
+    		return (User) result;
     	
     	return null;
     }
     
     public boolean doesUserEmailExist(String email) {
-
-    	Criteria criteria = getSession().createCriteria(Users.class)
+    	Criteria criteria = getSession().createCriteria(User.class)
            		.add(Restrictions.eq("email", email).ignoreCase())
            		.setProjection(Projections.projectionList()
            			.add(Projections.property("email")));
@@ -64,23 +60,20 @@ public class UsersRepositoryImpl implements UsersRepository {
         
     @SuppressWarnings("unchecked")
     public boolean validateUser(String email, String password) {
-
-    	Criteria criteria = getSession().createCriteria(Users.class)
+    	Criteria criteria = getSession().createCriteria(User.class)
     		.add(Restrictions.eq("email", email))
     		.add(Restrictions.eq("password", password));
-    	List<Users> result = criteria.list();
+    	List<User> result = criteria.list();
     	return !result.isEmpty();    	
     }
 
     @SuppressWarnings("unchecked")
-    public List<Users> listUsers() {
-    	
-    	return getSession().createCriteria(Users.class).list();
+    public List<User> listUsers() {
+    	return getSession().createCriteria(User.class).list();
     }
     
-    public String getUserName(Long id) {
-    	
-    	Users user = (Users) getSession().load(Users.class, id);
+    public String getUserFullName(Long id) {
+    	User user = (User) getSession().load(User.class, id);
         if (null != user) {
         	return user.getFirstName() + " " + user.getLastName();
         }
@@ -88,13 +81,18 @@ public class UsersRepositoryImpl implements UsersRepository {
         	return null;
     }
     
-    public Users getUser(Long id) {
-    	Users user = (Users) getSession().get(Users.class, id);
+    public User getUser(Long id) {
+    	User user = (User) getSession().get(User.class, id);
     	return user;
     }
- 
+    
+    public User getUserWithProfile(Long id) {
+    	User user = (User) getSession().get(User.class, id);
+    	Hibernate.initialize(user.getUserProfile());
+    	return user;
+    }
+    
 	private Session getSession() {
-		
 		Session sess = getSessionFactory().getCurrentSession();
 		if (sess == null) {
 			sess = getSessionFactory().openSession();

@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionTrackingMode;
 
+import net.kear.recipeorganizer.listener.RegistrationListener;
 import net.kear.recipeorganizer.listener.SessionListener;
 
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -24,11 +25,11 @@ public class WebAppInitializer implements WebApplicationInitializer {
 
         container.addListener(new ContextLoaderListener(rootContext));
     	container.addListener(new HttpSessionEventPublisher());
-        container.addListener(new SessionListener());        
+        container.addListener(new SessionListener());
     	container.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
     	
     	AnnotationConfigWebApplicationContext dispatcherServlet = new AnnotationConfigWebApplicationContext();
-        dispatcherServlet.register(WebMvcConfig.class);
+    	dispatcherServlet.addApplicationListener(new RegistrationListener());
     	
         ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherServlet));
         dispatcher.setLoadOnStartup(1);

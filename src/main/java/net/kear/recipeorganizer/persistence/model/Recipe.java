@@ -48,7 +48,7 @@ public class Recipe implements Serializable {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "USER_ID", referencedColumnName = "ID")
-	private Users user;
+	private User user;
 	
 	@Column(name = "NAME", nullable = false)
 	@NotNull
@@ -124,7 +124,7 @@ public class Recipe implements Serializable {
 	
 	public Recipe() {}
 
-	public Recipe(Users user, String name, String background, String description, Category category, String servings, String notes, int rating, boolean favorite, boolean allowShare, Date lastMade,			
+	public Recipe(User user, String name, String background, String description, Category category, String servings, String notes, int rating, boolean favorite, boolean allowShare, Date lastMade,			
 			int madeCount, String photo, List<String> tags, List<Instruction> instructions, List<RecipeIngredient> recipeIngredients, List<Source> sources) {
 		super();
 		this.user = user;
@@ -154,11 +154,11 @@ public class Recipe implements Serializable {
 		this.id = id;
 	}
 
-	public Users getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUser(Users user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 	

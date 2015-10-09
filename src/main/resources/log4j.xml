@@ -42,7 +42,7 @@
 
 	<logger name="org.springframework.web">
 		<!-- <level value="debug" /> -->
-		<level value="info" />
+		<!-- <level value="info" /> -->
 	</logger>
 
 	<logger name="org.springframework.security">
@@ -51,6 +51,11 @@
 	</logger>
 	
 	<logger name="org.hibernate">
+		<!-- <level value="debug" /> -->
+		<!-- <level value="info" /> -->
+	</logger>
+
+	<logger name="javax.persistence">
 		<!-- <level value="debug" /> -->
 		<!-- <level value="info" /> -->
 	</logger>

@@ -2,12 +2,6 @@ package net.kear.recipeorganizer.controller;
 
 import java.util.List;
 
-import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.service.CategoryService;
-import net.kear.recipeorganizer.persistence.service.RecipeService;
-import net.kear.recipeorganizer.persistence.service.UsersService;
-import net.kear.recipeorganizer.util.RecipeList;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +14,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.service.CategoryService;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.persistence.service.UserService;
+
 @Controller
 public class ViewRecipeController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ViewRecipeController.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
 	private RecipeService recipeService;
 	@Autowired
-	private UsersService usersService;
+	private UserService userService;
 	
 	@RequestMapping("recipe/viewRecipe/{id}")
 	public String displayRecipe(ModelMap model, @PathVariable Long id) {
@@ -46,7 +46,7 @@ public class ViewRecipeController {
 	public String listRecipeS(ModelMap model) {
 		logger.info("recipe/listRecipes");
 
-		List<RecipeList> recipes = recipeService.listRecipes();
+		List<RecipeListDto> recipes = recipeService.listRecipes();
 		model.addAttribute("recipes", recipes);
 
 		return "recipe/listRecipes";

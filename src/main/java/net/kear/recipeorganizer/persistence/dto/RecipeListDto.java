@@ -1,8 +1,8 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.persistence.dto;
 
 import java.sql.Date;
 
-public class RecipeList {
+public class RecipeListDto {
 
 	private long id;
 	private long userId;
@@ -15,9 +15,9 @@ public class RecipeList {
 	private String category;
 	private String source;
 
-	public RecipeList() {}
+	public RecipeListDto() {}
 	
-	public RecipeList(long id, long userId, String name, boolean favorite, boolean allowShare, Date lastMade, String firstName, String lastName, String category, String source) {
+	public RecipeListDto(long id, long userId, String name, boolean favorite, boolean allowShare, Date lastMade, String firstName, String lastName, String category, String source) {
 		super();
 		this.userId = userId;
 		this.id = id;

@@ -41,9 +41,9 @@ public class UserProfile implements Serializable {
 	@Size(max=500)	//500
 	private String interests;
 
-    @OneToOne(targetEntity = Users.class, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "USER_ID")
-    private Users user;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
 	
 	public UserProfile() {}
 	
@@ -103,11 +103,11 @@ public class UserProfile implements Serializable {
 		this.interests = interests;
 	}
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(final Users user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -123,8 +123,5 @@ public class UserProfile implements Serializable {
             return false;
         }
         return true;
-    }	
-	
-
-	
+    }		
 }

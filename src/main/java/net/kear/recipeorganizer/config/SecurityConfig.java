@@ -104,14 +104,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	//TODO: SECURITY: look into putting URLs with their roles into a DB table?
 	//TODO: SECURITY: consider securing every URL in the app to reduce unauth access
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
     	http
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/login**", "/thankyou", "/user/signup**", "/errors/**", "/ajax/all/**").permitAll() 
+			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**").permitAll()
+			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
+			.antMatchers("/regitrationConfirm**").permitAll()
 			.regexMatchers("/user/signup/.*").permitAll()
-			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**").hasAuthority("GUEST")
+			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**", "/user/changepassword*").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
 			.anyRequest().authenticated()
@@ -119,8 +121,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()
-			.loginPage("/login")
-			.failureUrl("/login?err=1")
+			.loginPage("/user/login")
+			.failureUrl("/user/login?err=1")
 			.permitAll()
 			.successHandler(loginSuccessHandler())
 			.and()

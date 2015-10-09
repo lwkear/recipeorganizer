@@ -3,7 +3,7 @@ package net.kear.recipeorganizer.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import net.kear.recipeorganizer.persistence.model.Users;
+import net.kear.recipeorganizer.persistence.dto.UserDto;
 
 public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch, Object> {   
     
@@ -13,7 +13,8 @@ public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch
     
 	@Override
     public boolean isValid(Object obj, ConstraintValidatorContext context){   
-        Users user = (Users) obj;
+        UserDto user = (UserDto) obj;
+        
         return user.getPassword().equals(user.getConfirmPassword());    
     }     
 }

@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import net.kear.recipeorganizer.persistence.service.UsersService;
+import net.kear.recipeorganizer.persistence.service.UserService;
 
 public class NotEmailExistValidator implements ConstraintValidator<NotEmailExist, String> {   
  

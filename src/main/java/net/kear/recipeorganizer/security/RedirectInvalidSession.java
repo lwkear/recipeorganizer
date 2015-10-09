@@ -6,8 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.springframework.security.web.util.UrlUtils;
@@ -16,7 +16,9 @@ import org.springframework.util.Assert;
 
 @Component
 public class RedirectInvalidSession implements InvalidSessionStrategy {
-	private final Log logger = LogFactory.getLog(getClass());
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	private final String destinationUrl;
 	private DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 	private boolean createNewSession = true;

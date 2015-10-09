@@ -17,7 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SessionListener implements HttpSessionListener {
 
-	private static final Logger logger = LoggerFactory.getLogger(SessionListener.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
 	public void sessionCreated(HttpSessionEvent event) {

@@ -17,11 +17,11 @@ import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
-import net.kear.recipeorganizer.util.RecipeList;
 
 @Repository
 public class RecipeRepositoryImpl implements RecipeRepository {
@@ -50,12 +50,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
         Hibernate.initialize(recipe.getRecipeIngredients());
         Hibernate.initialize(recipe.getSources());
-    	
         return recipe;
     }
     
     @SuppressWarnings("unchecked")
-    public List<RecipeList> listRecipes() {
+    public List<RecipeListDto> listRecipes() {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("category", "c")
     		.createAlias("user", "u")
@@ -70,9 +69,9 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.lastMade").as("lastMade")))
     		.addOrder(Order.asc("name"))
-    		.setResultTransformer(Transformers.aliasToBean(RecipeList.class));
+    		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
-    	List<RecipeList> recipes = (List<RecipeList>) criteria.list();
+    	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
     	return recipes;
     }
     

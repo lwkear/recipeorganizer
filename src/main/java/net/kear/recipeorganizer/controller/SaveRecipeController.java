@@ -3,7 +3,6 @@ package net.kear.recipeorganizer.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,17 +39,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
-import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.Source;
-import net.kear.recipeorganizer.persistence.model.Users;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
-import net.kear.recipeorganizer.persistence.service.UsersService;
+import net.kear.recipeorganizer.persistence.service.UserService;
 
 /**
  * Handles requests for the recipe pages.
@@ -58,7 +54,7 @@ import net.kear.recipeorganizer.persistence.service.UsersService;
 @Controller
 public class SaveRecipeController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(SaveRecipeController.class);
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private CategoryService categoryService;
@@ -71,7 +67,7 @@ public class SaveRecipeController {
 	@Autowired
 	private SourceService sourceService;
 	@Autowired
-	private UsersService usersService;
+	private UserService userService;
 
 	@Autowired
 	private MessageSource messages;

@@ -37,9 +37,9 @@ public class Role implements Serializable {
 	private int defaultRole;
 	
     //@ManyToMany(mappedBy = "roles")
-    //private Collection<Users> users;
+    //private Collection<UserDto> user;
     @OneToMany(mappedBy = "role")
-    private Collection<Users> users;
+    private Collection<User> user;
 	
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name = "ROLES_PRIVILEGES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), 
@@ -77,12 +77,12 @@ public class Role implements Serializable {
 		this.defaultRole = defaultRole;
 	}
 
-	public Collection<Users> getUsers() {
-        return users;
+	public Collection<User> getUsers() {
+        return user;
     }
 
-    public void setUsers(final Collection<Users> users) {
-        this.users = users;
+    public void setUsers(final Collection<User> user) {
+        this.user = user;
     }
 
     public Collection<Privilege> getPrivileges() {

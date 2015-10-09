@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<%@include file="common/head.jsp" %>
-	<%@include file="common/js.jsp" %>
 
-	<title>Login</title>
+<%@include file="../common/head.jsp" %>
+<%@include file="../common/js.jsp" %>
+
+<title>Login</title>
 
 </head>
 
 <body role="document" onload="document.loginForm.username.focus();">
 
-	<%@include file="common/nav.jsp" %>
+	<%@include file="../common/nav.jsp" %>
 
 	<div class="container">
 	
 		<h2 class="text-center">Please Login</h2>
 		
 		<div class="row">
-			<form name="loginForm" action="<c:url value='/login'/>" method="post">
+			<form name="loginForm" action="<c:url value='/user/login'/>" method="post">
 		        <div class="form-group col-sm-4 col-sm-offset-4">
 					<label class="control-label" for="username">Email</label>
 					<input class="form-control" type="text" id="username" name="username" placeholder="Email" autocomplete="off"/>
@@ -27,10 +28,6 @@
 					<input class="form-control" type="password" id="password" name="password" placeholder="Password" autocomplete="off"/>
 				</div>
 				<div class="form-group col-sm-4 col-sm-offset-4">
-					<!-- <div class="checkbox">
-						<label for="rememberMe"><span>Remember Me</span></label>
-						<input class="checkbox style-2 pull-right" type="checkbox" id="rememberMe" name="rememberMe"/>
-					</div> -->
 					<div class="checkbox-inline">
 						<input class="" type="checkbox" id="rememberMe" name="rememberMe"/><strong>Remember Me</strong>
 					</div>

@@ -28,7 +28,7 @@ $(function() {
 		//allow jquery to create the query string from the data parameters to handle special characters
 		$.ajax({
 			type: 'GET',
-			url: '/recipeorganizer/ajax/all/lookupUser',
+			url: '/recipeorganizer/ajax/anon/lookupUser',
 			dataType: 'json',
 			data: {
 				email : emailStr
@@ -39,7 +39,7 @@ $(function() {
 			console.log('Email ok (not found)');
 			//fix the appearance in case a name was entered in error
 			username.parent('div').removeClass('has-error');
-			$('#userLabel').html("Email:");
+			$('#userLabel').html("*Email:");
 		})
 		.fail(function(jqXHR, status, error) {
 			console.log('fail status: '+ jqXHR.status);
@@ -67,17 +67,17 @@ $(function() {
 
 	<%@include file="../common/nav.jsp" %>
 
-	<spring:bind path="users.email"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="users.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="users.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="users.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="users.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="user.email"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="user.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="user.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="user.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="user.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container">
 	
 		<h2 class="text-center">Sign Up</h2>
 		
-		<spring:hasBindErrors name="users">
+		<spring:hasBindErrors name="user">
 	    <c:set var="errorCnt">${errors.errorCount}</c:set>
 	    <p><b># of Errors:${errorCnt}</b></p>
 	    <p></p>
@@ -89,7 +89,7 @@ $(function() {
 		<p></p>
 		<p></p>
 		
-		<spring:bind path="users">
+		<spring:bind path="user">
 			<c:if test="${status.error}">
                 <c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
                 	<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
@@ -102,7 +102,7 @@ $(function() {
 		</spring:bind>
 
 		<div class="row">
-			<form:form role="form" method="post" modelAttribute="users">  <!-- enctype="multipart/form-data"> class="form-horizontal" -->
+			<form:form role="form" method="post" modelAttribute="user">
 		        <div class="col-sm-12">
 			        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
 						<label class="control-label" id="userLabel" for="username">*Email:&nbsp;&nbsp;${emailError}</label>
@@ -112,11 +112,11 @@ $(function() {
 				<div class="col-sm-12">
 					<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
 						<label class="control-label" for="password">*Password:&nbsp;&nbsp;${passwordError}</label>
-						<form:input class="form-control" type="text" id="password" placeholder="Password" path="password" autocomplete="off"/>
+						<form:input class="form-control" type="password" id="password" placeholder="Password" path="password" autocomplete="off"/>
 					</div>
 					<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
 						<label class="control-label" for="confirmpassword">*Confirm Password:&nbsp;&nbsp;${confirmError}</label>
-						<form:input class="form-control" type="text" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
+						<form:input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
 					</div>
 				</div>
 		        <div class="col-sm-12">

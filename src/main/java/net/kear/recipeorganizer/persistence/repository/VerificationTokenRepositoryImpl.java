@@ -1,7 +1,9 @@
 package net.kear.recipeorganizer.persistence.repository;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,16 @@ public class VerificationTokenRepositoryImpl implements VerificationTokenReposit
 	@Override
 	public void saveToken(VerificationToken token) {
     	getSession().save(token);
+	}
+	
+	public VerificationToken findByToken(String token) {
+		Criteria criteria = getSession().createCriteria(VerificationToken.class)
+	       		.add(Restrictions.eq("token", token).ignoreCase());
+	    Object result = criteria.uniqueResult();
+	    if (result != null)
+	    	return (VerificationToken) result;
+	    	
+	    return null;
 	}
 
 	private Session getSession() {
