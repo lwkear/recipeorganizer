@@ -7,6 +7,12 @@
 
 <title>Login</title>
 
+<script type="text/javascript">
+function resetPass(){
+	alert("resetPass");	
+}
+</script>
+
 </head>
 
 <body role="document" onload="document.loginForm.username.focus();">
@@ -19,23 +25,38 @@
 		
 		<div class="row">
 			<form name="loginForm" action="<c:url value='/user/login'/>" method="post">
-		        <div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="username">Email</label>
-					<input class="form-control" type="text" id="username" name="username" placeholder="Email" autocomplete="off"/>
+		        <div class="row">
+					<label class="control-label col-sm-4 col-sm-offset-4" for="email">Email</label>		        
+					<div class="col-sm-12 col-sm-offset-4">
+						<div class="form-group col-sm-4" style="padding-left:0px;">
+							<input class="form-control" type="text" id="username" name="username" placeholder="Email" autocomplete="off"/>
+						</div>
+					</div>
 				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="password">Password</label>
-					<input class="form-control" type="password" id="password" name="password" placeholder="Password" autocomplete="off"/>
+				<div class="row">
+					<label class="control-label col-sm-4 col-sm-offset-4" for="password">Password</label>
+					<div class="col-sm-12 col-sm-offset-4">
+						<div class="form-group col-sm-4" style="padding-left:0px;">
+							<input class="form-control" type="password" id="password" name="password" placeholder="Password" autocomplete="off"/>
+						</div>
+						<div class="col-sm-2">
+							<a class="btn btn-default" href="<c:url value="/home"></c:url>" role="button">Forgot Password?</a>
+						</div>
+					</div>
 				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<div class="checkbox-inline">
-						<input class="" type="checkbox" id="rememberMe" name="rememberMe"/><strong>Remember Me</strong>
+		        <div class="row">
+					<div class="form-group col-sm-4 col-sm-offset-4">
+						<div class="checkbox-inline">
+							<input class="" type="checkbox" id="rememberMe" name="rememberMe"/><strong>Remember Me</strong>
+						</div>
 					</div>
 				</div>
 				<div class="form-group col-sm-4 col-sm-offset-4">
 				</div>
-		        <div class="form-group col-sm-2 col-sm-offset-5">
-					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Submit</button>
+		        <div class="row">				
+			        <div class="form-group col-sm-2 col-sm-offset-5">
+						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Submit</button>
+	        		</div>
         		</div>
 
 				<div class="col-sm-12 text-center">
