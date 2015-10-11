@@ -2,10 +2,12 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
+import net.kear.recipeorganizer.persistence.repository.PasswordResetTokenRepository;
 import net.kear.recipeorganizer.persistence.repository.RoleRepository;
 import net.kear.recipeorganizer.persistence.repository.UserProfileRepository;
 import net.kear.recipeorganizer.persistence.repository.UserRepository;
@@ -34,7 +36,10 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     
     @Autowired
-    private VerificationTokenRepository tokenRepository;
+    private VerificationTokenRepository verificationTokenRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
     
     public User addUser(UserDto userDto) {
     	User user = new User();
@@ -107,11 +112,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUserVerificationToken(final User user, final String token) {
         final VerificationToken newToken = new VerificationToken(token, user);
-        tokenRepository.saveToken(newToken);
+        verificationTokenRepository.saveToken(newToken);
     }
     
     @Override
     public VerificationToken getVerificationToken(String token) {
-        return tokenRepository.findByToken(token);
-    }    
+        return verificationTokenRepository.findByToken(token);
+    }
+    
+    @Override
+    public void createPasswordResetTokenForUser(final User user, final String token) {
+        final PasswordResetToken newToken = new PasswordResetToken(token, user);
+        passwordResetTokenRepository.save(newToken);
+    }
+    
+    @Override
+    public PasswordResetToken getPasswordResetToken(String token) {
+    	return passwordResetTokenRepository.findByToken(token);
+    }
 }

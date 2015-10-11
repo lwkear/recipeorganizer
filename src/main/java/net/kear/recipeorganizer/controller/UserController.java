@@ -25,12 +25,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
+import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.registration.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
@@ -125,7 +126,7 @@ public class UserController {
 		return "redirect:/home";
 	}
 
-	@RequestMapping(value = "user/password", method = RequestMethod.GET)
+	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
 	public String getPassword(Model model) {
 		logger.info("password GET");
 				
@@ -163,8 +164,42 @@ public class UserController {
 				
 		return msg;
 	}
+	
+	@RequestMapping(value = "user/resetPassword", method = RequestMethod.GET)
+	public String getResetPassword(Model model) {
+		logger.info("resetPassword GET");
+		
+		String email = "";
+		model.addAttribute("email", email);
+		
+		return "user/resetPassword";
+	}
+	
+	@RequestMapping(value = "user/resetPassword", method = RequestMethod.POST)
+    //@ResponseBody
+    //public String postforgotPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
+	public String postResetPassword(Model model, @ModelAttribute @Valid String email, BindingResult result, HttpServletRequest request) {
 
-	@RequestMapping(value = "/registrationConfirm", method = RequestMethod.GET)
+		final User user = userService.findUserByEmail(email);
+
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			return "user/forgotPassword";
+		}
+
+		try {
+        	logger.info("password reset - publishing event");
+        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+        } catch (Exception ex) {
+        	//TODO: GUI: redisplay the reset page with an error message?
+        	logger.debug("error encountered: " + ex.getMessage());
+        }
+        
+		return "redirect:/messages/emailSent";		
+    }
+
+	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
     public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) {
 		logger.info("confirmRegistration");		
 		
@@ -199,6 +234,36 @@ public class UserController {
         return "redirect:/login";
     }	
 
+	@RequestMapping(value = "/confirmPasswordReset", method = RequestMethod.GET)
+    public String confirmPasswordReset(final Locale locale, final Model model, @RequestParam("token") final String token) {
+		logger.info("confirmPasswordReset");		
+		
+        final PasswordResetToken passwordResetToken = userService.getPasswordResetToken(token);
+        if (passwordResetToken == null) {
+        	//TODO: GUI: figure out how to set messages on the generic errorData page
+            //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
+            //model.addAttribute("message", message);
+            //return "redirect:/badUser.html?lang=" + locale.getLanguage();
+        	return "redirect:/errors/errorData";        	
+        }
+
+        final User user = passwordResetToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+        	//TODO: GUI: figure out how to set messages on the generic errorData page
+            //model.addAttribute("message", messages.getMessage("auth.message.expired", null, locale));
+            //model.addAttribute("expired", true);
+            //model.addAttribute("token", token);
+            //return "redirect:/badUser.html?lang=" + locale.getLanguage();
+        	return "redirect:/errors/errorData";        	
+        }
+
+        //TODO: GUI: figure out how to set messages on the login page
+        //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
+        //return "redirect:/login.html?lang=" + locale.getLanguage();
+        return "redirect:/login";
+    }	
+	
 	@RequestMapping(value = "/messages/emailSent", method = RequestMethod.GET)
 	public ModelAndView emailSent(Locale locale, Model model) {
 		ModelAndView view = new ModelAndView("/messages/emailSent");

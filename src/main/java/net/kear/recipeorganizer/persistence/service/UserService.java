@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.persistence.service;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.UserDto;
+import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
@@ -24,4 +25,6 @@ public interface UserService {
     public void saveUserProfile(UserProfile userProfile);
     public void createUserVerificationToken(User user, String token);
     public VerificationToken getVerificationToken(String token);
+    public void createPasswordResetTokenForUser(final User user, final String token);
+    public PasswordResetToken getPasswordResetToken(String token);
 }

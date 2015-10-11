@@ -12,12 +12,12 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
+import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 
 @Component
-public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
+public class PasswordResetListener implements ApplicationListener<OnPasswordResetEvent> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -34,27 +34,27 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
     private Environment env;
 
     @Override
-    public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
+    public void onApplicationEvent(final OnPasswordResetEvent event) {
     	logger.debug("onApplicationEvent");
         this.confirmRegistration(event);
     }
 
-    private void confirmRegistration(final OnRegistrationCompleteEvent event) {
+    private void confirmRegistration(final OnPasswordResetEvent event) {
     	logger.debug("confirmRegistration");
         final User user = event.getUser();
         final String token = UUID.randomUUID().toString();
-        userService.createUserVerificationToken(user, token);
+        userService.createPasswordResetTokenForUser(user, token);
 
         final SimpleMailMessage email = constructEmailMessage(event, user, token);
-        //mailSender.send(email);
+        mailSender.send(email);
     }
 
-    private final SimpleMailMessage constructEmailMessage(final OnRegistrationCompleteEvent event, final User user, final String token) {
+    private final SimpleMailMessage constructEmailMessage(final OnPasswordResetEvent event, final User user, final String token) {
     	logger.debug("constructEmailMessage");
         final String recipientAddress = user.getEmail();
-        final String subject = "Registration Confirmation";
-        final String confirmationUrl = event.getAppUrl() + "/confirmRegistration.html?token=" + token;
-        final String message = messages.getMessage("signupSuccess", null, event.getLocale());
+        final String subject = "Password Reset";
+        final String confirmationUrl = event.getAppUrl() + "/confirmPasswordReset.html?token=" + token;
+        final String message = messages.getMessage("passwordReset", null, event.getLocale());
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);

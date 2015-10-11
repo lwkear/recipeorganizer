@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.registration;
+package net.kear.recipeorganizer.event;
 
 import java.util.Locale;
 
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 
 @SuppressWarnings("serial")
-public class OnRegistrationCompleteEvent extends ApplicationEvent {
+public class OnPasswordResetEvent extends ApplicationEvent {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -17,12 +17,12 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
     private final Locale locale;
     private final User user;
 
-    public OnRegistrationCompleteEvent(final User user, final Locale locale, final String appUrl) {
+    public OnPasswordResetEvent(final User user, final Locale locale, final String appUrl) {
         super(user);
         this.user = user;
         this.locale = locale;
         this.appUrl = appUrl;
-        logger.debug("OnRegistrationCompleteEvent");
+        logger.debug("OnPasswordResetCompleteEvent");
     }
 
     public String getAppUrl() {

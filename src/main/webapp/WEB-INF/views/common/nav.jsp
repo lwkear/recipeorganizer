@@ -38,7 +38,7 @@
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${secUser}<span class="caret"></span></a>
 						        <ul class="dropdown-menu" role="menu">
 						        	<li><a href="<c:url value="/user/profile" />">Profile</a></li>
-						        	<li><a href="<c:url value="/user/password" />">Change Password</a></li>
+						        	<li><a href="<c:url value="/user/changePassword" />">Change Password</a></li>
 						        </ul>
 						    </li>
 					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
