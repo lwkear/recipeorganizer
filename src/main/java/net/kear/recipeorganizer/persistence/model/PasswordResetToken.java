@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "PASSWORDRESETTOKEN")
@@ -29,12 +31,15 @@ public class PasswordResetToken implements Serializable {
 	@SequenceGenerator(name = "PASSWORDRESETTOKEN_SEQ", sequenceName = "PASSWORDRESETTOKEN_SEQ", allocationSize = 1)
 	private long id;
 	
-    private String token;
+	@Column(name = "TOKEN")
+	private String token;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "USER_ID")
     private User user;
 
+    @Column(name = "EXPIRY_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date expiryDate;
 
     public PasswordResetToken() {
@@ -43,14 +48,12 @@ public class PasswordResetToken implements Serializable {
 
     public PasswordResetToken(final String token) {
         super();
-
         this.token = token;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
     public PasswordResetToken(final String token, final User user) {
         super();
-
         this.token = token;
         this.user = user;
         this.expiryDate = calculateExpiryDate(EXPIRATION);

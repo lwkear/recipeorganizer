@@ -109,11 +109,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
     	http
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**").permitAll()
+			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
-			.antMatchers("/regitrationConfirm**").permitAll()
+			.antMatchers("/confirmRegistration**", "/confirmPasswordReset**").permitAll()
 			.regexMatchers("/user/signup/.*").permitAll()
-			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**", "/user/changepassword*").hasAuthority("GUEST")
+			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**", "/user/changePassword**", "/user/profile", "/user/resetPassword", "/user/newPassword").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
 			.anyRequest().authenticated()

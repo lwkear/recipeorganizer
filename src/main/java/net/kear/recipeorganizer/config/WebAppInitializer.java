@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionTrackingMode;
 
+import net.kear.recipeorganizer.listener.PasswordResetListener;
 import net.kear.recipeorganizer.listener.RegistrationListener;
 import net.kear.recipeorganizer.listener.SessionListener;
 
@@ -30,6 +31,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     	
     	AnnotationConfigWebApplicationContext dispatcherServlet = new AnnotationConfigWebApplicationContext();
     	dispatcherServlet.addApplicationListener(new RegistrationListener());
+    	dispatcherServlet.addApplicationListener(new PasswordResetListener());
     	
         ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherServlet));
         dispatcher.setLoadOnStartup(1);

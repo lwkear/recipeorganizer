@@ -5,9 +5,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 
+@Repository
 public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepository {
 
 	@Autowired

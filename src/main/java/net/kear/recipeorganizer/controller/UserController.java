@@ -14,7 +14,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +28,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.hibernate.validator.constraints.Email;
 
+import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
+import net.kear.recipeorganizer.persistence.dto.PasswordDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
@@ -44,6 +51,9 @@ public class UserController {
 
 	@Autowired
 	private UserInfo userInfo;
+	
+	@Autowired
+	private UserDetailsService userDetailsService;
 	
 	@Autowired
 	private MessageSource messages;
@@ -169,35 +179,60 @@ public class UserController {
 	public String getResetPassword(Model model) {
 		logger.info("resetPassword GET");
 		
-		String email = "";
-		model.addAttribute("email", email);
+		UserEmail email = new UserEmail();
+		model.addAttribute("userEmail", email);
 		
 		return "user/resetPassword";
 	}
 	
 	@RequestMapping(value = "user/resetPassword", method = RequestMethod.POST)
-    //@ResponseBody
-    //public String postforgotPassword(final HttpServletRequest request, @RequestParam("email") final String userEmail) {
-	public String postResetPassword(Model model, @ModelAttribute @Valid String email, BindingResult result, HttpServletRequest request) {
+	public String postResetPassword(Model model, @ModelAttribute @Valid UserEmail email, BindingResult result, HttpServletRequest request) {
 
-		final User user = userService.findUserByEmail(email);
+		final User user = userService.findUserByEmail(email.getEmail());
 
 		if (result.hasErrors()) {
 			logger.info("Validation errors");
-			return "user/forgotPassword";
+			return "user/resetPassword";
 		}
 
 		try {
         	logger.info("password reset - publishing event");
         	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         } catch (Exception ex) {
         	//TODO: GUI: redisplay the reset page with an error message?
         	logger.debug("error encountered: " + ex.getMessage());
         }
         
-		return "redirect:/messages/emailSent";		
+		return "redirect:/messages/resetMessage";		
     }
+	
+	@RequestMapping(value = "user/newPassword", method = RequestMethod.GET)
+	public String getNewPassword(Model model) {
+		logger.info("newPassword GET");
+		
+		PasswordDto passwordDto = new PasswordDto();
+		model.addAttribute("passwordDto", passwordDto);
+		
+		return "user/newPassword";
+	}
+
+	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
+	public String postNewPassword(Model model, @ModelAttribute @Valid PasswordDto passwordDto, BindingResult result) {
+		logger.info("newPassword POST");
+
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			return "user/newPassword";
+		}
+		
+		User user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        userService.changePassword(passwordDto.getNewPassword(), user);
+        
+        //TODO: SECURITY: send an account change email
+		
+		return "login";
+	}
 
 	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
     public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) {
@@ -261,15 +296,33 @@ public class UserController {
         //TODO: GUI: figure out how to set messages on the login page
         //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
         //return "redirect:/login.html?lang=" + locale.getLanguage();
-        return "redirect:/login";
+        
+        final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        return "redirect:/user/newPassword";
     }	
 	
-	@RequestMapping(value = "/messages/emailSent", method = RequestMethod.GET)
-	public ModelAndView emailSent(Locale locale, Model model) {
-		ModelAndView view = new ModelAndView("/messages/emailSent");
+	@RequestMapping(value = "/messages/signupMessage", method = RequestMethod.GET)
+	public ModelAndView signupEmailSent(Locale locale, Model model) {
+		ModelAndView view = new ModelAndView("/messages/userMessage");
 
-        String msg = "An email has been sent to you with a link to complete your signup.";
-        model.addAttribute("signupMessage", msg);
+        String title = "Thanks for signing up for RecipeOrganizer!";
+		String msg = "An email has been sent to you with a link to complete your signup.";
+		model.addAttribute("title", title);
+		model.addAttribute("message", msg);
+		
+		return view;
+	}
+
+	@RequestMapping(value = "/messages/resetMessage", method = RequestMethod.GET)
+	public ModelAndView passwordEmailSent(Locale locale, Model model) {
+		ModelAndView view = new ModelAndView("/messages/userMessage");
+
+        String title = "Password reset";
+		String msg = "An email has been sent to you with a link to change your password.";
+		model.addAttribute("title", title);
+		model.addAttribute("message", msg);
 		
 		return view;
 	}
@@ -312,5 +365,21 @@ public class UserController {
 		}
 
 		return msg;
-	}	
+	}
+	
+	public static class UserEmail {
+		
+		@Email
+		private String email;
+		
+		public UserEmail() {}
+		
+		public String getEmail() {
+			return email;
+		}
+		
+		public void setEmail(String email) {
+			this.email = email;
+		}
+	}
 }
