@@ -18,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -175,24 +174,24 @@ public class UserController {
 		return msg;
 	}
 	
-	@RequestMapping(value = "user/resetPassword", method = RequestMethod.GET)
-	public String getResetPassword(Model model) {
-		logger.info("resetPassword GET");
+	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.GET)
+	public String getForgotPassword(Model model) {
+		logger.info("forgotPassword GET");
 		
 		UserEmail email = new UserEmail();
 		model.addAttribute("userEmail", email);
 		
-		return "user/resetPassword";
+		return "user/forgotPassword";
 	}
 	
-	@RequestMapping(value = "user/resetPassword", method = RequestMethod.POST)
-	public String postResetPassword(Model model, @ModelAttribute @Valid UserEmail email, BindingResult result, HttpServletRequest request) {
+	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.POST)
+	public String postForgotPassword(Model model, @ModelAttribute @Valid UserEmail email, BindingResult result, HttpServletRequest request) {
 
 		final User user = userService.findUserByEmail(email.getEmail());
 
 		if (result.hasErrors()) {
 			logger.info("Validation errors");
-			return "user/resetPassword";
+			return "user/forgotPassword";
 		}
 
 		try {
@@ -204,7 +203,7 @@ public class UserController {
         	logger.debug("error encountered: " + ex.getMessage());
         }
         
-		return "redirect:/messages/resetMessage";		
+		return "redirect:/messages/forgotMessage";		
     }
 	
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.GET)
@@ -218,7 +217,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
-	public String postNewPassword(Model model, @ModelAttribute @Valid PasswordDto passwordDto, BindingResult result) {
+	public String postNewPassword(Model model, @ModelAttribute @Valid PasswordDto passwordDto, BindingResult result) 
+		throws Exception {
 		logger.info("newPassword POST");
 
 		if (result.hasErrors()) {
@@ -226,16 +226,25 @@ public class UserController {
 			return "user/newPassword";
 		}
 		
-		User user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+		//String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		//User user = userService.findUserByEmail(email);
+		
+		User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (user == null)
+			throw new Exception("could not retrieve user");
+		
+		//user = userService.findUserByEmail(user.getEmail());
+			
         userService.changePassword(passwordDto.getNewPassword(), user);
         
         //TODO: SECURITY: send an account change email
 		
-		return "login";
+		return "redirect:/user/login";
 	}
 
 	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
-    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) {
+    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) 
+    		throws Exception {
 		logger.info("confirmRegistration");		
 		
         final VerificationToken verificationToken = userService.getVerificationToken(token);
@@ -244,7 +253,8 @@ public class UserController {
             //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             //model.addAttribute("message", message);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	return "redirect:/errors/errorData";        	
+        	//return "redirect:/errors/errorData";
+        	throw new Exception("invalid registration token");
         }
 
         final User user = verificationToken.getUser();
@@ -255,7 +265,8 @@ public class UserController {
             //model.addAttribute("expired", true);
             //model.addAttribute("token", token);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	return "redirect:/errors/errorData";        	
+        	//return "redirect:/errors/errorData";
+        	throw new Exception("registration token expired");
         }
 
         user.setEnabled(1);
@@ -266,23 +277,29 @@ public class UserController {
         //TODO: GUI: figure out how to set messages on the login page
         //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
         //return "redirect:/login.html?lang=" + locale.getLanguage();
-        return "redirect:/login";
+        return "redirect:/user/login";
     }	
 
 	@RequestMapping(value = "/confirmPasswordReset", method = RequestMethod.GET)
-    public String confirmPasswordReset(final Locale locale, final Model model, @RequestParam("token") final String token) {
+    public String confirmPasswordReset(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) 
+    		throws Exception {
 		logger.info("confirmPasswordReset");		
 		
+		User user = null;
         final PasswordResetToken passwordResetToken = userService.getPasswordResetToken(token);
-        if (passwordResetToken == null) {
+        if (passwordResetToken != null) {
+        	user = passwordResetToken.getUser();
+        }
+
+    	if (passwordResetToken == null || user == null || user.getId() != id) {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
             //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             //model.addAttribute("message", message);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	return "redirect:/errors/errorData";        	
+        	//return "redirect:/errors/errorData";
+        	throw new Exception("invalid reset password token");
         }
-
-        final User user = passwordResetToken.getUser();
+        
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
@@ -290,7 +307,8 @@ public class UserController {
             //model.addAttribute("expired", true);
             //model.addAttribute("token", token);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	return "redirect:/errors/errorData";        	
+        	//return "redirect:/errors/errorData";
+        	throw new Exception("reset password token expired");
         }
 
         //TODO: GUI: figure out how to set messages on the login page
@@ -315,7 +333,7 @@ public class UserController {
 		return view;
 	}
 
-	@RequestMapping(value = "/messages/resetMessage", method = RequestMethod.GET)
+	@RequestMapping(value = "/messages/forgotMessage", method = RequestMethod.GET)
 	public ModelAndView passwordEmailSent(Locale locale, Model model) {
 		ModelAndView view = new ModelAndView("/messages/userMessage");
 

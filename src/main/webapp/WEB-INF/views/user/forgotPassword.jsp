@@ -25,7 +25,7 @@
 		<h2 class="text-center">Enter your email</h2>
 		
 		<div class="row">
-			<form:form role="form" name="resetPassword" modelAttribute="userEmail" method="post">
+			<form:form role="form" name="forgotPassword" modelAttribute="userEmail" method="post">
 		        <div class="row">
 					<label class="control-label col-sm-4 col-sm-offset-4" for="email">Email</label>		        
 					<div class="col-sm-12 col-sm-offset-4">

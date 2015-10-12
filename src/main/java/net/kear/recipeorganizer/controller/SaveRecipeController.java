@@ -465,7 +465,7 @@ public class SaveRecipeController {
 
 	//TODO: EXCEPTION: make this available across all controllers
 	//general error handling routine - mostly SQL errors at this point
-	@ExceptionHandler(DataAccessException.class)
+	/*@ExceptionHandler(DataAccessException.class)
 	public ModelAndView handleDataAccessException(DataAccessException ex) {
 		ModelAndView view = new ModelAndView("/errors/errorData");
 
@@ -476,5 +476,5 @@ public class SaveRecipeController {
 		view.addObject("addError", "true");
 		view.addObject("errorMessage", errorMsg);
 		return view;
-	}
+	}*/
 }

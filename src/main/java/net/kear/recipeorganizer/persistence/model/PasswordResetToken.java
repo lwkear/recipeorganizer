@@ -23,7 +23,8 @@ public class PasswordResetToken implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
 	
-    private static final int EXPIRATION = 60 * 24;
+    /*private static final int EXPIRATION = 60 * 24;*/
+	private static final int EXPIRATION = 30;
 
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)

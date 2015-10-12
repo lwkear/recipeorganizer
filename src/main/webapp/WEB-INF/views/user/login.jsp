@@ -40,7 +40,7 @@ function resetPass(){
 							<input class="form-control" type="password" id="password" name="password" placeholder="Password" autocomplete="off"/>
 						</div>
 						<div class="col-sm-2">
-							<a class="btn btn-default" href="<c:url value="/user/resetPassword"></c:url>" role="button">Forgot Password?</a>
+							<a class="btn btn-default" href="<c:url value="/user/forgotPassword"></c:url>" role="button">Forgot Password?</a>
 						</div>
 					</div>
 				</div>
