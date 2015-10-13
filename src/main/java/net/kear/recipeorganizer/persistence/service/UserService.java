@@ -24,6 +24,7 @@ public interface UserService {
     public void changePassword(String password, User user);
     public void saveUserProfile(UserProfile userProfile);
     public void createUserVerificationToken(User user, String token);
+    public VerificationToken recreateUserVerificationToken(String token);
     public VerificationToken getVerificationToken(String token);
     public void createPasswordResetTokenForUser(final User user, final String token);
     public PasswordResetToken getPasswordResetToken(String token);

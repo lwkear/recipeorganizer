@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -252,9 +253,13 @@ public class UserController {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
             //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             //model.addAttribute("message", message);
+        	model.addAttribute("register", true);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
-        	throw new Exception("invalid registration token");
+        	//throw new Exception("invalid registration token");
+        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	return "redirect:/user/invalidToken";
+        	
         }
 
         final User user = verificationToken.getUser();
@@ -263,10 +268,14 @@ public class UserController {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
             //model.addAttribute("message", messages.getMessage("auth.message.expired", null, locale));
             //model.addAttribute("expired", true);
-            //model.addAttribute("token", token);
+        	model.addAttribute("register", true);
+            model.addAttribute("token", token);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
-        	throw new Exception("registration token expired");
+        	//throw new Exception("registration token expired");
+        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	return "redirect:/user/expiredToken";
+        	
         }
 
         user.setEnabled(1);
@@ -278,10 +287,22 @@ public class UserController {
         //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
         //return "redirect:/login.html?lang=" + locale.getLanguage();
         return "redirect:/user/login";
-    }	
+    }
+	
+	/*@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    @ResponseBody
+    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
+        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
+        final User user = userService.getUser(newToken.getToken());
+        final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
+        mailSender.send(email);
 
-	@RequestMapping(value = "/confirmPasswordReset", method = RequestMethod.GET)
-    public String confirmPasswordReset(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) 
+        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
+    }*/
+
+	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
+    public String confirmPassword(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) 
     		throws Exception {
 		logger.info("confirmPasswordReset");		
 		
@@ -295,20 +316,25 @@ public class UserController {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
             //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
             //model.addAttribute("message", message);
+    		model.addAttribute("password", true);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
-        	throw new Exception("invalid reset password token");
+        	//throw new Exception("invalid reset password token");
+        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	return "redirect:/user/invalidToken";
         }
         
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
         	//TODO: GUI: figure out how to set messages on the generic errorData page
             //model.addAttribute("message", messages.getMessage("auth.message.expired", null, locale));
-            //model.addAttribute("expired", true);
-            //model.addAttribute("token", token);
+        	model.addAttribute("password", true);
+            model.addAttribute("token", token);
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
-        	throw new Exception("reset password token expired");
+        	//throw new Exception("reset password token expired");
+        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	return "redirect:/user/expiredToken";
         }
 
         //TODO: GUI: figure out how to set messages on the login page
@@ -320,7 +346,19 @@ public class UserController {
         
         return "redirect:/user/newPassword";
     }	
-	
+
+	/*@RequestMapping(value = "/user/resendPasswordToken", method = RequestMethod.GET)
+    @ResponseBody
+    public String resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
+        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
+        final User user = userService.getUser(newToken.getToken());
+        final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
+        mailSender.send(email);
+
+        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
+    }*/
+
 	@RequestMapping(value = "/messages/signupMessage", method = RequestMethod.GET)
 	public ModelAndView signupEmailSent(Locale locale, Model model) {
 		ModelAndView view = new ModelAndView("/messages/userMessage");

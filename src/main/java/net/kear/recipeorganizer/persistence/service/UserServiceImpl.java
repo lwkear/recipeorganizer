@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
+import java.util.UUID;
 
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
@@ -113,6 +114,13 @@ public class UserServiceImpl implements UserService {
     public void createUserVerificationToken(final User user, final String token) {
         final VerificationToken newToken = new VerificationToken(token, user);
         verificationTokenRepository.saveToken(newToken);
+    }
+    
+    public VerificationToken recreateUserVerificationToken(String token) {
+	    VerificationToken newToken = verificationTokenRepository.findByToken(token);
+	    newToken.updateToken(UUID.randomUUID().toString());
+	    verificationTokenRepository.saveToken(newToken);
+	    return newToken;
     }
     
     @Override

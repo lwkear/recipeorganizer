@@ -53,7 +53,7 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
     	logger.debug("constructEmailMessage");
         final String recipientAddress = user.getEmail();
         final String subject = "Password Reset";
-        final String confirmationUrl = event.getAppUrl() + "/confirmPasswordReset?id=" + user.getId() + "&token=" + token;
+        final String confirmationUrl = event.getAppUrl() + "/confirmPassword?id=" + user.getId() + "&token=" + token;
         final String message = messages.getMessage("passwordReset", null, event.getLocale());
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
