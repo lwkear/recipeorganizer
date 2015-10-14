@@ -13,10 +13,10 @@
 
     <%@include file="common/nav.jsp" %>
 
-	<div class="container theme-showcase" role="main">
+ 	<div class="container theme-showcase" role="main">
 		<div class="jumbotron">
 			<h1>
-				Welcome to the RecipeOrganizer!  
+				<spring:message code="label.home.title"></spring:message>  
 			</h1>
 			<p>The time on the server is ${serverTime}. </p>
 		</div>
@@ -40,9 +40,10 @@
 		<div>
 			<p>${sess}</p>
 		</div>
+		
+		<%@include file="common/footer.jsp" %>
+		
 	</div>
-	
-<%@include file="common/footer.jsp" %>	
 	
 </body>
 </html>

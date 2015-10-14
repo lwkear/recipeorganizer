@@ -27,8 +27,8 @@
 	<link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="<c:url value="/resources/css/theme.css" />" rel="stylesheet">
-    <link href="<c:url value="/resources/css/sticky-footer-navbar.css"/>" rel="stylesheet">
+    <%-- <link href="<c:url value="/resources/css/theme.css" />" rel="stylesheet"> --%>
+    <%-- <link href="<c:url value="/resources/css/sticky-footer-navbar.css"/>" rel="stylesheet"> --%>
     <%-- <link href="<c:url value="/resources/css/signin.css" />" rel="stylesheet"> --%>
     
     <sec:csrfMetaTags />
