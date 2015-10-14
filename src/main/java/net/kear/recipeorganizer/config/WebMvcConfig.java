@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.config;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -40,23 +44,18 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     }
 
 	@Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+        configurer.enable();
+    }
+    
+	/*** resource location configuration ***/
+	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
     }
 	
-    @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-        super.addViewControllers(registry);
-        registry.addViewController("/errors/expiredToken.html");
-        registry.addViewController("/errors/invalidToken.html");
-    }
-
-	@Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
-    }
-	
-	//this is required in order to return a String as a JSON response to an AJAX method;
+	/*** JSON configuration ***/
+	//required in order to return a String as a JSON response to an AJAX method;
 	//by default the first converter in the array returns the String as text/javascript, not JSON, so removing
 	//the Jasckson converter from its place later in the list and adding it back as the first converter seems
 	//to fix this problem 
@@ -65,22 +64,32 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         converters.remove(msgConverter());
         converters.add(0, msgConverter());
 	}
-	
+
 	@Bean
     public MappingJackson2HttpMessageConverter msgConverter() {
 		return new MappingJackson2HttpMessageConverter();
     }
 	
+	/*** view configuration ***/
 	@Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".jsp");
         return resolver;
     }
-	
+
+    //this is an easy way to avoid creating a .GET method for every single page;
+	//works best if there is little content on the page, e.g., error pages
+	@Override
+    public void addViewControllers(final ViewControllerRegistry registry) {
+        super.addViewControllers(registry);
+        registry.addViewController("/errors/expiredToken.html");
+        registry.addViewController("/errors/invalidToken.html");
+    }
+
+	/*** file upload configuration ***/
 	@Bean
     public CommonsMultipartResolver multipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
@@ -88,12 +97,33 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return resolver;
     }
 	
+	/*** validation and i18n message configuration ***/
 	@Bean
 	public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
-        resource.setBasenames("classpath:messages", "classpath:messages_en", "classpath:messages_fr");
+        resource.setBasenames("classpath:messages", "classpath:messages_fr");
         resource.setDefaultEncoding("UTF-8");
+        //resource.setCacheSeconds(0);
+        //resource.setFallbackToSystemLocale(false);
         return resource;
+    }
+	
+	@Bean
+    public CookieLocaleResolver localeResolver() {
+		CookieLocaleResolver resolver = new CookieLocaleResolver();
+		resolver.setDefaultLocale(new Locale("en"));
+		return resolver;
+	}
+	
+	@Bean
+	public LocaleChangeInterceptor localeInterceptor() {
+		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+		interceptor.setParamName("lang");
+		return interceptor;
+	}
+
+    public void addInterceptors(InterceptorRegistry registry) {
+    	registry.addInterceptor(localeInterceptor());
     }
 	
     @Bean
@@ -101,6 +131,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return new PropertySourcesPlaceholderConfigurer();
     }
 	
+    /*** email configuration ***/
 	@Bean
     public JavaMailSenderImpl javaMailSenderImpl() {
         final JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();

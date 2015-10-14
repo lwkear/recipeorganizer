@@ -52,8 +52,8 @@
 	        <li><a href="<c:url value="/user/signup"/>"><img src=<c:url value="/resources/fr.png" /> class="img-responsive" style="width:24px;height:24px;border:0;"></a></li> --%>
 	        <%-- <li><a href="<c:url value="/user/signup"/>"><img src=<c:url value="/resources/us.png" /> class="img-responsive" style="padding=0"></a></li>
 	        <li><a href="<c:url value="/user/signup"/>"><img src=<c:url value="/resources/fr.png" /> class="img-responsive" style="height=none"></a></li> --%>
-	        <li><a href="<c:url value="/user/signup"/>"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
-	        <li><a href="<c:url value="/user/signup"/>"><img src=<c:url value="/resources/fr.png" /> class="img-responsive"></a></li>
+	        <li><a href="?lang=en"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
+	        <li><a href="?lang=fr"><img src=<c:url value="/resources/fr.png" /> class="img-responsive"></a></li>
 	    </ul>
     </div>
 </nav>

@@ -18,7 +18,7 @@
 			<h1>
 				<spring:message code="label.home.title"></spring:message>  
 			</h1>
-			<p>The time on the server is ${serverTime}. </p>
+			<P>  <spring:message code="label.servertime"></spring:message>&nbsp;${serverTime}. </P>
 		</div>
 		<div>
 			<c:if test="${not empty username}">
@@ -39,6 +39,12 @@
 		</div>
 		<div>
 			<p>${sess}</p>
+		</div>
+		<div>
+			<p>${country}</p>
+		</div>
+		<div>
+			<p>${language}</p>
 		</div>
 		
 		<%@include file="common/footer.jsp" %>

@@ -109,18 +109,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
     	http
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
+			/*.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword").permitAll()
-			.regexMatchers("/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
+			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
 			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**").hasAuthority("GUEST")
 			.antMatchers("/user/profile", "/user/changePassword**", "/user/newPassword").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
-			.anyRequest().authenticated()
-			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
+			.anyRequest().authenticated()*/
+			.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()

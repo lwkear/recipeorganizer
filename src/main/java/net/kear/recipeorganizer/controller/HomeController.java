@@ -55,11 +55,18 @@ public class HomeController {
 		String sInactive = "Session expires after: " + maxInactive + " seconds";
 		String sID = "Session ID: " + sessID;
 		
+		String country = locale.getCountry();
+		String language = locale.getLanguage();
+		String sCountry = "Request country: " + country;
+		String sLanguage = "Request language: " + language;
+		
 		model.addAttribute("create", sCreate);
 		model.addAttribute("last", sLast);
 		model.addAttribute("inactive", sInactive);
 		model.addAttribute("sess", sess);
 		model.addAttribute("sessID", sID);
+		model.addAttribute("country", sCountry);
+		model.addAttribute("language", sLanguage);
 		
 		if (!authCookie.cookieExists(request))
 			authCookie.setCookie(request, response, userInfo.getName());

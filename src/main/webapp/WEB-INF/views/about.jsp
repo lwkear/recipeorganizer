@@ -16,9 +16,9 @@
 	<div class="container theme-showcase" role="main">
 		<div class="jumbotron">
 			<h1>
-				About Page!  
+				<spring:message code="label.about.title"></spring:message>  
 			</h1>
-			<P>  The time on the server is ${serverTime}. </P>
+			<P>  <spring:message code="label.servertime"></spring:message>&nbsp;${serverTime}. </P>
 		</div>
 	</div>
 
