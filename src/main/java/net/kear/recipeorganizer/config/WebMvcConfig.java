@@ -20,6 +20,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -41,6 +42,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
+    }
+	
+    @Override
+    public void addViewControllers(final ViewControllerRegistry registry) {
+        super.addViewControllers(registry);
+        registry.addViewController("/errors/expiredToken.html");
+        registry.addViewController("/errors/invalidToken.html");
     }
 
 	@Override
@@ -83,7 +91,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
-        resource.setBasename("classpath:messages");
+        resource.setBasenames("classpath:messages", "classpath:messages_en", "classpath:messages_fr");
         resource.setDefaultEncoding("UTF-8");
         return resource;
     }

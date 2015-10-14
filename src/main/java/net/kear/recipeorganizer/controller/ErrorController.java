@@ -50,6 +50,7 @@ public class ErrorController {
 		
 		return view;
 	}
+	
 	@RequestMapping(value = "/errors/invalidSession", method = RequestMethod.GET)
 	public ModelAndView invalidSession(Locale locale, Model model) {
 		ModelAndView view = new ModelAndView("/errors/invalidSession");

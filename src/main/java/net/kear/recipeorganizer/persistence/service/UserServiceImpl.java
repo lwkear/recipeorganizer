@@ -74,6 +74,16 @@ public class UserServiceImpl implements UserService {
     	return userRepository.getUser(id);
     }
     
+    public User getVerificationUser(final String token) {
+        final User user = verificationTokenRepository.findByToken(token).getUser();
+        return user;
+    }
+    
+    public User getPasswordResetUser(final String token) {
+        final User user = passwordResetTokenRepository.findByToken(token).getUser();
+        return user;
+    }
+    
     public User getUserWithProfile(Long id) {
     	return userRepository.getUserWithProfile(id);
     }
@@ -131,8 +141,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createPasswordResetTokenForUser(final User user, final String token) {
         final PasswordResetToken newToken = new PasswordResetToken(token, user);
-        passwordResetTokenRepository.save(newToken);
+        passwordResetTokenRepository.saveToken(newToken);
     }
+    
+    @Override
+    public PasswordResetToken recreatePasswordResetTokenForUser(String token) {
+    	PasswordResetToken newToken = passwordResetTokenRepository.findByToken(token);
+	    newToken.updateToken(UUID.randomUUID().toString());
+	    passwordResetTokenRepository.saveToken(newToken);
+	    return newToken;
+    }    
     
     @Override
     public PasswordResetToken getPasswordResetToken(String token) {

@@ -15,6 +15,8 @@ public interface UserService {
     public void deleteUser(Long id);
     public List<User> listUsers();
     public User getUser(Long id);
+    public User getVerificationUser(final String token);
+    public User getPasswordResetUser(final String token);
     public User getUserWithProfile(Long id);
     public String getUserFullName(Long id);
     public User findUserByEmail(String email);
@@ -27,5 +29,6 @@ public interface UserService {
     public VerificationToken recreateUserVerificationToken(String token);
     public VerificationToken getVerificationToken(String token);
     public void createPasswordResetTokenForUser(final User user, final String token);
+    public PasswordResetToken recreatePasswordResetTokenForUser(final String token);
     public PasswordResetToken getPasswordResetToken(String token);
 }

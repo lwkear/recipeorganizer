@@ -22,6 +22,9 @@ public class UserDto implements Serializable {
 	@Size(min=1,max=50)	//50
 	private String firstName;
 
+	@NotNull
+	@NotBlank
+	@NotEmpty
 	@Size(min=1,max=50)	//50
 	private String lastName;
 

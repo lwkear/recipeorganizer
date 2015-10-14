@@ -14,7 +14,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,6 +62,12 @@ public class UserController {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private JavaMailSender mailSender;
     
     /*** Login handler ***/
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
@@ -74,7 +82,7 @@ public class UserController {
 		logger.info("signup GET");
 		
 		UserDto user = new UserDto();
-		model.addAttribute("user", user);		
+		model.addAttribute("userDto", user);		
 		
 		return "user/signup";
 	}
@@ -99,7 +107,7 @@ public class UserController {
         	logger.debug("error encountered: " + ex.getMessage());
         }
         
-		return "redirect:/messages/emailSent";
+		return "redirect:/messages/signupMessage";
 	}
 
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
@@ -140,7 +148,7 @@ public class UserController {
 	public String getPassword(Model model) {
 		logger.info("password GET");
 				
-		return "user/password";
+		return "user/changePassword";
 	}
 
 	//TODO: SECURITY: consider changing this to a standard form POST; 
@@ -258,7 +266,7 @@ public class UserController {
         	//return "redirect:/errors/errorData";
         	//throw new Exception("invalid registration token");
         	//TODO: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/user/invalidToken";
+        	return "redirect:/errors/invalidToken.html";
         	
         }
 
@@ -274,7 +282,7 @@ public class UserController {
         	//return "redirect:/errors/errorData";
         	//throw new Exception("registration token expired");
         	//TODO: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/user/expiredToken";
+        	return "redirect:/errors/expiredToken.html";
         	
         }
 
@@ -289,17 +297,16 @@ public class UserController {
         return "redirect:/user/login";
     }
 	
-	/*@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    @ResponseBody
-    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
-        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
-        final User user = userService.getUser(newToken.getToken());
+	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String token) {
+        final VerificationToken newToken = userService.recreateUserVerificationToken(token);
+        final User user = userService.getVerificationUser(newToken.getToken());
         final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
         final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
         mailSender.send(email);
 
-        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
-    }*/
+        return "redirect:/messages/signupMessage";
+    }
 
 	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
     public String confirmPassword(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) 
@@ -321,7 +328,7 @@ public class UserController {
         	//return "redirect:/errors/errorData";
         	//throw new Exception("invalid reset password token");
         	//TODO: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/user/invalidToken";
+        	return "redirect:/errors/invalidToken.html";
         }
         
         final Calendar cal = Calendar.getInstance();
@@ -334,7 +341,7 @@ public class UserController {
         	//return "redirect:/errors/errorData";
         	//throw new Exception("reset password token expired");
         	//TODO: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/user/expiredToken";
+        	return "redirect:/errors/expiredToken.html";
         }
 
         //TODO: GUI: figure out how to set messages on the login page
@@ -347,17 +354,16 @@ public class UserController {
         return "redirect:/user/newPassword";
     }	
 
-	/*@RequestMapping(value = "/user/resendPasswordToken", method = RequestMethod.GET)
-    @ResponseBody
-    public String resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String existingToken) {
-        final VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
-        final User user = userService.getUser(newToken.getToken());
+	@RequestMapping(value = "/user/resendPasswordToken", method = RequestMethod.GET)
+    public String resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String token) {
+        final PasswordResetToken newToken = userService.recreatePasswordResetTokenForUser(token);
+        final User user = userService.getPasswordResetUser(newToken.getToken());
         final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
+        final SimpleMailMessage email = constructResendPasswordTokenEmail(appUrl, request.getLocale(), newToken, user);
         mailSender.send(email);
 
-        return new GenericResponse(messages.getMessage("message.resendToken", null, request.getLocale()));
-    }*/
+        return "redirect:/messages/forgotMessage";
+    }
 
 	@RequestMapping(value = "/messages/signupMessage", method = RequestMethod.GET)
 	public ModelAndView signupEmailSent(Locale locale, Model model) {
@@ -438,4 +444,29 @@ public class UserController {
 			this.email = email;
 		}
 	}
+
+	//TODO: SECURITY: move this elsewhere; combine with the methods in the two relevant listeners
+	private final SimpleMailMessage constructResendVerificationTokenEmail(final String contextPath, final Locale locale, final VerificationToken newToken, final User user) {
+        final String confirmationUrl = contextPath + "/confirmRegistration.html?token=" + newToken.getToken();
+        final String message = messages.getMessage("signupSuccess", null, locale);
+        final SimpleMailMessage email = new SimpleMailMessage();
+        email.setSubject("Resend Registration Token");
+        email.setText(message + " \r\n" + confirmationUrl);
+        email.setTo(user.getEmail());
+        email.setFrom(env.getProperty("support.email"));
+        return email;
+    }
+
+	//TODO: SECURITY: move this elsewhere; combine with the methods in the two relevant listeners
+	private final SimpleMailMessage constructResendPasswordTokenEmail(final String contextPath, final Locale locale, final PasswordResetToken newToken, final User user) {
+        final String confirmationUrl = contextPath + "/confirmRegistration.html?token=" + newToken.getToken();
+        final String message = messages.getMessage("passwordReset", null, locale);
+        final SimpleMailMessage email = new SimpleMailMessage();
+        email.setSubject("Resend Password Token");
+        email.setText(message + " \r\n" + confirmationUrl);
+        email.setTo(user.getEmail());
+        email.setFrom(env.getProperty("support.email"));
+        return email;
+    }
 }
+

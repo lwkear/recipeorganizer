@@ -4,6 +4,7 @@
 
 <title>Signup</title>
 
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="../common/head.jsp" %>
 <%@include file="../common/js.jsp" %>
 
@@ -67,17 +68,17 @@ $(function() {
 
 	<%@include file="../common/nav.jsp" %>
 
-	<spring:bind path="user.email"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="user.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="user.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="user.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="user.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container">
 	
 		<h2 class="text-center">Sign Up</h2>
 		
-		<spring:hasBindErrors name="user">
+		<%-- <spring:hasBindErrors name="userDto">
 	    <c:set var="errorCnt">${errors.errorCount}</c:set>
 	    <p><b># of Errors:${errorCnt}</b></p>
 	    <p></p>
@@ -87,9 +88,9 @@ $(function() {
 		</c:forEach>
 		</spring:hasBindErrors>
 		<p></p>
-		<p></p>
+		<p></p> --%>
 		
-		<spring:bind path="user">
+		<spring:bind path="userDto">
 			<c:if test="${status.error}">
                 <c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
                 	<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
@@ -100,9 +101,13 @@ $(function() {
 				</c:forEach>
             </c:if>
 		</spring:bind>
+		
+		<p></p>
+		<p>S'il vous plaît, entrez un email</p>
+		<p></p>
 
 		<div class="row">
-			<form:form role="form" method="post" modelAttribute="user">
+			<form:form role="form" method="post" modelAttribute="userDto">
 		        <div class="col-sm-12">
 			        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
 						<label class="control-label" id="userLabel" for="username">*Email:&nbsp;&nbsp;${emailError}</label>

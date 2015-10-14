@@ -18,7 +18,7 @@ public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepos
 	public PasswordResetTokenRepositoryImpl() {}
 
 	@Override
-	public void save(PasswordResetToken token) {
+	public void saveToken(PasswordResetToken token) {
     	getSession().save(token);
 	}
 
