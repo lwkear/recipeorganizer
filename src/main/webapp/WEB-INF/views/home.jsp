@@ -6,7 +6,7 @@
 
 <%@include file="common/head.jsp" %>
 <%@include file="common/js.jsp" %>
-	
+
 </head>
 
 <body role="document">
@@ -41,5 +41,8 @@
 			<p>${sess}</p>
 		</div>
 	</div>
+	
+<%@include file="common/footer.jsp" %>	
+	
 </body>
 </html>
