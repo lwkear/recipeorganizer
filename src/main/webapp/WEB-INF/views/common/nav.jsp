@@ -1,25 +1,48 @@
 <%@include file="head.jsp"%>
 
+<!-- <style type="text/css">
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 80px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 80px;
+  background-color: #f5f5f5;
+}
+</style> -->
+   
 <script>
 	function submitLogoutForm() {
 		document.forms["logoutForm"].submit();
 	}
 
 	$(window).on('load', function() {
-		//getSessionTimeout();
+		getSessionTimeout();
 	});
-
-	/* $(window).on('unload', function() {
-		 
-	}); */	
 </script>
 
-<!-- Fixed navbar -->
+<sec:authorize var="isAuth" access="isAuthenticated()"/>
+<%-- <sec:authorize var="isAdmin" access="hasAnyRole('ADMIN')"/>
+<sec:authorize var="isEditor" access="hasAnyRole('EDITOR','ADMIN')"/>
+<sec:authorize var="isAuthor" access="hasAnyRole('AUTHOR','EDITOR','ADMIN')"/>
+<sec:authorize var="isGuest" access="hasAnyRole('GUEST','EDITOR','AUTHOR','ADMIN')"/> --%>
+<sec:authorize var="isAdmin" access="hasAuthority('ADMIN')"/>
+<sec:authorize var="isEditor" access="hasAuthority('EDITOR')"/>
+<sec:authorize var="isAuthor" access="hasAuthority('AUTHOR')"/>
+<sec:authorize var="isGuest" access="hasAuthority('GUEST')"/>
+
 <nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
@@ -27,7 +50,30 @@
 			<a class="navbar-brand" href="<c:url value="/home" />">RecipeOrganizer</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-			<sec:authorize var="isAuth" access="isAuthenticated()"/>
+			<ul class="nav navbar-nav">
+				<c:if test="${isAuth}">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Recipes<span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<c:if test="${isAuthor}">
+						<li><a href="<c:url value="/recipe/addRecipe" />">Add a Recipe</a></li>
+						</c:if>
+						<c:if test="${isGuest}">
+						<li><a href="<c:url value="/recipe/listRecipes" />">Recipe List</a></li>
+						</c:if>
+					</ul>
+				</li>
+				</c:if>
+				<c:if test="${isAdmin}">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin<span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="<c:url value="/admin/category" />">Categories</a></li>
+					</ul>
+				</li>
+				</c:if>
+				<li><a href="<c:url value="/about" />">About</a></li>
+			</ul>
 			<c:choose>
 				<c:when test="${isAuth}"> 
 					<sec:authentication var="secUser" property="principal.firstName"/>
@@ -52,28 +98,9 @@
 				    </ul>
 				</c:otherwise>
 			</c:choose>
-			<ul class="nav navbar-nav">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Recipes<span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/recipe/addRecipe" />">Add a Recipe</a></li>
-						<li><a href="<c:url value="/recipe/listRecipes" />">Recipe List</a></li>
-					</ul>
-				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin<span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/admin/category" />">Categories</a></li>
-					</ul>
-				</li>
-				<li><a href="<c:url value="/about" />">About</a></li>
-			</ul>
 		</div>
 	</div>
 </nav>
-<%-- <div>
-<h3>Session ID: ${pageContext.session.id}</h3>
-</div> --%>
 
 <div class="modal fade" id="sessionTimeout" role="dialog">
 	<div class="modal-dialog modal-sm">

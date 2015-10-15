@@ -11,14 +11,18 @@
 
 <body role="document">
 
+<sec:authorize var="isAuth" access="isAuthenticated()"></sec:authorize>
+<sec:authorize var="isAdmin" access="hasAnyRole('ROLE_ADMIN')"></sec:authorize>
+<sec:authorize var="isEditor" access="hasAnyRole('EDITOR','ADMIN')"></sec:authorize>
+<sec:authorize var="isAuthor" access="hasAnyRole('AUTHOR','EDITOR','ADMIN')"></sec:authorize>
+<sec:authorize var="isGuest" access="hasAnyRole('GUEST','EDITOR','AUTHOR','ADMIN')"></sec:authorize>
+
     <%@include file="common/nav.jsp" %>
 
- 	<div class="container theme-showcase" role="main">
+ 	<div class="container" role="main">
 		<div class="jumbotron">
-			<h1>
-				<spring:message code="label.home.title"></spring:message>  
-			</h1>
-			<P>  <spring:message code="label.servertime"></spring:message>&nbsp;${serverTime}. </P>
+			<h1><spring:message code="label.home.title"></spring:message></h1>
+			<p><spring:message code="label.servertime"></spring:message>&nbsp;${serverTime}.</p>
 		</div>
 		<div>
 			<c:if test="${not empty username}">
@@ -46,6 +50,41 @@
 		<div>
 			<p>${language}</p>
 		</div>
+		
+<p></p>
+<p></p>
+<p></p>
+<c:if test="${isAuth}">User is authorized</c:if>
+<c:if test="${isGuest}">User is guest</c:if>
+<c:if test="${isAuthor}">User is author</c:if>
+<c:if test="${isEditor}">User is editor</c:if>
+<c:if test="${isAdmin}">User is admin</c:if> 
+<p></p>
+<p></p>
+
+<sec:authorize access="hasAuthority('ROLE_ADMIN')">
+<p>Admin access - hasAuthority:ROLE_ADMIN</p>
+</sec:authorize>
+<sec:authorize access="hasAuthority('ADMIN')">
+<p>Admin access - hasAuthority:ADMIN</p>
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_ADMIN')">
+<p>Admin access - hasRole:ROLE_ADMIN</p>
+</sec:authorize>
+<sec:authorize access="hasRole('ADMIN')">
+<p>Admin access - hasRole:ADMIN</p>
+</sec:authorize>
+
+<sec:authorize access="hasRole('ROLE_EDITOR')">
+Editor access
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_AUTHOR')">
+Author access
+</sec:authorize>
+<sec:authorize access="hasRole('ROLE_GUEST')">
+Guest access
+</sec:authorize>
+		
 		
 		<%@include file="common/footer.jsp" %>
 		

@@ -13,8 +13,6 @@
 	<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.theme.css" />" rel="stylesheet">
 	<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.structure.css" />" rel="stylesheet">
-	<%-- <link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.css" />" rel="stylesheet">
-	<link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.structure.css" />" rel="stylesheet"> --%>
     	
     <!-- Bootstrap core CSS -->	
 	<link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
@@ -27,8 +25,8 @@
 	<link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <%-- <link href="<c:url value="/resources/css/theme.css" />" rel="stylesheet"> --%>
-    <%-- <link href="<c:url value="/resources/css/sticky-footer-navbar.css"/>" rel="stylesheet"> --%>
-    <%-- <link href="<c:url value="/resources/css/signin.css" />" rel="stylesheet"> --%>
     
+    <!-- Security tags -->
     <sec:csrfMetaTags />
+    
+ 
