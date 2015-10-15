@@ -458,8 +458,8 @@ public class UserController {
     }
 
 	//TODO: SECURITY: move this elsewhere; combine with the methods in the two relevant listeners
-	private final SimpleMailMessage constructResendPasswordTokenEmail(final String contextPath, final Locale locale, final PasswordResetToken newToken, final User user) {
-        final String confirmationUrl = contextPath + "/confirmRegistration.html?token=" + newToken.getToken();
+	private final SimpleMailMessage constructResendPasswordTokenEmail(final String contextPath, final Locale locale, final PasswordResetToken token, final User user) {
+		final String confirmationUrl = contextPath + "/confirmPassword?id=" + user.getId() + "&token=" + token.getToken();
         final String message = messages.getMessage("passwordReset", null, locale);
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setSubject("Resend Password Token");
