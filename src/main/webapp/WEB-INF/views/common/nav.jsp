@@ -70,7 +70,15 @@ body {
 					</ul>
 				</li>
 				</c:if>
-				<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="#"><spring:message code="menu.faq"></spring:message></a></li>
+						<li><a href="#"><spring:message code="menu.contact"></spring:message></a></li>							
+						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
+					</ul>
+				</li>
 			</ul>
 			<c:choose>
 				<c:when test="${isAuth}"> 
