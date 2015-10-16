@@ -119,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/user/profile", "/user/changePassword**", "/user/newPassword").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
-			//.anyRequest().authenticated()
+			.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()

@@ -51,44 +51,19 @@
 			<p>${language}</p>
 		</div>
 		
-<p></p>
-<p></p>
-<p></p>
-<c:if test="${isAuth}">User is authorized</c:if>
-<c:if test="${isGuest}">User is guest</c:if>
-<c:if test="${isAuthor}">User is author</c:if>
-<c:if test="${isEditor}">User is editor</c:if>
-<c:if test="${isAdmin}">User is admin</c:if> 
-<p></p>
-<p></p>
+		<p></p>
+		<p></p>
+		<p></p>
+		<c:if test="${isAuth}"><p>User is authorized</p></c:if>
+		<c:if test="${isGuest}"><p>User is guest</p></c:if>
+		<c:if test="${isAuthor}"><p>User is author</p></c:if>
+		<c:if test="${isEditor}"><p>User is editor</p></c:if>
+		<c:if test="${isAdmin}"><p>User is admin</p></c:if> 
+		<p></p>
+		<p></p>
 
-<sec:authorize access="hasAuthority('ROLE_ADMIN')">
-<p>Admin access - hasAuthority:ROLE_ADMIN</p>
-</sec:authorize>
-<sec:authorize access="hasAuthority('ADMIN')">
-<p>Admin access - hasAuthority:ADMIN</p>
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_ADMIN')">
-<p>Admin access - hasRole:ROLE_ADMIN</p>
-</sec:authorize>
-<sec:authorize access="hasRole('ADMIN')">
-<p>Admin access - hasRole:ADMIN</p>
-</sec:authorize>
-
-<sec:authorize access="hasRole('ROLE_EDITOR')">
-Editor access
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_AUTHOR')">
-Author access
-</sec:authorize>
-<sec:authorize access="hasRole('ROLE_GUEST')">
-Guest access
-</sec:authorize>
-		
-		
 		<%@include file="common/footer.jsp" %>
 		
 	</div>
-	
 </body>
 </html>

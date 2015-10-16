@@ -30,14 +30,10 @@ body {
 </script>
 
 <sec:authorize var="isAuth" access="isAuthenticated()"/>
-<%-- <sec:authorize var="isAdmin" access="hasAnyRole('ADMIN')"/>
-<sec:authorize var="isEditor" access="hasAnyRole('EDITOR','ADMIN')"/>
-<sec:authorize var="isAuthor" access="hasAnyRole('AUTHOR','EDITOR','ADMIN')"/>
-<sec:authorize var="isGuest" access="hasAnyRole('GUEST','EDITOR','AUTHOR','ADMIN')"/> --%>
 <sec:authorize var="isAdmin" access="hasAuthority('ADMIN')"/>
-<sec:authorize var="isEditor" access="hasAuthority('EDITOR')"/>
-<sec:authorize var="isAuthor" access="hasAuthority('AUTHOR')"/>
-<sec:authorize var="isGuest" access="hasAuthority('GUEST')"/>
+<sec:authorize var="isEditor" access="hasAnyAuthority('EDITOR','ADMIN')"/>
+<sec:authorize var="isAuthor" access="hasAnyAuthority('AUTHOR','EDITOR','ADMIN')"/>
+<sec:authorize var="isGuest" access="hasAnyAuthority('GUEST','AUTHOR','EDITOR','ADMIN')"/>
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
@@ -53,26 +49,28 @@ body {
 			<ul class="nav navbar-nav">
 				<c:if test="${isAuth}">
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Recipes<span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+							<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 						<c:if test="${isAuthor}">
-						<li><a href="<c:url value="/recipe/addRecipe" />">Add a Recipe</a></li>
+						<li><a href="<c:url value="/recipe/addRecipe" />"><spring:message code="menu.addrecipe"></spring:message></a></li>
 						</c:if>
 						<c:if test="${isGuest}">
-						<li><a href="<c:url value="/recipe/listRecipes" />">Recipe List</a></li>
+						<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
 						</c:if>
 					</ul>
 				</li>
 				</c:if>
 				<c:if test="${isAdmin}">
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin<span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+							<spring:message code="menu.admin"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/admin/category" />">Categories</a></li>
+						<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
 					</ul>
 				</li>
 				</c:if>
-				<li><a href="<c:url value="/about" />">About</a></li>
+				<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
 			</ul>
 			<c:choose>
 				<c:when test="${isAuth}"> 
@@ -83,8 +81,8 @@ body {
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${secUser}<span class="caret"></span></a>
 						        <ul class="dropdown-menu" role="menu">
-						        	<li><a href="<c:url value="/user/profile" />">Profile</a></li>
-						        	<li><a href="<c:url value="/user/changePassword" />">Change Password</a></li>
+						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
+						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
 						        </ul>
 						    </li>
 					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
@@ -93,8 +91,8 @@ body {
 				</c:when>
 				<c:otherwise>
 					<ul class="nav navbar-nav navbar-right">
-				        <li><a href="<c:url value="/user/signup" />"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;Sign Up</a></li>
-				        <li><a href="<c:url value="/user/login" />"><span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;Login</a></li>
+				        <li><a href="<c:url value="/user/signup" />"><span class="glyphicon glyphicon-user"></span>&nbsp;&nbsp;<spring:message code="menu.signup"></spring:message></a></li>
+				        <li><a href="<c:url value="/user/login" />"><span class="glyphicon glyphicon-log-in"></span>&nbsp;&nbsp;<spring:message code="menu.login"></spring:message></a></li>
 				    </ul>
 				</c:otherwise>
 			</c:choose>
