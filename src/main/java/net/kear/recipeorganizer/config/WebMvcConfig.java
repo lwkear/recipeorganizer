@@ -101,12 +101,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
-        resource.setBasenames("classpath:messages", 
+        resource.setBasenames("classpath:content",
+        					  "classpath:messages", 
         					  "classpath:labels",
         					  "classpath:validation",
+        					  "classpath:content_fr",
         					  "classpath:messages_fr",
         					  "classpath:labels_fr",
         					  "classpath:validation_fr",
+        					  "classpath:content_en",
         					  "classpath:labels_en",
         					  "classpath:messages_en",
         					  "classpath:validation_en");
