@@ -5,7 +5,7 @@
 <title>Change Password</title>
 
 <%@include file="../common/head.jsp" %>
-<%@include file="../common/js.jsp" %>
+
 <script type="text/javascript">
 
 function postPassword() {
@@ -63,7 +63,7 @@ $(document).ready(function() {
 
 <!-- <body role="document" onload="document.passswordForm.currentpassword.focus();"> -->
 <body role="document"> <!--  onload="document.currentpassword.focus();"> -->
-
+<div id="wrap">
 	<%@include file="../common/nav.jsp" %>
 
 	<div class="container">
@@ -111,5 +111,8 @@ $(document).ready(function() {
       		<!-- </form> -->
 		</div>
     </div>
+</div>
+
+<%@include file="../common/footer.jsp" %>
 </body>
 </html>

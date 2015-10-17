@@ -42,7 +42,7 @@ function catSelect() {
 </head>
 
 <body role="document">
-
+<div id="wrap">
 <%@include file="../common/nav.jsp" %>
 
 <!-- <div class="bs-example"> -->
@@ -76,6 +76,11 @@ function catSelect() {
 	        </div>
 		</form:form>
 	</div>
+</div>
+
+<%@include file="../common/footer.jsp" %>
+
+
 <!-- </div> -->
 
 </body>

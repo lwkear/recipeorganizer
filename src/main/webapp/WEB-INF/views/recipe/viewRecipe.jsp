@@ -4,20 +4,12 @@
 
 <title>Display Recipe</title>
 
-<%@include file="../common/js.jsp"%>
 <%@include file="../common/head.jsp"%>
-
-<script type="text/javascript">
-
-//shorthand for document.ready
-$(function() {
-})
-
-</script>
 
 </head>
 
 <body role="document">
+<div id="wrap">
 
     <%@include file="../common/nav.jsp" %>
 
@@ -125,9 +117,11 @@ $(function() {
 				</div>
 			</div>
 		</div>
-	</div>	
+	</div>
+</div>		
 </body>
 
+<%@include file="../common/footer.jsp" %>
 <!-- Placed at the end of the document so the pages load faster -->
 
 </html>

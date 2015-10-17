@@ -5,7 +5,6 @@
 <title>Add Recipe</title>
 
 <%@include file="../common/head.jsp"%>
-<%@include file="../common/js.jsp"%>
 
 <style type="text/css">
 .glyphicon {
@@ -702,6 +701,7 @@
 <!-- TODO: SECURITY: remove hard-coded ID's from userID field -->
 
 <body role="document">
+<div id="wrap">
 
 	<%@include file="../common/nav.jsp"%>
 
@@ -1061,6 +1061,7 @@
 			</form:form>
 		</div>
 	</div>
+</div>
 
 <%@include file="../common/footer.jsp" %>
 

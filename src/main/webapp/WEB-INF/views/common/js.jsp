@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <script src="<c:url value="/resources/js/jquery-2.1.3.js" />"></script>
 <script src="<c:url value="/resources/jqueryui-notheme/jquery-ui.js" />"></script>
@@ -78,7 +79,16 @@ function getSessionTimeout() {
 	});
 }
 
+function submitLogoutForm() {
+	document.forms["logoutForm"].submit();
+}
+
 $(document).ready(function() {
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
-});  
+});
+
+$(window).on('load', function() {
+	getSessionTimeout();
+});
+
 </script>

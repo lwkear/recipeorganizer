@@ -6,7 +6,7 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="../common/head.jsp" %>
-<%@include file="../common/js.jsp" %>
+<%-- <%@include file="../common/js.jsp" %> --%>
 
 <script type="text/javascript">
 
@@ -65,7 +65,7 @@ $(function() {
 </head>
 
 <body role="document">
-
+<div id="wrap">
 	<%@include file="../common/nav.jsp" %>
 
 	<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
@@ -142,5 +142,9 @@ $(function() {
       		</form:form>
 		</div>
     </div>
+</div>
+
+<%@include file="../common/footer.jsp" %>
+
 </body>
 </html>

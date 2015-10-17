@@ -7,6 +7,25 @@
 
 <title>Login</title>
 
+<style type="text/css">
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+</style>
+
 <script type="text/javascript">
 function resetPass(){
 	alert("resetPass");	
@@ -16,6 +35,7 @@ function resetPass(){
 </head>
 
 <body role="document" onload="document.loginForm.username.focus();">
+<div id="wrap">
 
 	<%@include file="../common/nav.jsp" %>
 
@@ -78,5 +98,9 @@ function resetPass(){
       		</form>
 		</div>
     </div>
+</div>
+
+<%@include file="../common/footer.jsp" %>
+
 </body>
 </html>

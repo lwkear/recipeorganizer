@@ -5,7 +5,7 @@
 <title>UserProfile</title>
 
 <%@include file="../common/head.jsp" %>
-<%@include file="../common/js.jsp" %>
+<%-- <%@include file="../common/js.jsp" %> --%>
 
 <script type="text/javascript">
 
@@ -25,6 +25,7 @@ $(function() {
 </head>
 
 <body role="document" onload="document.profileForm.city.focus();">
+<div id="wrap">
 
 	<%@include file="../common/nav.jsp" %>
 
@@ -103,5 +104,7 @@ $(function() {
       		</form:form>
 		</div>
     </div>
+</div>
+<%@include file="../common/footer.jsp" %>
 </body>
 </html>

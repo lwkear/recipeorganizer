@@ -1,33 +1,7 @@
-<%@include file="head.jsp"%>
-
-<!-- <style type="text/css">
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 80px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 80px;
-  background-color: #f5f5f5;
-}
-</style> -->
-   
-<script>
-	function submitLogoutForm() {
-		document.forms["logoutForm"].submit();
-	}
-
-	$(window).on('load', function() {
-		getSessionTimeout();
-	});
-</script>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <sec:authorize var="isAuth" access="isAuthenticated()"/>
 <sec:authorize var="isAdmin" access="hasAuthority('ADMIN')"/>
@@ -35,7 +9,15 @@ body {
 <sec:authorize var="isAuthor" access="hasAnyAuthority('AUTHOR','EDITOR','ADMIN')"/>
 <sec:authorize var="isGuest" access="hasAnyAuthority('GUEST','AUTHOR','EDITOR','ADMIN')"/>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<c:if test="${isAuth}">
+	<sec:authentication var="email" property="principal.username" />
+	<sec:authentication var="firstname" property="principal.firstName"/>
+	<sec:authentication var="lastname" property="principal.lastName" />
+	<!-- TODO: GUI: figure out how to retrieve the user profile within the principal security object -->
+	<%-- <sec:authentication var="city" property="principal.userProfile.city" /> --%>
+</c:if>
+
+<nav class="navbar navbar-inverse navbar-default">
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -81,19 +63,18 @@ body {
 				</li>
 			</ul>
 			<c:choose>
-				<c:when test="${isAuth}"> 
-					<sec:authentication var="secUser" property="principal.firstName"/>
+				<c:when test="${isAuth}">
 					<c:url var="logoutUrl" value="/logout"/>
 					<form:form id="logoutForm" action="${logoutUrl}" method="post">
 						<ul class="nav navbar-nav navbar-right">
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${secUser}<span class="caret"></span></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${firstname}<span class="caret"></span></a>
 						        <ul class="dropdown-menu" role="menu">
 						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
 						        </ul>
 						    </li>
-					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;Logout</a></li>
+					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;<spring:message code="menu.logout"></spring:message></a></li>
 						</ul>
 					</form:form>
 				</c:when>
@@ -107,21 +88,3 @@ body {
 		</div>
 	</div>
 </nav>
-
-<div class="modal fade" id="sessionTimeout" role="dialog">
-	<div class="modal-dialog modal-sm">
-	    <div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Session Timeout</h4>
-			</div>
-			<div class="modal-body">
-				<div class="text-center" id="timeoutText"></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setSessionTimeout()">OK</button>
-			</div>
-		</div>
-	</div>
-</div>

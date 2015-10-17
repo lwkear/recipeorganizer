@@ -5,12 +5,12 @@
 <title>Thankyou</title>
 
 <%@include file="common/head.jsp" %>
-<%@include file="common/js.jsp" %>
+<%-- <%@include file="common/js.jsp" %> --%>
 
 </head>
 
 <body role="document">
-
+<div id="wrap">
     <%@include file="common/nav.jsp" %>
 
 	<div class="container theme-showcase" role="main">
@@ -21,6 +21,9 @@
 			<P>  <spring:message code="label.servertime"></spring:message>&nbsp;${serverTime}. </P>
 		</div>
 	</div>
+</div>
+
+<%@include file="common/footer.jsp" %>
 	
 </body>
 </html>
