@@ -269,7 +269,7 @@ public class UserController {
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
         	//throw new Exception("invalid registration token");
-        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
         	return "redirect:/errors/invalidToken.html";
         	
         }
@@ -285,7 +285,7 @@ public class UserController {
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
         	//throw new Exception("registration token expired");
-        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
         	return "redirect:/errors/expiredToken.html";
         	
         }
@@ -331,7 +331,7 @@ public class UserController {
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
         	//throw new Exception("invalid reset password token");
-        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
         	return "redirect:/errors/invalidToken.html";
         }
         
@@ -344,7 +344,7 @@ public class UserController {
             //return "redirect:/badUser.html?lang=" + locale.getLanguage();
         	//return "redirect:/errors/errorData";
         	//throw new Exception("reset password token expired");
-        	//TODO: either throw exception or fix this jsp to work for both registration and password
+        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
         	return "redirect:/errors/expiredToken.html";
         }
 

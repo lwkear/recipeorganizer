@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body class="body-image" role="document">
 	<div id="wrap">
 
 <%@include file="common/nav.jsp" %>

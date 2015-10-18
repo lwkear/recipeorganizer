@@ -10,9 +10,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- JQueryUI core CSS -->	
-<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">
+<%-- <link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.theme.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.structure.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.structure.css" />" rel="stylesheet"> --%>
+<link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.structure.css" />" rel="stylesheet">
 	
 <!-- Bootstrap core CSS -->	
 <link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
@@ -23,6 +25,9 @@
 
 <!-- Typeahead CSS -->	
 <link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
+
+<!-- Floatlabels CSS -->	
+<link href="<c:url value="/resources/floatlabels/floatlabels.css" />" rel="stylesheet">
 
 <!-- Custom styles for this app -->
 <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
