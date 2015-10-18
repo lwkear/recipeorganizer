@@ -2,49 +2,44 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.GroupSequence;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 
 import net.kear.recipeorganizer.validation.PasswordMatch;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 @PasswordMatch
 public class UserDto implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-
-	@NotNull
+	
+	public interface ValidSize {}
+	
+	@GroupSequence({Default.class,ValidSize.class})
+	public interface Sequence {}
+	
 	@NotBlank
-	@NotEmpty
-	@Size(min=1,max=50)	//50
+	@Size(min=1,max=50, groups=ValidSize.class)	//50
 	private String firstName;
 
-	@NotNull
 	@NotBlank
-	@NotEmpty
-	@Size(min=1,max=50)	//50
+	@Size(min=1,max=50, groups=ValidSize.class)	//50
 	private String lastName;
 
-	@NotNull
 	@NotBlank
-	@NotEmpty
-	@Size(min=1,max=50)	//50
 	@Email
+	@Size(min=1,max=50, groups=ValidSize.class)	//50
 	private String email;
 
-	@NotNull
 	@NotBlank
-	@NotEmpty
-	@Size(min=6)
+	@Size(min=6, groups=ValidSize.class)
 	private String password;
 	
-	@NotNull
 	@NotBlank
-	@NotEmpty
-	@Size(min=6)
+	@Size(min=6, groups=ValidSize.class)
 	private String confirmPassword;
 	
 	public UserDto() {}

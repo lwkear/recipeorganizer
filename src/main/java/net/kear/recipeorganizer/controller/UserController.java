@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +38,7 @@ import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.dto.PasswordDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
+import net.kear.recipeorganizer.persistence.dto.UserDto.Sequence;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
@@ -88,7 +91,8 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
-	public String postSignup(Model model, @ModelAttribute @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
+	public String postSignup(Model model, @ModelAttribute @Validated(Sequence.class) UserDto userDto, 
+			BindingResult result, HttpServletRequest request) {
 		logger.info("login POST");
 
 		if (result.hasErrors()) {

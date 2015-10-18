@@ -17,6 +17,8 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -100,23 +102,32 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	/*** validation and i18n message configuration ***/
 	@Bean
 	public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
-        resource.setBasenames("classpath:content",
-        					  "classpath:messages", 
-        					  "classpath:labels",
-        					  "classpath:validation",
-        					  "classpath:content_fr",
-        					  "classpath:messages_fr",
-        					  "classpath:labels_fr",
-        					  "classpath:validation_fr",
-        					  "classpath:content_en",
-        					  "classpath:labels_en",
-        					  "classpath:messages_en",
-        					  "classpath:validation_en");
-        resource.setDefaultEncoding("UTF-8");
-        //resource.setCacheSeconds(0);
-        //resource.setFallbackToSystemLocale(false);
-        return resource;
+        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+        source.setBasenames(
+        		"classpath:content",
+        		//"classpath:content_en",  			  
+        		//"classpath:content_fr",
+        		"classpath:messages",
+        		//"classpath:messages_en",
+        		//"classpath:messages_fr",
+        		"classpath:labels",
+        		//"classpath:labels_fr",
+        		//"classpath:labels_en"
+        		"classpath:validation"
+        		//"classpath:validation_fr",
+        		//"classpath:validation_en"
+        		);
+        source.setDefaultEncoding("UTF-8");
+        source.setCacheSeconds(0);	//TODO: VALIDATION: be sure to change this value in production
+        //source.setFallbackToSystemLocale(false);
+        return source;
+    }
+	
+    @Override
+    public Validator getValidator() {
+       LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+       validator.setValidationMessageSource(messageSource());
+       return validator;
     }
 	
 	@Bean
