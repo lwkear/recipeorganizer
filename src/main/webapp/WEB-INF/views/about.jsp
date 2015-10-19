@@ -13,7 +13,7 @@
 
 <%@include file="common/nav.jsp" %>
 	
-		<div class="container" style="opacity:1; color:#FFFFFF">
+		<div class="container">
 			<div class="page-header">
 				<h1><spring:message code="about.title"></spring:message></h1>
 			</div>

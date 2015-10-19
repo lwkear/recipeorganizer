@@ -26,9 +26,6 @@
 <!-- Typeahead CSS -->	
 <link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
 
-<!-- Floatlabels CSS -->	
-<link href="<c:url value="/resources/floatlabels/floatlabels.css" />" rel="stylesheet">
-
 <!-- Custom styles for this app -->
 <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
 

@@ -8,7 +8,6 @@
 <script src="<c:url value="/resources/typeahead/bloodhound.js" />"></script>
 <script src="<c:url value="/resources/bootstrap-tagsinput/bootstrap-tagsinput.js" />"></script>
 <script src="<c:url value="/resources/js/js.cookie.js" />"></script>
-<script src="<c:url value="/resources/floatlabels/floatlabels.js" />"></script>
 
 <script>
 var timeout;

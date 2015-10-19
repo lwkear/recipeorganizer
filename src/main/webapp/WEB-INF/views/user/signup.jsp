@@ -59,47 +59,24 @@ $(function() {
 	});
 });
 
-$(function() {
-	  $("body").on("input propertychange", ".floating-label-form-group", function(e) {
-	    $(this).toggleClass("floating-label-form-group-with-value", !!$(e.target).val());
-	  }).on("focus", ".floating-label-form-group", function() {
-	    $(this).addClass("floating-label-form-group-with-focus");
-	  }).on("blur", ".floating-label-form-group", function() {
-	    $(this).removeClass("floating-label-form-group-with-focus");
-	  });
-	});
 </script>
 
-<!-- <style type="text/css" media="screen">
-      body {
-        padding-top: 4em;
-      }
+<body role="document">
+	<div id="wrap">
 
-      input, textarea {
-        font-weight: 100;
-      }
-      
-</style> -->
-
-</head>
-
-<!-- <body role="document"> -->
-<body>
-	<!-- <div id="wrap"> -->
-
-<%-- <%@include file="../common/nav.jsp" %> --%>
+<%@include file="../common/nav.jsp" %>
 	
-		<%-- <spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+		<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
 		<spring:bind path="userDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
 		<spring:bind path="userDto.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
 		<spring:bind path="userDto.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
 		<spring:bind path="userDto.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
 
-		<p><b><c:out value="${emailError}" /></b></p>
+		<%-- <p><b><c:out value="${emailError}" /></b></p>
 		<p><b><c:out value="${passwordError}" /></b></p>
 		<p><b><c:out value="${confirmError}" /></b></p>
 		<p><b><c:out value="${firstNameError}" /></b></p>
-		<p><b><c:out value="${lastNameError}" /></b></p>
+		<p><b><c:out value="${lastNameError}" /></b></p> --%>
 
 		<spring:bind path="userDto">
 			<c:if test="${status.error}">
@@ -111,74 +88,40 @@ $(function() {
 		            </c:if>
 				</c:forEach>
             </c:if>
-		</spring:bind> --%>
-		
-		<div class="container">
+		</spring:bind>
+
+		<div class="container container-white">
 			<div class="page-header"> 		
-				<h1><spring:message code="signup.title"></spring:message></h1>
+				<h3><spring:message code="signup.title"></spring:message></h3>
 			</div>			
-
-      <form role="form">
-        <div class="row">
-          <div class="form-group col-xs-12 floating-label-form-group">
-            <label for="title">Title</label>
-            <input class="form-control" type="text" name="title" placeholder="Title">
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-xs-4 floating-label-form-group">
-            <label for="price">Price</label>
-            <input class="form-control" type="text" name="price" placeholder="Price">
-          </div>
-          <div class="form-group col-xs-8 floating-label-form-group">
-            <label for="location">Specific location (optional)</label>
-            <input class="form-control" type="text" name="location" placeholder="Specific location (optional)">
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-xs-12 floating-label-form-group">
-            <label for="description">Description</label>
-            <textarea placeholder="Description" class="form-control" rows="5"></textarea>
-          </div>
-        </div>
-      </form>
-
-<%-- 			<div class="row">
+			<div class="row">
 				<form:form role="form" method="post" modelAttribute="userDto">
-					<div class="col-sm-12">
-						<div class="form-group col-sm-4 col-sm-offset-2 floating-label-form-group">
-							<label for="title">Title</label>
-							<input class="form-control" type="text" name="title" placeholder="Title">
-						</div>
-					</div>				
 			        <div class="col-sm-12">
-				        <div class="form-group col-sm-4 col-sm-offset-2 floating-label-form-group<c:if test="${not empty emailError}">has-error</c:if>">
+				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
 							<label class="control-label" id="userLabel" for="username">
 								*<spring:message code="signup.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
-							<label for="username">*<spring:message code="signup.email"></spring:message></label>
 							<form:input class="form-control" type="text" id="username" placeholder="Email" path="email" autocomplete="off"/>
-							<input class="form-control" type="text" id="username" placeholder="Email" autocomplete="off"/>
 						</div>
 					</div>
 					<div class="col-sm-12">
-						<div class="form-group col-sm-4 col-sm-offset-2 floating-label-form-group<c:if test="${not empty passwordError}">has-error</c:if>">
+						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
 							<label class="control-label" for="password">
 								*<spring:message code="signup.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
 							<form:input class="form-control" type="password" id="password" placeholder="Password" path="password" autocomplete="off"/>
 						</div>
-						<div class="form-group col-sm-4 floating-label-form-group<c:if test="${not empty confirmError}">has-error</c:if>">
+						<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
 							<label class="control-label" for="confirmpassword">
 								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
 							<form:input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
 						</div>
 					</div>
 			        <div class="col-sm-12">
-			        	<div class="form-group col-sm-4 col-sm-offset-2 floating-label-form-group<c:if test="${not empty firstNameError}">has-error</c:if>">
+			        	<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty firstNameError}">has-error</c:if>">
 							<label class="control-label" for="firstname">
 								*<spring:message code="signup.firstname"></spring:message>&nbsp;&nbsp;${firstNameError}</label>
 							<form:input class="form-control" type="text" id="firstname" placeholder="First name" path="firstName" autocomplete="off"/>
 						</div>
-			        	<div class="form-group col-sm-4 floating-label-form-group<c:if test="${not empty lastNameError}">has-error</c:if>">
+			        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
 							<label class="control-label" for="lastname">
 								*<spring:message code="signup.lastname"></spring:message>&nbsp;&nbsp;${lastNameError}</label>
 							<form:input class="form-control" type="text" id="lastname" placeholder="Last name" path="lastName" autocomplete="off"/>
@@ -191,11 +134,12 @@ $(function() {
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	      		</form:form>
-			</div> --%>
-	    <!-- </div> -->
+			</div>
+		</div>
+		<!-- </div> -->
 	</div>
 
-<%-- <%@include file="../common/footer.jsp" %> --%>
+<%@include file="../common/footer.jsp" %>
 
 </body>
 </html>
@@ -213,40 +157,3 @@ $(function() {
 		<p></p>
 		<p></p> --%>
 		
-
-<!-- 		
-  <body>
-    <div class="container">
-      <h1>Bootstrap floating labels</h1>
-      <p>Inspired by <a href="http://dribbble.com/shots/1254439--GIF-Mobile-Form-Interaction?list=users">Matt D. Smith</a></p>
-      
-    
-      <form role="form">
-        <div class="row">
-          <div class="form-group col-xs-12 floating-label-form-group">
-            <label for="title">Title</label>
-            <input class="form-control" type="text" name="title" placeholder="Title">
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-xs-4 floating-label-form-group">
-            <label for="price">Price</label>
-            <input class="form-control" type="text" name="price" placeholder="Price">
-          </div>
-          <div class="form-group col-xs-8 floating-label-form-group">
-            <label for="location">Specific location (optional)</label>
-            <input class="form-control" type="text" name="location" placeholder="Specific location (optional)">
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-xs-12 floating-label-form-group">
-            <label for="description">Description</label>
-            <textarea placeholder="Description" class="form-control" rows="5"></textarea>
-          </div>
-        </div>
-      </form>
-    </div>
-  </body>
-  </html>
-
- -->		

@@ -3,28 +3,8 @@
 <head>
 
 <%@include file="../common/head.jsp" %>
-<%@include file="../common/js.jsp" %>
 
 <title>Login</title>
-
-<style type="text/css">
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #f5f5f5;
-}
-</style>
 
 <script type="text/javascript">
 function resetPass(){
@@ -40,14 +20,15 @@ function resetPass(){
 	<%@include file="../common/nav.jsp" %>
 
 	<div class="container">
-	
-		<h2 class="text-center">Please Login</h2>
-		
+		<div class="page-header"> 		
+			<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
+			<h3>Login</h3>
+		</div>			
 		<div class="row">
 			<form name="loginForm" action="<c:url value='/user/login'/>" method="post">
 		        <div class="row">
 					<label class="control-label col-sm-4 col-sm-offset-4" for="email">Email</label>		        
-					<div class="col-sm-12 col-sm-offset-4">
+					<div class="col-sm-8 col-sm-offset-4">
 						<div class="form-group col-sm-4" style="padding-left:0px;">
 							<input class="form-control" type="text" id="username" name="username" placeholder="Email" autocomplete="off"/>
 						</div>
@@ -55,7 +36,7 @@ function resetPass(){
 				</div>
 				<div class="row">
 					<label class="control-label col-sm-4 col-sm-offset-4" for="password">Password</label>
-					<div class="col-sm-12 col-sm-offset-4">
+					<div class="col-sm-8 col-sm-offset-4">
 						<div class="form-group col-sm-4" style="padding-left:0px;">
 							<input class="form-control" type="password" id="password" name="password" placeholder="Password" autocomplete="off"/>
 						</div>

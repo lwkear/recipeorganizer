@@ -4,9 +4,9 @@
 <c:set var="now" value="<%=new java.util.Date()%>" />
 
 <div id="footer">
-	<nav class="navbar navbar-default" style="margin-bottom: 0">
+	<nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0">
 		<div class="container">
-		    <p class="navbar-center">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;All Rights Reserved.</p>
+		    <p class="navbar-center" style="color:#ffffff">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;All Rights Reserved.</p>
 		    <div class="navbar-collapse collapse">
 		    	<ul class="nav navbar-nav navbar-right">
 			        <li><a href="?lang=en"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
