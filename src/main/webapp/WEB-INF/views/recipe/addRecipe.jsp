@@ -701,372 +701,374 @@
 <!-- TODO: SECURITY: remove hard-coded ID's from userID field -->
 
 <body role="document">
-<div id="wrap">
 
-	<%@include file="../common/nav.jsp"%>
+<%@include file="../common/nav.jsp" %>
 
-	<div class="container">
-
-		<c:if test="${not empty dataError}">	
-			<h3 class="text-danger">An error has occurred: ${dataError}</h3>
-		</c:if>
+    <spring:hasBindErrors name="recipe">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors>
+	<p></p>
+	<p></p>
 	
-		<h1>Add a Recipe</h1>
-		
-	    <spring:hasBindErrors name="recipe">
-	    <c:set var="errorCnt">${errors.errorCount}</c:set>
-	    <p><b># of Errors:${errorCnt}</b></p>
-	    <p></p>
-		<c:forEach var="error" items="${errors.allErrors}">
-			<b><c:out value="${error}" /></b>
-			<p></p>
+	<!-- determine if instructions or ingredients have any errors -->
+	<spring:hasBindErrors name="recipe">
+		<c:if test="${errors.hasFieldErrors('instructions')}">
+			<spring:bind path="recipe.instructions">
+				<c:set var="instructListError">${status.errorMessage}</c:set>
+		    	<%-- <c:out value="${status.errorMessage}"/>
+		    	<c:out value="${status.displayValue}"/>
+		    	<c:out value="${status.errorCode}"/> --%>
+			</spring:bind>
+			<c:set var="instructErr" value="true"/>		
+		</c:if>
+		<c:forEach items="${recipe.instructions}" varStatus="loop">
+			<c:if test="${errors.hasFieldErrors('instructions[' += loop.index += '].description')}">
+				<c:set var="instructErr" value="true"/>
+			</c:if>				
+		</c:forEach>
+		<c:if test="${errors.hasFieldErrors('recipeIngredients')}">
+			<spring:bind path="recipe.recipeIngredients">
+				<c:set var="ingredListError">${status.errorMessage}</c:set>
+		    	<%-- <c:out value="${status.errorMessage}"/>
+		    	<c:out value="${status.displayValue}"/>
+		    	<c:out value="${status.errorCode}"/> --%>
+			</spring:bind>
+			<c:set var="ingredErr" value="true"/>		
+		</c:if>
+		<c:forEach items="${recipe.recipeIngredients}" varStatus="loop">
+			<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].quantity')}">
+				<c:set var="ingredQtyErr" value="true"/>
+				<c:set var="ingredErr" value="true"/>
+			</c:if>				
+			<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].qtyType')}">
+				<c:set var="ingredQtyTypeErr" value="true"/>
+				<c:set var="ingredErr" value="true"/>
+			</c:if>
+			<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].ingredientId')}">
+				<c:set var="ingredIdErr" value="true"/>
+				<c:set var="ingredErr" value="true"/>
+			</c:if>
+			<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].qualifier')}">
+				<c:set var="ingredQualErr" value="true"/>
+				<c:set var="ingredErr" value="true"/>
+			</c:if>
 		</c:forEach>
 		</spring:hasBindErrors>
-		<p></p>
-		<p></p>
+      
+    <!-- extract applicable error messages -->
+    <spring:bind path="recipe.name">
+    	<c:set var="nameError">${status.errorMessage}</c:set>
+    	<c:set var="nameDisplayValue">${status.displayValue}</c:set>
+    	<c:set var="nameCode">${status.errorCode}</c:set>
+    </spring:bind>
+    <!-- TODO: EXCEPTION: move this to the server into a custom message interpolator -->
+	<c:if test="${fn:contains(nameCode,'Size')}">
+		<c:set var="nameLen">${fn:length(nameDisplayValue)}</c:set>
+		<c:if test="${nameLen gt 0}">
+			<c:set var="nameError">${nameError += " (you entered " += nameLen += ")"}</c:set>  
+		</c:if>
+	</c:if>	
+    
+    <spring:bind path="recipe.category.id"><c:set var="categoryError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.servings"><c:set var="servingsError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.tags"><c:set var="tagsError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].cookbook"><c:set var="cookbookError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].magazine"><c:set var="magazineError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].magazinePubdate"><c:set var="magazinePubdateError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].newspaper"><c:set var="newspaperError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].newspaperPubdate"><c:set var="newspaperPubdateError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].person"><c:set var="personError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].other"><c:set var="otherError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].websiteUrl"><c:set var="websiteUrlError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.sources[0].recipeUrl"><c:set var="recipeUrlError">${status.errorMessage}</c:set></spring:bind>
+
+	<div class="container verticalFiller">
+	</div>
+
+	<div class="container container-white">	
+	 	<div class="col-sm-12">
+			<div class="page-header"> 		
+				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
+				<h3>Add a Recipe</h3>
+			</div>			
+
+			<c:if test="${not empty dataError}">	
+				<h3 class="text-danger">An error has occurred: ${dataError}</h3>
+			</c:if>
 		
-		<!-- determine if instructions or ingredients have any errors -->
-		<spring:hasBindErrors name="recipe">
-			<c:if test="${errors.hasFieldErrors('instructions')}">
-				<spring:bind path="recipe.instructions">
-					<c:set var="instructListError">${status.errorMessage}</c:set>
-			    	<%-- <c:out value="${status.errorMessage}"/>
-			    	<c:out value="${status.displayValue}"/>
-			    	<c:out value="${status.errorCode}"/> --%>
-				</spring:bind>
-				<c:set var="instructErr" value="true"/>		
-			</c:if>
-			<c:forEach items="${recipe.instructions}" varStatus="loop">
-				<c:if test="${errors.hasFieldErrors('instructions[' += loop.index += '].description')}">
-					<c:set var="instructErr" value="true"/>
-				</c:if>				
-			</c:forEach>
-			<c:if test="${errors.hasFieldErrors('recipeIngredients')}">
-				<spring:bind path="recipe.recipeIngredients">
-					<c:set var="ingredListError">${status.errorMessage}</c:set>
-			    	<%-- <c:out value="${status.errorMessage}"/>
-			    	<c:out value="${status.displayValue}"/>
-			    	<c:out value="${status.errorCode}"/> --%>
-				</spring:bind>
-				<c:set var="ingredErr" value="true"/>		
-			</c:if>
-			<c:forEach items="${recipe.recipeIngredients}" varStatus="loop">
-				<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].quantity')}">
-					<c:set var="ingredQtyErr" value="true"/>
-					<c:set var="ingredErr" value="true"/>
-				</c:if>				
-				<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].qtyType')}">
-					<c:set var="ingredQtyTypeErr" value="true"/>
-					<c:set var="ingredErr" value="true"/>
-				</c:if>
-				<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].ingredientId')}">
-					<c:set var="ingredIdErr" value="true"/>
-					<c:set var="ingredErr" value="true"/>
-				</c:if>
-				<c:if test="${errors.hasFieldErrors('recipeIngredients[' += loop.index += '].qualifier')}">
-					<c:set var="ingredQualErr" value="true"/>
-					<c:set var="ingredErr" value="true"/>
-				</c:if>
-			</c:forEach>
- 		</spring:hasBindErrors>
-	      
-	    <!-- extract applicable error messages -->
-	    <spring:bind path="recipe.name">
-	    	<c:set var="nameError">${status.errorMessage}</c:set>
-	    	<c:set var="nameDisplayValue">${status.displayValue}</c:set>
-	    	<c:set var="nameCode">${status.errorCode}</c:set>
-	    </spring:bind>
-	    <!-- TODO: EXCEPTION: move this to the server into a custom message interpolator -->
-		<c:if test="${fn:contains(nameCode,'Size')}">
-			<c:set var="nameLen">${fn:length(nameDisplayValue)}</c:set>
-			<c:if test="${nameLen gt 0}">
-				<c:set var="nameError">${nameError += " (you entered " += nameLen += ")"}</c:set>  
-			</c:if>
-		</c:if>	
-	    
-	    <spring:bind path="recipe.category.id"><c:set var="categoryError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.servings"><c:set var="servingsError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.tags"><c:set var="tagsError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].cookbook"><c:set var="cookbookError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].magazine"><c:set var="magazineError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].magazinePubdate"><c:set var="magazinePubdateError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].newspaper"><c:set var="newspaperError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].newspaperPubdate"><c:set var="newspaperPubdateError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].person"><c:set var="personError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].other"><c:set var="otherError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].websiteUrl"><c:set var="websiteUrlError">${status.errorMessage}</c:set></spring:bind>
-	    <spring:bind path="recipe.sources[0].recipeUrl"><c:set var="recipeUrlError">${status.errorMessage}</c:set></spring:bind>
-		
-		<div class="row">
-			<%-- <form:form class="form-horizontal" role="form" action="addRecipe" method="post" modelAttribute="recipe" enctype="multipart/form-data"> --%>
-			<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe" enctype="multipart/form-data">
-				<%-- <spring:bind path="recipe"> --%>
-				<%-- <form:hidden id="userID" path="userId" value="3" /> --%>
-				<form:hidden id="userID" path="user.id" value="3" />
-				<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
-					<label class="control-label" id="nameLabel" for="inputName">Name:&nbsp;&nbsp;${nameError}</label>
-					<%-- <form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="recipe.name" autocomplete="off"/>		<!-- changed --> --%>
-					<form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="name" autocomplete="off"/>		<!-- changed -->
-				</div>
-				<div class="form-group col-sm-12">
-					<label class="control-label" for="inputDesc">Description:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="recipe.description"></form:textarea>		<!-- changed --> --%>
-					<form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="description"></form:textarea>		<!-- changed -->
-				</div>
-				<div class="form-group col-sm-12">
-					<label class="control-label" for="inputBack">Background:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="recipe.background"></form:textarea>	<!-- changed --> --%>
-					<form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="background"></form:textarea>	<!-- changed -->
-				</div>
-				
-				<!-- must bind the ingredients array, even on initial display -->
-				<spring:bind path="recipe.recipeIngredients[0]"></spring:bind>
-				<div class="form-group col-sm-12">	<!-- removed ingredients class -->
-					<div class="form-group <c:if test="${ingredErr}">text-danger</c:if>" style="margin-bottom:0">
-						<label class="control-label col-sm-12" style="text-align: left" id="ingredLabel">
-							Ingredients:&nbsp;&nbsp;${ingredListError}
-						</label>
+			<div class="row">
+				<%-- <form:form class="form-horizontal" role="form" action="addRecipe" method="post" modelAttribute="recipe" enctype="multipart/form-data"> --%>
+				<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe" enctype="multipart/form-data">
+					<%-- <spring:bind path="recipe"> --%>
+					<%-- <form:hidden id="userID" path="userId" value="3" /> --%>
+					<form:hidden id="userID" path="user.id" value="3" />
+					<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
+						<label class="control-label" id="nameLabel" for="inputName">Name:&nbsp;&nbsp;${nameError}</label>
+						<%-- <form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="recipe.name" autocomplete="off"/>		<!-- changed --> --%>
+						<form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="name" autocomplete="off"/>		<!-- changed -->
 					</div>
-					<div class="form-group" style="margin-bottom:0">
-						<label class="control-label col-sm-1 <c:if test="${ingredQtyErr}">text-danger</c:if>" style="text-align: left" >Quantity:</label>
-						<label class="control-label col-sm-2 <c:if test="${ingredQtyTypeErr}">text-danger</c:if>" style="text-align: left" >Measure:</label>
-						<label class="control-label col-sm-5 <c:if test="${ingredIdErr}">text-danger</c:if>" style="text-align: left" >Ingredient:</label>
-						<label class="control-label col-sm-4 <c:if test="${ingredQualErr}">text-danger</c:if>" style="text-align: left" >Qualifier:</label>
+					<div class="form-group col-sm-12">
+						<label class="control-label" for="inputDesc">Description:</label>
+						<%-- <form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="recipe.description"></form:textarea>		<!-- changed --> --%>
+						<form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="description"></form:textarea>		<!-- changed -->
 					</div>
-					<c:forEach items="${recipe.recipeIngredients}" var="ingred" varStatus="loop">
-						<!-- bind server-side validation errors -->
-						<spring:bind path="recipe.recipeIngredients[${loop.index}].quantity"><c:set var="qtyError">${status.errorMessage}</c:set></spring:bind>
-						<spring:bind path="recipe.recipeIngredients[${loop.index}].qtyType"><c:set var="qtyTypeError">${status.errorMessage}</c:set></spring:bind>
-						<spring:bind path="recipe.recipeIngredients[${loop.index}].ingredientId"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
-						<spring:bind path="recipe.recipeIngredients[${loop.index}].qualifier"><c:set var="qualError">${status.errorMessage}</c:set></spring:bind>
-						<!-- display server-side validation errors if present -->
-						<c:if test="${ingredErr}">
-							<div class="form-group ingredErrGrp1" style="margin-bottom:0">
-								<label class="control-label col-sm-1 text-danger" style="text-align: left; margin-bottom:0;"><b>${qtyError}</b></label>
-								<label class="control-label col-sm-2 text-danger" style="text-align: left; margin-bottom:0;"><b>${qtyTypeError}</b></label>
-								<label class="control-label col-sm-5 text-danger" style="text-align: left; margin-bottom:0;"><b>${ingredError}</b></label>
-								<label class="control-label col-sm-4 text-danger" style="text-align: left; margin-bottom:0;"><b>${qualError}</b></label>
-							</div>
-						</c:if>
-						<div  class="ingredGrp">
-							<!-- display ajax validation errors -->						
-							<div class="form-group ingredErrGrp2" style="margin-bottom:0; display:none">
-								<label class="control-label col-sm-3" style="text-align: left; margin-bottom:0; "></label>
-								<label class="control-label col-sm-5 text-danger jsonIgredErr" style="text-align: left; margin-bottom:0;"><b>Error</b></label>
-								<label class="control-label col-sm-4" style="text-align: left; margin-bottom:0;"></label>
-							</div>
-							<div class="form-group">
-								<!--setting the path displays the previously entered content in an error display -->
-								<%-- <form:hidden class="ingredID" id="ingredientID" path="recipe.recipeIngredients[${loop.index}].ingredientId" />	<!-- changed --> --%>
-								<form:hidden class="ingredID" id="ingredientID" path="recipeIngredients[${loop.index}].ingredientId" />	<!-- changed -->
-								<%-- <form:hidden class="ingredSeq" path="recipe.recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed --> --%>
-								<form:hidden class="ingredSeq" path="recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed -->
-								<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
-									<%-- <form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipe.recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed --> --%>
-									<form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed -->
+					<div class="form-group col-sm-12">
+						<label class="control-label" for="inputBack">Background:</label>
+						<%-- <form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="recipe.background"></form:textarea>	<!-- changed --> --%>
+						<form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="background"></form:textarea>	<!-- changed -->
+					</div>
+					
+					<!-- must bind the ingredients array, even on initial display -->
+					<spring:bind path="recipe.recipeIngredients[0]"></spring:bind>
+					<div class="form-group col-sm-12">	<!-- removed ingredients class -->
+						<div class="form-group <c:if test="${ingredErr}">text-danger</c:if>" style="margin-bottom:0">
+							<label class="control-label col-sm-12" style="text-align: left" id="ingredLabel">
+								Ingredients:&nbsp;&nbsp;${ingredListError}
+							</label>
+						</div>
+						<div class="form-group" style="margin-bottom:0">
+							<label class="control-label col-sm-1 <c:if test="${ingredQtyErr}">text-danger</c:if>" style="text-align: left" >Quantity:</label>
+							<label class="control-label col-sm-2 <c:if test="${ingredQtyTypeErr}">text-danger</c:if>" style="text-align: left" >Measure:</label>
+							<label class="control-label col-sm-5 <c:if test="${ingredIdErr}">text-danger</c:if>" style="text-align: left" >Ingredient:</label>
+							<label class="control-label col-sm-4 <c:if test="${ingredQualErr}">text-danger</c:if>" style="text-align: left" >Qualifier:</label>
+						</div>
+						<c:forEach items="${recipe.recipeIngredients}" var="ingred" varStatus="loop">
+							<!-- bind server-side validation errors -->
+							<spring:bind path="recipe.recipeIngredients[${loop.index}].quantity"><c:set var="qtyError">${status.errorMessage}</c:set></spring:bind>
+							<spring:bind path="recipe.recipeIngredients[${loop.index}].qtyType"><c:set var="qtyTypeError">${status.errorMessage}</c:set></spring:bind>
+							<spring:bind path="recipe.recipeIngredients[${loop.index}].ingredientId"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
+							<spring:bind path="recipe.recipeIngredients[${loop.index}].qualifier"><c:set var="qualError">${status.errorMessage}</c:set></spring:bind>
+							<!-- display server-side validation errors if present -->
+							<c:if test="${ingredErr}">
+								<div class="form-group ingredErrGrp1" style="margin-bottom:0">
+									<label class="control-label col-sm-1 text-danger" style="text-align: left; margin-bottom:0;"><b>${qtyError}</b></label>
+									<label class="control-label col-sm-2 text-danger" style="text-align: left; margin-bottom:0;"><b>${qtyTypeError}</b></label>
+									<label class="control-label col-sm-5 text-danger" style="text-align: left; margin-bottom:0;"><b>${ingredError}</b></label>
+									<label class="control-label col-sm-4 text-danger" style="text-align: left; margin-bottom:0;"><b>${qualError}</b></label>
 								</div>
-								<div class="col-sm-2 <c:if test="${not empty qtyTypeError}">has-error</c:if>">
-									<%-- <form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipe.recipeIngredients[${loop.index}].qtyType" />	<!-- changed --> --%>
-									<form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipeIngredients[${loop.index}].qtyType" />	<!-- changed -->
+							</c:if>
+							<div  class="ingredGrp">
+								<!-- display ajax validation errors -->						
+								<div class="form-group ingredErrGrp2" style="margin-bottom:0; display:none">
+									<label class="control-label col-sm-3" style="text-align: left; margin-bottom:0; "></label>
+									<label class="control-label col-sm-5 text-danger jsonIgredErr" style="text-align: left; margin-bottom:0;"><b>Error</b></label>
+									<label class="control-label col-sm-4" style="text-align: left; margin-bottom:0;"></label>
 								</div>
-								<div class="col-sm-5 <c:if test="${not empty ingredError}">has-error</c:if>">
-									<input type="text" class="form-control ingredDesc" id="ingredient" placeholder="Add an ingredient" value="${ingredientList[loop.index].name}"/>
-								</div>
-								<div class="col-sm-4 <c:if test="${not empty qualError}">has-error</c:if>">
-									<div class="entry input-group">
-										<%-- <form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipe.recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed --> --%>
-										<form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed -->
-										<span class="input-group-btn">
-											<button class="btn btn-danger removeIngredient" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
-												<span class="glyphicon glyphicon-minus"></span>
-											</button>
-											<button class="btn btn-success addIngredient" type="button">
-												<span class="glyphicon glyphicon-plus"></span>
-											</button>
-										</span>
+								<div class="form-group">
+									<!--setting the path displays the previously entered content in an error display -->
+									<%-- <form:hidden class="ingredID" id="ingredientID" path="recipe.recipeIngredients[${loop.index}].ingredientId" />	<!-- changed --> --%>
+									<form:hidden class="ingredID" id="ingredientID" path="recipeIngredients[${loop.index}].ingredientId" />	<!-- changed -->
+									<%-- <form:hidden class="ingredSeq" path="recipe.recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed --> --%>
+									<form:hidden class="ingredSeq" path="recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed -->
+									<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
+										<%-- <form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipe.recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed --> --%>
+										<form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed -->
+									</div>
+									<div class="col-sm-2 <c:if test="${not empty qtyTypeError}">has-error</c:if>">
+										<%-- <form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipe.recipeIngredients[${loop.index}].qtyType" />	<!-- changed --> --%>
+										<form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipeIngredients[${loop.index}].qtyType" />	<!-- changed -->
+									</div>
+									<div class="col-sm-5 <c:if test="${not empty ingredError}">has-error</c:if>">
+										<input type="text" class="form-control ingredDesc" id="ingredient" placeholder="Add an ingredient" value="${ingredientList[loop.index].name}"/>
+									</div>
+									<div class="col-sm-4 <c:if test="${not empty qualError}">has-error</c:if>">
+										<div class="entry input-group">
+											<%-- <form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipe.recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed --> --%>
+											<form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed -->
+											<span class="input-group-btn">
+												<button class="btn btn-danger removeIngredient" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
+													<span class="glyphicon glyphicon-minus"></span>
+												</button>
+												<button class="btn btn-success addIngredient" type="button">
+													<span class="glyphicon glyphicon-plus"></span>
+												</button>
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</c:forEach>
-				</div>
-
-				<!-- must bind the instruction array, even on initial display -->
-				<spring:bind path="recipe.instructions[0]"></spring:bind>
-				<div class="form-group col-sm-12">
-					<div class="form-group <c:if test="${instructErr}">text-danger</c:if>" style="margin-bottom:0">
-						<label class="control-label col-sm-12" style="text-align: left" id="instructLabel">
-							Instructions:&nbsp;&nbsp;${instructListError}
-						</label>
+						</c:forEach>
 					</div>
-					<c:forEach items="${recipe.instructions}" var="instruction" varStatus="loop">
-						<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
-						<div class="form-group instructErrGrp" style="margin-bottom:0">
-							<c:if test="${not empty instructError}">
-								<label class="control-label col-sm-12 text-danger" style="text-align:left; margin-bottom:0"><b>${instructError}</b></label>
-							</c:if>
-						</div>						
-						<div class="form-group col-sm-12 <c:if test="${not empty instructError}">has-error</c:if>">
-							<div class="input-group instructGrp">
-								<!--setting the path displays the previously entered content in an error display -->
-								<%-- <form:hidden class="instructSeq instruct" path="recipe.instructions[${loop.index}].sequenceNo"/>	<!-- changed --> --%>									
-								<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>	<!-- changed -->
-								<%-- <form:textarea class="form-control instructDesc instruct" rows="2" path="recipe.instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed --> --%>
-								<form:textarea class="form-control instructDesc instruct" rows="2" path="instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed -->
-								<span class="input-group-btn">
-									<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
-										<span class="glyphicon glyphicon-minus"></span>
-									</button>
-									<button class="btn btn-success addInstruction" type="button">
-										<span class="glyphicon glyphicon-plus"></span>
-									</button>
-								</span>
+	
+					<!-- must bind the instruction array, even on initial display -->
+					<spring:bind path="recipe.instructions[0]"></spring:bind>
+					<div class="form-group col-sm-12">
+						<div class="form-group <c:if test="${instructErr}">text-danger</c:if>" style="margin-bottom:0">
+							<label class="control-label col-sm-12" style="text-align: left" id="instructLabel">
+								Instructions:&nbsp;&nbsp;${instructListError}
+							</label>
+						</div>
+						<c:forEach items="${recipe.instructions}" var="instruction" varStatus="loop">
+							<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
+							<div class="form-group instructErrGrp" style="margin-bottom:0">
+								<c:if test="${not empty instructError}">
+									<label class="control-label col-sm-12 text-danger" style="text-align:left; margin-bottom:0"><b>${instructError}</b></label>
+								</c:if>
+							</div>						
+							<div class="form-group col-sm-12 <c:if test="${not empty instructError}">has-error</c:if>">
+								<div class="input-group instructGrp">
+									<!--setting the path displays the previously entered content in an error display -->
+									<%-- <form:hidden class="instructSeq instruct" path="recipe.instructions[${loop.index}].sequenceNo"/>	<!-- changed --> --%>									
+									<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>	<!-- changed -->
+									<%-- <form:textarea class="form-control instructDesc instruct" rows="2" path="recipe.instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed --> --%>
+									<form:textarea class="form-control instructDesc instruct" rows="2" path="instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed -->
+									<span class="input-group-btn">
+										<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
+											<span class="glyphicon glyphicon-minus"></span>
+										</button>
+										<button class="btn btn-success addInstruction" type="button">
+											<span class="glyphicon glyphicon-plus"></span>
+										</button>
+									</span>
+								</div>
+							</div>
+						</c:forEach>
+					</div>
+	
+					<div class="form-group col-sm-12">
+						<div class="form-group" style="margin-bottom:0">
+							<label class="control-label col-sm-3 <c:if test="${not empty categoryError}">text-danger</c:if>" id="categoryLabel" style="text-align: left;">
+								Category:&nbsp;&nbsp;${categoryError}</label>
+							<label class="control-label col-sm-3 <c:if test="${not empty servingsError}">text-danger</c:if>" id="servingsLabel" style="text-align: left;">
+								Servings:&nbsp;&nbsp;${servingsError}</label>
+							<label class="control-label col-sm-2" style="text-align: left;">Share this recipe?</label>
+							<label class="control-label col-sm-4" style="text-align: left;">Photo:</label>
+			            </div>
+						<div class="form-group" style="margin-bottom:0">
+							<%-- <form:hidden id="catID" path="recipe.categoryId"/>	<!-- changed --> --%>
+							<form:hidden id="catID" path="category.id"/>	<!-- changed -->
+							<div class="col-sm-3 <c:if test="${not empty categoryError}">has-error</c:if>">
+								<form:select class="form-control col-sm-3 select-placeholder" id="inputCategory" path="category.name">
+									<option value="" style="display:none">Select a category</option>
+			            		</form:select>
+			            	</div>
+							<div class="col-sm-3 <c:if test="${not empty servingsError}">has-error</c:if>">
+								<%-- <form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="recipe.servings" autocomplete="off"/>	<!-- changed --> --%>
+								<form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="servings" autocomplete="off"/>	<!-- changed -->
+							</div>
+							<div class="col-sm-2">
+								<div class="radio-inline">
+									<%-- <form:radiobutton value="true" path="recipe.allowShare" checked="true"/>Yes		<!-- changed --> --%>
+									<form:radiobutton value="true" path="allowShare" checked="true"/>Yes		<!-- changed -->
+								</div>
+								<div class="radio-inline">
+									<%-- <form:radiobutton value="false" path="recipe.allowShare" />No	<!-- changed --> --%>
+									<form:radiobutton value="false" path="allowShare" />No	<!-- changed -->
+								</div>
+							</div>
+							<div class="col-sm-4" >
+								<input type="file" name="file"/>
 							</div>
 						</div>
-					</c:forEach>
-				</div>
-
-				<div class="form-group col-sm-12">
-					<div class="form-group" style="margin-bottom:0">
-						<label class="control-label col-sm-3 <c:if test="${not empty categoryError}">text-danger</c:if>" id="categoryLabel" style="text-align: left;">
-							Category:&nbsp;&nbsp;${categoryError}</label>
-						<label class="control-label col-sm-3 <c:if test="${not empty servingsError}">text-danger</c:if>" id="servingsLabel" style="text-align: left;">
-							Servings:&nbsp;&nbsp;${servingsError}</label>
-						<label class="control-label col-sm-2" style="text-align: left;">Share this recipe?</label>
-						<label class="control-label col-sm-4" style="text-align: left;">Photo:</label>
-		            </div>
-					<div class="form-group" style="margin-bottom:0">
-						<%-- <form:hidden id="catID" path="recipe.categoryId"/>	<!-- changed --> --%>
-						<form:hidden id="catID" path="category.id"/>	<!-- changed -->
-						<div class="col-sm-3 <c:if test="${not empty categoryError}">has-error</c:if>">
-							<form:select class="form-control col-sm-3 select-placeholder" id="inputCategory" path="category.name">
-								<option value="" style="display:none">Select a category</option>
-		            		</form:select>
-		            	</div>
-						<div class="col-sm-3 <c:if test="${not empty servingsError}">has-error</c:if>">
-							<%-- <form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="recipe.servings" autocomplete="off"/>	<!-- changed --> --%>
-							<form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="servings" autocomplete="off"/>	<!-- changed -->
+					</div>
+					<%-- </spring:bind> --%>
+	
+					<c:if test="${errors.hasFieldErrors('sources')}">
+						<spring:bind path="recipe.sources[0]"></spring:bind>
+					</c:if>
+					<div class="form-group col-sm-12">
+						<div class="form-group" style="margin-bottom:0">
+							<label class="control-label col-sm-2" style="text-align: left">Source:</label>
+							<label class="control-label col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">text-danger</c:if>" style="text-align: left; display:none" id="cookbookLabel">
+								Cookbook Name:&nbsp;&nbsp;${cookbookError}</label>
+							<label class="control-label col-sm-1 srcGroup bookGroup" style="text-align: left; display:none">Page#:</label>
+							<label class="control-label col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">text-danger</c:if>" style="text-align: left; display:none" id="zineLabel">
+								Magazine Name:&nbsp;&nbsp;${magazineError}</label>
+							<label class="control-label col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">text-danger</c:if>" style="text-align: left; display:none" id="zineDateLabel">
+								Pub Date:&nbsp;&nbsp;${magazinePubdateError}</label>						
+							<label class="control-label col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">text-danger</c:if>" style="text-align: left; display:none" id="newsLabel">
+								Newspaper Name:&nbsp;&nbsp;${newspaperError}</label>
+							<label class="control-label col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">text-danger</c:if>" style="text-align: left; display:none" id="newsDateLabel">
+								Pub Date:&nbsp;&nbsp;${newspaperPubdateError}</label>
+							<label class="control-label col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">text-danger</c:if>" style="text-align: left; display:none" id="personLabel">
+								Name:&nbsp;&nbsp;${personError}</label>
+							<label class="control-label col-sm-5 srcGroup webGroup <c:if test="${not empty websiteUrlError}">text-danger</c:if>" style="text-align: left; display:none" id="webURLLabel">
+								Website URL:&nbsp;&nbsp;${websiteUrlError}</label>
+							<label class="control-label col-sm-5 srcGroup webGroup <c:if test="${not empty recipeUrlError}">text-danger</c:if>" style="text-align: left; display:none" id="recipeURLLabel">
+								Recipe URL:&nbsp;&nbsp;${recipeUrlError}</label>
+							<label class="control-label col-sm-7 srcGroup otherGroup <c:if test="${not empty otherError}">text-danger</c:if>" style="text-align: left; display:none" id="otherLabel">
+								Details:&nbsp;&nbsp;${otherError}</label>
 						</div>
-						<div class="col-sm-2">
-							<div class="radio-inline">
-								<%-- <form:radiobutton value="true" path="recipe.allowShare" checked="true"/>Yes		<!-- changed --> --%>
-								<form:radiobutton value="true" path="allowShare" checked="true"/>Yes		<!-- changed -->
+						<div class="form-group" style="margin-bottom:0">
+							<div class="col-sm-2">
+								<form:select class="form-control col-sm-2 select-placeholder" id="inputSource" path="sources[0].type" >
+			            			<form:option style="display:none" value="">Select a source</form:option>
+			            			<form:option value="Cookbook"/>
+			            			<form:option value="Magazine"/>
+			            			<form:option value="Newspaper"/>
+			            			<form:option value="Person"/>
+			            			<form:option value="Website"/>
+			            			<form:option value="Other"/>
+			            			<form:option value="None"/>
+								</form:select>
 							</div>
-							<div class="radio-inline">
-								<%-- <form:radiobutton value="false" path="recipe.allowShare" />No	<!-- changed --> --%>
-								<form:radiobutton value="false" path="allowShare" />No	<!-- changed -->
+							<div class="col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-5 srcGroup bookGroup srcTA" id="inputBookName" style="display:none" placeholder="Enter name" path="sources[0].cookbook"/>
+							</div>
+							<div class="col-sm-1 srcGroup bookGroup" style="display:none">
+								<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup" id="inputBookPage" style="display:none" placeholder="Page" path="sources[0].cookbookPage" autocomplete="off"/>
+							</div>
+							<div class="col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-5 srcGroup magGroup srcTA" id="inputMagName" style="display:none" placeholder="Enter name" path="sources[0].magazine"/>
+							</div>
+							<div class="col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-2 srcGroup magGroup" id="inputMagDate" style="display:none" path="sources[0].magazinePubdate"/>
+							</div>
+							<div class="col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-5 srcGroup newsGroup srcTA" id="inputNewsName" style="display:none" placeholder="Enter name" path="sources[0].newspaper"/>
+							</div>
+							<div class="col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-2 srcGroup newsGroup" id="inputNewsDate" style="display:none" path="sources[0].newspaperPubdate"/>
+							</div>
+							<div class="col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-4 srcGroup personGroup srcTA" id="inputPersonName" style="display:none" placeholder="Enter name" path="sources[0].person"/>
+							</div>
+							<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty websiteUrlError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-5 srcGroup webGroup srcTA" id="inputWebURL" style="display:none" placeholder="Enter URL" path="sources[0].websiteUrl"/>
+							</div>
+							<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty recipeUrlError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-5 srcGroup webGroup" id="inputRecipeURL" style="display:none" placeholder="Enter URL" path="sources[0].recipeUrl"/>
+							</div>
+							<div class="col-sm-7 srcGroup otherGroup <c:if test="${not empty otherError}">has-error</c:if>" style="display:none">
+								<form:input type="text" class="form-control col-sm-7 srcGroup otherGroup" id="inputOtherDetails" style="display:none" placeholder="Enter details" path="sources[0].other" autocomplete="off"/>
 							</div>
 						</div>
-						<div class="col-sm-4" >
-							<input type="file" name="file"/>
+					</div>
+		
+					<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>">
+						<label class="control-label" id="tagsLabel" for="inputTags">Tags:&nbsp;&nbsp;${tagsError}</label>
+						<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
+							<%-- <form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="recipe.tags"/>	<!-- changed --> --%>
+							<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="tags"/>	<!-- changed -->
+						</div>					
+					</div>
+		
+					<div class="form-group col-sm-12">
+						<label class="control-label" for="inputNotes">Notes:</label>
+						<%-- <form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="recipe.notes"></form:textarea>	<!-- changed --> --%>					
+						<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="notes"></form:textarea>	<!-- changed -->
+					</div>
+		
+					<div class="form-group col-sm-12"></div>
+		
+					<div class="form-group col-sm-12">
+						<div class="col-sm-offset-5 col-sm-2 text-center">
+							<button type="submit" class="btn btn-primary pull-left" id="save" name="save" value="Save">Save</button>
+							<input type="reset" class="btn btn-default pull-right" id="reset" value="Reset">
 						</div>
 					</div>
-				</div>
-				<%-- </spring:bind> --%>
-
-				<c:if test="${errors.hasFieldErrors('sources')}">
-					<spring:bind path="recipe.sources[0]"></spring:bind>
-				</c:if>
-				<div class="form-group col-sm-12">
-					<div class="form-group" style="margin-bottom:0">
-						<label class="control-label col-sm-2" style="text-align: left">Source:</label>
-						<label class="control-label col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">text-danger</c:if>" style="text-align: left; display:none" id="cookbookLabel">
-							Cookbook Name:&nbsp;&nbsp;${cookbookError}</label>
-						<label class="control-label col-sm-1 srcGroup bookGroup" style="text-align: left; display:none">Page#:</label>
-						<label class="control-label col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">text-danger</c:if>" style="text-align: left; display:none" id="zineLabel">
-							Magazine Name:&nbsp;&nbsp;${magazineError}</label>
-						<label class="control-label col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">text-danger</c:if>" style="text-align: left; display:none" id="zineDateLabel">
-							Pub Date:&nbsp;&nbsp;${magazinePubdateError}</label>						
-						<label class="control-label col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">text-danger</c:if>" style="text-align: left; display:none" id="newsLabel">
-							Newspaper Name:&nbsp;&nbsp;${newspaperError}</label>
-						<label class="control-label col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">text-danger</c:if>" style="text-align: left; display:none" id="newsDateLabel">
-							Pub Date:&nbsp;&nbsp;${newspaperPubdateError}</label>
-						<label class="control-label col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">text-danger</c:if>" style="text-align: left; display:none" id="personLabel">
-							Name:&nbsp;&nbsp;${personError}</label>
-						<label class="control-label col-sm-5 srcGroup webGroup <c:if test="${not empty websiteUrlError}">text-danger</c:if>" style="text-align: left; display:none" id="webURLLabel">
-							Website URL:&nbsp;&nbsp;${websiteUrlError}</label>
-						<label class="control-label col-sm-5 srcGroup webGroup <c:if test="${not empty recipeUrlError}">text-danger</c:if>" style="text-align: left; display:none" id="recipeURLLabel">
-							Recipe URL:&nbsp;&nbsp;${recipeUrlError}</label>
-						<label class="control-label col-sm-7 srcGroup otherGroup <c:if test="${not empty otherError}">text-danger</c:if>" style="text-align: left; display:none" id="otherLabel">
-							Details:&nbsp;&nbsp;${otherError}</label>
-					</div>
-					<div class="form-group" style="margin-bottom:0">
-						<div class="col-sm-2">
-							<form:select class="form-control col-sm-2 select-placeholder" id="inputSource" path="sources[0].type" >
-		            			<form:option style="display:none" value="">Select a source</form:option>
-		            			<form:option value="Cookbook"/>
-		            			<form:option value="Magazine"/>
-		            			<form:option value="Newspaper"/>
-		            			<form:option value="Person"/>
-		            			<form:option value="Website"/>
-		            			<form:option value="Other"/>
-		            			<form:option value="None"/>
-							</form:select>
-						</div>
-						<div class="col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-5 srcGroup bookGroup srcTA" id="inputBookName" style="display:none" placeholder="Enter name" path="sources[0].cookbook"/>
-						</div>
-						<div class="col-sm-1 srcGroup bookGroup" style="display:none">
-							<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup" id="inputBookPage" style="display:none" placeholder="Page" path="sources[0].cookbookPage" autocomplete="off"/>
-						</div>
-						<div class="col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-5 srcGroup magGroup srcTA" id="inputMagName" style="display:none" placeholder="Enter name" path="sources[0].magazine"/>
-						</div>
-						<div class="col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-2 srcGroup magGroup" id="inputMagDate" style="display:none" path="sources[0].magazinePubdate"/>
-						</div>
-						<div class="col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-5 srcGroup newsGroup srcTA" id="inputNewsName" style="display:none" placeholder="Enter name" path="sources[0].newspaper"/>
-						</div>
-						<div class="col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-2 srcGroup newsGroup" id="inputNewsDate" style="display:none" path="sources[0].newspaperPubdate"/>
-						</div>
-						<div class="col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-4 srcGroup personGroup srcTA" id="inputPersonName" style="display:none" placeholder="Enter name" path="sources[0].person"/>
-						</div>
-						<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty websiteUrlError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-5 srcGroup webGroup srcTA" id="inputWebURL" style="display:none" placeholder="Enter URL" path="sources[0].websiteUrl"/>
-						</div>
-						<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty recipeUrlError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-5 srcGroup webGroup" id="inputRecipeURL" style="display:none" placeholder="Enter URL" path="sources[0].recipeUrl"/>
-						</div>
-						<div class="col-sm-7 srcGroup otherGroup <c:if test="${not empty otherError}">has-error</c:if>" style="display:none">
-							<form:input type="text" class="form-control col-sm-7 srcGroup otherGroup" id="inputOtherDetails" style="display:none" placeholder="Enter details" path="sources[0].other" autocomplete="off"/>
-						</div>
-					</div>
-				</div>
-	
-				<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>">
-					<label class="control-label" id="tagsLabel" for="inputTags">Tags:&nbsp;&nbsp;${tagsError}</label>
-					<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-						<%-- <form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="recipe.tags"/>	<!-- changed --> --%>
-						<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="tags"/>	<!-- changed -->
-					</div>					
-				</div>
-	
-				<div class="form-group col-sm-12">
-					<label class="control-label" for="inputNotes">Notes:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="recipe.notes"></form:textarea>	<!-- changed --> --%>					
-					<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="notes"></form:textarea>	<!-- changed -->
-				</div>
-	
-				<div class="form-group col-sm-12"></div>
-	
-				<div class="form-group col-sm-12">
-					<div class="col-sm-offset-5 col-sm-2 text-center">
-						<button type="submit" class="btn btn-primary pull-left" id="save" name="save" value="Save">Save</button>
-						<input type="reset" class="btn btn-default pull-right" id="reset" value="Reset">
-					</div>
-				</div>
-			</form:form>
+				</form:form>
+			</div>
 		</div>
 	</div>
-</div>
 
 <%@include file="../common/footer.jsp" %>
 
 </body>
-
-<!-- Placed at the end of the document so the pages load faster -->
-
 </html>

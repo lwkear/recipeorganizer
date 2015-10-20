@@ -2,35 +2,33 @@
 <html>
 <head>
 
-<title>List Recipes</title>
+<title>ListRecipes</title>
 
-<%@include file="../common/head.jsp"%>
+<%@include file="../common/head.jsp" %>
 
 </head>
 
 <body role="document">
-<div id="wrap">
 
-    <%@include file="../common/nav.jsp" %>
+<%@include file="../common/nav.jsp" %>
 
-	<div class="container">
+	<sec:authorize var="isAuth" access="isAuthenticated()"/>
+	<c:if test="${isAuth}"> 
+		<sec:authentication var="secUserId" property="principal.id"/>
+	</c:if>
 
-		<sec:authorize var="isAuth" access="isAuthenticated()"/>
-		<c:if test="${isAuth}"> 
-			<sec:authentication var="secUserId" property="principal.id"/>
-		</c:if>
-	
-		<h1>Recipes</h1>
-	
-		<div class="col-sm-12">
+	<div class="container container-white">	
+	 	<div class="content col-sm-12">
+			<div class="page-header"> 		
+				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
+				<h3>Recipes</h3>
+			</div>			
 			<table class="table table-condensed table-striped">
 				<thead>
 					<tr>
-						<!-- <th>ID</th> -->
 						<th>Name</th>
 						<th>Category</th>
 						<th>Submitted By</th>
-						<!-- <th>Source</th> -->
 						<th>Favorite</th>
 						<th>Share</th>
 						<th>LastMade</th>
@@ -38,7 +36,6 @@
 				</thead>
 				<tbody>
 					<c:forEach var="recipe" items="${recipes}">
-
 						<tr>
 							<%-- <td>${recipe.id}</td> --%>
 							<td>${recipe.name}</td>
@@ -90,7 +87,6 @@
 			</table>
 		</div>
 	</div>	
-</div>
 
 <%@include file="../common/footer.jsp" %>
 

@@ -8,12 +8,12 @@
 
 </head>
 
-<body class="body-image" role="document">
-	<div id="wrap">
-
-<%@include file="common/nav.jsp" %>
+<body role="document">
 	
-		<div class="container" style="opacity:1; color:#FFFFFF">
+<%@include file="common/nav.jsp" %>	
+
+	<div class="container container-opaque">	
+	 	<div class="content col-sm-12">
 			<div class="page-header">
 				<h1><spring:message code="thankyou.title"></spring:message></h1>
 			</div>

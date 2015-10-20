@@ -18,7 +18,8 @@
 </c:if>
 
 
-<nav class="navbar navbar-inverse navbar-default" style="border-top:0; border-bottom:0; margin-bottom:0;z-index:100">
+<!-- <nav class="navbar navbar-inverse navbar-default" style="border-top:0; border-bottom:0; margin-bottom:0;z-index:9999"> ""> -->
+<nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -57,7 +58,7 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="#"><spring:message code="menu.faq"></spring:message></a></li>
+						<li><a href="<c:url value="/testpage" />"><spring:message code="menu.faq"></spring:message></a></li>
 						<li><a href="#"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
 					</ul>

@@ -2,14 +2,92 @@
 <html>
 <head>
 
-<title>Signup</title>
+<title>SignUp</title>
 
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="../common/head.jsp" %>
+
+</head>
+
+<body role="document">
+
+<%@include file="../common/nav.jsp" %>
+	
+	<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
+
+	<spring:bind path="userDto">
+		<c:if test="${status.error}">
+			<c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
+				<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
+					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
+						<c:set var="confirmError">${error}</c:set>
+					</c:forEach>
+				</c:if>
+			</c:forEach>
+		</c:if>
+	</spring:bind>
+
+	<div class="container verticalFiller">
+	</div>
+
+	<div class="container container-white">	
+	 	<div class="content col-sm-12">
+			<div class="page-header"> 		
+				<h3><spring:message code="signup.title"></spring:message></h3>
+			</div>			
+			<div class="row">
+				<form:form role="form" method="post" modelAttribute="userDto">
+			        <div class="col-sm-12">
+				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
+							<label class="control-label" id="userLabel" for="username">
+								*<spring:message code="signup.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
+							<form:input class="form-control" type="text" id="username" placeholder="Email" path="email" autocomplete="off"/>
+						</div>
+					</div>
+					<div class="col-sm-12">
+						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
+							<label class="control-label" for="password">
+								*<spring:message code="signup.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
+							<form:input class="form-control" type="password" id="password" placeholder="Password" path="password" autocomplete="off"/>
+						</div>
+						<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
+							<label class="control-label" for="confirmpassword">
+								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
+							<form:input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
+						</div>
+					</div>
+			        <div class="col-sm-12">
+			        	<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty firstNameError}">has-error</c:if>">
+							<label class="control-label" for="firstname">
+								*<spring:message code="signup.firstname"></spring:message>&nbsp;&nbsp;${firstNameError}</label>
+							<form:input class="form-control" type="text" id="firstname" placeholder="First name" path="firstName" autocomplete="off"/>
+						</div>
+			        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
+							<label class="control-label" for="lastname">
+								*<spring:message code="signup.lastname"></spring:message>&nbsp;&nbsp;${lastNameError}</label>
+							<form:input class="form-control" type="text" id="lastname" placeholder="Last name" path="lastName" autocomplete="off"/>
+						</div>
+					</div>
+					<div class="form-group col-sm-12">
+					</div>
+			        <div class="form-group col-sm-2 col-sm-offset-5">
+						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">
+							<spring:message code="common.submit"></spring:message></button>
+	        		</div>
+	      		</form:form>
+			</div>
+			</div>
+		</div>
+
+<%@include file="../common/footer.jsp" %>
+
+</body>
 
 <script type="text/javascript">
 
-//shorthand for document.ready
 $(function() {
 
 	$(document)
@@ -61,89 +139,6 @@ $(function() {
 
 </script>
 
-<body role="document">
-
-<%@include file="../common/nav.jsp" %>
-	
-		<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
-		<spring:bind path="userDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
-		<spring:bind path="userDto.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
-		<spring:bind path="userDto.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
-		<spring:bind path="userDto.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
-
-		<%-- <p><b><c:out value="${emailError}" /></b></p>
-		<p><b><c:out value="${passwordError}" /></b></p>
-		<p><b><c:out value="${confirmError}" /></b></p>
-		<p><b><c:out value="${firstNameError}" /></b></p>
-		<p><b><c:out value="${lastNameError}" /></b></p> --%>
-
-		<spring:bind path="userDto">
-			<c:if test="${status.error}">
-                <c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
-                	<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
-		                <c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
-		                    <c:set var="confirmError">${error}</c:set>
-		                </c:forEach>
-		            </c:if>
-				</c:forEach>
-            </c:if>
-		</spring:bind>
-
-		<div class="container container-white">
-		<div class="content">
-			<div class="col-sm-12">
-		
-			<div class="page-header"> 		
-				<h3><spring:message code="signup.title"></spring:message></h3>
-			</div>			
-			<div class="row">
-				<form:form role="form" method="post" modelAttribute="userDto">
-			        <div class="col-sm-12">
-				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
-							<label class="control-label" id="userLabel" for="username">
-								*<spring:message code="signup.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
-							<form:input class="form-control" type="text" id="username" placeholder="Email" path="email" autocomplete="off"/>
-						</div>
-					</div>
-					<div class="col-sm-12">
-						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
-							<label class="control-label" for="password">
-								*<spring:message code="signup.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
-							<form:input class="form-control" type="password" id="password" placeholder="Password" path="password" autocomplete="off"/>
-						</div>
-						<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
-							<label class="control-label" for="confirmpassword">
-								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
-							<form:input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
-						</div>
-					</div>
-			        <div class="col-sm-12">
-			        	<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty firstNameError}">has-error</c:if>">
-							<label class="control-label" for="firstname">
-								*<spring:message code="signup.firstname"></spring:message>&nbsp;&nbsp;${firstNameError}</label>
-							<form:input class="form-control" type="text" id="firstname" placeholder="First name" path="firstName" autocomplete="off"/>
-						</div>
-			        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
-							<label class="control-label" for="lastname">
-								*<spring:message code="signup.lastname"></spring:message>&nbsp;&nbsp;${lastNameError}</label>
-							<form:input class="form-control" type="text" id="lastname" placeholder="Last name" path="lastName" autocomplete="off"/>
-						</div>
-					</div>
-					<div class="form-group col-sm-12">
-					</div>
-			        <div class="form-group col-sm-2 col-sm-offset-5">
-						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">
-							<spring:message code="common.submit"></spring:message></button>
-	        		</div>
-	      		</form:form>
-			</div>
-			</div>
-		</div>
-		</div>
-
-<%@include file="../common/footer.jsp" %>
-
-</body>
 </html>
 
 
@@ -158,4 +153,11 @@ $(function() {
 		</spring:hasBindErrors>
 		<p></p>
 		<p></p> --%>
+		
+		
+		<%-- <p><b><c:out value="${emailError}" /></b></p>
+		<p><b><c:out value="${passwordError}" /></b></p>
+		<p><b><c:out value="${confirmError}" /></b></p>
+		<p><b><c:out value="${firstNameError}" /></b></p>
+		<p><b><c:out value="${lastNameError}" /></b></p> --%>
 		

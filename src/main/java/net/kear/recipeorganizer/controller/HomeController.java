@@ -99,4 +99,11 @@ public class HomeController {
 
 		return "thankyou";
 	}
-}
+
+	@RequestMapping(value = "/testpage", method = RequestMethod.GET)
+	public String getTestpage(Locale locale, Model model, HttpSession session) {
+		
+		logger.info("getTestpage");
+		
+		return "testpage";
+	}}

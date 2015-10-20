@@ -112,6 +112,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword").permitAll()
+			.antMatchers("/testpage").permitAll()
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			

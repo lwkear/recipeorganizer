@@ -6,6 +6,47 @@
 
 <%@include file="../common/head.jsp" %>
 
+</head>
+
+<body role="document">
+
+<%@include file="../common/nav.jsp" %>
+
+	<div class="container verticalFiller">
+	</div>
+
+	<div class="container container-white">	
+	 	<div class="content col-sm-12">
+			<div class="page-header"> 		
+				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
+				<h3>Change Password</h3>
+			</div>			
+			<div class="row">
+				<div class="form-group col-sm-4 col-sm-offset-4">
+					<label class="control-label" for="currentpassword">Current Password</label>
+					<input class="form-control" type="password" id="currentpassword" name="currentpassword" placeholder="Current Password" autocomplete="off"/>
+				</div>
+				<div class="form-group col-sm-4 col-sm-offset-4">
+					<label class="control-label" for="password">New Password</label>
+					<input class="form-control" type="password" id="password" name="password" placeholder="New Password" autocomplete="off"/>
+				</div>
+				<div class="form-group col-sm-4 col-sm-offset-4">
+					<label class="control-label" for="confirmpassword">Confirm Password:&nbsp;&nbsp;${confirmError}</label>
+					<input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" autocomplete="off"/>
+				</div>
+				<div class="form-group col-sm-4 col-sm-offset-4">
+				</div>
+		        <div class="form-group col-sm-2 col-sm-offset-5">
+					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" onclick="postPassword()">Submit</button>
+        		</div>
+			</div>
+    	</div>
+	</div>
+
+<%@include file="../common/footer.jsp" %>
+
+</body>
+
 <script type="text/javascript">
 
 function postPassword() {
@@ -58,39 +99,10 @@ $(document).ready(function() {
 });
 
 </script>
+</html>
 
-</head>
 
-<!-- <body role="document" onload="document.passswordForm.currentpassword.focus();"> -->
-<body role="document"> <!--  onload="document.currentpassword.focus();"> -->
-<div id="wrap">
-	<%@include file="../common/nav.jsp" %>
-
-	<div class="container">
-	
-		<h2 class="text-center">Change Password</h2>
-		
-		<div class="row">
-			<!-- <form name="passswordForm" role="form"> --> <!--  method="post"> -->
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="currentpassword">Current Password</label>
-					<input class="form-control" type="password" id="currentpassword" name="currentpassword" placeholder="Current Password" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="password">New Password</label>
-					<input class="form-control" type="password" id="password" name="password" placeholder="New Password" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="confirmpassword">Confirm Password:&nbsp;&nbsp;${confirmError}</label>
-					<input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-				</div>
-		        <div class="form-group col-sm-2 col-sm-offset-5">
-					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" onclick="postPassword()">Submit</button>
-        		</div>
-
-				<div class="col-sm-12 text-center">
+<%-- 				<div class="col-sm-12 text-center">
 					<c:if test="${not empty param.err}">
 						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 						<h5>failureUrl.</h5>
@@ -106,13 +118,5 @@ $(document).ready(function() {
 					<h4 class="control-label text-danger" style="display:none" id="confirmError">Confirmation Password does not match</h4>
 					<h4 class="control-label text-danger" style="display:none" id="errormsg">Confirmation Password does not match</h4>
 				</div>
-				
+ --%>				
 				<%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> --%>
-      		<!-- </form> -->
-		</div>
-    </div>
-</div>
-
-<%@include file="../common/footer.jsp" %>
-</body>
-</html>

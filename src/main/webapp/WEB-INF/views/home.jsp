@@ -8,35 +8,33 @@
 
 </head>
 
-<body class="body-image" role="document">
+<body role="document">
 	
 <%@include file="common/nav.jsp" %>	
 
 	<div class="container container-opaque">	
-	 	<div class="content">
-		 	<div class="col-sm-12">
-				<div class="page-header"> 		
-					<h1><spring:message code="home.title"></spring:message></h1>
+	 	<div class="col-sm-12">
+			<div class="page-header"> 		
+				<h1><spring:message code="home.title"></spring:message></h1>
+			</div>
+			<div class="lead text-center"> 		
+				<h3><spring:message code="home.description1"></spring:message></h3>
+			</div>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+					<br>
+					<h4><spring:message code="home.description2"></spring:message></h4>
+					<br>
+					<h4><spring:message code="home.description3"></spring:message>
+					<spring:message code="home.description4"></spring:message></h4>
+					<br>
+					<h4><spring:message code="home.description5"></spring:message></h4>
+					<br>			
 				</div>
-				<div class="lead text-center"> 		
-					<h3><spring:message code="home.description1"></spring:message></h3>
-				</div>
-				<div class="row">
-					<div class="col-sm-6 col-sm-offset-3">
-						<br>
-						<h4><spring:message code="home.description2"></spring:message></h4>
-						<br>
-						<h4><spring:message code="home.description3"></spring:message>
-						<spring:message code="home.description4"></spring:message></h4>
-						<br>
-						<h4><spring:message code="home.description5"></spring:message></h4>
-						<br>			
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-2 col-sm-offset-5">
-						<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">Sign Up</a>
-					</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2 col-sm-offset-5">
+					<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">Sign Up</a>
 				</div>
 			</div>
 		</div>
