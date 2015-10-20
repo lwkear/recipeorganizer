@@ -62,7 +62,6 @@ $(function() {
 </script>
 
 <body role="document">
-	<div id="wrap">
 
 <%@include file="../common/nav.jsp" %>
 	
@@ -91,6 +90,9 @@ $(function() {
 		</spring:bind>
 
 		<div class="container container-white">
+		<div class="content">
+			<div class="col-sm-12">
+		
 			<div class="page-header"> 		
 				<h3><spring:message code="signup.title"></spring:message></h3>
 			</div>			
@@ -135,9 +137,9 @@ $(function() {
 	        		</div>
 	      		</form:form>
 			</div>
+			</div>
 		</div>
-		<!-- </div> -->
-	</div>
+		</div>
 
 <%@include file="../common/footer.jsp" %>
 

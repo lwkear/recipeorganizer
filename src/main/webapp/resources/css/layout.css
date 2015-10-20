@@ -1,43 +1,47 @@
-/* html,body {
+html,body {
 	margin:0;
 	padding:0;
-	height:100%; needed for container min-height
-} */
+	height:100%; /* needed for container min-height */
+	background:gray;
+}
 
-.body-image {
+body {
+	background: url("../recipes.jpg") no-repeat center center fixed;
+	background-size: cover;
+}
+
+/* .body-image {
 	background: url("../recipes.jpg") no-repeat center center fixed;
 	background-size: cover;
 }
 
 .body-color {
-	/* background-color: #ececec; */
 	background:gray;
-}
+} */
 
 .container-white {
-	background: #ffffff;
-	background-size: cover;
+	position:relative; /* needed for footer positioning*/
+	margin-top:-50px;
+	margin-bottom:-50px;
+	background:#ffffff;
+	height:auto !important; /* real browsers */
+	min-height:100%; /* real browsers */
 }
 
-/* Wrapper for page content to push down footer */
-#wrap {
-  min-height: 100%;
-  height: auto;
-  /* height: 100%; */
-  /* Negative indent footer by its height */
-  margin: 0 auto -50px;
-  /* Pad bottom by footer height */
-  padding: 0 0 50px;
+.container-opaque {
+	position:relative; /* needed for footer positioning*/
+	margin-top:-50px;
+	margin-bottom:-50px;
+	background:none;
+	height:auto !important; /* real browsers */
+	min-height:100%; /* real browsers */
+	opacity:1;
+	color:#FFFFFF
 }
 
-/* Set the fixed height of the footer here */
-#footer-old {
-    /* display: block; */
-    /* position:relative; */
-	height: 50px;
-    /* position:absolute; */
-    /* height:auto; */
-    bottom:0;
+.content {
+	min-height: 100%;
+    height: auto;	
 }
 
 /* Center the footer copyright text */ 
@@ -51,136 +55,3 @@
     margin: auto;
     font-size: 85%;
 }
-
-.custom-fill {
-    /* height:100%; */
-    /* min-height:100%; */
-    background-color:#ffffff;
-    /* margin-top: -20px; */
-}
-
-
-.stretchedMargin {
-    display: relative;
-    position:absolute;
-    height:auto;
-    bottom:0;
-    top:0;
-    left:0;
-    right:0;
-    margin-top:50px;
-/*  	margin-bottom:-50px;
-      margin-right:80px;
-    margin-left:80px;
-    background-color: green;
- */
- }
-
- 
- /* div#container {
-	position:relative; needed for footer positioning
-	margin:0 auto; center, not in IE5
-	width:750px;
-	background:#ffffff;
-	
-	height:auto !important; real browsers
-	height:100%; IE6: treaded as min-height
-
-	min-height:100%; real browsers
-}
-
-div#header {
-	padding:1em;
-	background:#ddd url("../csslayout.gif") 98% 10px no-repeat;
-	border-bottom:6px double gray;
-}
-
-div#content {
-	padding:1em 1em 5em; bottom padding for footer
-}
-
-div#footer {
-	position:absolute;
-	width:100%;
-	bottom:0; stick to bottom
-}
- */
-
-
-/**
- * 100% height layout with header and footer
- * ----------------------------------------------
- * Feel free to copy/use/change/improve
- */
-
-html,body {
-	margin:0;
-	padding:0;
-	height:100%; /* needed for container min-height */
-	background:gray;
-	
-	font-family:arial,sans-serif;
-	font-size:small;
-	color:#666;
-}
-
-h1 { 
-	font:1.5em georgia,serif; 
-	margin:0.5em 0;
-}
-
-h2 {
-	font:1.25em georgia,serif; 
-	margin:0 0 0.5em;
-}
-	h1, h2, a {
-		color:orange;
-	}
-
-p { 
-	line-height:1.5; 
-	margin:0 0 1em;
-}
-
-div#container {
-	position:relative; /* needed for footer positioning*/
-	margin:0 auto; /* center, not in IE5 */
-	width:750px;
-	background:#f0f0f0;
-	
-	height:auto !important; /* real browsers */
-	height:100%; /* IE6: treaded as min-height*/
-
-	min-height:100%; /* real browsers */
-}
-
-div#header {
-	padding:1em;
-	background:#ddd url("../csslayout.gif") 98% 10px no-repeat;
-	border-bottom:6px double gray;
-}
-	div#header p {
-		font-style:italic;
-		font-size:1.1em;
-		margin:0;
-	}
-
-div#content {
-	padding:1em 1em 5em; /* bottom padding for footer */
-}
-	div#content p {
-		text-align:justify;
-		padding:0 1em;
-	}
-
-div#footer {
-	position:absolute;
-	width:100%;
-	bottom:0; /* stick to bottom */
-	background:#ddd;
-	border-top:6px double gray;
-}
-	div#footer p {
-		padding:1em;
-		margin:0;
-	}
