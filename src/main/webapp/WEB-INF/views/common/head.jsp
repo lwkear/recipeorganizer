@@ -27,7 +27,7 @@
 <link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
 
 <!-- Custom styles for this app -->
-<link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
+<%-- <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet"> --%>
 
 <!-- Security tags -->
 <sec:csrfMetaTags />

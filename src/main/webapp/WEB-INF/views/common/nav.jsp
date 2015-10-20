@@ -17,7 +17,8 @@
 	<%-- <sec:authentication var="city" property="principal.userProfile.city" /> --%>
 </c:if>
 
-<nav class="navbar navbar-inverse navbar-default">
+
+<nav class="navbar navbar-inverse navbar-default" style="border-top:0; border-bottom:0; margin-bottom:0;z-index:100">
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">

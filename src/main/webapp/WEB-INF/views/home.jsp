@@ -6,12 +6,14 @@
 
 <%@include file="common/head.jsp" %>
 
+<link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
+
 </head>
 
 <body class="body-image" role="document">
 	<div id="wrap">
 	
-<%@include file="common/nav.jsp" %>
+<%@include file="common/nav.jsp" %>	
 	
 	 	<div class="container" style="opacity:1; color:#FFFFFF">
 			<div class="page-header"> 		
@@ -85,3 +87,42 @@
 				<c:if test="${isAdmin}"><p>User is admin</p></c:if> 
 				<p></p>
 				<p></p> --%>
+				
+				
+				
+<%-- <body class="body-image" role="document">
+	<div id="wrap">
+	
+<%@include file="common/nav.jsp" %>	
+	
+	 	<div class="container" style="opacity:1; color:#FFFFFF">
+			<div class="page-header"> 		
+				<h1><spring:message code="home.title"></spring:message></h1>
+			</div>
+			<div class="lead text-center"> 		
+				<h3><spring:message code="home.description1"></spring:message></h3>
+			</div>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+					<br>
+					<h4><spring:message code="home.description2"></spring:message></h4>
+					<br>
+					<h4><spring:message code="home.description3"></spring:message>
+					<spring:message code="home.description4"></spring:message></h4>
+					<br>
+					<h4><spring:message code="home.description5"></spring:message></h4>
+					<br>			
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2 col-sm-offset-5">
+					<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">Sign Up</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<%@include file="common/footer.jsp" %>
+
+</body>
+				 --%>
