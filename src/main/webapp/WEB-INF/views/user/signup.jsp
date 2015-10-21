@@ -30,11 +30,8 @@
 		</c:if>
 	</spring:bind>
 
-	<div class="container verticalFiller">
-	</div>
-
 	<div class="container container-white">	
-	 	<div class="content col-sm-12">
+	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="signup.title"></spring:message></h3>
 			</div>			

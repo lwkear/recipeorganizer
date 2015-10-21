@@ -14,39 +14,3 @@
 	    </div>
 	</nav>
 </footer>
-
-
-
-<!-- This seemed to work -->
-<%-- <div class="container" style="background:black;margin-bottom: 0; margin-top: 0; border-top:0; border-bottom:0;height:50px">
-	<!-- <nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0; margin-top: 0; border-top:0; border-bottom:0"> -->
-		<!-- <div class="container"> -->
-		    <p class="navbar-center" style="color:#ffffff">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;All Rights Reserved.</p>
-<!-- 		    <div class="navbar-collapse collapse">
-		    	<ul class="nav navbar-nav navbar-right">
-			        <li><a href="?lang=en"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
-			        <li><a href="?lang=fr"><img src=<c:url value="/resources/fr.png" /> class="img-responsive"></a></li>
-			    </ul>
-		    <!-- </div> -->
- -->		<!-- </div> -->
-	<!-- </nav> -->
-</div>
- --%>
- 
- 
- <!-- This also seemed to work -->
- <!-- <div class="container"> -->
-<%-- <div>
-	<nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0; margin-top: 0; border-top:0; border-bottom:0">
-		<!-- <div class="container"> -->
-		    <p class="navbar-center" style="color:#ffffff">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;All Rights Reserved.</p>
- 		    <div class="navbar-collapse collapse">
-		    	<ul class="nav navbar-nav navbar-right">
-			        <li><a href="?lang=en"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
-			        <li><a href="?lang=fr"><img src=<c:url value="/resources/fr.png" /> class="img-responsive"></a></li>
-			    </ul>
-		    </div>
- 	<!-- </div> -->
-	</nav>
-</div>
-  --%>

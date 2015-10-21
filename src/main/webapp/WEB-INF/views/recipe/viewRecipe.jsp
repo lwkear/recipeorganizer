@@ -13,7 +13,7 @@
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
-	 	<div class="content col-sm-12">
+	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3>${recipe.name}</h3>
 			</div>			
@@ -56,11 +56,11 @@
 						</table>
 					</div>
 				</div>
-				<%-- <div class="col-sm-12">
+				<div class="col-sm-12">
 					<h3>Notes</h3>
 					<p>${recipe.notes}</p>
-				</div> --%>
-				<%-- <div class="col-sm-12">
+				</div>
+				<div class="col-sm-12">
 					<div class="col-sm-2">
 						<h4>Source: ${recipe.sources[0].type}</h4>
 					</div>
@@ -86,8 +86,8 @@
 							</c:when>
 						</c:choose>
 					</div>
-				</div> --%>
-				<%-- <div class="col-sm-12">
+				</div>
+				<div class="col-sm-12">
 					<div class="col-sm-3">
 						<h4>Category: ${recipe.category.name}</h4>
 					</div>
@@ -100,8 +100,8 @@
 					<div class="col-sm-3">
 						<h4>Favorite: <c:choose><c:when test="${recipe.favorite}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></h4>
 					</div>
-				</div> --%>
-				<%-- <div class="col-sm-12">
+				</div>
+				<div class="col-sm-12">
 					<div class="col-sm-3">
 						<h4>Last Made: ${recipe.lastMade}</h4>
 					</div>
@@ -119,7 +119,7 @@
 							</ul>
 						</c:if>
 					</div>
-				</div> --%>
+				</div>
 			</div>
 		</div>
 	</div>		

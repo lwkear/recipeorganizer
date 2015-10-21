@@ -12,9 +12,6 @@
 
 <%@include file="common/nav.jsp" %>
 
-	<div class="container verticalFiller">
-	</div>
-
 	<div class="container container-white">
 		<div class="col-sm-12">
 			<div class="page-header">

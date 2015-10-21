@@ -788,9 +788,6 @@
     <spring:bind path="recipe.sources[0].websiteUrl"><c:set var="websiteUrlError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.sources[0].recipeUrl"><c:set var="recipeUrlError">${status.errorMessage}</c:set></spring:bind>
 
-	<div class="container verticalFiller">
-	</div>
-
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		

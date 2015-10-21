@@ -42,44 +42,48 @@ function catSelect() {
 </head>
 
 <body role="document">
-<div id="wrap">
+
 <%@include file="../common/nav.jsp" %>
 
-<!-- <div class="bs-example"> -->
-	<div class="container">
-		<h1>Categories</h1>
-	    <form:form class="form-horizontal" role="form" action="category" method="post" modelAttribute="category">
-	    	<form:hidden id="selID" path="id" value="0"/>
-			<div class="form-group">
-	            <label class="control-label col-sm-4" for="inputCategory">Categories:</label>
-	            <div class="col-sm-3">
-	                <select class="form-control" id="inputCategory" onChange="catSelect()">
-	                	<c:forEach items="${categoryList}" var="category" varStatus="loopCounter">
-	                		<option data-id="${category.id}"><c:out value="${category.name}" /></option>
-	                	</c:forEach>
-	                </select>
-	           </div>
-	        </div>           
-	    	<div class="form-group">
-	            <label class="control-label col-sm-4" for="inputName">Description:</label>
-	            <div class="col-sm-3">
-	                <form:input type="text" class="form-control" id="inputName" placeholder="Name" path="name" />
-	            </div>
-	        </div>
-	        <br>
-	        <div class="form-group">
-	            <div class="col-sm-offset-4 col-sm-3 text-center">
-	                <form:button type="submit" class="btn btn-primary pull-left" name="save" value="Save">Save</form:button>
-	                <form:button type="submit" class="btn btn-primary" name="delete" value="Delete">Delete</form:button>
-	                <input type="reset" class="btn btn-default pull-right" value="Reset">
-	            </div>
-	        </div>
-		</form:form>
+	<div class="container container-white">
+	 	<div class="col-sm-12">
+			<div class="page-header"> 		
+				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
+				<h3>Categories</h3>
+			</div>
+			<div class="row">			
+		    <form:form class="form-horizontal" role="form" action="category" method="post" modelAttribute="category">
+		    	<form:hidden id="selID" path="id" value="0"/>
+				<div class="form-group">
+		            <label class="control-label col-sm-4" for="inputCategory">Categories:</label>
+		            <div class="col-sm-3">
+		                <select class="form-control" id="inputCategory" onChange="catSelect()">
+		                	<c:forEach items="${categoryList}" var="category" varStatus="loopCounter">
+		                		<option data-id="${category.id}"><c:out value="${category.name}" /></option>
+		                	</c:forEach>
+		                </select>
+		           </div>
+		        </div>           
+		    	<div class="form-group">
+		            <label class="control-label col-sm-4" for="inputName">Description:</label>
+		            <div class="col-sm-3">
+		                <form:input type="text" class="form-control" id="inputName" placeholder="Name" path="name" />
+		            </div>
+		        </div>
+		        <br>
+		        <div class="form-group">
+		            <div class="col-sm-offset-4 col-sm-3 text-center">
+		                <form:button type="submit" class="btn btn-primary pull-left" name="save" value="Save">Save</form:button>
+		                <form:button type="submit" class="btn btn-primary" name="delete" value="Delete">Delete</form:button>
+		                <input type="reset" class="btn btn-default pull-right" value="Reset">
+		            </div>
+		        </div>
+			</form:form>
+		</div>
 	</div>
 </div>
 
 <%@include file="../common/footer.jsp" %>
-
 
 <!-- </div> -->
 

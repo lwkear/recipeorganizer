@@ -39,6 +39,8 @@ public class HomeController {
 
 		logger.info("getHome");
 		
+		model.addAttribute("vertFiller", "1");
+		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		String formattedDate = dateFormat.format(date);
@@ -91,6 +93,8 @@ public class HomeController {
 	public String getThankyou(Locale locale, Model model) {
 		
 		logger.info("getThankyou");
+		
+		model.addAttribute("vertFiller", "1");
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);

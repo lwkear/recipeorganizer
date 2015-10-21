@@ -2,6 +2,7 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <sec:authorize var="isAuth" access="isAuthenticated()"/>
 <sec:authorize var="isAdmin" access="hasAuthority('ADMIN')"/>
@@ -17,8 +18,6 @@
 	<%-- <sec:authentication var="city" property="principal.userProfile.city" /> --%>
 </c:if>
 
-
-<!-- <nav class="navbar navbar-inverse navbar-default" style="border-top:0; border-bottom:0; margin-bottom:0;z-index:9999"> ""> -->
 <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
@@ -90,3 +89,9 @@
 		</div>
 	</div>
 </nav>
+
+<c:if test="${empty vertFiller}">
+	<div class="container verticalFiller">
+	</div>
+</c:if>
+

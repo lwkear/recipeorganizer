@@ -132,6 +132,12 @@ code {
 
     <!-- Begin page content -->
     <div class="container container-white">
+
+	<c:set var="requestURI" value="${pageContext.request.requestURI}" />
+	<c:set var="requestURL" value="${pageContext.request.requestURL}" />
+	<p>requestURI: ${requestURI}</p>
+	<p>requestURL: ${requestURL}</p>
+
       <div class="page-header">
         <h1>Sticky footer with fixed navbar</h1>
       </div>
