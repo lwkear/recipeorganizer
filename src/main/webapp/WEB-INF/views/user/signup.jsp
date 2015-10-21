@@ -13,8 +13,9 @@
 <%@include file="../common/nav.jsp" %>
 	
 	<spring:bind path="userDto.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.confirmEmail" htmlEscape="false"><c:set var="confirmEmailError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="userDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="userDto.confirmPassword"><c:set var="confirmError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userDto.confirmPassword"><c:set var="confirmPasswordError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="userDto.firstName"><c:set var="firstNameError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="userDto.lastName"><c:set var="lastNameError">${status.errorMessage}</c:set></spring:bind>
 
@@ -23,7 +24,12 @@
 			<c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
 				<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
 					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
-						<c:set var="confirmError">${error}</c:set>
+						<c:set var="confirmPasswordError">${error}</c:set>
+					</c:forEach>
+				</c:if>
+				<c:if test="${fn:containsIgnoreCase(code, 'EmailMatch')}">
+					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
+						<c:set var="confirmEmailError">${error}</c:set>
 					</c:forEach>
 				</c:if>
 			</c:forEach>
@@ -39,33 +45,38 @@
 				<form:form role="form" method="post" modelAttribute="userDto">
 			        <div class="col-sm-12">
 				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
-							<label class="control-label" id="userLabel" for="username">
+							<label class="control-label" id="emailLabel" for="email">
 								*<spring:message code="signup.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
-							<form:input class="form-control" type="text" id="username" placeholder="Email" path="email" autocomplete="off"/>
+							<form:input class="form-control" type="text" id="email" path="email" autocomplete="off"/>
+						</div>
+				        <div class="form-group col-sm-4 <c:if test="${not empty confirmEmailError}">has-error</c:if>">
+							<label class="control-label" id="confirmEmailLabel" for="confirmEmail">
+								*<spring:message code="signup.confirmemail"></spring:message>&nbsp;&nbsp;${confirmEmailError}</label>
+							<form:input class="form-control" type="text" id="confirmEmail" path="confirmEmail" autocomplete="off"/>
 						</div>
 					</div>
 					<div class="col-sm-12">
 						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
 							<label class="control-label" for="password">
 								*<spring:message code="signup.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
-							<form:input class="form-control" type="password" id="password" placeholder="Password" path="password" autocomplete="off"/>
+							<form:input class="form-control" type="password" id="password" path="password" autocomplete="off"/>
 						</div>
-						<div class="form-group col-sm-4 <c:if test="${not empty confirmError}">has-error</c:if>">
+						<div class="form-group col-sm-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
 							<label class="control-label" for="confirmpassword">
-								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
-							<form:input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" path="confirmPassword" autocomplete="off"/>
+								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmPasswordError}</label>
+							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
 						</div>
 					</div>
 			        <div class="col-sm-12">
 			        	<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty firstNameError}">has-error</c:if>">
 							<label class="control-label" for="firstname">
 								*<spring:message code="signup.firstname"></spring:message>&nbsp;&nbsp;${firstNameError}</label>
-							<form:input class="form-control" type="text" id="firstname" placeholder="First name" path="firstName" autocomplete="off"/>
+							<form:input class="form-control" type="text" id="firstname" path="firstName" autocomplete="off"/>
 						</div>
 			        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
 							<label class="control-label" for="lastname">
 								*<spring:message code="signup.lastname"></spring:message>&nbsp;&nbsp;${lastNameError}</label>
-							<form:input class="form-control" type="text" id="lastname" placeholder="Last name" path="lastName" autocomplete="off"/>
+							<form:input class="form-control" type="text" id="lastname" path="lastName" autocomplete="off"/>
 						</div>
 					</div>
 					<div class="form-group col-sm-12">
@@ -154,7 +165,7 @@ $(function() {
 		
 		<%-- <p><b><c:out value="${emailError}" /></b></p>
 		<p><b><c:out value="${passwordError}" /></b></p>
-		<p><b><c:out value="${confirmError}" /></b></p>
+		<p><b><c:out value="${confirmPasswordError}" /></b></p>
 		<p><b><c:out value="${firstNameError}" /></b></p>
 		<p><b><c:out value="${lastNameError}" /></b></p> --%>
 		

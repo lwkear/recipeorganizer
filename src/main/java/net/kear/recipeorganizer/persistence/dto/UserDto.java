@@ -6,20 +6,25 @@ import javax.validation.GroupSequence;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
+import net.kear.recipeorganizer.validation.EmailMatch;
 import net.kear.recipeorganizer.validation.PasswordMatch;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
-@PasswordMatch
+@PasswordMatch(groups=UserDto.ValidMatch.class)
+@EmailMatch(groups=UserDto.ValidMatch.class)
 public class UserDto implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	//Hibernate validation groups
 	public interface ValidSize {}
+	public interface ValidMatch {}
 	
-	@GroupSequence({Default.class,ValidSize.class})
-	public interface Sequence {}
+	//Hibernate validation sequence
+	@GroupSequence({Default.class,ValidSize.class,ValidMatch.class})
+	public interface UserDtoSequence {}
 	
 	@NotBlank
 	@Size(min=1,max=50, groups=ValidSize.class)	//50
@@ -31,15 +36,20 @@ public class UserDto implements Serializable {
 
 	@NotBlank
 	@Email
-	@Size(min=1,max=50, groups=ValidSize.class)	//50
+	@Size(max=50, groups=ValidSize.class)	//50
 	private String email;
 
 	@NotBlank
-	@Size(min=6, groups=ValidSize.class)
+	@Email
+	@Size(max=50, groups=ValidSize.class)	//50
+	private String confirmEmail;
+
+	@NotBlank
+	@Size(min=6,max=20, groups=ValidSize.class)
 	private String password;
 	
 	@NotBlank
-	@Size(min=6, groups=ValidSize.class)
+	@Size(min=6,max=20, groups=ValidSize.class)
 	private String confirmPassword;
 	
 	public UserDto() {}
@@ -82,6 +92,14 @@ public class UserDto implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getConfirmEmail() {
+		return confirmEmail;
+	}
+
+	public void setConfirmEmail(String confirmEmail) {
+		this.confirmEmail = confirmEmail;
 	}
 
 	public String getPassword() {

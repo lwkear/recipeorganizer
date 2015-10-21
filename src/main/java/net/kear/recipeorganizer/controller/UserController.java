@@ -38,7 +38,8 @@ import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.dto.PasswordDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
-import net.kear.recipeorganizer.persistence.dto.UserDto.Sequence;
+import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
+//import net.kear.recipeorganizer.persistence.dto.UserDto.Sequence;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
@@ -91,7 +92,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
-	public String postSignup(Model model, @ModelAttribute @Validated(Sequence.class) UserDto userDto, 
+	public String postSignup(Model model, @ModelAttribute @Validated(UserDtoSequence.class) UserDto userDto, 
 			BindingResult result, HttpServletRequest request) {
 		logger.info("login POST");
 
