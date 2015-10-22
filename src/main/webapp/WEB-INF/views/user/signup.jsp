@@ -46,7 +46,7 @@
 			        <div class="col-sm-12">
 				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
 							<label class="control-label" id="emailLabel" for="email">
-								*<spring:message code="common.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
+								*<spring:message code="common.email"></spring:message>&nbsp;&nbsp;<small>${emailError}</small></label>
 							<form:input class="form-control" type="text" id="email" path="email" autocomplete="off"/>
 						</div>
 				        <div class="form-group col-sm-4 <c:if test="${not empty confirmEmailError}">has-error</c:if>">
@@ -63,7 +63,7 @@
 						</div>
 						<div class="form-group col-sm-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
 							<label class="control-label" for="confirmpassword">
-								*<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmPasswordError}</label>
+								*<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;<small>${confirmPasswordError}</small></label>
 							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
 						</div>
 					</div>
