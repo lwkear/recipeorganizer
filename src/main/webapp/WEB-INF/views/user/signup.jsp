@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.signupForm.email.focus();">
 
 <%@include file="../common/nav.jsp" %>
 	
@@ -42,11 +42,11 @@
 				<h3><spring:message code="signup.title"></spring:message></h3>
 			</div>			
 			<div class="row">
-				<form:form role="form" method="post" modelAttribute="userDto">
+				<form:form name="signupForm" role="form" method="post" modelAttribute="userDto">
 			        <div class="col-sm-12">
 				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
 							<label class="control-label" id="emailLabel" for="email">
-								*<spring:message code="signup.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
+								*<spring:message code="common.email"></spring:message>&nbsp;&nbsp;${emailError}</label>
 							<form:input class="form-control" type="text" id="email" path="email" autocomplete="off"/>
 						</div>
 				        <div class="form-group col-sm-4 <c:if test="${not empty confirmEmailError}">has-error</c:if>">
@@ -58,12 +58,12 @@
 					<div class="col-sm-12">
 						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
 							<label class="control-label" for="password">
-								*<spring:message code="signup.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
+								*<spring:message code="common.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
 							<form:input class="form-control" type="password" id="password" path="password" autocomplete="off"/>
 						</div>
 						<div class="form-group col-sm-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
 							<label class="control-label" for="confirmpassword">
-								*<spring:message code="signup.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmPasswordError}</label>
+								*<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmPasswordError}</label>
 							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
 						</div>
 					</div>

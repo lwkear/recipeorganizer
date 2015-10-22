@@ -8,33 +8,36 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.password.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
-				<h3>Change Password</h3>
+				<h3><spring:message code="changepswd.title"></spring:message></h3>
 			</div>			
 			<div class="row">
 				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="currentpassword">Current Password</label>
-					<input class="form-control" type="password" id="currentpassword" name="currentpassword" placeholder="Current Password" autocomplete="off"/>
+					<label class="control-label" for="currentpassword">
+						<spring:message code="password.currentpassword"></spring:message></label>
+					<input class="form-control" type="password" id="currentpassword" name="currentpassword" autocomplete="off"/>
 				</div>
 				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="password">New Password</label>
-					<input class="form-control" type="password" id="password" name="password" placeholder="New Password" autocomplete="off"/>
+					<label class="control-label" for="password">
+						<spring:message code="password.newpassword"></spring:message></label>
+					<input class="form-control" type="password" id="password" name="password" autocomplete="off"/>
 				</div>
 				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="confirmpassword">Confirm Password:&nbsp;&nbsp;${confirmError}</label>
-					<input class="form-control" type="password" id="confirmpassword" placeholder="Confirm password" autocomplete="off"/>
+					<label class="control-label" for="confirmpassword">
+						<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
+					<input class="form-control" type="password" id="confirmpassword" autocomplete="off"/>
 				</div>
 				<div class="form-group col-sm-4 col-sm-offset-4">
 				</div>
 		        <div class="form-group col-sm-2 col-sm-offset-5">
-					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" onclick="postPassword()">Submit</button>
+					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" onclick="postPassword()">
+						<spring:message code="common.submit"></spring:message></button>
         		</div>
 			</div>
     	</div>

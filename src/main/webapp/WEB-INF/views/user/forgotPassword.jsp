@@ -8,23 +8,23 @@
 
 </head>
 
-<body role="document" onload="document.profileForm.email.focus();">
+<body role="document" onload="document.forgotForm.email.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
-				<h3>Forgot Password</h3>
+				<h3><spring:message code="forgotpswd.title"></spring:message></h3>
 			</div>			
 			<div class="row">
-				<form:form role="form" name="forgotPassword" modelAttribute="userEmail" method="post">
+				<form:form role="form" name="forgotForm" modelAttribute="userEmail" method="post">
 			        <div class="row">
-						<label class="control-label col-sm-4 col-sm-offset-4" for="email">Email</label>		        
-						<div class="col-sm-12 col-sm-offset-4">
-							<div class="form-group col-sm-4" style="padding-left:0px;">
-								<form:input type="text" class="form-control" id="email" name="email" placeholder="Email" path="email" autocomplete="off"/>
+						<label class="control-label col-sm-5 col-sm-offset-4" for="email">
+							<spring:message code="common.email"></spring:message></label>		        
+						<div class="col-sm-8 col-sm-offset-4">
+							<div class="form-group col-sm-6" style="padding-left:0px;">
+								<form:input type="text" class="form-control" id="email" name="email" path="email" autocomplete="off"/>
 							</div>
 						</div>
 					</div>
@@ -32,7 +32,8 @@
 					</div>
 			        <div class="row">				
 				        <div class="form-group col-sm-2 col-sm-offset-5">
-							<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Submit</button>
+							<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">
+								<spring:message code="common.submit"></spring:message></button>
 		        		</div>
 	        		</div>
 	      		</form:form>
