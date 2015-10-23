@@ -45,50 +45,48 @@
 				<form:form name="signupForm" role="form" method="post" modelAttribute="userDto">
 			        <div class="col-sm-12">
 				        <div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty emailError}">has-error</c:if>">
-							<label class="control-label" id="emailLabel" for="email">
-								*<spring:message code="common.email"></spring:message>&nbsp;&nbsp;<small>${emailError}</small></label>
+							<label class="control-label" id="emailLabel" for="email"><spring:message code="common.email"></spring:message></label>
 							<form:input class="form-control" type="text" id="email" path="email" autocomplete="off"/>
+							<span class="text-danger" id="emailErrMsg">${emailError}</span>
 						</div>
 				        <div class="form-group col-sm-4 <c:if test="${not empty confirmEmailError}">has-error</c:if>">
-							<label class="control-label" id="confirmEmailLabel" for="confirmEmail">
-								*<spring:message code="signup.confirmemail"></spring:message>&nbsp;&nbsp;${confirmEmailError}</label>
+							<label class="control-label" id="confirmEmailLabel" for="confirmEmail"><spring:message code="signup.confirmemail"></spring:message></label>
 							<form:input class="form-control" type="text" id="confirmEmail" path="confirmEmail" autocomplete="off"/>
+							<span class="text-danger">${confirmEmailError}</span>
 						</div>
 					</div>
 					<div class="col-sm-12">
 						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
-							<label class="control-label" for="password">
-								*<spring:message code="common.password"></spring:message>&nbsp;&nbsp;${passwordError}</label>
+							<label class="control-label" for="password"><spring:message code="common.password"></spring:message></label>
 							<form:input class="form-control" type="password" id="password" path="password" autocomplete="off"/>
+							<span class="text-danger">${passwordError}</span>
 						</div>
 						<div class="form-group col-sm-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
-							<label class="control-label" for="confirmpassword">
-								*<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;<small>${confirmPasswordError}</small></label>
+							<label class="control-label" for="confirmpassword"><spring:message code="password.confirmpassword"></spring:message></label>
 							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
+							<span class="text-danger">${confirmPasswordError}</span>
 						</div>
 					</div>
 			        <div class="col-sm-12">
 			        	<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty firstNameError}">has-error</c:if>">
-							<label class="control-label" for="firstname">
-								*<spring:message code="signup.firstname"></spring:message>&nbsp;&nbsp;${firstNameError}</label>
+							<label class="control-label" for="firstname"><spring:message code="signup.firstname"></spring:message></label>
 							<form:input class="form-control" type="text" id="firstname" path="firstName" autocomplete="off"/>
+							<span class="text-danger">${firstNameError}</span>
 						</div>
 			        	<div class="form-group col-sm-4 <c:if test="${not empty lastNameError}">has-error</c:if>">
-							<label class="control-label" for="lastname">
-								*<spring:message code="signup.lastname"></spring:message>&nbsp;&nbsp;${lastNameError}</label>
+							<label class="control-label" for="lastname"><spring:message code="signup.lastname"></spring:message></label>
 							<form:input class="form-control" type="text" id="lastname" path="lastName" autocomplete="off"/>
+							<span class="text-danger">${lastNameError}</span>
 						</div>
 					</div>
-					<div class="form-group col-sm-12">
-					</div>
+					<div class="form-group col-sm-12">&nbsp;</div>
 			        <div class="form-group col-sm-2 col-sm-offset-5">
-						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">
-							<spring:message code="common.submit"></spring:message></button>
+						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	      		</form:form>
 			</div>
-			</div>
 		</div>
+	</div>
 
 <%@include file="../common/footer.jsp" %>
 
@@ -99,7 +97,7 @@
 $(function() {
 
 	$(document)
-	.on('blur', '#username', function(e)
+	.on('blur', '#email', function(e)
 	{
 		e.preventDefault();
 
@@ -124,8 +122,8 @@ $(function() {
 			//TODO: GUI: probably need to check for a success status?
 			console.log('Email ok (not found)');
 			//fix the appearance in case a name was entered in error
-			username.parent('div').removeClass('has-error');
-			$('#userLabel').html("*Email:");
+			username.parent('div').reveClass('has-error');
+			//$('#emailErrMsg').html("");
 		})
 		.fail(function(jqXHR, status, error) {
 			console.log('fail status: '+ jqXHR.status);
@@ -138,7 +136,7 @@ $(function() {
 				console.log('respText: '+ respText);
 				//set the error indicator
 				username.parent('div').addClass('has-error');
-				$('#userLabel').html("Name:&nbsp;&nbsp;" + respText);
+				$('#emailErrMsg').html(respText);
 				return;
 			}
 		});
@@ -168,4 +166,12 @@ $(function() {
 		<p><b><c:out value="${confirmPasswordError}" /></b></p>
 		<p><b><c:out value="${firstNameError}" /></b></p>
 		<p><b><c:out value="${lastNameError}" /></b></p> --%>
-		
+
+<%-- 
+	      		<div class="form-group col-sm-12"></div>
+	      		<div class="form-group col-sm-12">
+	      			<div class="form-group col-sm-4 col-sm-offset-2">
+	      				<small><spring:message code="common.requiredfield"></spring:message></small>
+	      			</div>
+	      		</div>
+--%>
