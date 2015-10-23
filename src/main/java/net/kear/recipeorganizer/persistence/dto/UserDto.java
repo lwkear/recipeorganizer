@@ -3,7 +3,6 @@ package net.kear.recipeorganizer.persistence.dto;
 import java.io.Serializable;
 
 import javax.validation.GroupSequence;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 

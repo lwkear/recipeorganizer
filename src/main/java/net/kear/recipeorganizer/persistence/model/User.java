@@ -45,6 +45,12 @@ public class User implements Serializable {
 	@Column(name = "TOKEN_EXPIRED")
 	private int tokenExpired;
 
+	@Column(name = "LOCKED")
+	private int locked;
+	
+	@Column(name = "EXPIRED")
+	private int expired;
+
 	@ManyToOne(fetch=FetchType.EAGER)
     @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
     	inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
@@ -114,26 +120,50 @@ public class User implements Serializable {
 		return enabled;
 	}
 	
-	public boolean isEnabled() {
-		return (enabled == 1 ? true : false);
-	}
-
 	public void setEnabled(int enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return (enabled == 1 ? true : false);
 	}
 
 	public int getTokenExpired() {
 		return tokenExpired;
 	}
 
-	public boolean isTokenExpired() {
-		return (tokenExpired == 1 ? true : false);
-	}
-	
 	public void setTokenExpired(int tokenExpired) {
 		this.tokenExpired = tokenExpired;
 	}
 	
+	public boolean isTokenExpired() {
+		return (tokenExpired == 1 ? true : false);
+	}
+	
+	public int getLocked() {
+		return locked;
+	}
+
+	public void setLocked(int locked) {
+		this.locked = locked;
+	}
+	
+	public boolean isAccountNonLocked() {
+		return (locked == 1 ? false : true);
+	}
+
+	public int getExpired() {
+		return expired;
+	}
+
+	public void setExpired(int expired) {
+		this.expired = expired;
+	}
+	
+	public boolean isAccountNonExpired() {
+		return (expired == 1 ? false : true);
+	}
+
 	public String getPassword() {
 		return password;
 	}

@@ -396,7 +396,7 @@ public class UserController {
 	
 	//TODO: EXCEPTION: consider using an exception handler instead?
 	//AJAX/JSON request for checking user (email) duplication
-	@RequestMapping(value="/ajax/anon/lookupUser")
+	@RequestMapping(value="/ajax/anon/lookupUser", produces="text/plain")
 	@ResponseBody 
 	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
 		
@@ -420,14 +420,14 @@ public class UserController {
 
 			//getMessage throws an error if the message is not found
 			try {
-				msg = messages.getMessage("Duplicate.user.email", null, locale);
+				msg = messages.getMessage("DuplicateEmail", null, locale);
 			}
 			catch (NoSuchMessageException e) {
 				msg = "";
 			};
 
 			if (msg.isEmpty()) {
-				msg = "Duplicate email.";
+				msg = "Duplicate email";
 			}
 		}
 

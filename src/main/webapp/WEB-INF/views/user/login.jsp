@@ -30,7 +30,7 @@
 					</div>
 					<div class="row">
 						<label class="control-label col-sm-5 col-sm-offset-4" for="password">
-							<spring:message code="common.password"></spring:message></label></label>
+							<spring:message code="common.password"></spring:message></label>
 						<div class="col-sm-8 col-sm-offset-4">
 							<div class="form-group col-sm-6" style="padding-left:0px;">
 								<input class="form-control" type="password" id="password" name="password" autocomplete="off"/>
@@ -58,7 +58,7 @@
 		        		</div>
 	        		</div>
 	
-					<div class="col-sm-12 text-center">
+					<%-- <div class="col-sm-12 text-center">
 						<c:if test="${not empty param.err}">
 							<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 							</c:if>
@@ -68,6 +68,10 @@
 						<c:if test="${not empty param.invalid}">
 							<h4 class="control-label text-info"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 							</c:if>
+					</div> --%>
+					
+					<div class="col-sm-12 text-center">
+						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 					</div>
 					
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
