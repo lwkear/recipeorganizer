@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.persistence.dto;
 import java.io.Serializable;
 
 import javax.validation.GroupSequence;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
@@ -27,7 +28,7 @@ public class UserDto implements Serializable {
 	public interface UserDtoSequence {}
 	
 	@NotBlank
-	@Size(min=1,max=50, groups=ValidSize.class)	//50
+	@Size(max=50, groups=ValidSize.class)	//50
 	private String firstName;
 
 	@NotBlank
