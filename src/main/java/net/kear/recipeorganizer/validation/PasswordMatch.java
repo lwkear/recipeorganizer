@@ -14,7 +14,7 @@ import javax.validation.Payload;
 @Constraint(validatedBy = PasswordMatchValidator.class)
 @Documented
 public @interface PasswordMatch { 
-    String message() default "password mismatch";
+    String message() default "Password mismatch";
     Class<?>[] groups() default {}; 
     Class<? extends Payload>[] payload() default {};
 }

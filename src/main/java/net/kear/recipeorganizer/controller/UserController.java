@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,8 +73,10 @@ public class UserController {
 
     @Autowired
     private JavaMailSender mailSender;
-    
+
+    /*********************/
     /*** Login handler ***/
+    /*********************/
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
 	public String getLogin(Model model) {
 		logger.info("login GET");
@@ -81,6 +84,9 @@ public class UserController {
 		return "user/login";
 	}
 		
+	/****************************/
+	/*** Registration handler ***/
+	/****************************/
 	@RequestMapping(value = "user/signup", method = RequestMethod.GET)
 	public String getSignup(Model model) {
 		logger.info("signup GET");
@@ -101,20 +107,102 @@ public class UserController {
 			return "user/signup";
 		}
 		
+		//double-check the email isn't in use in case user ignored the AJAX error
+		boolean exists = userService.doesUserEmailExist(userDto.getEmail());
+		if (exists) {
+			String msg = messages.getMessage("user.duplicateEmail", null, LocaleContextHolder.getLocale());
+			FieldError err = new FieldError("userDto","email", msg);
+			result.addError(err);
+			logger.info("Validation errors");
+			return "user/signup";
+		}
+		
         User user = userService.addUser(userDto);
 		
-        try {
-        	logger.info("user added - publishing event");
-        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
-        } catch (Exception ex) {
-        	//TODO: GUI: redisplay the signup page with an error message
-        	logger.debug("error encountered: " + ex.getMessage());
-        }
+       	logger.info("user added - publishing event");
+       	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+       	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         
 		return "redirect:/messages/signupMessage";
 	}
 
+	//AJAX/JSON request for checking user (email) duplication
+	@RequestMapping(value="/ajax/anon/lookupUser", produces="text/plain")
+	@ResponseBody 
+	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
+		
+		logger.info("ajax/anon/lookupUser");
+		logger.info("email =" + lookupEmail);
+		
+		//set default response, incl. empty JSON msg
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		//query the DB for the user
+		boolean result = userService.doesUserEmailExist(lookupEmail);
+		
+		logger.info("lookupEmail result=" + result);
+		
+		//name was found
+		if (result) {
+			Locale locale = LocaleContextHolder.getLocale();
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			msg = messages.getMessage("user.duplicateEmail", null, "This email is not available", locale);
+		}
+
+		return msg;
+	}
+
+	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
+    public String confirmRegistration(final Model model, @RequestParam("token") final String token) 
+    		throws Exception {
+		logger.info("confirmRegistration");		
+		
+        final VerificationToken verificationToken = userService.getVerificationToken(token);
+        if (verificationToken == null) {
+        	model.addAttribute("message", messages.getMessage("auth.message.expired", null, LocaleContextHolder.getLocale()));
+        	model.addAttribute("register", true);
+        	return "redirect:/errors/invalidToken.html";
+        }
+
+        final User user = verificationToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            model.addAttribute("message", messages.getMessage("auth.message.expired", null, LocaleContextHolder.getLocale()));
+        	model.addAttribute("register", true);
+        	model.addAttribute("expired", true);
+            model.addAttribute("token", token);
+        	return "redirect:/errors/expiredToken";
+        	
+        }
+
+        //http://localhost:8080/recipeorganizer/confirmRegistration?token=4e2fc56d-cdbc-4141-8374-c06372534491
+        
+        user.setEnabled(1);
+        userService.updateUser(user);
+        
+        logger.info("user updated");
+        
+        //TODO: GUI: figure out how to set messages on the login page
+        //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
+        //return "redirect:/login.html?lang=" + locale.getLanguage();
+        return "redirect:/user/login";
+    }
+	
+	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
+    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String token) {
+        final VerificationToken newToken = userService.recreateUserVerificationToken(token);
+        final User user = userService.getVerificationUser(newToken.getToken());
+        final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
+        mailSender.send(email);
+
+        return "redirect:/messages/signupMessage";
+    }
+	
+	/***********************/
+	/*** Profile handler ***/
+	/***********************/
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
 	public String getProfile(Model model) {
 		logger.info("profile GET");
@@ -149,6 +237,9 @@ public class UserController {
 		return "redirect:/home";
 	}
 
+	/*******************************/
+	/*** Change password handler ***/
+	/*******************************/
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
 	public String getPassword(Model model) {
 		logger.info("password GET");
@@ -188,6 +279,9 @@ public class UserController {
 		return msg;
 	}
 	
+	/*******************************/
+	/*** Forgot password handler ***/
+	/*******************************/
 	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.GET)
 	public String getForgotPassword(Model model) {
 		logger.info("forgotPassword GET");
@@ -220,6 +314,9 @@ public class UserController {
 		return "redirect:/messages/forgotMessage";		
     }
 	
+	/******************************************************/
+	/*** New password handler (follows Forgot Password) ***/
+	/******************************************************/
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.GET)
 	public String getNewPassword(Model model) {
 		logger.info("newPassword GET");
@@ -256,62 +353,6 @@ public class UserController {
 		return "redirect:/user/login";
 	}
 
-	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
-    public String confirmRegistration(final Locale locale, final Model model, @RequestParam("token") final String token) 
-    		throws Exception {
-		logger.info("confirmRegistration");		
-		
-        final VerificationToken verificationToken = userService.getVerificationToken(token);
-        if (verificationToken == null) {
-        	//TODO: GUI: figure out how to set messages on the generic errorData page
-            //final String message = messages.getMessage("auth.message.invalidToken", null, locale);
-            //model.addAttribute("message", message);
-        	model.addAttribute("register", true);
-            //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	//return "redirect:/errors/errorData";
-        	//throw new Exception("invalid registration token");
-        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/errors/invalidToken.html";
-        	
-        }
-
-        final User user = verificationToken.getUser();
-        final Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	//TODO: GUI: figure out how to set messages on the generic errorData page
-            //model.addAttribute("message", messages.getMessage("auth.message.expired", null, locale));
-            //model.addAttribute("expired", true);
-        	model.addAttribute("register", true);
-            model.addAttribute("token", token);
-            //return "redirect:/badUser.html?lang=" + locale.getLanguage();
-        	//return "redirect:/errors/errorData";
-        	//throw new Exception("registration token expired");
-        	//TODO: SECURITY: either throw exception or fix this jsp to work for both registration and password
-        	return "redirect:/errors/expiredToken.html";
-        	
-        }
-
-        user.setEnabled(1);
-        userService.updateUser(user);
-        
-        logger.info("user updated");
-        
-        //TODO: GUI: figure out how to set messages on the login page
-        //model.addAttribute("message", messages.getMessage("message.accountVerified", null, locale));
-        //return "redirect:/login.html?lang=" + locale.getLanguage();
-        return "redirect:/user/login";
-    }
-	
-	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    public String resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String token) {
-        final VerificationToken newToken = userService.recreateUserVerificationToken(token);
-        final User user = userService.getVerificationUser(newToken.getToken());
-        final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        final SimpleMailMessage email = constructResendVerificationTokenEmail(appUrl, request.getLocale(), newToken, user);
-        mailSender.send(email);
-
-        return "redirect:/messages/signupMessage";
-    }
 
 	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
     public String confirmPassword(final Locale locale, final Model model, @RequestParam("id") final long id, @RequestParam("token") final String token) 
@@ -394,46 +435,7 @@ public class UserController {
 		return view;
 	}
 	
-	//TODO: EXCEPTION: consider using an exception handler instead?
-	//AJAX/JSON request for checking user (email) duplication
-	@RequestMapping(value="/ajax/anon/lookupUser", produces="text/plain")
-	@ResponseBody 
-	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
-		
-		logger.info("ajax/anon/lookupUser");
-		logger.info("email =" + lookupEmail);
-		
-		//set default response, incl. empty JSON msg
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		//query the DB for the user
-		boolean result = userService.doesUserEmailExist(lookupEmail);
-		
-		logger.info("lookupEmail result=" + result);
-		
-		//name was found
-		if (result) {
-			
-			Locale locale = LocaleContextHolder.getLocale();
-			response.setStatus(HttpServletResponse.SC_CONFLICT);
 
-			//getMessage throws an error if the message is not found
-			try {
-				msg = messages.getMessage("DuplicateEmail", null, locale);
-			}
-			catch (NoSuchMessageException e) {
-				msg = "";
-			};
-
-			if (msg.isEmpty()) {
-				msg = "Duplicate email";
-			}
-		}
-
-		return msg;
-	}
-	
 	public static class UserEmail {
 		
 		@Email
@@ -473,5 +475,12 @@ public class UserController {
         email.setFrom(env.getProperty("support.email"));
         return email;
     }
+
+	@RequestMapping(value = "errors/expiredToken", method = RequestMethod.GET)
+	public String getExpiredToken(Model model) {
+		logger.info("expiredToken GET");
+		
+		return "errors/expiredToken";
+	}
 }
 

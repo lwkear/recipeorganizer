@@ -46,7 +46,7 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
         userService.createPasswordResetTokenForUser(user, token);
 
         final SimpleMailMessage email = constructEmailMessage(event, user, token);
-        mailSender.send(email);
+        //mailSender.send(email);
     }
 
     private final SimpleMailMessage constructEmailMessage(final OnPasswordResetEvent event, final User user, final String token) {

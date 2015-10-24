@@ -84,12 +84,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages
-	@Override
+	/*@Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         super.addViewControllers(registry);
         registry.addViewController("/errors/expiredToken.html");
         registry.addViewController("/errors/invalidToken.html");
-    }
+    }*/
 
 	/*** file upload configuration ***/
 	@Bean
