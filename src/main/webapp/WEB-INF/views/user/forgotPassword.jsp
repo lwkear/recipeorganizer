@@ -12,20 +12,25 @@
 
 <%@include file="../common/nav.jsp" %>
 
+	<spring:bind path="userEmail.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
+	
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="forgotpswd.title"></spring:message></h3>
 			</div>			
 			<div class="row">
+				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
+					<spring:message code="user.password.resetInstructions"></spring:message>
+				</div>
+				<div class="form-group col-sm-4 col-sm-offset-4">
+				</div>
 				<form:form role="form" name="forgotForm" modelAttribute="userEmail" method="post">
-			        <div class="row">
-						<label class="control-label col-sm-5 col-sm-offset-4" for="email">
-							<spring:message code="common.email"></spring:message></label>		        
-						<div class="col-sm-8 col-sm-offset-4">
-							<div class="form-group col-sm-6" style="padding-left:0px;">
-								<form:input type="text" class="form-control" id="email" name="email" path="email" autocomplete="off"/>
-							</div>
+			        <div class="col-sm-12">
+				        <div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty emailError}">has-error</c:if>">
+							<label class="control-label" id="emailLabel" for="email"><spring:message code="common.email"></spring:message></label>
+							<form:input class="form-control" type="text" id="email" path="email" autocomplete="off"/>
+							<span class="text-danger" id="emailErrMsg">${emailError}</span>
 						</div>
 					</div>
 					<div class="form-group col-sm-4 col-sm-offset-4">
@@ -45,20 +50,3 @@
     
 </body>
 </html>
-
-				<%-- <div class="col-sm-12 text-center">
-					<c:if test="${not empty param.err}">
-						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>failureUrl.</h5>
-					</c:if>
-					<c:if test="${not empty param.time}">
-						<h4 class="control-label text-info"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>expiredURL.</h5>
-					</c:if>
-					<c:if test="${not empty param.invalid}">
-						<h4 class="control-label text-info"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>invalidSessionUrl</h5>
-					</c:if>
-				</div> --%>
-
-				<%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> --%>				

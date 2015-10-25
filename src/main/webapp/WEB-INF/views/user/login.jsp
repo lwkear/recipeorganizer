@@ -57,23 +57,10 @@
 								<spring:message code="common.submit"></spring:message></button>
 		        		</div>
 	        		</div>
-	
-					<%-- <div class="col-sm-12 text-center">
-						<c:if test="${not empty param.err}">
-							<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-							</c:if>
-						<c:if test="${not empty param.time}">
-							<h4 class="control-label text-info"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-							</c:if>
-						<c:if test="${not empty param.invalid}">
-							<h4 class="control-label text-info"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-							</c:if>
-					</div> --%>
-					
 					<div class="col-sm-12 text-center">
 						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 					</div>
-					
+
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	      		</form>
 			</div>

@@ -75,8 +75,7 @@ function postPassword() {
 	})
 	.done(function(data) {
 		console.log('postPassword() done');
-		$("#errormsg").show().html(data);
-		//window.location.href = "<c:url value='/home'></c:url>";
+		//$("#errormsg").show().html(data);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('postPassword() fail');
@@ -100,23 +99,3 @@ $(document).ready(function() {
 
 </script>
 </html>
-
-
-<%-- 				<div class="col-sm-12 text-center">
-					<c:if test="${not empty param.err}">
-						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>failureUrl.</h5>
-					</c:if>
-					<c:if test="${not empty param.time}">
-						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>expiredURL.</h5>
-					</c:if>
-					<c:if test="${not empty param.invalid}">
-						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-						<h5>invalidSessionUrl</h5>
-					</c:if>
-					<h4 class="control-label text-danger" style="display:none" id="confirmError">Confirmation Password does not match</h4>
-					<h4 class="control-label text-danger" style="display:none" id="errormsg">Confirmation Password does not match</h4>
-				</div>
- --%>				
-				<%-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/> --%>

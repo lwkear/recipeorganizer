@@ -25,14 +25,14 @@
 				<form:form name="profileForm" role="form" method="post" modelAttribute="userProfile">
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
-							<label class="control-label" for="city">
-								<spring:message code="profile.city"></spring:message>&nbsp;&nbsp;${cityError}</label>
+							<label class="control-label" for="city"><spring:message code="profile.city"></spring:message></label>
 							<form:input class="form-control" type="text" id="city" name="city" path="city" autocomplete="off"/>
+							<span class="text-danger">${cityError}</span>
 						</div>
 			        	<div class="form-group col-sm-2 <c:if test="${not empty stateError}">has-error</c:if>">
-							<label class="control-label" for="state">
-								<spring:message code="profile.state"></spring:message>&nbsp;&nbsp;${stateError}</label>
+							<label class="control-label" for="state"><spring:message code="profile.state"></spring:message></label>
 							<form:input class="form-control" type="text" id="state" path="state" autocomplete="off"/>
+							<span class="text-danger">${stateError}</span>
 						</div>
 					</div>
 					<div class="col-sm-12">
@@ -64,9 +64,9 @@
 					</div>
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-8 col-sm-offset-2 <c:if test="${not empty interestsError}">has-error</c:if>">
-							<label class="control-label" for="interests">
-								<spring:message code="profile.interests"></spring:message>&nbsp;&nbsp;${interestsError}</label>
-							<form:textarea class="form-control" rows="4" id="interests" path="interests"></form:textarea>				
+							<label class="control-label" for="interests"><spring:message code="profile.interests"></spring:message></label>
+							<form:textarea class="form-control" rows="4" id="interests" path="interests"></form:textarea>
+							<span class="text-danger">${interestsError}</span>
 						</div>
 					</div>
 					<div class="form-group col-sm-12">
@@ -100,19 +100,4 @@ $(function() {
 });
 
 </script>
-
 </html>
-
-<%-- 
-		<spring:hasBindErrors name="user">
-	    <c:set var="errorCnt">${errors.errorCount}</c:set>
-	    <p><b># of Errors:${errorCnt}</b></p>
-	    <p></p>
-		<c:forEach var="error" items="${errors.allErrors}">
-			<b><c:out value="${error}" /></b>
-			<p></p>
-		</c:forEach>
-		</spring:hasBindErrors>
-		<p></p>
-		<p></p>
- --%>
