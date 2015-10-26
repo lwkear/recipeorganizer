@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.EmailSender;
 
 @Component
 public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
@@ -24,14 +25,17 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 	@Autowired
     private UserService userService;
 
-    @Autowired
+	@Autowired
+	private EmailSender emailSender;
+	
+    /*@Autowired
     private MessageSource messages;
-
+    
     @Autowired
     private JavaMailSender mailSender;
 
     @Autowired
-    private Environment env;
+    private Environment env;*/
 
     @Override
     public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
@@ -45,11 +49,11 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         final String token = UUID.randomUUID().toString();
         userService.createUserVerificationToken(user, token);
 
-        final SimpleMailMessage email = constructEmailMessage(event, user, token);
+        //final SimpleMailMessage email = constructEmailMessage(event, user, token);
         //mailSender.send(email);	TODO: SECURITY: don't forget to add this back in production
     }
 
-    private final SimpleMailMessage constructEmailMessage(final OnRegistrationCompleteEvent event, final User user, final String token) {
+    /*private final SimpleMailMessage constructEmailMessage(final OnRegistrationCompleteEvent event, final User user, final String token) {
     	logger.debug("constructEmailMessage");
     	
         final String recipientAddress = user.getEmail();
@@ -62,5 +66,21 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         email.setText(message + " \r\n" + confirmationUrl);
         email.setFrom(env.getProperty("support.email"));
         return email;
-    }
+    }*/
+    
+    private final void sendEmail(final OnRegistrationCompleteEvent event, final User user, final String token) {
+    	logger.debug("constructEmailMessage");
+    	
+    	String confirmationUrl = event.getAppUrl() + "/confirmRegistration?token=" + token;
+    	
+    	emailSender.setUser(user);
+    	emailSender.setLocale(event.getLocale());
+    	emailSender.setSubjectCode("user.email.signupSubject");
+    	emailSender.setMessageCode("user.email.signupSuccess");
+    	
+    	emailSender.constructTokenEmailMessage(confirmationUrl, token);
+    	
+    	
+        
+    }    
 }
