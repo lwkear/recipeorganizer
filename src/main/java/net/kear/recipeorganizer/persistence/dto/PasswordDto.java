@@ -2,50 +2,58 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 //import net.kear.recipeorganizer.validation.PasswordMatch;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 //@PasswordMatch
 public class PasswordDto implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
 	@NotBlank
-	@NotEmpty
 	@Size(min=6)
-	private String newPassword;
-	
-	@NotNull
+	private String currentPassword;
+
 	@NotBlank
-	@NotEmpty
+	@Size(min=6)
+	private String password;
+	
+	@NotBlank
 	@Size(min=6)
 	private String confirmPassword;
 	
 	public PasswordDto() {}
 	
 	public PasswordDto(PasswordDto password) {
-		this.newPassword = password.newPassword;
+		this.currentPassword = password.currentPassword;
+		this.password = password.password;
 		this.confirmPassword = password.confirmPassword;
 	}
 	
-	public PasswordDto(String newPassword, String confirmPassword) {
+	public PasswordDto(String currentPassword, String password, String confirmPassword) {
 		super();
-		this.newPassword = newPassword;
+		this.currentPassword = currentPassword;
+		this.password = password;
 		this.confirmPassword = confirmPassword;
 	}
 
-	public String getNewPassword() {
-		return newPassword;
+	public String getCurrentPassword() {
+		return currentPassword;
 	}
 
-	public void setNewPassword(String password) {
-		this.newPassword = password;
+	public void setCurrentPassword(String password) {
+		this.currentPassword = password;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	public String getConfirmPassword() {
@@ -58,7 +66,7 @@ public class PasswordDto implements Serializable {
 
     @Override
     public int hashCode() {
-        return newPassword.hashCode();
+        return password.hashCode();
     }	
 
     @Override
@@ -73,6 +81,10 @@ public class PasswordDto implements Serializable {
             return false;
         }
         return true;
-    }	
-	
+    }
+
+	@Override
+	public String toString() {
+		return "PasswordDto [currentPassword=" + currentPassword + ", password=" + password + ", confirmPassword=" + confirmPassword + "]";
+	}
 }

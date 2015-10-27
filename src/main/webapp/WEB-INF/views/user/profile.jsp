@@ -36,11 +36,9 @@
 						</div>
 					</div>
 					<div class="col-sm-12">
-						<div class="form-group col-sm-8 col-sm-offset-2">
+						<div class="col-sm-8 col-sm-offset-2">
 							<label class="control-label"><spring:message code="profile.age"></spring:message></label>
 						</div>
-					</div>
-					<div class="col-sm-12">
 						<div class="form-group col-sm-8 col-sm-offset-2" id="ageGroup">
 							<div class="radio-inline">
 								<form:radiobutton value="1" id="age1" path="age"/>&lt;18

@@ -17,36 +17,6 @@
 			<div class="page-header">
 				<h3><spring:message code="about.title"></spring:message></h3>
 			</div>
-        <p>Some content1</p>
-        <p>Some content2</p>
-        <p>Some content3</p>
-        <p>Some content4</p>
-        <p>Some content5</p>
-        <p>Some content6</p>
-        <p>Some content7</p>
-        <p>Some content8</p>
-        <p>Some content9</p>
-        <p>Some content10</p>
-        <p>Some content1</p>
-        <p>Some content2</p>
-        <p>Some content3</p>
-        <p>Some content4</p>
-        <p>Some content5</p>
-        <p>Some content6</p>
-        <p>Some content7</p>
-        <p>Some content8</p>
-        <p>Some content9</p>
-        <p>Some content20</p>
-        <p>Some content1</p>
-        <p>Some content2</p>
-        <p>Some content3</p>
-        <p>Some content4</p>
-        <p>Some content5</p>
-        <p>Some content6</p>
-        <p>Some content7</p>
-        <p>Some content8</p>
-        <p>Some content9</p>
-        <p>Some content30</p>
 		</div>
 	</div>
 

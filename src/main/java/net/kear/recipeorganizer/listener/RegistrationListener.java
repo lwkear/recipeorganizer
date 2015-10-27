@@ -6,10 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.MessageSource;
-import org.springframework.core.env.Environment;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
@@ -28,19 +24,11 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 	@Autowired
 	private EmailSender emailSender;
 	
-    /*@Autowired
-    private MessageSource messages;
-    
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private Environment env;*/
-
     @Override
     public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
     	logger.debug("onApplicationEvent");
-        this.confirmRegistration(event);
+        
+		this.confirmRegistration(event);
     }
 
     private void confirmRegistration(final OnRegistrationCompleteEvent event) {
@@ -49,38 +37,12 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         final String token = UUID.randomUUID().toString();
         userService.createUserVerificationToken(user, token);
 
-        //final SimpleMailMessage email = constructEmailMessage(event, user, token);
-        //mailSender.send(email);	TODO: SECURITY: don't forget to add this back in production
-    }
-
-    /*private final SimpleMailMessage constructEmailMessage(final OnRegistrationCompleteEvent event, final User user, final String token) {
-    	logger.debug("constructEmailMessage");
-    	
-        final String recipientAddress = user.getEmail();
-        final String subject = messages.getMessage("user.email.signupSubject", null, event.getLocale());
-        final String confirmationUrl = event.getAppUrl() + "/confirmRegistration?token=" + token;
-        final String message = messages.getMessage("user.email.signupSuccess", null, event.getLocale());
-        final SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + " \r\n" + confirmationUrl);
-        email.setFrom(env.getProperty("support.email"));
-        return email;
-    }*/
-    
-    private final void sendEmail(final OnRegistrationCompleteEvent event, final User user, final String token) {
-    	logger.debug("constructEmailMessage");
-    	
     	String confirmationUrl = event.getAppUrl() + "/confirmRegistration?token=" + token;
     	
     	emailSender.setUser(user);
     	emailSender.setLocale(event.getLocale());
     	emailSender.setSubjectCode("user.email.signupSubject");
     	emailSender.setMessageCode("user.email.signupSuccess");
-    	
-    	emailSender.constructTokenEmailMessage(confirmationUrl, token);
-    	
-    	
-        
-    }    
+    	emailSender.sendTokenEmailMessage(confirmationUrl);
+    }
 }

@@ -16,7 +16,7 @@
 				<h3>${title}</h3>
 			</div>			
 			<div class="row">
-				<div class="span12 center alert alert-success" style="text-align: center !important;">
+				<div class="span12 center alert alert-success text-center">
 					<span>${message}</span>
 				</div>
 			</div>

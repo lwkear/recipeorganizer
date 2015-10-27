@@ -65,7 +65,7 @@ public class ErrorController {
 		
 		Integer maxInactive = session.getMaxInactiveInterval();
 		
-		logger.info("getSessionTimeout returned" + maxInactive + " seconds");
+		logger.info("getSessionTimeout returned " + maxInactive + " seconds");
 		
 		return maxInactive;
 	}

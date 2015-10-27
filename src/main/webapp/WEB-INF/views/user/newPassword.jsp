@@ -31,16 +31,21 @@
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="newpswd.title"></spring:message></h3>
-			</div>			
+			</div>
 			<div class="row">
+				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
+					<spring:message code="user.password.resetInstructions"></spring:message>
+				</div>
 				<form:form name="passswordForm" role="form" modelAttribute="newPassword" method="post">
 					<div class="col-sm-12">
-						<div class="form-group col-sm-4 col-sm-offset-2 <c:if test="${not empty passwordError}">has-error</c:if>">
+						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty passwordError}">has-error</c:if>">
 							<label class="control-label" for="password"><spring:message code="common.password"></spring:message></label>
 							<form:input class="form-control" type="password" id="password" path="password" autocomplete="off"/>
 							<span class="text-danger">${passwordError}</span>
 						</div>
-						<div class="form-group col-sm-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
+					</div>
+					<div class="col-sm-12">
+						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
 							<label class="control-label" for="confirmpassword"><spring:message code="password.confirmpassword"></spring:message></label>
 							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
 							<span class="text-danger">${confirmPasswordError}</span>
@@ -50,6 +55,7 @@
 			        <div class="form-group col-sm-2 col-sm-offset-5">
 						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
+	        		<form:hidden path="userId" />
 	      		</form:form>
 			</div>
 			<div class="col-sm-12 text-center">

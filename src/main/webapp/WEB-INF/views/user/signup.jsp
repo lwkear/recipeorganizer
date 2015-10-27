@@ -118,12 +118,14 @@ $(function() {
 				email : emailStr
 			}
 		})
-		.done(function(data) {
+		.done(function(jqXHR, status, msg) {
 			//TODO: GUI: probably need to check for a success status?
-			console.log('Email ok (not found)');
+			console.log('done xhr.status: '+ jqXHR.status);
+			console.log('done status: '+ status);
+			console.log('done msg: '+ msg);
 			//fix the appearance in case a name was entered in error
-			username.parent('div').reveClass('has-error');
-			//$('#emailErrMsg').html("");
+			username.parent('div').removeClass('has-error');
+			$('#emailErrMsg').html("");
 		})
 		.fail(function(jqXHR, status, error) {
 			console.log('fail status: '+ jqXHR.status);

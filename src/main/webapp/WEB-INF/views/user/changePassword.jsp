@@ -8,9 +8,25 @@
 
 </head>
 
-<body role="document" onload="document.password.focus();">
+<body role="document" onload="document.passswordForm.currentpassword.focus();">
 
 <%@include file="../common/nav.jsp" %>
+
+	<spring:bind path="passwordDto.currentPassword"><c:set var="currentPasswordError">${status.errorMessage}</c:set></spring:bind>	
+	<spring:bind path="passwordDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="passwordDto.confirmPassword"><c:set var="confirmPasswordError">${status.errorMessage}</c:set></spring:bind>
+
+	<spring:bind path="passwordDto">
+		<c:if test="${status.error}">
+			<c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
+				<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
+					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
+						<c:set var="confirmPasswordError">${error}</c:set>
+					</c:forEach>
+				</c:if>
+			</c:forEach>
+		</c:if>
+	</spring:bind>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
@@ -18,27 +34,34 @@
 				<h3><spring:message code="changepswd.title"></spring:message></h3>
 			</div>			
 			<div class="row">
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="currentpassword">
-						<spring:message code="password.currentpassword"></spring:message></label>
-					<input class="form-control" type="password" id="currentpassword" name="currentpassword" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="password">
-						<spring:message code="password.newpassword"></spring:message></label>
-					<input class="form-control" type="password" id="password" name="password" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-					<label class="control-label" for="confirmpassword">
-						<spring:message code="password.confirmpassword"></spring:message>&nbsp;&nbsp;${confirmError}</label>
-					<input class="form-control" type="password" id="confirmpassword" autocomplete="off"/>
-				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-				</div>
-		        <div class="form-group col-sm-2 col-sm-offset-5">
-					<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" onclick="postPassword()">
-						<spring:message code="common.submit"></spring:message></button>
-        		</div>
+				<form:form name="passswordForm" role="form" modelAttribute="passwordDto" method="post">
+					<div class="col-sm-12">
+						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty currentPasswordError}">has-error</c:if>">
+							<label class="control-label" for="password"><spring:message code="password.currentpassword"></spring:message></label>
+							<form:input class="form-control" type="password" id="currentPassword" path="currentPassword" autocomplete="off"/>
+							<span class="text-danger">${currentPasswordError}</span>
+						</div>
+					</div>
+					<div class="col-sm-12">
+						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty passwordError}">has-error</c:if>">
+							<label class="control-label" for="password"><spring:message code="common.password"></spring:message></label>
+							<form:input class="form-control" type="password" id="password" path="password" autocomplete="off"/>
+							<span class="text-danger">${passwordError}</span>
+						</div>
+					</div>
+					<div class="col-sm-12">
+						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty confirmPasswordError}">has-error</c:if>">
+							<label class="control-label" for="confirmpassword"><spring:message code="password.confirmpassword"></spring:message></label>
+							<form:input class="form-control" type="password" id="confirmpassword" path="confirmPassword" autocomplete="off"/>
+							<span class="text-danger">${confirmPasswordError}</span>
+						</div>
+					</div>
+					<div class="form-group col-sm-12">&nbsp;</div>
+			        <div class="form-group col-sm-2 col-sm-offset-5">
+						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
+	        		</div>
+	        		<%-- <form:hidden path="userId" /> --%>
+	      		</form:form>
 			</div>
     	</div>
 	</div>
@@ -47,7 +70,7 @@
 
 </body>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 
 function postPassword() {
 	var oldpass = $("#currentpassword").val();
@@ -97,5 +120,6 @@ $(document).ready(function() {
     });
 });
 
-</script>
+</script> -->
+
 </html>

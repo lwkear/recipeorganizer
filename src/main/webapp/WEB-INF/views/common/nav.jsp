@@ -11,7 +11,6 @@
 <sec:authorize var="isGuest" access="hasAnyAuthority('GUEST','AUTHOR','EDITOR','ADMIN')"/>
 
 <c:if test="${isAuth}">
-	<sec:authentication var="email" property="principal.username" />
 	<sec:authentication var="firstname" property="principal.firstName"/>
 	<sec:authentication var="lastname" property="principal.lastName" />
 	<!-- TODO: GUI: figure out how to retrieve the user profile within the principal security object -->

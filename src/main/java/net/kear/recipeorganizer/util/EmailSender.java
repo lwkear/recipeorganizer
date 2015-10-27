@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -55,30 +57,80 @@ public class EmailSender {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
-	public SimpleMailMessage constructTokenEmailMessage(String msgLink, String token) {
-    	logger.debug("constructTokenEmailMessage");
+
+	public void sendSimpleEmailMessage() throws MailException {
+    	logger.debug("sendSimpleEmailMessage");
     	
         String subject = messages.getMessage(subjCode, null, locale);
-        String link = msgLink + token;
-        String message = "";
-        
-        if (msgCode != null) {
-        	message = messages.getMessage(msgCode, null, locale);
+        String message = getMessage();
+        if (message == null) {
+        	throw new MailSendException("No message content");
         }
-        else {
-	        for (String code : msgCodes) {
-	        	String msg = messages.getMessage(code, null, locale);
-	        	message += msg + " \r\n ";
-	        }
-    	}
         
         final SimpleMailMessage email = new SimpleMailMessage();
         
         email.setTo(user.getEmail());
         email.setSubject(subject);
-        email.setText(message + " \r\n" + link);
+        email.setText(message);
         email.setFrom(env.getProperty("support.email"));
-        return email;
-    }	
+       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+        
+		//throw new MailSendException("sendSimpleEmailMessage forced error");
+
+		//TODO: EMAIL: not sure if variables need to be initialized???
+		//initialize();
+		
+        //return true;        
+    }
+
+	public void sendTokenEmailMessage(String msgLink) throws MailException {
+    	logger.debug("sendTokenEmailMessage");
+    	
+        String subject = messages.getMessage(subjCode, null, locale);
+        String message = getMessage();
+        if (message == null) {
+        	throw new MailSendException("No message content");
+        }
+        
+        final SimpleMailMessage email = new SimpleMailMessage();
+        
+        email.setTo(user.getEmail());
+        email.setSubject(subject);
+        email.setText(message + " \r\n\r\n" + msgLink);
+        email.setFrom(env.getProperty("support.email"));
+       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+        
+		//throw new MailSendException("sendTokenEmailMessage forced error");
+
+		//TODO: EMAIL: not sure if variables need to be initialized???
+		//initialize();
+		
+        //return true;        
+    }
+	
+	private String getMessage() {
+		String message = "";
+		
+        if (msgCode != null) {
+        	message = messages.getMessage(msgCode, null, locale);
+        }
+        else {
+        	if (msgCodes != null && !msgCodes.isEmpty() ) {
+		        for (String code : msgCodes) {
+		        	String msg = messages.getMessage(code, null, locale);
+		        	message += msg + " \r\n\r\n ";
+		        }
+        	}
+    	}
+		
+		return message;
+	}
+	
+	private void initialize() {
+	    subjCode = "";
+	    msgCode = "";
+	    msgCodes.clear();
+	    locale = null;
+	    user = null;
+	}
 }

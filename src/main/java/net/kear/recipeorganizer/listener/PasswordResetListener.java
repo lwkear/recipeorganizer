@@ -6,15 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.MessageSource;
-import org.springframework.core.env.Environment;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.EmailSender;
 
 @Component
 public class PasswordResetListener implements ApplicationListener<OnPasswordResetEvent> {
@@ -24,15 +21,9 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
 	@Autowired
     private UserService userService;
 
-    @Autowired
-    private MessageSource messages;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private Environment env;
-
+	@Autowired
+	private EmailSender emailSender;
+	
     @Override
     public void onApplicationEvent(final OnPasswordResetEvent event) {
     	logger.debug("onApplicationEvent");
@@ -45,21 +36,12 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
         final String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
-        final SimpleMailMessage email = constructEmailMessage(event, user, token);
-        //mailSender.send(email);
-    }
-
-    private final SimpleMailMessage constructEmailMessage(final OnPasswordResetEvent event, final User user, final String token) {
-    	logger.debug("constructEmailMessage");
-        final String recipientAddress = user.getEmail();
-        final String subject = messages.getMessage("user.password.resetSubject", null, event.getLocale());
-        final String confirmationUrl = event.getAppUrl() + "/confirmPassword?id=" + user.getId() + "&token=" + token;
-        final String message = messages.getMessage("user.password.resetMessage", null, event.getLocale());
-        final SimpleMailMessage email = new SimpleMailMessage();
-        email.setTo(recipientAddress);
-        email.setSubject(subject);
-        email.setText(message + " \r\n" + confirmationUrl);
-        email.setFrom(env.getProperty("support.email"));
-        return email;
+        String confirmationUrl = event.getAppUrl() + "/confirmPassword?id=" + user.getId() + "&token=" + token;
+    	
+    	emailSender.setUser(user);
+    	emailSender.setLocale(event.getLocale());
+    	emailSender.setSubjectCode("user.password.resetSubject");
+    	emailSender.setMessageCode("user.password.resetMessage");
+    	emailSender.sendTokenEmailMessage(confirmationUrl);
     }
 }

@@ -23,8 +23,6 @@
 				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
 					<spring:message code="user.password.resetInstructions"></spring:message>
 				</div>
-				<div class="form-group col-sm-4 col-sm-offset-4">
-				</div>
 				<form:form role="form" name="forgotForm" modelAttribute="userEmail" method="post">
 			        <div class="col-sm-12">
 				        <div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty emailError}">has-error</c:if>">
@@ -33,8 +31,7 @@
 							<span class="text-danger" id="emailErrMsg">${emailError}</span>
 						</div>
 					</div>
-					<div class="form-group col-sm-4 col-sm-offset-4">
-					</div>
+					<div class="form-group col-sm-12">&nbsp;</div>
 			        <div class="row">				
 				        <div class="form-group col-sm-2 col-sm-offset-5">
 							<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">

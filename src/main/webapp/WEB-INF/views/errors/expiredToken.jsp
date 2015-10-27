@@ -14,14 +14,14 @@
 	 	<div class="col-sm-12">
 			<div class="page-header">
 				<c:if test="${register}"> 		
-					<h3><spring:message code="expired.registration.title"></spring:message></h3>
+					<h3><spring:message code="registration.expired.title"></spring:message></h3>
 				</c:if>
 				<c:if test="${password}">
-					<h3><spring:message code="expired.password.title"></spring:message></h3>
+					<h3><spring:message code="password.expired.title"></spring:message></h3>
 				</c:if>
 			</div>			
 			<div class="row">
-				<div class="span12 center alert alert-danger" style="text-align: center !important;">
+				<div class="span12 center alert alert-danger text-center">
 					<span>${message}</span>
 				</div>
 				<div class="form-group col-sm-12">&nbsp;</div>

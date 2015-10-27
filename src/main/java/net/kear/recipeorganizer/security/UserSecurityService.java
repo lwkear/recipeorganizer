@@ -65,15 +65,6 @@ public class UserSecurityService implements UserDetailsService {
 			return getEmail();
 		}
 		
-		//TODO: SECURITY: return correct values for these 3 methods
-		/*public boolean isAccountNonExpired() {
-			return true;
-		}
-
-		public boolean isAccountNonLocked() {
-			return true;
-		}*/
-
 		public boolean isCredentialsNonExpired() {
 			return true;
 		}
