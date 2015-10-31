@@ -10,6 +10,7 @@
 	<properties>
 		<java-version>1.7</java-version>
 		<org.springframework-version>4.1.6.RELEASE</org.springframework-version>
+		<webflow-version>2.4.2.RELEASE</webflow-version>
 		<hibernate-version>4.3.10.Final</hibernate-version>
 		<org.aspectj-version>1.6.10</org.aspectj-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
@@ -224,6 +225,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<version>4.0.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.webflow</groupId>
+			<artifactId>spring-webflow</artifactId>
+			<version>${webflow-version}</version>
 		</dependency>
 	</dependencies>
     <build>

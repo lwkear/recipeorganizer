@@ -3,7 +3,6 @@ package net.kear.recipeorganizer.persistence.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
-import java.sql.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,15 +20,15 @@ import javax.persistence.GenerationType;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 
+import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.util.TagList;
+
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.hibernate.validator.constraints.*;
 import org.springframework.util.AutoPopulatingList;
-
-import net.kear.recipeorganizer.persistence.model.Instruction;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
-import net.kear.recipeorganizer.util.TagList;
 
 @Entity
 @Table(name = "RECIPE")
@@ -51,9 +50,7 @@ public class Recipe implements Serializable {
 	private User user;
 	
 	@Column(name = "NAME", nullable = false)
-	@NotNull
 	@NotBlank 
-	@NotEmpty 
 	@Size(max=250)
 	private String name;
 
@@ -69,27 +66,15 @@ public class Recipe implements Serializable {
 	@Size(max=100)
 	private String servings;
 
+	@Column(name = "PREP_TIME")
+	private int prepTime;
+	
 	@Column(name = "NOTES")
 	@Lob
 	private String notes;
 
-	@Column(name = "RATING")
-	@Min(0)
-	@Max(5)
-	private int rating;
-
-	@Column(name = "FAVORITE")
-	private boolean favorite;
-
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
-
-	@Column(name = "LAST_MADE")
-	@Past
-	private Date lastMade;
-
-	@Column(name = "MADE_COUNT")
-	private int madeCount;
 
 	@Column(name = "PHOTO")
 	private String photo;
@@ -107,13 +92,12 @@ public class Recipe implements Serializable {
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
-	@NotNull @Size(min=1)	
+	@Size(min=1)	
 	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
 	
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
-	@NotNull
 	@Size(min=1)	
 	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 
@@ -124,8 +108,9 @@ public class Recipe implements Serializable {
 	
 	public Recipe() {}
 
-	public Recipe(User user, String name, String background, String description, Category category, String servings, String notes, int rating, boolean favorite, boolean allowShare, Date lastMade,			
-			int madeCount, String photo, List<String> tags, List<Instruction> instructions, List<RecipeIngredient> recipeIngredients, List<Source> sources) {
+	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepTime, String notes, 
+				boolean allowShare, String photo, List<String> tags, List<Instruction> instructions, List<RecipeIngredient> recipeIngredients, 
+				List<Source> sources) {
 		super();
 		this.user = user;
 		this.name = name;
@@ -133,12 +118,9 @@ public class Recipe implements Serializable {
 		this.description = description;
 		this.category = category;
 		this.servings = servings;
+		this.prepTime = prepTime;
 		this.notes = notes;
-		this.rating = rating;
-		this.favorite = favorite;
 		this.allowShare = allowShare;
-		this.lastMade = lastMade;
-		this.madeCount = madeCount;
 		this.photo = photo;
 		this.tags = tags;
 		this.instructions = instructions;
@@ -202,28 +184,20 @@ public class Recipe implements Serializable {
 		this.servings = servings;
 	}
 
+	public int getPrepTime() {
+		return prepTime;
+	}
+
+	public void setPrepTime(int prepTime) {
+		this.prepTime = prepTime;
+	}
+
 	public String getNotes() {
 		return notes;
 	}
 
 	public void setNotes(String notes) {
 		this.notes = notes;
-	}
-
-	public int getRating() {
-		return rating;
-	}
-
-	public void setRating(int rating) {
-		this.rating = rating;
-	}
-
-	public Boolean getFavorite() {
-		return favorite;
-	}
-
-	public void setFavorite(Boolean favorite) {
-		this.favorite = favorite;
 	}
 
 	public Boolean getAllowShare() {
@@ -234,22 +208,6 @@ public class Recipe implements Serializable {
 		this.allowShare = allowShare;
 	}
 
-	public Date getLastMade() {
-		return lastMade;
-	}
-
-	public void setLastMade(Date lastMade) {
-		this.lastMade = lastMade;
-	}
-
-	public int getMadeCount() {
-		return madeCount;
-	}
-
-	public void setMadeCount(int madeCount) {
-		this.madeCount = madeCount;
-	}
-
 	public String getPhoto() {
 		return photo;
 	}
@@ -258,10 +216,6 @@ public class Recipe implements Serializable {
 		this.photo = photo;
 	}
 	
-	public void setFavorite(boolean favorite) {
-		this.favorite = favorite;
-	}
-
 	public void setAllowShare(boolean allowShare) {
 		this.allowShare = allowShare;
 	}
@@ -333,26 +287,12 @@ public class Recipe implements Serializable {
 	public void addSource(Source source) {
 		this.sources.add(source);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Recipe [id=" + id 
-				+ ", user=" + user
-				+ ", name=" + name 
-				+ ", background=" + background 
-				+ ", description=" + description 
-				+ ", category=" + category
-				+ ", servings=" + servings
-				+ ", notes=" + notes 
-				+ ", rating=" + rating 
-				+ ", favorite=" + favorite 
-				+ ", allowShare=" + allowShare 
-				+ ", lastMade=" + lastMade 
-				+ ", madeCount=" + madeCount 
-				+ ", photo=" + photo
-				+ ", tags=" + tags 
-				+ ", instructions=" + instructions 
-				+ ", recipeIngredients=" + recipeIngredients
-				+ ", source=" + sources + "]";
-	}	
+		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
+				", servings=" + servings + ", prepTime=" + prepTime + ", notes=" + notes + ", allowShare=" + allowShare + ", photo=" + photo +
+				", tags=" + tags + ", category=" + category + ", instructions=" + instructions + ", recipeIngredients=" + recipeIngredients + 
+				", sources=" + sources + "]";
+	}
 }

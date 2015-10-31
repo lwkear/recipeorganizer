@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
@@ -35,9 +36,11 @@ public class HomeController {
 	private UserInfo userInfo;
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
-	public String getHome(Locale locale, Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-
+	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("getHome");
+
+		//tell the page to not include the white vertical filler
+		model.addAttribute("vertFiller", "1");
 		
 		/*Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -75,8 +78,7 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/about", method = RequestMethod.GET)
-	public String getAbout(Locale locale, Model model, HttpSession session) {
-		
+	public String getAbout(Model model, HttpSession session) {
 		logger.info("getAbout");
 		
 		/*Date date = new Date();
@@ -88,9 +90,11 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/thankyou", method = RequestMethod.GET)
-	public String getThankyou(Locale locale, Model model) {
-		
+	public String getThankyou(Model model) {
 		logger.info("getThankyou");
+
+		//tell the page to not include the white vertical filler
+		model.addAttribute("vertFiller", "1");
 		
 		/*Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
@@ -101,9 +105,20 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/testpage", method = RequestMethod.GET)
-	public String getTestpage(Locale locale, Model model, HttpSession session) {
-		
+	public String getTestpage(Model model) {
 		logger.info("getTestpage");
+
+		Recipe recipe = new Recipe();
+		recipe.setAllowShare(true);
+		model.addAttribute("recipe", recipe);
 		
 		return "testpage";
-	}}
+	}
+
+	@RequestMapping(value = "/start", method = RequestMethod.GET)
+	public String getStartpage(Model model) {
+		logger.info("getStartpage");
+
+		return "start";
+	}
+}

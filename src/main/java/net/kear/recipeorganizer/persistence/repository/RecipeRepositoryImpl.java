@@ -65,9 +65,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("r.favorite").as("favorite"))
-    			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.lastMade").as("lastMade")))
+    			.add(Projections.property("r.allowShare").as("allowShare")))
     		.addOrder(Order.asc("name"))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 

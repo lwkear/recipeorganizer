@@ -17,7 +17,7 @@
 					<h3><spring:message code="registration.invalid.title"></spring:message></h3>
 				</c:if>
 				<c:if test="${password}">
-					<h3><spring:message code="password.invalid.title"></spring:message></h3>
+					<spring:message code="password.invalid.title"></spring:message>
 				</c:if>
 			</div>			
 			<div class="row">

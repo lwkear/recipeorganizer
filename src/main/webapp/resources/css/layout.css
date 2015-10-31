@@ -70,53 +70,10 @@ body {
     font-size: 85%;
 }
 
-/* 
-html,body {
-	margin:0;
-	padding:0;
-	height:100%; needed for container min-height
-	background:gray;
+.glyphicon {
+	font-size: 10px;
 }
 
-body {
-	background: url("../recipes.jpg") no-repeat center center fixed;
-	background-size: cover;
-}
-
-.container-white {
-	position:relative; needed for footer positioning
-	margin-top:-50px;
-	margin-bottom:-50px;	margin-bottom:-50px;
-	background:#ffffff;
-	height:auto;
-	min-height:100%;
-	opacity:1;
-}
-
-.container-opaque {
-	position:relative; needed for footer positioning
-	margin-top:-50px;
-	margin-bottom:0px;	margin-bottom:-50px;
-	background:none;
-	height:auto;
-	min-height:100%;
-	opacity:1;
-	color:#FFFFFF
-}
-
-.content {
-	min-height: 100%;
-    height: auto;	
-}
-
-Center the footer copyright text 
-.navbar-center
-{
-	padding: 15px 15px;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    text-align: center;
-    margin: auto;
-    font-size: 85%;
-} */
+.select-placeholder{color: #999;}
+.select-placeholder option:first-child{color: #999; display: none;}
+.select-placeholder option{color: #555;} // bootstrap default color

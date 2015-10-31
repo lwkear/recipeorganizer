@@ -13,7 +13,6 @@ public class ExceptionController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	//TODO: EXCEPTION: make this available across all controllers
 	//general error handling routine - mostly SQL errors at this point
 	@ExceptionHandler(DataAccessException.class)
 	public ModelAndView handleDataAccessException(DataAccessException ex) {
@@ -22,6 +21,7 @@ public class ExceptionController {
 		ModelAndView view = new ModelAndView("/errors/errorData");		
 		String errorMsg = ExceptionUtils.getRootCauseMessage(ex);
 		
+		//TODO: RECIPE: determine if there's a way to show the button to return to the recipe
 		//view.addObject("addError", "true");
 		view.addObject("errorMessage", errorMsg);
 		return view;
@@ -34,7 +34,6 @@ public class ExceptionController {
 		ModelAndView view = new ModelAndView("/errors/errorData");		
 		String errorMsg = ExceptionUtils.getRootCauseMessage(ex);
 		
-		//view.addObject("addError", "true");
 		view.addObject("errorMessage", errorMsg);
 		return view;
 	}

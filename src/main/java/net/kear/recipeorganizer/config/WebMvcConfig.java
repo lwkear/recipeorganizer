@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import net.kear.recipeorganizer.webflow.AddRecipeFlowHandler;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +32,8 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.springframework.webflow.mvc.servlet.FlowHandlerAdapter;
+import org.springframework.webflow.mvc.servlet.FlowHandlerMapping;
 
 @EnableWebMvc
 @EnableTransactionManagement
@@ -40,6 +44,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
     private Environment env;	
+
+	@Autowired
+	private WebFlowConfig webFlowConfig;
 	
     public WebMvcConfig() {
         super();
@@ -84,12 +91,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages
-	/*@Override
+	@Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         super.addViewControllers(registry);
-        registry.addViewController("/errors/expiredToken.html");
-        registry.addViewController("/errors/invalidToken.html");
-    }*/
+        registry.addViewController("/recipe/basics.htm");        
+        registry.addViewController("/recipe/ingredients.htm");
+        registry.addViewController("/recipe/instructions.htm");
+        registry.addViewController("/recipe/optional.htm");
+        registry.addViewController("/recipe/end.htm");
+    }
 
 	/*** file upload configuration ***/
 	@Bean
@@ -98,6 +108,28 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		resolver.setMaxUploadSize(20971520);
 		return resolver;
     }
+
+	/*** webflow configuration ***/
+	@Bean
+	public FlowHandlerMapping flowHandlerMapping() {
+		FlowHandlerMapping handlerMapping = new FlowHandlerMapping();
+		handlerMapping.setOrder(-1);
+		handlerMapping.setFlowRegistry(this.webFlowConfig.flowRegistry());
+		return handlerMapping;
+	}
+
+	@Bean
+	public FlowHandlerAdapter flowHandlerAdapter() {
+		FlowHandlerAdapter handlerAdapter = new FlowHandlerAdapter();
+		handlerAdapter.setFlowExecutor(this.webFlowConfig.flowExecutor());
+		//handlerAdapter.setSaveOutputToFlashScopeOnRedirect(true);
+		return handlerAdapter;
+	}
+
+	@Bean(name="views/recipe")
+	public AddRecipeFlowHandler addRecipeFlowHandler() {
+		return new AddRecipeFlowHandler();
+	}
 	
 	/*** validation and i18n message configuration ***/
 	@Bean

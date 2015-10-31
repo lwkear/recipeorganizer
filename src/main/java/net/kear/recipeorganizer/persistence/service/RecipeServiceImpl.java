@@ -5,29 +5,40 @@ import java.util.List;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 
-
-
-
-
-
-
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
  
-@Service
+@Service("recipeService")
 @Transactional
 public class RecipeServiceImpl implements RecipeService {
 	
     @Autowired
     private RecipeRepository recipeRepository;
-      
+
+	@Autowired
+	private UserService userService;
+    
+    /*public Recipe createRecipe(String userName) {
+    	User user = userService.findUserByEmail(userName);
+    	
+		Recipe recipe = new Recipe();
+		recipe.setAllowShare(true);
+		recipe.setFavorite(false);
+		recipe.setUser(user);
+		return recipe;
+    }*/
+    
+    public Recipe createRecipe() {
+		Recipe recipe = new Recipe();
+		recipe.setAllowShare(true);
+		return recipe;
+    }
+    
     public void addRecipe(Recipe recipe) {
     	recipeRepository.addRecipe(recipe);
     }
@@ -35,7 +46,15 @@ public class RecipeServiceImpl implements RecipeService {
     public void updateRecipe(Recipe recipe) {
     	recipeRepository.updateRecipe(recipe);
     }
- 
+
+    public void saveRecipe(Recipe recipe) {
+    	//assume if the recipe has an ID then it must already exist
+    	if (recipe.getId() > 0)
+    		recipeRepository.updateRecipe(recipe);
+    	else
+    		recipeRepository.addRecipe(recipe);
+    }
+    
     public void deleteRecipe(Long id) {
     	recipeRepository.deleteRecipe(id);
     }

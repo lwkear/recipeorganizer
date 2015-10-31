@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<on-start>
+    	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
+	</on-start>
+
+	<view-state id="basics" view="recipe/basics" model="recipe">
+		<transition on="proceed" to="ingredients"></transition>
+		<transition on="cancel" to="cancel"></transition>
+	</view-state>
+	<view-state id="ingredients" view="recipe/ingredients" model="recipe">
+		<transition on="proceed" to="instructions"></transition>
+		<transition on="cancel" to="cancel"></transition>
+	</view-state>
+	<view-state id="instructions" view="recipe/instructions" model="recipe">
+		<transition on="proceed" to="optional"></transition>
+		<transition on="cancel" to="cancel"></transition>
+	</view-state>
+	<view-state id="optional" view="recipe/optional" model="recipe">
+		<transition on="save" to="end">
+			<!-- <evaluate expression="bookingService.persistBooking(booking)" /> -->
+		</transition>		
+		<transition on="cancel" to="cancel"></transition>
+	</view-state>
+	
+	<end-state id="end"/>
+	<end-state id="cancel" view="recipe/end"/>
+	
+</flow>

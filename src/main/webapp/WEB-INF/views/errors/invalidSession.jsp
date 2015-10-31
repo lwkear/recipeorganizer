@@ -17,7 +17,7 @@
 			</div>			
 			<div class="row">
 				<div class="span12 center alert alert-danger text-center">
-					<h3><spring:message code="session.invalid.message"></spring:message></h3>
+					<spring:message code="session.invalid.message"></spring:message>
 				</div>
 				<div class="form-group col-sm-12">&nbsp;</div>
 				<div class="form-group col-sm-2 col-sm-offset-5">

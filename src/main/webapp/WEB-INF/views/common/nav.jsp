@@ -30,34 +30,35 @@
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<c:if test="${isAuth}">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-							<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<c:if test="${isAuthor}">
-						<li><a href="<c:url value="/recipe/addRecipe" />"><spring:message code="menu.addrecipe"></spring:message></a></li>
-						</c:if>
-						<c:if test="${isGuest}">
-						<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
-						</c:if>
-					</ul>
-				</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<c:if test="${isAuthor}">
+							<li><a href="<c:url value="/recipe/addRecipe" />"><spring:message code="menu.addrecipe"></spring:message></a></li>
+							</c:if>
+							<c:if test="${isGuest}">
+							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
+							</c:if>
+						</ul>
+					</li>
 				</c:if>
 				<c:if test="${isAdmin}">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-							<spring:message code="menu.admin"></spring:message><span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
-					</ul>
-				</li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+								<spring:message code="menu.admin"></spring:message><span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
+						</ul>
+					</li>
 				</c:if>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="<c:url value="/testpage" />"><spring:message code="menu.faq"></spring:message></a></li>
-						<li><a href="#"><spring:message code="menu.contact"></spring:message></a></li>							
+						<%-- <li><a href=""><spring:message code="menu.contact"></spring:message></a></li> --%>							
+						<li><a href="<c:url value="/start" />">Start Web Flow</a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
 					</ul>
 				</li>

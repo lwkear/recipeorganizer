@@ -1,15 +1,11 @@
 package net.kear.recipeorganizer.persistence.dto;
 
-import java.sql.Date;
-
 public class RecipeListDto {
 
 	private long id;
 	private long userId;
 	private String name;	
-	private boolean favorite;
 	private boolean allowShare;
-	private Date lastMade;
 	private String firstName;
 	private String lastName;
 	private String category;
@@ -17,14 +13,12 @@ public class RecipeListDto {
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, long userId, String name, boolean favorite, boolean allowShare, Date lastMade, String firstName, String lastName, String category, String source) {
+	public RecipeListDto(long id, long userId, String name, boolean allowShare, String firstName, String lastName, String category, String source) {
 		super();
 		this.userId = userId;
 		this.id = id;
 		this.name = name;
-		this.favorite = favorite;
 		this.allowShare = allowShare;
-		this.lastMade = lastMade;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.category = category;
@@ -55,28 +49,12 @@ public class RecipeListDto {
 		this.name = name;
 	}
 	
-	public boolean isFavorite() {
-		return favorite;
-	}
-	
-	public void setFavorite(boolean favorite) {
-		this.favorite = favorite;
-	}
-	
 	public boolean isAllowShare() {
 		return allowShare;
 	}
 	
 	public void setAllowShare(boolean allowShare) {
 		this.allowShare = allowShare;
-	}
-	
-	public Date getLastMade() {
-		return lastMade;
-	}
-	
-	public void setLastMade(Date lastMade) {
-		this.lastMade = lastMade;
 	}
 	
 	public String getFirstName() {

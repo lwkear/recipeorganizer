@@ -110,16 +110,6 @@ function postPassword() {
 	})
 };
 
-//NOTE: this routine appends the csrf info to an AJAX call
-//TODO: GUI: make this available to all .jsp's
-$(document).ready(function() {
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function(e, xhr, options) {
-        xhr.setRequestHeader(header, token);
-    });
-});
-
 </script> -->
 
 </html>

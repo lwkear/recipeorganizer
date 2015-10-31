@@ -113,12 +113,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword").permitAll()
 			.antMatchers("/testpage").permitAll()
+			.antMatchers("/recipe/**").permitAll()	//TODO: remove this after testing!!!
+			.antMatchers("/start").permitAll()		//TODO: remove this after testing!!!
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
+			.regexMatchers("/recipe/*.*").permitAll()	//TODO: remove this after testing!!!
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
-			.antMatchers("/recipe/listRecipes*", "/ajax/auth/**").hasAuthority("GUEST")
+			.antMatchers("/recipe/listRecipes", "/ajax/auth/**").hasAuthority("GUEST")
 			.antMatchers("/user/profile", "/user/changePassword**").hasAuthority("GUEST")
-			.antMatchers("/recipe/addRecipe*").hasAuthority("AUTHOR")
+			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
 			.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
