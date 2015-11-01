@@ -97,17 +97,8 @@
 					<div class="col-sm-3">
 						<h4>Share: <c:choose><c:when test="${recipe.allowShare}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></h4>
 					</div>
-					<div class="col-sm-3">
-						<h4>Favorite: <c:choose><c:when test="${recipe.favorite}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></h4>
-					</div>
 				</div>
 				<div class="col-sm-12">
-					<div class="col-sm-3">
-						<h4>Last Made: ${recipe.lastMade}</h4>
-					</div>
-					<div class="col-sm-3">
-						<h4># Times Made: ${recipe.madeCount}</h4>
-					</div>
 					<div class="col-sm-6">
 						<c:set var="tags">${recipe.tags[0]}</c:set> 
 						<c:if test="${not empty tags}">
