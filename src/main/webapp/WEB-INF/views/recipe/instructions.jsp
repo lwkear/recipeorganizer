@@ -59,7 +59,7 @@
 				    </div>
 				</div>
 			</div>
-			<%-- <form:hidden id="userID" path="user.id"/> --%>
+			<form:hidden id="userID" path="user.id"/>
 			
 			<div>
 				<a class="btn btn-default" href="${flowExecutionUrl}&_eventId=proceed" role="button">Optional</a>

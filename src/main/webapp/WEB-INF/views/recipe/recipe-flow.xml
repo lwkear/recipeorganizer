@@ -5,7 +5,7 @@
         http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
 
 	<on-start>
-    	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
+    	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
 	</on-start>
 
 	<view-state id="basics" view="recipe/basics" model="recipe">
@@ -27,7 +27,7 @@
 		<transition on="cancel" to="cancel"></transition>
 	</view-state>
 	
-	<end-state id="end"/>
+	<end-state id="end" view="recipe/end"/>
 	<end-state id="cancel" view="recipe/end"/>
 	
 </flow>

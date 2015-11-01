@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.persistence.service;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.User;
@@ -23,19 +24,13 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private UserService userService;
     
-    /*public Recipe createRecipe(String userName) {
+    public Recipe createRecipe(String userName) {
     	User user = userService.findUserByEmail(userName);
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
-		recipe.setFavorite(false);
+		recipe.setCategory(new Category());
 		recipe.setUser(user);
-		return recipe;
-    }*/
-    
-    public Recipe createRecipe() {
-		Recipe recipe = new Recipe();
-		recipe.setAllowShare(true);
 		return recipe;
     }
     

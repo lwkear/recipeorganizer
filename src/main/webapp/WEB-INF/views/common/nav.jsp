@@ -13,6 +13,7 @@
 <c:if test="${isAuth}">
 	<sec:authentication var="firstname" property="principal.firstName"/>
 	<sec:authentication var="lastname" property="principal.lastName" />
+	<sec:authentication var="userId" property="principal.id" />
 	<!-- TODO: GUI: figure out how to retrieve the user profile within the principal security object -->
 	<%-- <sec:authentication var="city" property="principal.userProfile.city" /> --%>
 </c:if>

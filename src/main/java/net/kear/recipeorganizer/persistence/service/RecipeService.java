@@ -8,8 +8,7 @@ import net.kear.recipeorganizer.persistence.model.Recipe;
  
 public interface RecipeService {
      
-	/*public Recipe createRecipe(String userName);*/
-	public Recipe createRecipe();
+	public Recipe createRecipe(String userName);
 	public void addRecipe(Recipe recipe);
     public void updateRecipe(Recipe recipe);
     public void saveRecipe(Recipe recipe);

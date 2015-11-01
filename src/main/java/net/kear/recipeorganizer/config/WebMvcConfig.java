@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import net.kear.recipeorganizer.webflow.AddRecipeFlowHandler;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -126,11 +124,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return handlerAdapter;
 	}
 
-	@Bean(name="views/recipe")
-	public AddRecipeFlowHandler addRecipeFlowHandler() {
-		return new AddRecipeFlowHandler();
-	}
-	
 	/*** validation and i18n message configuration ***/
 	@Bean
 	public MessageSource messageSource() {

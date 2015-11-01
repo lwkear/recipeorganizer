@@ -39,13 +39,13 @@
 								<spring:message code="recipe.general.share"></spring:message></label>
 						</div>
 						<div class="row">
-							<%-- <form:hidden id="catID" path="category.id"/> --%>
-							<%-- <div class="col-sm-3 <c:if test="${not empty categoryError}">has-error</c:if>">
+							<form:hidden id="catID" path="category.id"/>
+							<div class="col-sm-3 <c:if test="${not empty categoryError}">has-error</c:if>">
 								<form:select class="form-control col-sm-3 select-placeholder" id="inputCategory" path="category.name">
 									<option value="" style="display:none"><spring:message code="recipe.general.selectcat"></spring:message></option>
 			            		</form:select>
 			            		<span class="text-danger">${categoryError}</span>
-			            	</div> --%>
+			            	</div>
 							<div class="col-sm-3 <c:if test="${not empty servingsError}">has-error</c:if>">
 								<form:input type="text" class="form-control col-sm-1" id="inputServings" path="servings" autocomplete="off"/>
 								<span class="text-danger">${servingsError}</span>
@@ -62,7 +62,7 @@
 					</div>
 				</div>
 			</div>
-			<!-- <hidden id="userID" path="user.id"/> -->
+			<form:hidden id="userID" path="user.id"/>
 
 			<div>
 				<a class="btn btn-default" href="${flowExecutionUrl}&_eventId=proceed" role="button">Ingredients</a>
