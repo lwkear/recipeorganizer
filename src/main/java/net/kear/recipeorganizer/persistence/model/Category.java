@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "CATEGORY")
@@ -31,9 +30,7 @@ public class Category implements Serializable {
 	private long id;
 
 	@Column(name = "NAME", nullable = false)
-	@NotNull
 	@NotBlank
-	@NotEmpty
 	@Size(max=250)
 	private String name;
 

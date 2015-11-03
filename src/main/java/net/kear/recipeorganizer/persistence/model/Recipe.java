@@ -19,6 +19,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import javax.validation.GroupSequence;
+import javax.validation.groups.Default;
+
+
 
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
@@ -39,6 +43,13 @@ public class Recipe implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	//Hibernate validation groups
+	public interface ValidBasic1 {}
+	public interface ValidBasic2 {}
+	
+	@GroupSequence({ValidBasic1.class,ValidBasic2.class})
+	public interface RecipeBasicGroup {}
+	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RECIPE_SEQ")
@@ -50,8 +61,8 @@ public class Recipe implements Serializable {
 	private User user;
 	
 	@Column(name = "NAME", nullable = false)
-	@NotBlank 
-	@Size(max=250)
+	@NotBlank(groups=ValidBasic1.class) 
+	@Size(max=250, groups=ValidBasic2.class)
 	private String name;
 
 	@Column(name = "BACKGROUND")
@@ -59,11 +70,12 @@ public class Recipe implements Serializable {
 	private String background;
 	
 	@Column(name = "DESCRIPTION")
+	@NotBlank(groups=ValidBasic1.class)
 	@Lob
 	private String description;
 
 	@Column(name = "SERVINGS")
-	@Size(max=100)
+	@Size(max=100, groups=ValidBasic2.class)
 	private String servings;
 
 	@Column(name = "PREP_TIME")
