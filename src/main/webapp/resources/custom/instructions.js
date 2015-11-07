@@ -61,7 +61,7 @@ $(document)
 	    removeEmptyRows('.instructGrp',fields);
 	    
 		//each of the individual elements require their array indexes to be set/reset
-	    fixArrayIndexes('.instructId', false);
+	    /*fixArrayIndexes('.instructId', false);*/
 		fixArrayIndexes('.instructDesc', false);
 	    fixArrayIndexes('.instructSeq', true);		
 	})

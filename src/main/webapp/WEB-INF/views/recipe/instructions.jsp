@@ -40,7 +40,7 @@
 							<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
 							<div class="form-group <c:if test="${not empty instructError}">has-error</c:if>">
 								<div class="input-group instructGrp">
-									<form:hidden class="instructId instruct" path="instructions[${loop.index}].id"/>
+									<%-- <form:hidden class="instructId instruct" path="instructions[${loop.index}].id"/> --%>
 									<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>
 									<form:textarea class="form-control instructDesc instruct" rows="2" path="instructions[${loop.index}].description"
 										placeholder="${instructplaceholder}" />

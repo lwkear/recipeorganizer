@@ -48,7 +48,7 @@ public class RecipeServiceImpl implements RecipeService {
     /*public Recipe createRecipe(String userName) {*/
 		/*User user = userService.findUserByEmail(userName);*/
     public Recipe createRecipe() {
-    	User user = userService.findUserByEmail("lwk@outlook.com");	//TODO: remove after testing
+    	User user = userService.findUserByEmail("kear@outlook.com");	//TODO: remove after testing
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
@@ -132,18 +132,20 @@ public class RecipeServiceImpl implements RecipeService {
     	Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
     	for (Entry<String, Object> entry : entries) {
     		key = entry.getKey();
-    		value = (String)entry.getValue();
+    		value = entry.getValue();
     		logger.info("key/value= " + key + "/" + value);
     		if (key.contains("instructions")) {
-    			if (key.contains(".id")) {
+    			/*if (key.contains(".id")) {
 	    			inst = new Instruction();
 					int id = Integer.parseInt((String)value);
 					inst.setId(id);
 	    			inst.setSequenceNo(seq++);
-    			}    			
+    			}*/    			
     			if (key.contains("description")) {
+    				inst = new Instruction();
 	    			inst.setDescription((String)value);
 	    			requestInstruct.add(inst);
+	    			inst.setSequenceNo(seq++);
     			}    			
     		}
     	}
@@ -162,7 +164,7 @@ public class RecipeServiceImpl implements RecipeService {
 		Iterator<RecipeIngredient> iterator2 = recipe.getRecipeIngredients().iterator();
 		while (iterator2.hasNext()) {
 			RecipeIngredient recipeIngred = iterator2.next();
-			logger.info("id= " + recipeIngred.getId());
+			/*logger.info("id= " + recipeIngred.getId());*/
 			logger.info("seq= " + recipeIngred.getSequenceNo());
 			logger.info("ingredId= " + recipeIngred.getIngredientId());
 			logger.info("qty= " + recipeIngred.getQuantity());
@@ -189,15 +191,24 @@ public class RecipeServiceImpl implements RecipeService {
 			value = entry.getValue();
 			logger.info("key/value= " + key + "/" + value);
 			if (key.contains("recipeIngredients")) {
-				if (key.contains(".id")) {
+				/*if (key.contains(".id")) {
 					ingred = new RecipeIngredient();
-					int id = Integer.parseInt((String)value);
+					String str = (String)value;
+					//int id = Integer.parseInt((String)str);
+					int id = Integer.parseInt(str);
 					ingred.setId(id);
 					ingred.setSequenceNo(seq++);
 				}
 				if (key.contains("ingredientId")) {
 					int id = Integer.parseInt((String)value);
 					ingred.setIngredientId(id);
+				}*/
+				if (key.contains("ingredientId")) {
+					ingred = new RecipeIngredient();
+					String str = (String)value;
+					int id = Integer.parseInt((String)str);
+					ingred.setIngredientId(id);
+					ingred.setSequenceNo(seq++);
 				}
 				if (key.contains("quantity")) {
 					ingred.setQuantity((String)value);

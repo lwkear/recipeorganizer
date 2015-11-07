@@ -150,7 +150,7 @@ $(document)
 	    removeEmptyRows('.ingredGrp',fields);
 	    
 		//each of the individual elements require their array indexes to be set/reset
-	    fixArrayIndexes('.recipeIngredID', false);
+	    /*fixArrayIndexes('.recipeIngredID', false);*/
 		fixArrayIndexes('.ingredID', false);
 		fixArrayIndexes('.ingredQty', false);
 		fixArrayIndexes('.ingredQtyType', false);

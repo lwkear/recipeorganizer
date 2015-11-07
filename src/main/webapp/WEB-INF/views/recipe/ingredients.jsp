@@ -55,7 +55,7 @@
 									<label class="control-label col-sm-4" style="text-align: left; margin-bottom:0;"></label>
 								</div>
 								<div class="form-group">
-									<form:hidden class="recipeIngredID" path="recipeIngredients[${loop.index}].id" />
+									<%-- <form:hidden class="recipeIngredID" path="recipeIngredients[${loop.index}].id" /> --%>
 									<form:hidden class="ingredID" id="ingredientID" path="recipeIngredients[${loop.index}].ingredientId" />
 									<form:hidden class="ingredSeq" path="recipeIngredients[${loop.index}].sequenceNo"/>
 									<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
