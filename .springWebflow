@@ -3,9 +3,5 @@
 	<version>1</version>
 	<pluginVersion><![CDATA[3.6.4.201503051146-RELEASE]]></pluginVersion>
 	<configs>
-		<config>
-			<file>src/main/webapp/WEB-INF/views/recipe/recipe-flow.xml</file>
-			<name><![CDATA[recipe-flow]]></name>
-		</config>
 	</configs>
 </webflow-project-description>

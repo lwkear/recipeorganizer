@@ -121,4 +121,11 @@ public class HomeController {
 
 		return "start";
 	}
+
+	@RequestMapping(value = "/recipe/end", method = RequestMethod.GET)
+	public String getEndpage(Model model) {
+		logger.info("getEndpage");
+
+		return "recipe/end";
+	}
 }

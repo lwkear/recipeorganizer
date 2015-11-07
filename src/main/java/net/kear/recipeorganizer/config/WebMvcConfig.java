@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import net.kear.recipeorganizer.webflow.RecipeFlowHandler;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +44,8 @@ import org.springframework.webflow.mvc.servlet.FlowHandlerMapping;
 @PropertySource("classpath:email.properties")
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
     private Environment env;	
 
@@ -52,12 +58,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+		logger.debug("configureDefaultServletHandling");
         configurer.enable();
     }
     
 	/*** resource location configuration ***/
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
     }
 	
@@ -68,18 +76,21 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	//to fix this problem 
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+		logger.debug("extendMessageConverters");
         converters.remove(msgConverter());
         converters.add(0, msgConverter());
 	}
 
 	@Bean
     public MappingJackson2HttpMessageConverter msgConverter() {
+		logger.debug("MappingJackson2HttpMessageConverter");
 		return new MappingJackson2HttpMessageConverter();
     }
 	
 	/*** view configuration ***/
 	@Bean
     public InternalResourceViewResolver viewResolver() {
+		logger.debug("InternalResourceViewResolver");
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
@@ -89,19 +100,21 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages
-	@Override
+	/*@Override
     public void addViewControllers(final ViewControllerRegistry registry) {
+		logger.debug("addViewControllers");
         super.addViewControllers(registry);
         registry.addViewController("/recipe/basics.htm");        
         registry.addViewController("/recipe/ingredients.htm");
         registry.addViewController("/recipe/instructions.htm");
         registry.addViewController("/recipe/optional.htm");
         registry.addViewController("/recipe/end.htm");
-    }
+    }*/
 
 	/*** file upload configuration ***/
 	@Bean
     public CommonsMultipartResolver multipartResolver() {
+		logger.debug("CommonsMultipartResolver");
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 		resolver.setMaxUploadSize(20971520);
 		return resolver;
@@ -110,6 +123,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	/*** webflow configuration ***/
 	@Bean
 	public FlowHandlerMapping flowHandlerMapping() {
+		logger.debug("FlowHandlerMapping");
 		FlowHandlerMapping handlerMapping = new FlowHandlerMapping();
 		handlerMapping.setOrder(-1);
 		handlerMapping.setFlowRegistry(this.webFlowConfig.flowRegistry());
@@ -118,15 +132,23 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public FlowHandlerAdapter flowHandlerAdapter() {
+		logger.debug("FlowHandlerAdapter");
 		FlowHandlerAdapter handlerAdapter = new FlowHandlerAdapter();
 		handlerAdapter.setFlowExecutor(this.webFlowConfig.flowExecutor());
-		//handlerAdapter.setSaveOutputToFlashScopeOnRedirect(true);
+		handlerAdapter.setSaveOutputToFlashScopeOnRedirect(true);
 		return handlerAdapter;
+	}
+	
+	@Bean(name="recipe")
+	public RecipeFlowHandler recipeFlowHandler() {
+		logger.debug("RecipeFlowHandler");
+		return new RecipeFlowHandler();
 	}
 
 	/*** validation and i18n message configuration ***/
 	@Bean
 	public MessageSource messageSource() {
+		logger.debug("MessageSource");
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasenames(
         		"classpath:content",
@@ -141,13 +163,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	
     @Override
     public Validator getValidator() {
-       LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-       validator.setValidationMessageSource(messageSource());
-       return validator;
+    	logger.debug("getValidator");
+    	LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+    	validator.setValidationMessageSource(messageSource());
+    	return validator;
     }
 	
 	@Bean
     public CookieLocaleResolver localeResolver() {
+		logger.debug("CookieLocaleResolver");
 		CookieLocaleResolver resolver = new CookieLocaleResolver();
 		resolver.setDefaultLocale(new Locale("en"));
 		return resolver;
@@ -155,12 +179,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean
 	public LocaleChangeInterceptor localeInterceptor() {
+		logger.debug("LocaleChangeInterceptor");
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("lang");
 		return interceptor;
 	}
 
     public void addInterceptors(InterceptorRegistry registry) {
+    	logger.debug("addInterceptors");
     	registry.addInterceptor(localeInterceptor());
     }
 	
@@ -172,6 +198,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     /*** email configuration ***/
 	@Bean
     public JavaMailSenderImpl javaMailSenderImpl() {
+		logger.debug("JavaMailSenderImpl");
         final JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();
         mailSenderImpl.setHost(env.getProperty("smtp.host"));
         mailSenderImpl.setPort(env.getProperty("smtp.port", Integer.class));

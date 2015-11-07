@@ -1,33 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flow xmlns="http://www.springframework.org/schema/webflow"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/webflow
-        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
-
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="
+      	http://www.springframework.org/schema/webflow
+      	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
+	
+	<!-- <secured attributes="GUEST" /> -->
+	
 	<on-start>
-    	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
+    	<!-- <evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" /> -->
+    	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
 	</on-start>
 
 	<view-state id="basics" view="recipe/basics" model="recipe">
-		<transition on="proceed" to="ingredients"></transition>
-		<transition on="cancel" to="cancel"></transition>
+		<binder>
+			<binding property="name"/>
+			<binding property="description"/>
+			<binding property="servings"/>
+			<binding property="prepTime"/>
+			<binding property="allowShare"/>
+			<binding property="category.id"/>
+			<binding property="category.name"/>
+		</binder>
+		<transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'"></transition>
+		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	<view-state id="ingredients" view="recipe/ingredients" model="recipe">
-		<transition on="proceed" to="instructions"></transition>
-		<transition on="cancel" to="cancel"></transition>
+		<on-render>
+			<evaluate expression="recipeService.getIngredients(recipe)" result="viewScope.ingredientList"></evaluate>
+		</on-render>
+		<transition on="back" to="basics" validate="false">
+			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
+		</transition>
+		<transition on="proceed" to="instructions" bind="true" validate="true" validation-hints="'recipeRecipeIngredientGroup'">
+			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
+		</transition>
+		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
-		<transition on="proceed" to="optional"></transition>
-		<transition on="cancel" to="cancel"></transition>
+		<transition on="back" to="ingredients" validate="false">
+			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+		</transition>
+		<transition on="proceed" to="optional" bind="true" validate="true" validation-hints="'recipeInstructGroup'">
+			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+		</transition>
+		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	<view-state id="optional" view="recipe/optional" model="recipe">
+		<binder>
+			<binding property="background"/>
+			<binding property="notes"/>
+			<binding property="tags"/>
+			<binding property="source.type"/>
+			<binding property="source.person"/>
+		</binder>
+		<transition on="back" to="instructions" bind="false" validate="false"></transition>
 		<transition on="save" to="end">
-			<!-- <evaluate expression="bookingService.persistBooking(booking)" /> -->
+			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
 		</transition>		
-		<transition on="cancel" to="cancel"></transition>
+		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	
 	<end-state id="end" view="recipe/end"/>
 	<end-state id="cancel" view="recipe/end"/>
-	
+
 </flow>

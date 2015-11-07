@@ -9,11 +9,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.validation.constraints.NotNull;
+import javax.validation.GroupSequence;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "INGREDIENT")
@@ -21,6 +20,13 @@ public class Ingredient implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	//Hibernate validation groups
+	public interface NotBlankGroup {}
+	public interface SizeGroup {}
+	
+	@GroupSequence({NotBlankGroup.class,SizeGroup.class})
+	public interface IngredientGroup {}
+	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INGREDIENT_SEQ")
@@ -28,10 +34,8 @@ public class Ingredient implements Serializable {
 	private long id;
 
 	@Column(name = "NAME", nullable = false)
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(max=250)	//250
+	@NotBlank(groups=NotBlankGroup.class)
+	@Size(max=250, groups=SizeGroup.class)	//250
 	private String name;
 	
 	@Column(name = "RANK")
@@ -66,6 +70,37 @@ public class Ingredient implements Serializable {
 
 	public void setRank(int rank) {
 		this.rank = rank;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + rank;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Ingredient other = (Ingredient) obj;
+		if (id != other.id)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (rank != other.rank)
+			return false;
+		return true;
 	}
 
 	@Override

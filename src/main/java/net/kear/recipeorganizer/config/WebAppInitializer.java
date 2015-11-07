@@ -22,7 +22,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext container) {
         
     	AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(WebMvcConfig.class, RepositoryConfig.class, SecurityConfig.class);
+        rootContext.register(WebMvcConfig.class, RepositoryConfig.class, SecurityConfig.class, WebFlowConfig.class);
 
         container.addListener(new ContextLoaderListener(rootContext));
     	container.addListener(new HttpSessionEventPublisher());

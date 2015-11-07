@@ -630,9 +630,14 @@ $('#inputTags').on('beforeItemAdd', function(e) {
 }); */ 	
 
 $('#inputCategory').change(function() {
-	var id = $(this).find(':selected').data('id')
+	var entry = $(this).find(':selected');
+	var name = entry.val();
+	//var id = $(this).find(':selected').data('id');
+	id = entry.data('id');
 	console.log("catID=" + id);		
+	console.log("catName=" + name);
 	$('#catID').val(id);
+	$('#catName').val(name);
 	$(this).removeClass('select-placeholder');
 });
 

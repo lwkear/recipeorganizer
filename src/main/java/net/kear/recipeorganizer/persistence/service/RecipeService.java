@@ -2,13 +2,16 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import org.springframework.webflow.execution.RequestContext;
+
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
  
 public interface RecipeService {
      
-	public Recipe createRecipe(String userName);
+	/*public Recipe createRecipe(String userName);*/
+	public Recipe createRecipe();
 	public void addRecipe(Recipe recipe);
     public void updateRecipe(Recipe recipe);
     public void saveRecipe(Recipe recipe);
@@ -18,4 +21,6 @@ public interface RecipeService {
     public List<Ingredient> getIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);
     public boolean lookupName(String lookupName, Long userId);
+    public void adjustInstructionList(Recipe recipe, RequestContext context);
+    public void adjustRecipeIngredientList(Recipe recipe, RequestContext context);
 }

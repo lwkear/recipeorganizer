@@ -134,13 +134,14 @@ public class SaveRecipeController {
         	logger.info("Empty file");
         }*/
 		
-		//empty the array if the user did not enter a source
-		if (recipe.getSources().size() > 0) {
+		//TODO: fix this for single Source object!!!
+		//empty the array if the user did not enter a source		
+		/*if (recipe.getSources().size() > 0) {
 			String sourceType = recipe.getSources().get(0).getType();
 			if (sourceType == null || sourceType.isEmpty()) {
 				recipe.getSources().clear();
 			}
-		}
+		}*/
 				
 		//add the object to the session in case of error
 		session.setAttribute("recipe", recipe);
@@ -226,10 +227,11 @@ public class SaveRecipeController {
 			logger.info("editRecipe: session.getAttribute: recipe is NOT null!!!");
 		}
 
-		if (recipe.getSources().size() == 0) {
+		//TODO: fix this for single Source object!!!
+		/*if (recipe.getSources().size() == 0) {
 			Source source = new Source(); 
 			recipe.getSources().add(source);
-		}
+		}*/
 
 		model.addAttribute("ingredientList", recipeService.getIngredients(recipe));
 		model.addAttribute("recipe", recipe);

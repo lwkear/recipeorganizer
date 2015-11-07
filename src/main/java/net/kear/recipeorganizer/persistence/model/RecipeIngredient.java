@@ -12,12 +12,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.GroupSequence;
 import javax.validation.constraints.*;
 
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "RECIPE_INGREDIENTS")
@@ -25,6 +25,13 @@ public class RecipeIngredient implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	//Hibernate validation groups
+	public interface NotBlankGroup {}
+	public interface SizeGroup {}
+	
+	@GroupSequence({NotBlankGroup.class,SizeGroup.class,Ingredient.IngredientGroup.class})
+	public interface RecipeIngredientGroup {}
+	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RECIPE_INGREDIENTS_SEQ")
@@ -32,26 +39,23 @@ public class RecipeIngredient implements Serializable {
 	private long id;
 
 	@Column(name = "INGREDIENT_ID", nullable = false)
-	@NotNull
-	@Min(1)
+	@Min(value=1, groups=SizeGroup.class)
 	private long ingredientId;
 		
 	@Column(name = "QUANTITY")
-	@NotNull
-	@NotBlank
-	@NotEmpty
-	@Size(max=20)
+	@NotBlank(groups=NotBlankGroup.class)
+	@Size(max=20, groups=SizeGroup.class)
 	private String quantity;
 
 	@Column(name = "QTY_AMT")
 	private float qtyAmt;
 	
 	@Column(name = "QTY_TYPE")
-	@Size(max=50)
+	@Size(max=50, groups=SizeGroup.class)
 	private String qtyType;
 
 	@Column(name = "QUALIFIER")
-	@Size(max=250)
+	@Size(max=250, groups=SizeGroup.class)
 	private String qualifier;
 
 	@Column(name = "SEQUENCE_NO")
@@ -134,6 +138,61 @@ public class RecipeIngredient implements Serializable {
 
 	public void setSequenceNo(int sequenceNo) {
 		this.sequenceNo = sequenceNo;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((ingredient == null) ? 0 : ingredient.hashCode());
+		result = prime * result + (int) (ingredientId ^ (ingredientId >>> 32));
+		result = prime * result + Float.floatToIntBits(qtyAmt);
+		result = prime * result + ((qtyType == null) ? 0 : qtyType.hashCode());
+		result = prime * result + ((qualifier == null) ? 0 : qualifier.hashCode());
+		result = prime * result + ((quantity == null) ? 0 : quantity.hashCode());
+		result = prime * result + sequenceNo;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RecipeIngredient other = (RecipeIngredient) obj;
+		if (id != other.id)
+			return false;
+		if (ingredient == null) {
+			if (other.ingredient != null)
+				return false;
+		} else if (!ingredient.equals(other.ingredient))
+			return false;
+		if (ingredientId != other.ingredientId)
+			return false;
+		if (Float.floatToIntBits(qtyAmt) != Float.floatToIntBits(other.qtyAmt))
+			return false;
+		if (qtyType == null) {
+			if (other.qtyType != null)
+				return false;
+		} else if (!qtyType.equals(other.qtyType))
+			return false;
+		if (qualifier == null) {
+			if (other.qualifier != null)
+				return false;
+		} else if (!qualifier.equals(other.qualifier))
+			return false;
+		if (quantity == null) {
+			if (other.quantity != null)
+				return false;
+		} else if (!quantity.equals(other.quantity))
+			return false;
+		if (sequenceNo != other.sequenceNo)
+			return false;
+		return true;
 	}
 
 	@Override

@@ -49,7 +49,8 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     public Recipe getRecipe(Long id) {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
         Hibernate.initialize(recipe.getRecipeIngredients());
-        Hibernate.initialize(recipe.getSources());
+        //Hibernate.initialize(recipe.getSources());
+        Hibernate.initialize(recipe.getSource());
         return recipe;
     }
     

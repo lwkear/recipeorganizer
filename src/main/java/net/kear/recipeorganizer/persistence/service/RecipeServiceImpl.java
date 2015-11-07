@@ -1,22 +1,43 @@
 package net.kear.recipeorganizer.persistence.service;
  
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.expression.EvaluationException;
+import org.springframework.binding.expression.Expression;
+import org.springframework.binding.expression.ExpressionParser;
+import org.springframework.binding.expression.ParserContext;
+import org.springframework.binding.expression.beanwrapper.BeanWrapperExpressionParser;
+import org.springframework.binding.expression.support.FluentParserContext;
+import org.springframework.binding.mapping.impl.DefaultMapper;
+import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.AutoPopulatingList;
+import org.springframework.webflow.core.collection.ParameterMap;
+import org.springframework.webflow.execution.RequestContext;
  
 @Service("recipeService")
 @Transactional
 public class RecipeServiceImpl implements RecipeService {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
     @Autowired
     private RecipeRepository recipeRepository;
@@ -24,13 +45,17 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private UserService userService;
     
-    public Recipe createRecipe(String userName) {
-    	User user = userService.findUserByEmail(userName);
+    /*public Recipe createRecipe(String userName) {*/
+		/*User user = userService.findUserByEmail(userName);*/
+    public Recipe createRecipe() {
+    	User user = userService.findUserByEmail("lwk@outlook.com");	//TODO: remove after testing
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
 		recipe.setCategory(new Category());
+		recipe.setSource(new Source());
 		recipe.setUser(user);
+		/*recipe.getInstructions().add(new Instruction());*/
 		return recipe;
     }
     
@@ -43,6 +68,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     public void saveRecipe(Recipe recipe) {
+	
+    	String type = recipe.getSource().getType(); 
+    	if (type == null || type.isEmpty()) {
+			recipe.setSource(null);
+		}
+    	
     	//assume if the recipe has an ID then it must already exist
     	if (recipe.getId() > 0)
     		recipeRepository.updateRecipe(recipe);
@@ -73,4 +104,118 @@ public class RecipeServiceImpl implements RecipeService {
     public boolean lookupName(String lookupName, Long userId) {
     	return recipeRepository.lookupName(lookupName, userId);
     }
+    
+    public void adjustInstructionList(Recipe recipe, RequestContext context) {
+    	logger.info("adjustInstructionList");
+    	
+    	logger.info("parsing instructions");
+    	int ndx = 0;
+    	Iterator<Instruction> iterator1 = recipe.getInstructions().iterator();
+    	while (iterator1.hasNext()) {
+    		Instruction instruct = iterator1.next();
+    		logger.info("ndx= " + ndx++);
+    		logger.info("seq= " + instruct.getSequenceNo());
+    		logger.info("desc= " + instruct.getDescription());
+    	}
+    	
+    	String key = null;
+    	Object value = null;
+    	int seq = 0;
+    	Instruction inst = null;
+    	
+    	//get the parameters
+    	ParameterMap requestParameters = context.getRequestParameters();
+    	//create a new empty list
+    	List<Instruction> requestInstruct = new AutoPopulatingList<Instruction>(Instruction.class);
+
+    	//get the parameters from the request and parse the set looking for instructions
+    	Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
+    	for (Entry<String, Object> entry : entries) {
+    		key = entry.getKey();
+    		value = (String)entry.getValue();
+    		logger.info("key/value= " + key + "/" + value);
+    		if (key.contains("instructions")) {
+    			if (key.contains(".id")) {
+	    			inst = new Instruction();
+					int id = Integer.parseInt((String)value);
+					inst.setId(id);
+	    			inst.setSequenceNo(seq++);
+    			}    			
+    			if (key.contains("description")) {
+	    			inst.setDescription((String)value);
+	    			requestInstruct.add(inst);
+    			}    			
+    		}
+    	}
+    	
+    	//replace the current list with the parsed list
+    	if (requestInstruct.size() > 0) {
+    		recipe.getInstructions().clear();
+    		recipe.setInstruction(requestInstruct);
+    	}
+    }
+
+	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {
+		logger.info("adjustRecipeIngredientList");
+		
+		logger.info("parsing ingredients");
+		Iterator<RecipeIngredient> iterator2 = recipe.getRecipeIngredients().iterator();
+		while (iterator2.hasNext()) {
+			RecipeIngredient recipeIngred = iterator2.next();
+			logger.info("id= " + recipeIngred.getId());
+			logger.info("seq= " + recipeIngred.getSequenceNo());
+			logger.info("ingredId= " + recipeIngred.getIngredientId());
+			logger.info("qty= " + recipeIngred.getQuantity());
+			logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
+			logger.info("type= " + recipeIngred.getQtyType());			
+			logger.info("qual= " + recipeIngred.getQualifier());
+			logger.info("ingred= " + recipeIngred.getIngredient());
+		}	
+		
+		int seq = 0;
+		String key = null;
+		Object value = null;
+		RecipeIngredient ingred = null;
+		
+		//get the parameters
+		ParameterMap requestParameters = context.getRequestParameters();
+		//create a new empty list
+		List<RecipeIngredient> requestIngred = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
+	
+		//get the parameters from the request and parse the set looking for instructions
+		Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
+		for (Entry<String, Object> entry : entries) {
+			key = entry.getKey();
+			value = entry.getValue();
+			logger.info("key/value= " + key + "/" + value);
+			if (key.contains("recipeIngredients")) {
+				if (key.contains(".id")) {
+					ingred = new RecipeIngredient();
+					int id = Integer.parseInt((String)value);
+					ingred.setId(id);
+					ingred.setSequenceNo(seq++);
+				}
+				if (key.contains("ingredientId")) {
+					int id = Integer.parseInt((String)value);
+					ingred.setIngredientId(id);
+				}
+				if (key.contains("quantity")) {
+					ingred.setQuantity((String)value);
+				}
+				if (key.contains("qtyType")) {
+					ingred.setQtyType((String)value);
+				}
+				if (key.contains("qualifier")) {
+					ingred.setQualifier((String)value);
+					requestIngred.add(ingred);
+				}	
+			}
+		}
+		
+		//replace the current list with the parsed list
+		if (requestIngred.size() > 0) {
+			recipe.getRecipeIngredients().clear();
+			recipe.setRecipeIngredients(requestIngred);
+		}
+	}
 }
