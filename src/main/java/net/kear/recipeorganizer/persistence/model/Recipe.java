@@ -127,8 +127,13 @@ public class Recipe implements Serializable {
 	@Valid
 	private List<Source> sources = new ArrayList<Source>();*/
 	
-	@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
-	private Source source;
+	//@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
+	//private Source source;
+	
+    @OneToOne(orphanRemoval=true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECIPE_ID", nullable = false)
+    private Source source;
+
 	
 	public Recipe() {}
 

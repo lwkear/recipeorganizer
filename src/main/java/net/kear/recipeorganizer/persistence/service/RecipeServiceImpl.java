@@ -120,7 +120,7 @@ public class RecipeServiceImpl implements RecipeService {
     	
     	String key = null;
     	Object value = null;
-    	int seq = 0;
+    	int seq = 1;
     	Instruction inst = null;
     	
     	//get the parameters
@@ -174,7 +174,7 @@ public class RecipeServiceImpl implements RecipeService {
 			logger.info("ingred= " + recipeIngred.getIngredient());
 		}	
 		
-		int seq = 0;
+		int seq = 1;
 		String key = null;
 		Object value = null;
 		RecipeIngredient ingred = null;

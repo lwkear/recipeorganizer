@@ -78,10 +78,13 @@ public class Source implements Serializable {
 	@Size(max=500)	//250
 	private String other;
 
-    @OneToOne(fetch = FetchType.LAZY)
+/*    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECIPE_ID", nullable = false)
-    private Recipe recipe;
-	
+    private Recipe recipe;*/
+
+    @OneToOne(mappedBy = "recipe")
+  	private Recipe recipe;
+    
 	public Source() {}
 	
 	public Source(String type, String cookbook, Integer cookbookPage, String magazine, Date magazinePubdate, String newspaper, Date newspaperPubdate, String person,
