@@ -53,9 +53,10 @@ public class RecipeServiceImpl implements RecipeService {
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
 		recipe.setCategory(new Category());
-		recipe.setSource(new Source());
+		Source source = new Source();
+		source.setRecipe(recipe);
+		recipe.setSource(source);
 		recipe.setUser(user);
-		/*recipe.getInstructions().add(new Instruction());*/
 		return recipe;
     }
     

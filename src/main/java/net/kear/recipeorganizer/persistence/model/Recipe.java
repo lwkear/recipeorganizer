@@ -23,6 +23,7 @@ import javax.validation.GroupSequence;
 
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.util.TagList;
 
 import org.hibernate.annotations.Type;
@@ -54,6 +55,9 @@ public class Recipe implements Serializable {
 	
 	@GroupSequence({MinSizeGroup2.class, RecipeIngredient.RecipeIngredientGroup.class})
 	public interface RecipeRecipeIngredientGroup {}
+
+	@GroupSequence({Source.SourceGroup.class})
+	public interface RecipeOptionalGroup {}
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
@@ -80,8 +84,11 @@ public class Recipe implements Serializable {
 	@Size(max=10, groups=SizeGroup.class)	//100
 	private String servings;
 
-	@Column(name = "PREP_TIME")
-	private int prepTime;
+	@Column(name = "PREP_HOURS")
+	private int prepHours;
+
+	@Column(name = "PREP_MINUTES")
+	private int prepMinutes;
 
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
@@ -91,13 +98,6 @@ public class Recipe implements Serializable {
 	@Valid
 	private Category category;
 
-	/*** ingredients page ***/
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name="RECIPE_ID", nullable=false)
-	@Valid
-	@Size(min=1, groups=MinSizeGroup2.class)
-	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
-
 	/*** instructions page ***/
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
@@ -105,6 +105,13 @@ public class Recipe implements Serializable {
 	@Size(min=1, groups=MinSizeGroup1.class)
 	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
 	
+	/*** ingredients page ***/
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name="RECIPE_ID", nullable=false)
+	@Valid
+	@Size(min=1, groups=MinSizeGroup2.class)
+	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
+
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
 	@Lob
@@ -122,25 +129,15 @@ public class Recipe implements Serializable {
 	@Size(max=10, groups=SizeGroup.class)
 	private List<String> tags;
 	
-	/*@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name="RECIPE_ID", nullable=false)
+	@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	@Valid
-	private List<Source> sources = new ArrayList<Source>();*/
-	
-	//@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
-	//private Source source;
-	
-    @OneToOne(orphanRemoval=true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "RECIPE_ID", nullable = false)
-    private Source source;
-
+	private Source source;
 	
 	public Recipe() {}
 
-	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepTime, String notes, 
-				boolean allowShare, String photo, List<String> tags, List<Instruction> instructions, List<RecipeIngredient> recipeIngredients, 
-				/*List<Source> sources) {*/
-				Source source) {
+	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
+				Integer prepMinutes, String notes, boolean allowShare, String photo, List<String> tags, List<Instruction> instructions, 
+				List<RecipeIngredient> recipeIngredients, Source source) {
 		super();
 		this.user = user;
 		this.name = name;
@@ -148,14 +145,14 @@ public class Recipe implements Serializable {
 		this.description = description;
 		this.category = category;
 		this.servings = servings;
-		this.prepTime = prepTime;
+		this.prepHours = prepHours;
+		this.prepMinutes = prepMinutes;
 		this.notes = notes;
 		this.allowShare = allowShare;
 		this.photo = photo;
 		this.tags = tags;
 		this.instructions = instructions;
 		this.recipeIngredients = recipeIngredients;
-		/*this.sources = sources;*/
 		this.source = source;
 	}
 
@@ -215,14 +212,22 @@ public class Recipe implements Serializable {
 		this.servings = servings;
 	}
 
-	public int getPrepTime() {
-		return prepTime;
+	public int getPrepHours() {
+		return prepHours;
 	}
 
-	public void setPrepTime(int prepTime) {
-		this.prepTime = prepTime;
+	public void setPrepHours(int prepHours) {
+		this.prepHours = prepHours;
 	}
 
+	public int getPrepMinutes() {
+		return prepMinutes;
+	}
+
+	public void setPrepMinutes(int prepMinutes) {
+		this.prepMinutes = prepMinutes;
+	}
+	
 	public String getNotes() {
 		return notes;
 	}
@@ -299,26 +304,6 @@ public class Recipe implements Serializable {
 		this.recipeIngredients.add(recipeIngredient);
 	}
 
-	/*public List<Source> getSources() {
-		return sources;
-	}
-
-	public Source getSource(int ndx) {
-		return this.sources.get(ndx);
-	}
-	public void setSources(List<Source> sources) {
-		this.sources = sources;
-	}
-
-	public void setSource(int ndx, Source source) {
-		this.sources.set(ndx, source);
-	}
-
-	public void addSource(Source source) {
-		this.sources.add(source);
-	}
-	*/
-
 	public Source getSource() {
 		return source;
 	}
@@ -340,10 +325,10 @@ public class Recipe implements Serializable {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((photo == null) ? 0 : photo.hashCode());
-		result = prime * result + prepTime;
+		result = prime * result + prepHours;
+		result = prime * result + prepMinutes;
 		result = prime * result + ((recipeIngredients == null) ? 0 : recipeIngredients.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
-		/*result = prime * result + ((sources == null) ? 0 : sources.hashCode());*/
 		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
@@ -398,7 +383,9 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!photo.equals(other.photo))
 			return false;
-		if (prepTime != other.prepTime)
+		if (prepHours != other.prepHours)
+			return false;
+		if (prepMinutes != other.prepMinutes)
 			return false;
 		if (recipeIngredients == null) {
 			if (other.recipeIngredients != null)
@@ -410,11 +397,6 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!servings.equals(other.servings))
 			return false;
-		/*if (sources == null) {
-			if (other.sources != null)
-				return false;
-		} else if (!sources.equals(other.sources))
-			return false;*/
 		if (source == null) {
 			if (other.source != null)
 				return false;
@@ -436,9 +418,8 @@ public class Recipe implements Serializable {
 	@Override
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
-				", servings=" + servings + ", prepTime=" + prepTime + ", notes=" + notes + ", allowShare=" + allowShare + ", photo=" + photo +
-				", tags=" + tags + ", category=" + category + ", instructions=" + instructions + ", recipeIngredients=" + recipeIngredients + 
-				/*", sources=" + sources + "]";*/
-				", source=" + source + "]";
+				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
+				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructions=" + instructions + ", recipeIngredients=" +  
+				recipeIngredients + ", source=" + source + "]";
 	}
 }

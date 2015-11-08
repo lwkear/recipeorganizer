@@ -17,7 +17,8 @@
 			<binding property="name"/>
 			<binding property="description"/>
 			<binding property="servings"/>
-			<binding property="prepTime"/>
+			<binding property="prepHours"/>
+			<binding property="prepMinutes"/>
 			<binding property="allowShare"/>
 			<binding property="category.id"/>
 			<binding property="category.name"/>
@@ -52,10 +53,19 @@
 			<binding property="notes"/>
 			<binding property="tags"/>
 			<binding property="source.type"/>
+			<binding property="source.cookbook"/>
+			<binding property="source.cookbookPage"/>
+			<binding property="source.magazine"/>
+			<binding property="source.magazinePubdate"/>
+			<binding property="source.newspaper"/>
+			<binding property="source.newspaperPubdate"/>
 			<binding property="source.person"/>
+			<binding property="source.websiteUrl"/>
+			<binding property="source.recipeUrl"/>
+			<binding property="source.other"/>
 		</binder>
-		<transition on="back" to="instructions" bind="false" validate="false"></transition>
-		<transition on="save" to="end">
+		<transition on="back" to="instructions" bind="true" validate="false"></transition>
+		<transition on="save" to="end" bind="true" validate="true" validation-hints="'recipeOptionalGroup'">
 			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
 		</transition>		
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
