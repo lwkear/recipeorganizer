@@ -2,6 +2,8 @@
 <html>
 <head>
 
+<title>Basics</title>
+
 <%@include file="../common/head.jsp"%>
 
 </head>
@@ -13,8 +15,12 @@
 	<spring:bind path="recipe.name"><c:set var="nameError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.description"><c:set var="descriptionError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.servings"><c:set var="servingsError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="recipe.prepTime"><c:set var="prepError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="recipe.prepHours"><c:set var="prepHourError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="recipe.prepMinutes"><c:set var="prepMinuteError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.category.id"><c:set var="categoryError">${status.errorMessage}</c:set></spring:bind>
+
+	<c:if test="${not empty prepHourError}"><c:set var="prepTimeError">X</c:set></c:if>
+	<c:if test="${not empty prepMinuteError}"><c:set var="prepTimeError">X</c:set></c:if>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
@@ -35,7 +41,6 @@
 	<p></p>
 	<p></p>
 
-		<%-- <form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe"> --%>		
 		<form:form class="form-horizontal" role="form" modelAttribute="recipe">
 			<div class="row">
 				<div class="col-sm-12">
@@ -58,10 +63,10 @@
 							<label class="control-label col-sm-3 <c:if test="${not empty servingsError}">text-danger</c:if>" style="text-align: left;" 
 									id="servingsLabel" for="inputServings">
 								<spring:message code="recipe.basics.servings"></spring:message></label>
-							<label class="control-label col-sm-2 <c:if test="${not empty prepError}">text-danger</c:if>" style="text-align: left;"
-									id="prepLabel" for="inputPrepTime">
+							<label class="control-label col-sm-3 <c:if test="${not empty prepTimeError}">text-danger</c:if>" style="text-align: left;"
+									id="prepLabel" >	<!-- for="inputPrepHour" -->
 								<spring:message code="recipe.basics.preptime"></spring:message></label>
-							<label class="control-label col-sm-2" style="text-align: left;">
+							<label class="control-label col-sm-3" style="text-align: left;">
 								<spring:message code="recipe.basics.share"></spring:message></label>
 						</div>
 						<div class="row">
@@ -77,11 +82,21 @@
 								<form:input type="text" class="form-control col-sm-1" id="inputServings" path="servings" autocomplete="off"/>
 								<span class="text-danger">${servingsError}</span>
 							</div>
-							<div class="col-sm-2 <c:if test="${not empty prepError}">has-error</c:if>">
-								<form:input type="text" class="form-control col-sm-1" id="inputPrepTime" path="prepTime" autocomplete="off"/>
-								<span class="text-danger">${prepError}</span>
+							<div class="row col-sm-3" style="margin:0; padding-left:0">
+								<label class="control-label col-sm-1" for="inputPrepHour">
+									<spring:message code="recipe.basics.hour"></spring:message></label>
+								<div class="col-sm-4 <c:if test="${not empty prepHourError}">has-error</c:if>">
+									<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" autocomplete="off"/>
+									<span class="text-danger">${prepHourError}</span>
+								</div>
+								<label class="control-label col-sm-1" for="inputPrepMinute">
+									<spring:message code="recipe.basics.minute"></spring:message></label>
+								<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
+									<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" autocomplete="off"/>
+									<span class="text-danger">${prepMinuteError}</span>
+								</div>
 							</div>
-							<div class="col-sm-2">
+							<div class="col-sm-3">
 								<div class="radio-inline">
 									<form:radiobutton value="true" path="allowShare" checked="true"/><spring:message code="common.yes"></spring:message>
 								</div>
@@ -93,13 +108,20 @@
 					</div>
 				</div>
 			</div>
+			<div class="row spacer-vert">  <!-- style="margin-top:40px"> -->
+				<div class="col-sm-5">
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-primary" type="submit" name="_eventId_proceed">Ingredients</button>
+				</div>
+				<div class="col-sm-3">
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+				</div>
+			</div>
 			<form:hidden id="userID" path="user.id"/>
 			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
-
-			<div>
-				<button class="btn btn-default" type="submit" name="_eventId_proceed">Ingredients</button>
-				<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
-			</div>
 		</form:form>
 	</div>
 	

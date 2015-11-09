@@ -61,7 +61,7 @@
 	</logger>
 	
 	<logger name="org.hibernate">
-		<level value="debug" />
+		<!-- <level value="debug" /> -->
 		<!-- <level value="info" /> -->
 	</logger>
 

@@ -2,6 +2,8 @@
 <html>
 <head>
 
+<title>End</title>
+
 <title>About</title>
 
 <%@include file="../common/head.jsp" %>

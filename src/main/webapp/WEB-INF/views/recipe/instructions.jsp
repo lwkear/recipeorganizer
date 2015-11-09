@@ -2,6 +2,8 @@
 <html>
 <head>
 
+<title>Instructions</title>
+
 <%@include file="../common/head.jsp"%>
 
 </head>
@@ -59,14 +61,22 @@
 					</div>
 				</div>
 			</div>
-			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
-			
-			<div>
-				<button class="btn btn-default row-adjust" type="submit" name="_eventId_back">Back</button>
-				<button class="btn btn-default row-adjust" type="submit" name="_eventId_proceed">Optional</button>
-				<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+			<div class="row" style="margin-top:40px">
+				<div class="col-sm-2">
+					<button class="btn btn-default" type="submit" name="_eventId_back">Back</button>
+				</div>
+				<div class="col-sm-3">
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-primary" type="submit" name="_eventId_proceed">Optional</button>
+				</div>
+				<div class="col-sm-3">
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+				</div>
 			</div>
-			
+			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
 		</form:form>
 	</div>
 

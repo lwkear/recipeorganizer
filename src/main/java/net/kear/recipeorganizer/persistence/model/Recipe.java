@@ -88,6 +88,7 @@ public class Recipe implements Serializable {
 	private int prepHours;
 
 	@Column(name = "PREP_MINUTES")
+	@Max(value=59, groups=SizeGroup.class)
 	private int prepMinutes;
 
 	@Column(name = "ALLOW_SHARE")
