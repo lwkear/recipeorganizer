@@ -37,7 +37,8 @@
 					<!-- must bind the instruction array, even on initial display -->
 					<spring:bind path="recipe.instructions[0]"></spring:bind>
 					<c:set var="instructplaceholder"><spring:message code="recipe.instructions.placeholder"></spring:message></c:set>
-					<div class="col-sm-12">
+						<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.instructions.step"></spring:message></label>
+						<div class="col-sm-12">
 						<c:forEach items="${recipe.instructions}" var="instruction" varStatus="loop">
 							<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
 							<div class="form-group <c:if test="${not empty instructError}">has-error</c:if>">
@@ -61,14 +62,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="row" style="margin-top:40px">
+			<div class="row">
+				<div class="col-sm-12">
+					<small><spring:message code="common.requiredfield"></spring:message></small>
+				</div>
+			</div>
+			<div class="row spacer-vert">
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
+					<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.optional.button"></spring:message></button>
+					<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed"><spring:message code="recipe.optional.button"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>

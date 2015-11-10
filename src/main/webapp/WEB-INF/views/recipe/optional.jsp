@@ -139,7 +139,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="row" style="margin-top:40px">
+			<div class="row spacer-vert">
 				<div class="col-sm-2">
 					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>

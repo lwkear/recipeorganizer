@@ -38,9 +38,9 @@
 					<spring:bind path="recipe.recipeIngredients[0]"></spring:bind>
 					<div class="form-group col-sm-12">
 						<div class="form-group" style="margin-bottom:0">
-							<label class="control-label col-sm-1" style="text-align: left" ><spring:message code="recipe.ingredients.quantity"></spring:message></label>
+							<label class="control-label col-sm-1" style="text-align: left" >*<spring:message code="recipe.ingredients.quantity"></spring:message></label>
 							<label class="control-label col-sm-2" style="text-align: left" ><spring:message code="recipe.ingredients.measure"></spring:message></label>
-							<label class="control-label col-sm-5" style="text-align: left" ><spring:message code="recipe.ingredients.ingredient"></spring:message></label>
+							<label class="control-label col-sm-5" style="text-align: left" >*<spring:message code="recipe.ingredients.ingredient"></spring:message></label>
 							<label class="control-label col-sm-4" style="text-align: left" ><spring:message code="recipe.ingredients.qualifier"></spring:message></label>
 						</div>
 						<c:forEach items="${recipe.recipeIngredients}" var="ingred" varStatus="loop">
@@ -93,14 +93,19 @@
 					</div>
                 </div>
 			</div>
-			<div class="row" style="margin-top:40px">
+			<div class="row">
+				<div class="col-sm-12">
+					<small><spring:message code="common.requiredfield"></spring:message></small>
+				</div>
+			</div>
+			<div class="row spacer-vert">
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
+					<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.instructions.button"></spring:message></button>
+					<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed"><spring:message code="recipe.instructions.button"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
