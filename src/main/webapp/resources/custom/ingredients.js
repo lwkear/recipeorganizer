@@ -139,7 +139,7 @@ $(document)
 		$(this).parents('.form-group:first').remove();    	
 		return false;
 	})
-	.on('click', '#proceed', function(e)
+	.on('click', '.row-adjust', function(e)
 	{
 		//remove the typeahead html added to the form which included the class w/o the name attribute 
 	    $('.ingredQtyType').typeahead('destroy');
@@ -231,7 +231,7 @@ $(document)
 			ingredId.val(data.id);
 			ingredDesc.val(desc);
 		})
-		.fail(function(jqXHR, status, error){
+		.fail(function(jqXHR, status, error) {
 			console.log('fail request: '+ jqXHR);
 			console.log('fail status: '+ status);
 			console.log('fail error: '+ error);
