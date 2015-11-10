@@ -8,14 +8,14 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.ingredForm.inputQty.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="recipe.add.title"></spring:message></h3>
+				<h3><spring:message code="recipe.ingredients.title"></spring:message></h3>
 			</div>
 		</div>
 
@@ -31,7 +31,7 @@
 	<p></p>
 	<p></p>
 
-		<form:form class="form-horizontal" role="form" modelAttribute="recipe">		
+		<form:form class="form-horizontal" name="ingredForm" role="form" modelAttribute="recipe">		
 			<div class="row">
 				<div class="col-sm-12">
 					<!-- must bind the ingredients array, even on initial display -->
@@ -53,7 +53,8 @@
 								<!-- display ajax validation errors -->						
 								<div class="form-group ingredErrGrp2" style="margin-bottom:0; display:none">
 									<label class="control-label col-sm-3" style="text-align: left; margin-bottom:0; "></label>
-									<label class="control-label col-sm-5 text-danger jsonIgredErr" style="text-align: left; margin-bottom:0;"><b>Error</b></label>
+									<label class="control-label col-sm-5 text-danger jsonIgredErr" style="text-align: left; margin-bottom:0;">
+										<b><spring:message code="common.error"></spring:message></b></label>
 									<label class="control-label col-sm-4" style="text-align: left; margin-bottom:0;"></label>
 								</div>
 								<div class="form-group">
@@ -94,17 +95,17 @@
 			</div>
 			<div class="row" style="margin-top:40px">
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_back">Back</button>
+					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_proceed">Instructions</button>
+					<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.instructions.button"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+					<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 				</div>
 			</div>
 			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>

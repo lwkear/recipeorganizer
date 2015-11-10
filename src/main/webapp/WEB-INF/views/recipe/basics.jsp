@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.basicsForm.inputName.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
@@ -25,7 +25,7 @@
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="recipe.add.title"></spring:message></h3>
+				<h3><spring:message code="recipe.basics.title"></spring:message></h3>
 			</div>
 		</div>
 
@@ -41,33 +41,28 @@
 	<p></p>
 	<p></p>
 
-		<form:form class="form-horizontal" role="form" modelAttribute="recipe">
+		<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe">
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
-						<label class="control-label" id="nameLabel" for="inputName"><spring:message code="recipe.basics.name"></spring:message></label>
+						<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.basics.name"></spring:message></label>
 						<form:input type="text" class="form-control recipeName" id="inputName" path="name" autocomplete="off"/>
 						<span class="text-danger">${nameError}</span>
 					</div>
 					<div class="form-group col-sm-12 <c:if test="${not empty descriptionError}">has-error</c:if>">
-						<label class="control-label" for="inputDesc"><spring:message code="recipe.basics.description"></spring:message></label>
+						<label class="control-label" for="inputDesc">*<spring:message code="recipe.basics.description"></spring:message></label>
 						<form:textarea class="form-control" rows="3" id="inputDesc" path="description"></form:textarea>
 						<span class="text-danger">${descriptionError}</span>
 					</div>
-
 					<div class="form-group col-sm-12">
 						<div class="row">
 							<label class="control-label col-sm-3 <c:if test="${not empty categoryError}">text-danger</c:if>" style="text-align: left;" 
-									id="categoryLabel" for="inputCategory">
-								<spring:message code="recipe.basics.category"></spring:message></label>
+								id="categoryLabel" for="inputCategory">*<spring:message code="recipe.basics.category"></spring:message></label>
 							<label class="control-label col-sm-3 <c:if test="${not empty servingsError}">text-danger</c:if>" style="text-align: left;" 
-									id="servingsLabel" for="inputServings">
-								<spring:message code="recipe.basics.servings"></spring:message></label>
+								id="servingsLabel" for="inputServings"><spring:message code="recipe.basics.servings"></spring:message></label>
 							<label class="control-label col-sm-3 <c:if test="${not empty prepTimeError}">text-danger</c:if>" style="text-align: left;"
-									id="prepLabel" >	<!-- for="inputPrepHour" -->
-								<spring:message code="recipe.basics.preptime"></spring:message></label>
-							<label class="control-label col-sm-3" style="text-align: left;">
-								<spring:message code="recipe.basics.share"></spring:message></label>
+								id="prepLabel" ><spring:message code="recipe.basics.preptime"></spring:message></label>
+							<label class="control-label col-sm-3" style="text-align: left;"><spring:message code="recipe.basics.share"></spring:message></label>
 						</div>
 						<div class="row">
 							<form:hidden id="catID" path="category.id"/>
@@ -83,13 +78,13 @@
 								<span class="text-danger">${servingsError}</span>
 							</div>
 							<div class="row col-sm-3" style="margin:0; padding-left:0">
-								<label class="control-label col-sm-1" for="inputPrepHour">
+								<label class="control-label col-sm-1" for="inputPrepHour" style="padding-left: 0;">
 									<spring:message code="recipe.basics.hour"></spring:message></label>
 								<div class="col-sm-4 <c:if test="${not empty prepHourError}">has-error</c:if>">
 									<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" autocomplete="off"/>
 									<span class="text-danger">${prepHourError}</span>
 								</div>
-								<label class="control-label col-sm-1" for="inputPrepMinute">
+								<label class="control-label col-sm-1" for="inputPrepMinute" style="padding-left: 0">
 									<spring:message code="recipe.basics.minute"></spring:message></label>
 								<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
 									<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" autocomplete="off"/>
@@ -108,16 +103,21 @@
 					</div>
 				</div>
 			</div>
-			<div class="row spacer-vert">  <!-- style="margin-top:40px"> -->
+			<div class="row">
+				<div class="col-sm-12">
+					<small><spring:message code="common.requiredfield"></spring:message></small>
+				</div>
+			</div>
+			<div class="row spacer-vert">
 				<div class="col-sm-5">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_proceed">Ingredients</button>
+					<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.ingredients.button"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+					<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 				</div>
 			</div>
 			<form:hidden id="userID" path="user.id"/>

@@ -8,14 +8,14 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.instructForm.inputDesc.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="recipe.add.title"></spring:message></h3>
+				<h3><spring:message code="recipe.instructions.title"></spring:message></h3>
 			</div>
 		</div>
 
@@ -44,7 +44,7 @@
 								<div class="input-group instructGrp">
 									<%-- <form:hidden class="instructId instruct" path="instructions[${loop.index}].id"/> --%>
 									<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>
-									<form:textarea class="form-control instructDesc instruct" rows="2" path="instructions[${loop.index}].description"
+									<form:textarea class="form-control instructDesc instruct" id="inputDesc" rows="2" path="instructions[${loop.index}].description"
 										placeholder="${instructplaceholder}" />
 									<span class="input-group-btn">
 										<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
@@ -63,17 +63,17 @@
 			</div>
 			<div class="row" style="margin-top:40px">
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_back">Back</button>
+					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_proceed">Optional</button>
+					<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.optional.button"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+					<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 				</div>
 			</div>
 			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>

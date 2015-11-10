@@ -8,14 +8,14 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="document.optionalForm.inputBack.focus();">
 
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="recipe.add.title"></spring:message></h3>
+				<h3><spring:message code="recipe.optional.title"></spring:message></h3>
 			</div>
 		</div>
 
@@ -31,22 +31,23 @@
 	<p></p>
 	<p></p>
 
-		<%-- <form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe"> --%>		
-		<form:form class="form-horizontal" role="form" modelAttribute="recipe">
+		<form:form class="form-horizontal" role="form" name="optionalForm" modelAttribute="recipe">
 			<div class="row">
 				<div class="col-sm-12">
 					<c:set var="backgroundplaceholder"><spring:message code="recipe.optional.background.placeholder"></spring:message></c:set>
+					<c:set var="tagsplaceholder"><spring:message code="recipe.optional.tags.placeholder"></spring:message></c:set>
+					<c:set var="notesplaceholder"><spring:message code="recipe.optional.notes.placeholder"></spring:message></c:set>
 					<div class="form-group col-sm-12">
-						<label class="control-label" for="inputBack">Background:</label>
+						<label class="control-label" for="inputBack"><spring:message code="recipe.optional.background"></spring:message></label>
 						<form:textarea class="form-control" rows="3" id="inputBack" placeholder="${backgroundplaceholder}" path="background"></form:textarea>
 					</div>
-					
 					<c:if test="${errors.hasFieldErrors('source')}">
 						<spring:bind path="recipe.source"></spring:bind>
 					</c:if>
 					<div class="form-group col-sm-12">
 						<div class="form-group" style="margin-bottom:0">
-							<label class="control-label col-sm-2" style="text-align: left">Source:</label>
+							<label class="control-label col-sm-2" style="text-align: left">
+								<spring:message code="recipe.optional.source"></spring:message></label>
 							<label class="control-label col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">text-danger</c:if>" style="text-align: left; display:none" id="cookbookLabel">
 								<spring:message code="recipe.optional.source.cookbookname"></spring:message></label>
 							<label class="control-label col-sm-1 srcGroup bookGroup" style="text-align: left; display:none">
@@ -124,32 +125,33 @@
 					</div>
 
 					<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>">
-						<label class="control-label" id="tagsLabel" for="inputTags">Tags</label>
+						<label class="control-label" id="tagsLabel" for="inputTags">
+							<spring:message code="recipe.optional.tags"></spring:message></label>
 						<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-							<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="tags"/>
+							<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
 							<span class="text-danger">${tagsError}</span>
 						</div>					
 					</div>
 
 					<div class="form-group col-sm-12">
-						<label class="control-label" for="inputNotes">Notes:</label>
-						<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="notes"></form:textarea>
+						<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
+						<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="${notesplaceholder}" path="notes"></form:textarea>
 					</div>
 				</div>
 			</div>
 			<div class="row" style="margin-top:40px">
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_back">Back</button>
+					<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-primary" type="submit" name="_eventId_save">Save</button>
+					<button class="btn btn-primary" type="submit" name="_eventId_save"><spring:message code="common.review"></spring:message></button>
 				</div>
 				<div class="col-sm-3">
 				</div>
 				<div class="col-sm-2">
-					<button class="btn btn-default" type="submit" name="_eventId_cancel">Cancel</button>
+					<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 				</div>
 			</div>
 			<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
