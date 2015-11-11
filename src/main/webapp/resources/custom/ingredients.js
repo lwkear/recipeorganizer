@@ -122,7 +122,7 @@ $(document)
 	    //clear any entered text from the current entry, remove has-error class, hide the ajax error messages (just in case)
 	  	newEntry.find('input').val('');
 	  	newEntry.find('.has-error').removeClass('has-error');
-	  	newEntry.find('.ingredErrGrp2').hide();
+	  	newEntry.find('.ingredErrGrp').hide();
 	  	//show the "minus" button for the current entry
 	  	currentEntry.find('.removeIngredient').show();
 	
@@ -135,7 +135,7 @@ $(document)
 	{
 		e.preventDefault();
 		//there are 2 separate <div> sections that need to be removed
-		$(this).parents('.form-group:first').prev('.ingredErrGrp2').remove();
+		$(this).parents('.form-group:first').prev('.ingredErrGrp').remove();
 		$(this).parents('.form-group:first').remove();    	
 		return false;
 	})
@@ -244,7 +244,7 @@ $(document)
 			//get the parent <div> for this edit box, then set the error message and show the error 
 			var currentEntry = ingredDesc.parents('.ingredGrp:first');
 			currentEntry.find('.jsonIgredErr').html(respText);
-			currentEntry.find('.ingredErrGrp2').show();
+			currentEntry.find('.ingredErrGrp').show();
 		})
 	})
 })

@@ -50,13 +50,13 @@ public class Recipe implements Serializable {
 	@GroupSequence({NotBlankGroup.class,SizeGroup.class,Category.CategoryGroup.class})
 	public interface RecipeBasicGroup {}
 	
-	@GroupSequence({MinSizeGroup1.class, Instruction.InstructGroup.class})
-	public interface RecipeInstructGroup {}
-	
-	@GroupSequence({MinSizeGroup2.class, RecipeIngredient.RecipeIngredientGroup.class})
+	@GroupSequence({MinSizeGroup1.class, RecipeIngredient.RecipeIngredientGroup.class})
 	public interface RecipeRecipeIngredientGroup {}
 
-	@GroupSequence({Source.SourceGroup.class})
+	@GroupSequence({MinSizeGroup2.class, Instruction.InstructGroup.class})
+	public interface RecipeInstructGroup {}
+	
+	@GroupSequence({SizeGroup.class, Source.SourceGroup.class})
 	public interface RecipeOptionalGroup {}
 	
 	@Id
@@ -85,11 +85,11 @@ public class Recipe implements Serializable {
 	private String servings;
 
 	@Column(name = "PREP_HOURS")
-	private int prepHours;
+	private Integer prepHours;
 
 	@Column(name = "PREP_MINUTES")
 	@Max(value=59, groups=SizeGroup.class)
-	private int prepMinutes;
+	private Integer prepMinutes;
 
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
@@ -99,20 +99,20 @@ public class Recipe implements Serializable {
 	@Valid
 	private Category category;
 
-	/*** instructions page ***/
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="RECIPE_ID", nullable=false)
-	@Valid
-	@Size(min=1, groups=MinSizeGroup1.class)
-	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
-	
 	/*** ingredients page ***/
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
-	@Size(min=1, groups=MinSizeGroup2.class)
+	@Size(min=1, groups=MinSizeGroup1.class)
 	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 
+	/*** instructions page ***/
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(name="RECIPE_ID", nullable=false)
+	@Valid
+	@Size(min=1, groups=MinSizeGroup2.class)
+	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
+	
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
 	@Lob
@@ -213,19 +213,19 @@ public class Recipe implements Serializable {
 		this.servings = servings;
 	}
 
-	public int getPrepHours() {
+	public Integer getPrepHours() {
 		return prepHours;
 	}
 
-	public void setPrepHours(int prepHours) {
+	public void setPrepHours(Integer prepHours) {
 		this.prepHours = prepHours;
 	}
 
-	public int getPrepMinutes() {
+	public Integer getPrepMinutes() {
 		return prepMinutes;
 	}
 
-	public void setPrepMinutes(int prepMinutes) {
+	public void setPrepMinutes(Integer prepMinutes) {
 		this.prepMinutes = prepMinutes;
 	}
 	
@@ -322,17 +322,13 @@ public class Recipe implements Serializable {
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((instructions == null) ? 0 : instructions.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((photo == null) ? 0 : photo.hashCode());
-		result = prime * result + prepHours;
-		result = prime * result + prepMinutes;
-		result = prime * result + ((recipeIngredients == null) ? 0 : recipeIngredients.hashCode());
+		result = prime * result + ((prepHours == null) ? 0 : prepHours.hashCode());
+		result = prime * result + ((prepMinutes == null) ? 0 : prepMinutes.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
-		result = prime * result + ((source == null) ? 0 : source.hashCode());
 		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -384,9 +380,15 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!photo.equals(other.photo))
 			return false;
-		if (prepHours != other.prepHours)
+		if (prepHours == null) {
+			if (other.prepHours != null)
+				return false;
+		} else if (!prepHours.equals(other.prepHours))
 			return false;
-		if (prepMinutes != other.prepMinutes)
+		if (prepMinutes == null) {
+			if (other.prepMinutes != null)
+				return false;
+		} else if (!prepMinutes.equals(other.prepMinutes))
 			return false;
 		if (recipeIngredients == null) {
 			if (other.recipeIngredients != null)

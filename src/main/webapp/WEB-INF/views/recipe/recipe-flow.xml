@@ -66,7 +66,7 @@
 		</binder>
 		<transition on="back" to="instructions" bind="true" validate="false"></transition>
 		<transition on="save" to="end" bind="true" validate="true" validation-hints="'recipeOptionalGroup'">
-			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
+			<!-- <evaluate expression="recipeService.saveRecipe(recipe)"></evaluate> -->
 		</transition>		
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>

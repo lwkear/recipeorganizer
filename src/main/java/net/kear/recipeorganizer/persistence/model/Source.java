@@ -85,7 +85,7 @@ public class Source implements Serializable {
 	private String recipeUrl;
 
 	@Column(name = "OTHER")
-	@Size(max=500, groups=SizeGroup.class)	//250
+	@Size(max=500, groups=SizeGroup.class)	//500
 	private String other;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -227,6 +227,7 @@ public class Source implements Serializable {
 		result = prime * result + ((newspaperPubdate == null) ? 0 : newspaperPubdate.hashCode());
 		result = prime * result + ((other == null) ? 0 : other.hashCode());
 		result = prime * result + ((person == null) ? 0 : person.hashCode());
+		result = prime * result + ((recipe == null) ? 0 : recipe.hashCode());
 		result = prime * result + ((recipeUrl == null) ? 0 : recipeUrl.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((websiteUrl == null) ? 0 : websiteUrl.hashCode());
@@ -283,6 +284,11 @@ public class Source implements Serializable {
 			if (other.person != null)
 				return false;
 		} else if (!person.equals(other.person))
+			return false;
+		if (recipe == null) {
+			if (other.recipe != null)
+				return false;
+		} else if (!recipe.equals(other.recipe))
 			return false;
 		if (recipeUrl == null) {
 			if (other.recipeUrl != null)

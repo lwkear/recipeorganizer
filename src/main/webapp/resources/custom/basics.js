@@ -53,7 +53,8 @@ $(function() {
 			console.log('Name ok (not found)');
 			//fix the appearance in case a name was entered in error
 			recipeName.parent('div').removeClass('has-error');
-			$('#nameLabel').html("Name:");
+			$('#dupeErr').hide();
+			//$('#nameLabel').html("Name:");
 		})
 		.fail(function(jqXHR, status, error) {
 			console.log('fail status: '+ jqXHR.status);
@@ -66,16 +67,27 @@ $(function() {
 				console.log('respText: '+ respText);
 				//set the error indicator
 				recipeName.parent('div').addClass('has-error');
-				$('#nameLabel').html("Name:&nbsp;&nbsp;" + respText);
+				$('#dupeErr').html(respText);
+				$('#dupeErr').show();
+				//$('#nameLabel').html("Name:&nbsp;&nbsp;" + respText);
 				return;
 			}
 		})
 	})
+	.on('click', '#proceed', function(e)
+	{
+		var num = $('#inputPrepHour').val();
+		if (num == null)
+			$('#inputPrepHour').val(0);
+		num = $('#inputPrepMinute').val();
+		if (num == null)
+			$('#inputPrepMinute').val(0);
+	})
+
 	
 	$('#inputCategory').change(function() {
 		var entry = $(this).find(':selected');
 		var name = entry.val();
-		//var id = $(this).find(':selected').data('id');
 		id = entry.data('id');
 		console.log("catID=" + id);		
 		console.log("catName=" + name);

@@ -12,9 +12,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- JQueryUI core CSS -->	
-<%-- <link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.theme.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.structure.css" />" rel="stylesheet"> --%>
+<link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.structure.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.structure.css" />" rel="stylesheet">
 	

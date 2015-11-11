@@ -44,13 +44,14 @@ $(document)
 		var	newEntry = $(currentEntry.clone()).insertAfter(currentEntry);
 		newEntry.find('textarea').val('');
 		newEntry.removeClass('has-error');
+		newEntry.find('.instructErr').hide();
 		currentEntry.find('.removeInstruction').show();		
 	})    
 	.on('click', '.removeInstruction', function(e)
 	{
 		e.preventDefault();
 		//there are 2 separate <div> sections that need to be removed
-		$(this).parents('.form-group:first').prev('.instructErrGrp').remove();
+		$(this).parents('.form-group:first').prev('.instructErr').remove();
 		$(this).parents('.form-group:first').remove();
 		return false;
 	})

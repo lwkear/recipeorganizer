@@ -429,7 +429,7 @@ public class UserController {
 	}
 
 	//two-field class (not worth creating a DTO object)
-	//TODO: need to figure out how to make the password validator usable by different classes
+	//TODO: SECURITY: need to figure out how to make the password validator usable by different classes
 	//@PasswordMatch
 	public static class NewPassword {
 		

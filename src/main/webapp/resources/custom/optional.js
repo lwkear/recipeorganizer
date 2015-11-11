@@ -126,14 +126,30 @@ initTagsTA();
 //these events must reside in $(document) because the dynamically added elements are not
 //visible to the DOM otherwise
 $(document)
-.on('click', '#save', function(e)
-{
+	.on('click', '#review', function(e)
+	{
+		var ndx = $('#inputSource option:selected').index();
+		if (ndx == 0 || ndx == 7) {
+			$('#inputSource').val("");
+		}
+		var page = $('#inputBookPage').val();
+		if (page == null)
+			$('#inputBookPage').val(0);
+	})
+	
+$('.webGroup').on('blur', function() {
+	console.log("webGroup .on blur in document");
 	var ndx = $('#inputSource option:selected').index();
-	if (ndx == 0 || ndx == 7) {
-		$('#inputSource').val("");
+	var url = $(this);
+	if (ndx == 5) {
+		var webURL = url.val();
+		var pos = webURL.search('http');
+		if (pos != 0) {
+			webURL = "http://" + webURL;
+			url.val(webURL);
+		}
 	}
-
-})
+})	
 
 $('#inputSource').change(function() {
 

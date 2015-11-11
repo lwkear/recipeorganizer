@@ -134,7 +134,6 @@ public class SaveRecipeController {
         	logger.info("Empty file");
         }*/
 		
-		//TODO: fix this for single Source object!!!
 		//empty the array if the user did not enter a source		
 		/*if (recipe.getSources().size() > 0) {
 			String sourceType = recipe.getSources().get(0).getType();
@@ -227,7 +226,6 @@ public class SaveRecipeController {
 			logger.info("editRecipe: session.getAttribute: recipe is NOT null!!!");
 		}
 
-		//TODO: fix this for single Source object!!!
 		/*if (recipe.getSources().size() == 0) {
 			Source source = new Source(); 
 			recipe.getSources().add(source);
@@ -374,7 +372,7 @@ public class SaveRecipeController {
 
 	//TODO: EXCEPTION: consider using an exception handler instead?
 	//AJAX/JSON request for checking name duplication
-	@RequestMapping(value="recipe/lookupRecipeName")
+	@RequestMapping(value="recipe/lookupRecipeName", produces="text/javascript")
 	@ResponseBody 
 	public String lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response) {
 		
@@ -392,21 +390,9 @@ public class SaveRecipeController {
 		
 		//name was found
 		if (result) {
-			
 			Locale locale = LocaleContextHolder.getLocale();
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
-
-			//getMessage throws an error if the message is not found
-			try {
-				msg = messages.getMessage("Duplicate.recipe.name", null, locale);
-			}
-			catch (NoSuchMessageException e) {
-				msg = "";
-			};
-
-			if (msg.isEmpty()) {
-				msg = "Duplicate name.";
-			}
+			msg = messages.getMessage("recipe.name.duplicate", null, "Duplicate name", locale);
 		}
 
 		return msg;

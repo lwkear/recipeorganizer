@@ -19,14 +19,6 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.binding.expression.EvaluationException;
-import org.springframework.binding.expression.Expression;
-import org.springframework.binding.expression.ExpressionParser;
-import org.springframework.binding.expression.ParserContext;
-import org.springframework.binding.expression.beanwrapper.BeanWrapperExpressionParser;
-import org.springframework.binding.expression.support.FluentParserContext;
-import org.springframework.binding.mapping.impl.DefaultMapper;
-import org.springframework.binding.mapping.impl.DefaultMapping;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AutoPopulatingList;
@@ -48,7 +40,7 @@ public class RecipeServiceImpl implements RecipeService {
     /*public Recipe createRecipe(String userName) {*/
 		/*User user = userService.findUserByEmail(userName);*/
     public Recipe createRecipe() {
-    	User user = userService.findUserByEmail("kear@outlook.com");	//TODO: remove after testing
+    	User user = userService.findUserByEmail("kear@outlook.com");	//TODO: RECIPE: remove this after testing!!!
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
