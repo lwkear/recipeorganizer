@@ -154,14 +154,14 @@
 						</div>
 					</div>
 				</div>
-				<div class="row spacer-vert">
+				<div class="row spacer-vert-lg">
 					<div class="col-sm-2">
 						<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
 					<div class="col-sm-2">
-						<button class="btn btn-primary" type="submit" id="review" name="_eventId_save"><spring:message code="common.review"></spring:message></button>
+						<button class="btn btn-primary" type="submit" id="review" name="_eventId_proceed"><spring:message code="common.review"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>

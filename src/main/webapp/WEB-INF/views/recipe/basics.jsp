@@ -110,7 +110,7 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
-				<div class="row spacer-vert">
+				<div class="row spacer-vert-lg">
 					<div class="col-sm-5">
 					</div>
 					<div class="col-sm-2">

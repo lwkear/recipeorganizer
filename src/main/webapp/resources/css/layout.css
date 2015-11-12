@@ -69,6 +69,14 @@ body {
 .select-placeholder option:first-child{color: #999; display: none;}
 .select-placeholder option{color: #555;} /* bootstrap default color */
 
-.spacer-vert {
+.spacer-vert-lg {
 	margin-top:60px;
+}
+
+.spacer-vert-md {
+	margin-top:45px;
+}
+
+.spacer-vert-sm {
+	margin-top:30px;
 }

@@ -68,7 +68,7 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
-				<div class="row spacer-vert">
+				<div class="row spacer-vert-lg">
 					<div class="col-sm-2">
 						<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>

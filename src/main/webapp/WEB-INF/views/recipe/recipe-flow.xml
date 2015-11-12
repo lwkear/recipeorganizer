@@ -65,13 +65,21 @@
 			<binding property="source.other"/>
 		</binder>
 		<transition on="back" to="instructions" bind="true" validate="false"></transition>
-		<transition on="save" to="end" bind="true" validate="true" validation-hints="'recipeOptionalGroup'">
-			<!-- <evaluate expression="recipeService.saveRecipe(recipe)"></evaluate> -->
-		</transition>		
+		<transition on="proceed" to="review" bind="true" validate="true" validation-hints="'recipeOptionalGroup'"></transition>		
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
-	
+	<view-state id="review" view="recipe/review" model="recipe">
+		<on-render>
+			<evaluate expression="recipeService.getIngredients(recipe)" result="viewScope.ingredientList"></evaluate>
+		</on-render>
+		<transition on="back" to="optional" bind="true" validate="false"></transition>
+		<transition on="save" to="end" bind="true">
+			<!-- <evaluate expression="recipeService.saveRecipe(recipe)"></evaluate> -->
+		</transition>
+		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+	</view-state>
+
 	<end-state id="end" view="recipe/end"/>
-	<end-state id="cancel" view="recipe/end"/>
+	<end-state id="cancel" view="recipe/cancel"/>
 
 </flow>
