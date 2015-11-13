@@ -72,7 +72,7 @@ public class Recipe implements Serializable {
 	/*** basics page ***/
 	@Column(name = "NAME", nullable = false)
 	@NotBlank(groups=SizeGroup.class) 
-	@Size(max=10, groups=SizeGroup.class)	//250
+	@Size(max=250, groups=SizeGroup.class)	//250
 	private String name;
 
 	@Column(name = "DESCRIPTION")
@@ -81,7 +81,7 @@ public class Recipe implements Serializable {
 	private String description;
 
 	@Column(name = "SERVINGS")
-	@Size(max=10, groups=SizeGroup.class)	//100
+	@Size(max=100, groups=SizeGroup.class)	//100
 	private String servings;
 
 	@Column(name = "PREP_HOURS")

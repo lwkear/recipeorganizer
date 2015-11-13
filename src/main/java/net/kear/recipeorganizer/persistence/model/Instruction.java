@@ -38,7 +38,7 @@ public class Instruction implements Serializable {
 	
 	@Column(name = "DESCRIPTION")
 	@NotBlank(groups=NotBlankGroup.class)
-	@Size(max=20, groups=SizeGroup.class)	//2000
+	@Size(max=2000, groups=SizeGroup.class)	//2000
 	private String description;
 
 	public Instruction() {}

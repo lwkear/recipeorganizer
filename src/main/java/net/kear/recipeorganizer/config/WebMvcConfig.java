@@ -138,12 +138,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return handlerAdapter;
 	}
 	
-	@Bean(name="recipe")
+	/*@Bean(name="recipe")
 	public RecipeFlowHandler recipeFlowHandler() {
 		logger.debug("RecipeFlowHandler");
 		return new RecipeFlowHandler();
-	}
-
+	}*/
+	
 	/*** validation and i18n message configuration ***/
 	@Bean
 	public MessageSource messageSource() {

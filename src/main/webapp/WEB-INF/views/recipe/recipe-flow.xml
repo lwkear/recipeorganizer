@@ -4,9 +4,10 @@
       xsi:schemaLocation="
       	http://www.springframework.org/schema/webflow
       	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
+      	<!-- https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
 	
 	<!-- <secured attributes="GUEST" /> -->
-	
+		
 	<on-start>
     	<!-- <evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" /> -->
     	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
@@ -79,7 +80,7 @@
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 
-	<end-state id="end" view="recipe/end"/>
+	<end-state id="end" view="recipe/endpage"></end-state>
 	<end-state id="cancel" view="recipe/cancel"/>
 
 </flow>
