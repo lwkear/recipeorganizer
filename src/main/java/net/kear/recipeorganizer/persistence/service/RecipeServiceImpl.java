@@ -101,7 +101,7 @@ public class RecipeServiceImpl implements RecipeService {
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
     	logger.info("adjustInstructionList");
     	
-    	logger.info("parsing instructions");
+    	/*logger.info("parsing instructions");
     	int ndx = 0;
     	Iterator<Instruction> iterator1 = recipe.getInstructions().iterator();
     	while (iterator1.hasNext()) {
@@ -128,12 +128,12 @@ public class RecipeServiceImpl implements RecipeService {
     		value = entry.getValue();
     		logger.info("key/value= " + key + "/" + value);
     		if (key.contains("instructions")) {
-    			/*if (key.contains(".id")) {
+    			if (key.contains(".id")) {
 	    			inst = new Instruction();
 					int id = Integer.parseInt((String)value);
 					inst.setId(id);
 	    			inst.setSequenceNo(seq++);
-    			}*/    			
+    			}    			
     			if (key.contains("description")) {
     				inst = new Instruction();
 	    			inst.setDescription((String)value);
@@ -147,7 +147,7 @@ public class RecipeServiceImpl implements RecipeService {
     	if (requestInstruct.size() > 0) {
     		recipe.getInstructions().clear();
     		recipe.setInstruction(requestInstruct);
-    	}
+    	}*/
     }
 
 	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {

@@ -29,9 +29,7 @@
 						<th>Name</th>
 						<th>Category</th>
 						<th>Submitted By</th>
-						<th>Favorite</th>
 						<th>Share</th>
-						<th>LastMade</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -42,9 +40,7 @@
 							<td>${recipe.category}</td>
 							<td>${recipe.firstName}&nbsp;${recipe.lastName}</td>
 							<%-- <td>${recipe.source}</td> --%>
-							<td><c:choose><c:when test="${recipe.favorite}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></td>							
 							<td><c:choose><c:when test="${recipe.allowShare}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></td>
-							<td>${recipe.lastMade}</td>
 							<td>
 								<c:choose>
 									<c:when test="${recipe.allowShare}">

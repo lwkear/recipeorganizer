@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
@@ -37,6 +40,28 @@ public class ViewRecipeController {
 		logger.info("recipe/viewRecipe GET");
 
 		Recipe recipe = recipeService.getRecipe(id);
+		
+		int size = recipe.getInstructSections().size();
+		if (size > 0) {
+			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
+			while (iterator1.hasNext()) {
+				InstructionSection instructSection = iterator1.next();
+				logger.info("id= " + instructSection.getId()); 
+				logger.info("seq= " + instructSection.getSequenceNo());
+				logger.info("name= " + instructSection.getName());
+				size = instructSection.getInstructions().size();
+				if (size > 0) {
+					Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
+					while (iterator2.hasNext()) {
+						Instruction instruct = iterator2.next();
+						logger.info("id = " + instruct.getId()); 
+						logger.info("desc= " + instruct.getDescription());
+						logger.info("seq= " + instruct.getSequenceNo());			
+					}					
+				}
+			}			
+		}
+		
 		model.addAttribute("recipe", recipe);
 
 		return "recipe/viewRecipe";

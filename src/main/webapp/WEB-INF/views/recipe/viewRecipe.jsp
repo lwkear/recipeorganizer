@@ -49,8 +49,11 @@
 					<div class="col-sm-12">
 						<table class="table table-condensed table-striped">
 							<tbody>				
-								<c:forEach var="instrct" items="${recipe.instructions}">
-									<tr><td>${instrct.sequenceNo}: ${instrct.description}</td></tr>
+								<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
+									<tr><td>${section.name}</td></tr>
+									<c:forEach var="instrct" items="${section.instructions}">
+										<tr><td>${instrct.sequenceNo}: ${instrct.description}</td></tr>
+									</c:forEach>
 								</c:forEach>
 							</tbody>
 						</table>
@@ -60,7 +63,7 @@
 					<h3>Notes</h3>
 					<p>${recipe.notes}</p>
 				</div>
-				<div class="col-sm-12">
+				<%-- <div class="col-sm-12">
 					<div class="col-sm-2">
 						<h4>Source: ${recipe.sources[0].type}</h4>
 					</div>
@@ -86,7 +89,7 @@
 							</c:when>
 						</c:choose>
 					</div>
-				</div>
+				</div> --%>
 				<div class="col-sm-12">
 					<div class="col-sm-3">
 						<h4>Category: ${recipe.category.name}</h4>

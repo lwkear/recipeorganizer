@@ -47,8 +47,11 @@
 				<div class="col-sm-12 spacer-vert-sm">
 					<table class="table table-condensed table-striped">
 						<tbody>				
-							<c:forEach var="instrct" items="${recipe.instructions}">
-								<tr><td>${instrct.sequenceNo}: ${instrct.description}</td></tr>
+							<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
+								<tr><td>${section.name}</td></tr>
+								<c:forEach var="instrct" items="${section.instructions}">
+									<tr><td>${instrct.sequenceNo}: ${instrct.description}</td></tr>
+								</c:forEach>
 							</c:forEach>
 						</tbody>
 					</table>

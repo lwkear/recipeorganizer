@@ -4,7 +4,7 @@
       xsi:schemaLocation="
       	http://www.springframework.org/schema/webflow
       	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
-      	<!-- https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
+      	<!-- use this to examine the xsd: https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
 	
 	<!-- <secured attributes="GUEST" /> -->
 		
@@ -41,10 +41,11 @@
 	</view-state>
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
 		<transition on="back" to="ingredients" validate="false">
-			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+			<!-- <evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate> -->
 		</transition>
-		<transition on="proceed" to="optional" bind="true" validate="true" validation-hints="'recipeInstructGroup'">
-			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+		<!-- <transition on="proceed" to="optional" bind="true" validate="true" validation-hints="'recipeInstructGroup'"> -->
+		<transition on="proceed" to="optional" bind="true">
+			<!-- <evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate> -->
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
@@ -75,7 +76,7 @@
 		</on-render>
 		<transition on="back" to="optional" bind="true" validate="false"></transition>
 		<transition on="save" to="end" bind="true">
-			<!-- <evaluate expression="recipeService.saveRecipe(recipe)"></evaluate> -->
+			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>

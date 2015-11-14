@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.persistence.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
@@ -21,7 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import javax.validation.GroupSequence;
 
-import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.util.TagList;
@@ -53,8 +54,8 @@ public class Recipe implements Serializable {
 	@GroupSequence({MinSizeGroup1.class, RecipeIngredient.RecipeIngredientGroup.class})
 	public interface RecipeRecipeIngredientGroup {}
 
-	@GroupSequence({MinSizeGroup2.class, Instruction.InstructGroup.class})
-	public interface RecipeInstructGroup {}
+	//@GroupSequence({MinSizeGroup2.class, Instruction.InstructGroup.class})
+	//public interface RecipeInstructGroup {}
 	
 	@GroupSequence({SizeGroup.class, Source.SourceGroup.class})
 	public interface RecipeOptionalGroup {}
@@ -107,11 +108,17 @@ public class Recipe implements Serializable {
 	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 
 	/*** instructions page ***/
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	/*@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
 	@Size(min=1, groups=MinSizeGroup2.class)
-	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
+	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);*/
+
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinColumn(name="RECIPE_ID", nullable=false)
+	//@Valid
+	//@Size(min=1, groups=MinSizeGroup2.class)
+	private List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);
 	
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
@@ -137,7 +144,8 @@ public class Recipe implements Serializable {
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, String notes, boolean allowShare, String photo, List<String> tags, List<Instruction> instructions, 
+				Integer prepMinutes, String notes, boolean allowShare, String photo, List<String> tags, 
+				List<InstructionSection> instructSections, 
 				List<RecipeIngredient> recipeIngredients, Source source) {
 		super();
 		this.user = user;
@@ -152,7 +160,7 @@ public class Recipe implements Serializable {
 		this.allowShare = allowShare;
 		this.photo = photo;
 		this.tags = tags;
-		this.instructions = instructions;
+		this.instructSections = instructSections;
 		this.recipeIngredients = recipeIngredients;
 		this.source = source;
 	}
@@ -265,24 +273,24 @@ public class Recipe implements Serializable {
 		this.tags = tags;
 	}
 
-	public List<Instruction> getInstructions() {
-		return instructions;
+	public List<InstructionSection> getInstructSections() {
+		return instructSections;
 	}
 	
-	public Instruction getInstruction(int ndx) {
-		return this.instructions.get(ndx);
+	public InstructionSection getInstructionSection(int ndx) {
+		return this.instructSections.get(ndx);
 	}
 
-	public void setInstruction(List<Instruction> instructions) {
-		this.instructions = instructions;
+	public void setInstructSections(List<InstructionSection> instructSections) {
+		this.instructSections = instructSections;
 	}
 
-	public void setInstruction(int ndx, Instruction instruction) {
-		this.instructions.set(ndx, instruction);
+	public void setInstructionSection(int ndx, InstructionSection instructionSection) {
+		this.instructSections.set(ndx, instructionSection);
 	}
 	
-	public void addInstruction(Instruction instruction) {
-		this.instructions.add(instruction);
+	public void addInstructSections(InstructionSection instructionSection) {
+		this.instructSections.add(instructionSection);
 	}
 	
 	public List<RecipeIngredient> getRecipeIngredients() {
@@ -360,10 +368,10 @@ public class Recipe implements Serializable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (instructions == null) {
-			if (other.instructions != null)
+		if (instructSections == null) {
+			if (other.instructSections != null)
 				return false;
-		} else if (!instructions.equals(other.instructions))
+		} else if (!instructSections.equals(other.instructSections))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -422,7 +430,7 @@ public class Recipe implements Serializable {
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructions=" + instructions + ", recipeIngredients=" +  
+				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", recipeIngredients=" +  
 				recipeIngredients + ", source=" + source + "]";
 	}
 }
