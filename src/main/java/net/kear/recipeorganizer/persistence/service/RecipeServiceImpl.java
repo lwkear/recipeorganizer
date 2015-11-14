@@ -9,6 +9,7 @@ import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.Source;
@@ -101,15 +102,28 @@ public class RecipeServiceImpl implements RecipeService {
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
     	logger.info("adjustInstructionList");
     	
-    	/*logger.info("parsing instructions");
-    	int ndx = 0;
-    	Iterator<Instruction> iterator1 = recipe.getInstructions().iterator();
-    	while (iterator1.hasNext()) {
-    		Instruction instruct = iterator1.next();
-    		logger.info("ndx= " + ndx++);
-    		logger.info("seq= " + instruct.getSequenceNo());
-    		logger.info("desc= " + instruct.getDescription());
-    	}
+    	logger.info("parsing instructions");
+    	
+		int size = recipe.getInstructSections().size();
+		if (size > 0) {
+			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
+			while (iterator1.hasNext()) {
+				InstructionSection instructSection = iterator1.next();
+				logger.info("id= " + instructSection.getId()); 
+				logger.info("seq= " + instructSection.getSequenceNo());
+				logger.info("name= " + instructSection.getName());
+				size = instructSection.getInstructions().size();
+				if (size > 0) {
+					Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
+					while (iterator2.hasNext()) {
+						Instruction instruct = iterator2.next();
+						logger.info("id = " + instruct.getId()); 
+						logger.info("desc= " + instruct.getDescription());
+						logger.info("seq= " + instruct.getSequenceNo());			
+					}					
+				}
+			}			
+		}
     	
     	String key = null;
     	Object value = null;
@@ -128,12 +142,12 @@ public class RecipeServiceImpl implements RecipeService {
     		value = entry.getValue();
     		logger.info("key/value= " + key + "/" + value);
     		if (key.contains("instructions")) {
-    			if (key.contains(".id")) {
+    			/*if (key.contains(".id")) {
 	    			inst = new Instruction();
 					int id = Integer.parseInt((String)value);
 					inst.setId(id);
 	    			inst.setSequenceNo(seq++);
-    			}    			
+    			}*/    			
     			if (key.contains("description")) {
     				inst = new Instruction();
 	    			inst.setDescription((String)value);
@@ -144,8 +158,8 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	//replace the current list with the parsed list
-    	if (requestInstruct.size() > 0) {
-    		recipe.getInstructions().clear();
+    	/*if (requestInstruct.size() > 0) {
+    		.getInstructions().clear();
     		recipe.setInstruction(requestInstruct);
     	}*/
     }

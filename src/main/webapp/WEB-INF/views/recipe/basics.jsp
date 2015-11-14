@@ -41,6 +41,11 @@
 	<p></p>
 	<p></p>
 	
+	<p></p>
+	<p>${flowRequestContext}</p>
+	<p></p>
+	
+	
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe">
 				<div class="row">
