@@ -8,7 +8,7 @@
 	
 	<!-- <secured attributes="GUEST" /> -->
 	
-	<var name="instructpages" class="java.util.String"/>
+	<!-- <var name="instructpages" class="java.util.String"/> -->
 		
 	<on-start>
     	<!-- <evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" /> -->
@@ -26,8 +26,11 @@
 			<binding property="category.id"/>
 			<binding property="category.name"/>
 		</binder>
+		<on-entry><set name="flowScope.instructpages" value="1" type="integer"/></on-entry>
 		<!-- <transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'"></transition> -->
-		<transition on="proceed" to="instructions" validation-hints="'recipeBasicGroup'"></transition>
+		<transition on="proceed" to="instructions" validation-hints="'recipeBasicGroup'">
+			<!-- <set name="flowScope.instructpages" value="1" type="integer"/> -->
+		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	<view-state id="ingredients" view="recipe/ingredients" model="recipe">

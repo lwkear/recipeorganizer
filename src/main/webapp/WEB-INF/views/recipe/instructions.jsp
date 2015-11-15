@@ -30,6 +30,20 @@
 	</spring:hasBindErrors>
 	<p></p>
 	<p></p>
+
+	<p><b>flowRequestContext</b></p>
+	<p>${flowRequestContext}</p>
+	<p></p>
+	<p><b>flowScope</b></p>
+	<p>${flowRequestContext.flowScope}</p>
+	<p></p>
+	<p><b>requestScope</b></p>
+	<p>${flowRequestContext.requestScope}</p>
+	<p></p>
+	<p><b>instructpages</b></p>
+	<p>${instructpages}</p>
+	<p></p>
+	
 	
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" name="instructForm" modelAttribute="recipe">

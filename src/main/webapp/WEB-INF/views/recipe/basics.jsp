@@ -44,8 +44,13 @@
 	<p></p>
 	<p>${flowRequestContext}</p>
 	<p></p>
+	<p><b>instructpages</b></p>
+	<p>${instructpages}</p>
+	<p></p>
+
+	<c:set var="instructpages">${instructpages}</c:set>
 	
-	
+		
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe">
 				<div class="row">
