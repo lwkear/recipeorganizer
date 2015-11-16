@@ -18,6 +18,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import javax.validation.GroupSequence;
@@ -120,6 +121,12 @@ public class Recipe implements Serializable {
 	//@Size(min=1, groups=MinSizeGroup2.class)
 	private List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);
 	
+	@Transient
+	private int numInstructSections;
+
+	@Transient
+	private int currentInstructSection;
+
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
 	@Lob

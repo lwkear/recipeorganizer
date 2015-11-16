@@ -8,8 +8,6 @@
 	
 	<!-- <secured attributes="GUEST" /> -->
 	
-	<!-- <var name="instructpages" class="java.util.String"/> -->
-		
 	<on-start>
     	<!-- <evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" /> -->
     	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
@@ -26,10 +24,9 @@
 			<binding property="category.id"/>
 			<binding property="category.name"/>
 		</binder>
-		<on-entry><set name="flowScope.instructpages" value="1" type="integer"/></on-entry>
 		<!-- <transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'"></transition> -->
 		<transition on="proceed" to="instructions" validation-hints="'recipeBasicGroup'">
-			<!-- <set name="flowScope.instructpages" value="1" type="integer"/> -->
+			<set name="flowScope.instructpages" value="requestParameters.numpages"/>
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
@@ -46,8 +43,9 @@
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
-		<transition on="back" to="ingredients" validate="false">
-			<!-- <evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate> -->
+		<!-- <transition on="back" to="ingredients" validate="false"> -->
+		<transition on="back" to="bascis" validate="false">
+			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
 		</transition>
 		<!-- <transition on="proceed" to="optional" bind="true" validate="true" validation-hints="'recipeInstructGroup'"> -->
 		<transition on="proceed" to="optional" bind="true">

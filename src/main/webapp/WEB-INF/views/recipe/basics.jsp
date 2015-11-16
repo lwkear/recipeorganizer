@@ -8,6 +8,25 @@
 
 </head>
 
+<script type="text/javascript">
+
+function proceedUrl() {
+
+	var url;
+	var pages = $('#numpages').val();
+	var flowUrl = $('#flowurl').val();
+	/* url = 'http://localhost:8080/' + flowUrl + '&_eventId=proceed&numpages=' + pages; */
+	url = flowUrl + '&_eventId=proceed&numpages=' + pages;
+	return url;	
+}
+
+function redirectUrl() {    
+	window.location=proceedUrl();
+	return false;
+}
+
+</script>
+
 <body role="document" onload="document.basicsForm.inputName.focus();">
 
 <%@include file="../common/nav.jsp" %>
@@ -41,18 +60,14 @@
 	<p></p>
 	<p></p>
 	
-	<p></p>
+	<%-- <p></p>
 	<p>${flowRequestContext}</p>
 	<p></p>
-	<p><b>instructpages</b></p>
-	<p>${instructpages}</p>
-	<p></p>
+	<p><b>instructpages:</b>${instructpages}</p>
+	<p></p> --%>
 
-	<c:set var="instructpages">${instructpages}</c:set>
-	
-		
 		<div class="col-sm-12">
-			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe">
+			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" action="javascript:redirectUrl();" method="post">		<!--  method="post" action="javascript:redirectUrl();"   -->
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
@@ -120,12 +135,21 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-sm-1">
+						<input type="text" id="numpages" name="numpages"/>						
+					</div>
+				</div>
 				<div class="row spacer-vert-lg">
 					<div class="col-sm-5">
 					</div>
 					<div class="col-sm-2">
-						<button class="btn btn-primary" type="submit" id="proceed" name="_eventId_proceed"><spring:message code="recipe.ingredients.button"></spring:message></button>
+						<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.ingredients.button"></spring:message></button>
 					</div>
+					<%-- <div class="col-sm-2">
+						<a href="javascript:void(0);" onclick="redirectUrl();" class="btn btn-primary" role="button">
+							<spring:message code="recipe.ingredients.button"></spring:message></a>
+					</div> --%>
 					<div class="col-sm-3">
 					</div>
 					<div class="col-sm-2">
@@ -134,6 +158,7 @@
 				</div>
 				<form:hidden id="userID" path="user.id"/>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
+				<input type="hidden" id="flowurl" name="_flowExecutionUrl" value="${flowExecutionUrl}"/>
 			</form:form>
 		</div>
 	</div>

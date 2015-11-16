@@ -31,9 +31,9 @@
 	<p></p>
 	<p></p>
 
-	<p><b>flowRequestContext</b></p>
+	<%-- <p><b>flowRequestContext</b></p>
 	<p>${flowRequestContext}</p>
-	<p></p>
+	<p></p> --%>
 	<p><b>flowScope</b></p>
 	<p>${flowRequestContext.flowScope}</p>
 	<p></p>
