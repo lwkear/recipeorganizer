@@ -8,7 +8,8 @@
 
 </head>
 
-<body role="document" onload="document.signupForm.email.focus();">
+<!-- <body role="document" onload="document.signupForm.email.focus();"> -->
+<body role="document">
 
 <%@include file="../common/nav.jsp" %>
 	

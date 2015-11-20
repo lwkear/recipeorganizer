@@ -82,109 +82,121 @@ function setSource() {
 //shorthand for document.ready
 $(function() {
 
-//TODO: GUI: replace these JQuery UI controls with Bootstrap controls?
-//TODO: GUI: try to get the calendar icon to appear
-$.datepicker.setDefaults({
-	dateFormat: "mm/dd/yy",
-	defaultDate: null,
-	//buttonImage: "/recipeorganizer/resources/jqueryui-smoothness/images/calendar-icon.png",
-	//showOn: "both",
-    beforeShow: function() {
-    	$(this).css("z-index", 999);	//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
-    }
-});
-
-$('#inputNewsDate').datepicker();
-$('#inputMagDate').datepicker();
-
-//TODO: GUI: typeahead for tagsinput doesn't always work the first time - an initialization issue?
-$('#inputTags').tagsinput({
-	tagClass: function(item) {
-    	return 'label label-primary';
-    },
-    maxtags: 10,
-    maxchars: 25,
-    trimvalue: true,
-    typeaheadjs: [ 
-		{
-			hint: true,
-			highlight: true,
-			minLength: 1
-		},
-		{
-			name: 'tags',
-			limit: 20,
-			source: tagsBH 
-		}
-	]
-});
-
-setSource();
-initSourceTA();
-initTagsTA();
-
-//these events must reside in $(document) because the dynamically added elements are not
-//visible to the DOM otherwise
-$(document)
-	.on('click', '#review', function(e)
-	{
-		var ndx = $('#inputSource option:selected').index();
-		if (ndx == 0 || ndx == 7) {
-			$('#inputSource').val("");
-		}
-		var page = $('#inputBookPage').val();
-		if (page == null)
-			$('#inputBookPage').val(0);
-	})
-	
-$('.webGroup').on('blur', function() {
-	console.log("webGroup .on blur in document");
-	var ndx = $('#inputSource option:selected').index();
-	var url = $(this);
-	if (ndx == 5) {
-		var webURL = url.val();
-		var pos = webURL.search('http');
-		if (pos != 0) {
-			webURL = "http://" + webURL;
-			url.val(webURL);
-		}
-	}
-})	
-
-$('#inputSource').change(function() {
-
-	//prepare a date in the correct format
-	var d = new Date();
-	var day = d.getDate();
-	day = (day < 10) ? '0' + day : day;
-	var mon = d.getMonth() + 1;
-	mon = (mon < 10) ? '0' + mon : mon;
-	var dateStr = mon + '/' + day + '/' + d.getFullYear();
-
-	initSource();
-	
-	var option = $(this).val();
-	$('.srcGroup').hide(); 
-	if (option === 'Cookbook') {
-		$('.bookGroup').show();			
-	}		
-	if (option === 'Magazine') {
-		$('.magGroup').show();
-		$( '#inputMagDate' ).val(dateStr);			
-	}		
-	if (option === 'Newspaper') {
-		$('.newsGroup').show();
-		$( '#inputNewsDate' ).val(dateStr);			
-	}		
-	if (option === 'Person') {
-		$('.personGroup').show();			
-	}		
-	if (option === 'Website') {
-		$('.webGroup').show();			
-	}		
-	if (option === 'Other') {
-		$('.otherGroup').show();			
-	}
-	$(this).removeClass('select-placeholder');				
+	//TODO: GUI: replace these JQuery UI controls with Bootstrap controls?
+	//TODO: GUI: try to get the calendar icon to appear
+	$.datepicker.setDefaults({
+		dateFormat: "mm/dd/yy",
+		defaultDate: null,
+		//buttonImage: "/recipeorganizer/resources/jqueryui-smoothness/images/calendar-icon.png",
+		//showOn: "both",
+	    beforeShow: function() {
+	    	$(this).css("z-index", 999);	//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
+	    }
 	});
+	
+	$('#inputNewsDate').datepicker();
+	$('#inputMagDate').datepicker();
+	
+	//TODO: GUI: typeahead for tagsinput doesn't always work the first time - an initialization issue?
+	$('#inputTags').tagsinput({
+		tagClass: function(item) {
+	    	return 'label label-primary';
+	    },
+	    maxtags: 10,
+	    maxchars: 25,
+	    trimvalue: true,
+	    typeaheadjs: [ 
+			{
+				hint: true,
+				highlight: true,
+				minLength: 1
+			},
+			{
+				name: 'tags',
+				limit: 20,
+				source: tagsBH 
+			}
+		]
+	});
+	
+	setSource();
+	initSourceTA();
+	initTagsTA();
+	
+	//these events must reside in $(document) because the dynamically added elements are not
+	//visible to the DOM otherwise
+	$(document)
+		.on('click', '#review', function(e)
+		{
+			var ndx = $('#inputSource option:selected').index();
+			if (ndx == 0 || ndx == 7) {
+				$('#inputSource').val("");
+			}
+			var page = $('#inputBookPage').val();
+			if (page == null)
+				$('#inputBookPage').val(0);
+		})
+		.on('click', '#back', function(e) {
+			//set index for the last set of instructions, which will be total sections minus one
+		    var ndx = $('#instructSections').val();
+		    console.log("_eventId_back");
+		    console.log("instructSects val:" + ndx);
+		    var num = parseInt(ndx);
+		    if (num > 0) {
+			    num = num-1;
+				console.log("currInstructSect new val:" + num);
+				$('#currInstructSect').val(num.toString());
+		    }
+		})	
+		
+	$('.webGroup').on('blur', function() {
+		console.log("webGroup .on blur in document");
+		var ndx = $('#inputSource option:selected').index();
+		var url = $(this);
+		if (ndx == 5) {
+			var webURL = url.val();
+			var pos = webURL.search('http');
+			if (pos != 0) {
+				webURL = "http://" + webURL;
+				url.val(webURL);
+			}
+		}
+	})	
+	
+	$('#inputSource').change(function() {
+	
+		//prepare a date in the correct format
+		var d = new Date();
+		var day = d.getDate();
+		day = (day < 10) ? '0' + day : day;
+		var mon = d.getMonth() + 1;
+		mon = (mon < 10) ? '0' + mon : mon;
+		var dateStr = mon + '/' + day + '/' + d.getFullYear();
+	
+		initSource();
+		
+		var option = $(this).val();
+		$('.srcGroup').hide(); 
+		if (option === 'Cookbook') {
+			$('.bookGroup').show();			
+		}		
+		if (option === 'Magazine') {
+			$('.magGroup').show();
+			$( '#inputMagDate' ).val(dateStr);			
+		}		
+		if (option === 'Newspaper') {
+			$('.newsGroup').show();
+			$( '#inputNewsDate' ).val(dateStr);			
+		}		
+		if (option === 'Person') {
+			$('.personGroup').show();			
+		}		
+		if (option === 'Website') {
+			$('.webGroup').show();			
+		}		
+		if (option === 'Other') {
+			$('.otherGroup').show();			
+		}
+		$(this).removeClass('select-placeholder');				
+		});
 })

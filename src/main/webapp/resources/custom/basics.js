@@ -8,8 +8,20 @@ function setCategory() {
 	}			
 }
 
+function checkSections() {
+	var num = $('#instructSections').val();
+	if (num == null || num < 2)
+		return;
+	$('#instructYes').prop('checked', true);
+	$('.instructNum').show();
+	return false;
+}
+
 //shorthand for document.ready
 $(function() {
+	
+	checkSections();
+	
 	//get categories and set the options
 	$.getJSON("/recipeorganizer/recipe/getCategories")
 		.done(function (data) {
@@ -54,7 +66,6 @@ $(function() {
 			//fix the appearance in case a name was entered in error
 			recipeName.parent('div').removeClass('has-error');
 			$('#dupeErr').hide();
-			//$('#nameLabel').html("Name:");
 		})
 		.fail(function(jqXHR, status, error) {
 			console.log('fail status: '+ jqXHR.status);
@@ -76,14 +87,46 @@ $(function() {
 	})
 	.on('click', '#proceed', function(e)
 	{
-		var num = $('#inputPrepHour').val();
-		if (num == null)
+		var num;
+		
+		num = $('#inputPrepHour').val();
+		if (!num || !num.length)
 			$('#inputPrepHour').val(0);
 		num = $('#inputPrepMinute').val();
-		if (num == null)
+		if (!num || !num.length)
 			$('#inputPrepMinute').val(0);
+		
+		num = $('#ingredSections').val();
+		if (!num || !num.length || num === "0")
+			$('#ingredSections').val(1);
+		num = $('#currIngredSect').val();			
+		if (!num || !num.length)
+			$('#currIngredSect').val(0);
+		num = $('#instructSections').val();
+		if (!num || !num.length || num === "0")
+			$('#instructSections').val(1);
+		num = $('#currInstructSect').val();
+		if (!num || !num.length)
+			$('#currInstructSect').val(0);
 	})
-
+	.on('click', 'input[name="instructSet"]:checked', function(e)
+	{
+		if ($(this).val() == "true")
+			$('.instructNum').show();
+		else {
+			$('.instructNum').hide();
+			$('#instructSections').val(1);
+		}
+	})
+	.on('click', 'input[name="ingredSet"]:checked', function(e)
+	{
+		if ($(this).val() == "true")
+			$('.ingredNum').show();
+		else {
+			$('.ingredNum').hide();
+			$('#ingredSections').val(1);
+		}
+	})
 	
 	$('#inputCategory').change(function() {
 		var entry = $(this).find(':selected');

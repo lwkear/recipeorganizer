@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
@@ -99,16 +101,29 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.lookupName(lookupName, userId);
     }
     
+    public void checkArraySizes(Recipe recipe) {
+    	int sections = recipe.getNumInstructSections();
+    	int size = recipe.getInstructSections().size();
+    	logger.info("numInstructSections=" + sections);
+    	logger.info("instructArraySize=" + size); 
+    	if (size > sections) {
+    		logger.info("need to adjust size");
+    		for (int ndx=size;ndx>sections;ndx--) {
+    			recipe.getInstructSections().remove(ndx-1);
+			}    		
+    	}
+    }
+    
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
     	logger.info("adjustInstructionList");
-    	
     	logger.info("parsing instructions");
-    	
 		int size = recipe.getInstructSections().size();
+		int ndx = 0;
 		if (size > 0) {
 			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
 			while (iterator1.hasNext()) {
 				InstructionSection instructSection = iterator1.next();
+				logger.info("ndx= " + ndx++);
 				logger.info("id= " + instructSection.getId()); 
 				logger.info("seq= " + instructSection.getSequenceNo());
 				logger.info("name= " + instructSection.getName());
@@ -127,8 +142,11 @@ public class RecipeServiceImpl implements RecipeService {
     	
     	String key = null;
     	Object value = null;
-    	int seq = 1;
     	Instruction inst = null;
+    	int seq = 1;
+    	int sectNdx = 0;
+    	boolean forward = false;
+    	boolean back = false;
     	
     	//get the parameters
     	ParameterMap requestParameters = context.getRequestParameters();
@@ -141,6 +159,22 @@ public class RecipeServiceImpl implements RecipeService {
     		key = entry.getKey();
     		value = entry.getValue();
     		logger.info("key/value= " + key + "/" + value);
+    		//get the index of the instruction section
+    		
+    		//code to get the section index with a regex
+    		/*if (key.contains("name")) {    			
+    			Pattern arrayNdx = Pattern.compile("\\d+");
+    			Matcher makeMatch = arrayNdx.matcher(key);
+    			makeMatch.find();
+    			String index = makeMatch.group();
+    			sectNdx = Integer.parseInt(index);   			
+    		}*/
+    		
+    		if (key.contains("currInstructSection")) {
+				String str = (String)value;
+				sectNdx = Integer.parseInt(str);
+    		}
+    		
     		if (key.contains("instructions")) {
     			/*if (key.contains(".id")) {
 	    			inst = new Instruction();
@@ -151,17 +185,34 @@ public class RecipeServiceImpl implements RecipeService {
     			if (key.contains("description")) {
     				inst = new Instruction();
 	    			inst.setDescription((String)value);
-	    			requestInstruct.add(inst);
 	    			inst.setSequenceNo(seq++);
+	    			requestInstruct.add(inst);	    			
     			}    			
     		}
+    		if (key.contains("_proceed"))
+    			forward = true;
+    		if (key.contains("_back"))
+    			back = true;
     	}
-    	
     	//replace the current list with the parsed list
-    	/*if (requestInstruct.size() > 0) {
-    		.getInstructions().clear();
-    		recipe.setInstruction(requestInstruct);
-    	}*/
+    	if (requestInstruct.size() > 0) {
+    		recipe.getInstructionSection(sectNdx).getInstructions().clear();
+    		recipe.getInstructionSection(sectNdx).setInstruction(requestInstruct);
+	    	if (forward) {
+		    	recipe.getInstructionSection(sectNdx).setSequenceNo(sectNdx+1);
+				recipe.setCurrInstructSection(sectNdx+1);
+			}
+			if (back)
+				recipe.setCurrInstructSection(sectNdx-1);	
+    	}
+    	else {
+    		//back to previous page, but no instructions so remove the section
+    		if (back) {
+    			if (sectNdx < recipe.getInstructSections().size())
+    				recipe.getInstructSections().remove(sectNdx);
+    			recipe.setCurrInstructSection(sectNdx-1);
+    		}
+    	}
     }
 
 	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {

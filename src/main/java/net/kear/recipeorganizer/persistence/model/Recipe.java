@@ -55,8 +55,8 @@ public class Recipe implements Serializable {
 	@GroupSequence({MinSizeGroup1.class, RecipeIngredient.RecipeIngredientGroup.class})
 	public interface RecipeRecipeIngredientGroup {}
 
-	//@GroupSequence({MinSizeGroup2.class, Instruction.InstructGroup.class})
-	//public interface RecipeInstructGroup {}
+	@GroupSequence({MinSizeGroup2.class, InstructionSection.InstructSectGroup.class,})
+	public interface RecipeInstructGroup {}
 	
 	@GroupSequence({SizeGroup.class, Source.SourceGroup.class})
 	public interface RecipeOptionalGroup {}
@@ -108,24 +108,24 @@ public class Recipe implements Serializable {
 	@Size(min=1, groups=MinSizeGroup1.class)
 	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 
+	@Transient
+	private int numIngredSections;
+
+	@Transient
+	private int currIngredSection;
+
 	/*** instructions page ***/
-	/*@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
 	@Size(min=1, groups=MinSizeGroup2.class)
-	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);*/
-
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name="RECIPE_ID", nullable=false)
-	//@Valid
-	//@Size(min=1, groups=MinSizeGroup2.class)
 	private List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);
 	
 	@Transient
 	private int numInstructSections;
 
 	@Transient
-	private int currentInstructSection;
+	private int currInstructSection;
 
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
@@ -299,7 +299,23 @@ public class Recipe implements Serializable {
 	public void addInstructSections(InstructionSection instructionSection) {
 		this.instructSections.add(instructionSection);
 	}
-	
+
+	public Integer getNumInstructSections() {
+		return numInstructSections;
+	}
+
+	public void setNumInstructSections(Integer numInstructSections) {
+		this.numInstructSections = numInstructSections;
+	}
+
+	public Integer getCurrInstructSection() {
+		return currInstructSection;
+	}
+
+	public void setCurrInstructSection(Integer currInstructSection) {
+		this.currInstructSection = currInstructSection;
+	}
+
 	public List<RecipeIngredient> getRecipeIngredients() {
 		return recipeIngredients;
 	}
@@ -318,6 +334,22 @@ public class Recipe implements Serializable {
 	
 	public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
 		this.recipeIngredients.add(recipeIngredient);
+	}
+
+	public Integer getNumIngredSections() {
+		return numIngredSections;
+	}
+
+	public void setNumIngredSections(Integer numIngredSections) {
+		this.numIngredSections = numIngredSections;
+	}
+
+	public Integer getCurrIngredSection() {
+		return currIngredSection;
+	}
+
+	public void setCurrIngredSection(Integer currIngredSection) {
+		this.currIngredSection = currIngredSection;
 	}
 
 	public Source getSource() {

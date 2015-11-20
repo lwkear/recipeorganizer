@@ -71,9 +71,16 @@ function submitLogoutForm() {
 	document.forms["logoutForm"].submit();
 }
 
+function setInputFocus()
+{
+	$(':input:visible:enabled:first').focus(); 
+}
+
 $(document).ready(function() {
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
 
+	setInputFocus();
+	
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend(function(e, xhr, options) {

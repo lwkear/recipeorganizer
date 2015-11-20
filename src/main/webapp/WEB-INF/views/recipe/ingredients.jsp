@@ -28,8 +28,11 @@
 		<p></p>
 	</c:forEach>
 	</spring:hasBindErrors>
-	<p></p>
-	<p></p>
+
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
 
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" name="ingredForm" role="form" modelAttribute="recipe">		
@@ -115,6 +118,7 @@
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
+				<form:hidden id="currInstructSect" path="currInstructSection"/>
 			</form:form>
 		</div>
 	</div>

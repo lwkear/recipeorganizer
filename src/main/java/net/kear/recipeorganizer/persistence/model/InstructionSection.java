@@ -31,11 +31,12 @@ public class InstructionSection implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	//Hibernate validation groups
-	//public interface NotBlankGroup {}
-	//public interface SizeGroup {}
+	public interface NotBlankGroup {}
+	public interface SizeGroup {}
+	public interface MinSizeGroup {}
 	
-	//@GroupSequence({NotBlankGroup.class,SizeGroup.class})
-	//public interface InstructGroup {}
+	@GroupSequence({NotBlankGroup.class,SizeGroup.class,MinSizeGroup.class,Instruction.InstructGroup.class})
+	public interface InstructSectGroup {}
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
@@ -47,14 +48,14 @@ public class InstructionSection implements Serializable {
 	private int sequenceNo;
 	
 	@Column(name = "NAME")
-	//@NotBlank(groups=NotBlankGroup.class)
-	//@Size(max=2000, groups=SizeGroup.class)	//2000
+	@NotBlank(groups=NotBlankGroup.class)
+	@Size(max=10, groups=SizeGroup.class)	//50
 	private String name;
 
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="SECTION_ID", nullable=false)
 	@Valid
-	//@Size(min=1, groups=MinSizeGroup2.class)
+	@Size(min=1, groups=MinSizeGroup.class)
 	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
 	
 	public InstructionSection() {}

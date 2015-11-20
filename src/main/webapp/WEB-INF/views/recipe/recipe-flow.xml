@@ -21,15 +21,23 @@
 			<binding property="prepHours"/>
 			<binding property="prepMinutes"/>
 			<binding property="allowShare"/>
+			<binding property="numInstructSections"/>
+			<binding property="currInstructSection"/>
+			<binding property="numIngredSections"/>
+			<binding property="currIngredSection"/>
 			<binding property="category.id"/>
 			<binding property="category.name"/>
 		</binder>
-		<!-- <transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'"></transition> -->
-		<transition on="proceed" to="instructions" validation-hints="'recipeBasicGroup'">
-			<set name="flowScope.instructpages" value="requestParameters.numpages"/>
+		<transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'">
+			<set name="flowScope.instructCount" value="recipe.numInstructSections"/>
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
+			<set name="flowScope.insgredCount" value="recipe.numIngredSections"/>
+			<set name="flowScope.insgredIndex" value="recipe.currIngredSection"/>
+			<evaluate expression="recipeService.checkArraySizes(recipe)"></evaluate>
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
+
 	<view-state id="ingredients" view="recipe/ingredients" model="recipe">
 		<on-render>
 			<evaluate expression="recipeService.getIngredients(recipe)" result="viewScope.ingredientList"></evaluate>
@@ -37,22 +45,32 @@
 		<transition on="back" to="basics" validate="false">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 		</transition>
-		<transition on="proceed" to="instructions" bind="true" validate="true" validation-hints="'recipeRecipeIngredientGroup'">
+		<transition on="proceed" to="instructLoopForward" bind="true" validate="true" validation-hints="'recipeRecipeIngredientGroup'">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
+
+	<decision-state id="instructLoopForward">
+		<if test="flowScope.instructCount > flowScope.instructIndex" then="instructions" else="optional"/>
+	</decision-state>
+	<decision-state id="instructLoopBack">
+		<if test="flowScope.instructIndex > -1" then="instructions" else="ingredients"/>
+	</decision-state>
+	
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
-		<!-- <transition on="back" to="ingredients" validate="false"> -->
-		<transition on="back" to="bascis" validate="false">
+		<transition on="back" to="instructLoopBack" bind="true" validate="false">
 			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
-		<!-- <transition on="proceed" to="optional" bind="true" validate="true" validation-hints="'recipeInstructGroup'"> -->
-		<transition on="proceed" to="optional" bind="true">
+		<transition on="proceed" to="instructLoopForward" bind="true" validate="true" validation-hints="'recipeInstructGroup'">
 			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
+
 	<view-state id="optional" view="recipe/optional" model="recipe">
 		<binder>
 			<binding property="background"/>
@@ -69,16 +87,23 @@
 			<binding property="source.websiteUrl"/>
 			<binding property="source.recipeUrl"/>
 			<binding property="source.other"/>
+			<binding property="numInstructSections"/>
+			<binding property="currInstructSection"/>
+			<binding property="numIngredSections"/>
+			<binding property="currIngredSection"/>
 		</binder>
-		<transition on="back" to="instructions" bind="true" validate="false"></transition>
+		<transition on="back" to="instructLoopBack" bind="true" validate="false"></transition>
 		<transition on="proceed" to="review" bind="true" validate="true" validation-hints="'recipeOptionalGroup'"></transition>		
 		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
 	</view-state>
+	
 	<view-state id="review" view="recipe/review" model="recipe">
 		<on-render>
 			<evaluate expression="recipeService.getIngredients(recipe)" result="viewScope.ingredientList"></evaluate>
 		</on-render>
-		<transition on="back" to="optional" bind="true" validate="false"></transition>
+		<transition on="back" to="instructLoopBack" bind="true" validate="false">
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
+		</transition>
 		<transition on="save" to="end" bind="true">
 			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
 		</transition>

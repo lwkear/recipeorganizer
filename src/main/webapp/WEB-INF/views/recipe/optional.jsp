@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document" onload="document.optionalForm.inputBack.focus();">
+<body role="document">
 
 <%@include file="../common/nav.jsp" %>
 
@@ -40,8 +40,11 @@
 		<p></p>
 	</c:forEach>
 	</spring:hasBindErrors>
-	<p></p>
-	<p></p>
+
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
 
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" name="optionalForm" modelAttribute="recipe">
@@ -156,7 +159,7 @@
 				</div>
 				<div class="row spacer-vert-lg">
 					<div class="col-sm-2">
-						<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
+						<button class="btn btn-default" id="back" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
@@ -170,6 +173,8 @@
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
+				<form:hidden id="instructSections" path="numInstructSections"/>
+				<form:hidden id="currInstructSect" path="currInstructSection"/>
 			</form:form>
 		</div>
 	</div>

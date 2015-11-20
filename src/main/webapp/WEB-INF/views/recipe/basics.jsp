@@ -8,26 +8,7 @@
 
 </head>
 
-<script type="text/javascript">
-
-function proceedUrl() {
-
-	var url;
-	var pages = $('#numpages').val();
-	var flowUrl = $('#flowurl').val();
-	/* url = 'http://localhost:8080/' + flowUrl + '&_eventId=proceed&numpages=' + pages; */
-	url = flowUrl + '&_eventId=proceed&numpages=' + pages;
-	return url;	
-}
-
-function redirectUrl() {    
-	window.location=proceedUrl();
-	return false;
-}
-
-</script>
-
-<body role="document" onload="document.basicsForm.inputName.focus();">
+<body role="document">
 
 <%@include file="../common/nav.jsp" %>
 
@@ -40,7 +21,7 @@ function redirectUrl() {
 
 	<c:if test="${not empty prepHourError}"><c:set var="prepTimeError">X</c:set></c:if>
 	<c:if test="${not empty prepMinuteError}"><c:set var="prepTimeError">X</c:set></c:if>
-	
+
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
@@ -57,17 +38,14 @@ function redirectUrl() {
 		<p></p>
 	</c:forEach>
 	</spring:hasBindErrors>
-	<p></p>
-	<p></p>
 	
-	<%-- <p></p>
-	<p>${flowRequestContext}</p>
-	<p></p>
-	<p><b>instructpages:</b>${instructpages}</p>
-	<p></p> --%>
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
 
 		<div class="col-sm-12">
-			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" action="javascript:redirectUrl();" method="post">		<!--  method="post" action="javascript:redirectUrl();"   -->
+			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off">
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
@@ -104,18 +82,20 @@ function redirectUrl() {
 									<form:input type="text" class="form-control col-sm-1" id="inputServings" path="servings" autocomplete="off"/>
 									<span class="text-danger">${servingsError}</span>
 								</div>
-								<div class="row col-sm-3" style="margin:0; padding-left:0">
-									<label class="control-label col-sm-1" for="inputPrepHour" style="padding-left: 0;">
-										<spring:message code="recipe.basics.hour"></spring:message></label>
-									<div class="col-sm-4 <c:if test="${not empty prepHourError}">has-error</c:if>">
-										<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" value="0" autocomplete="off"/>
-										<span class="text-danger">${prepHourError}</span>
-									</div>
-									<label class="control-label col-sm-1" for="inputPrepMinute" style="padding-left: 0">
-										<spring:message code="recipe.basics.minute"></spring:message></label>
-									<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
-										<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" value="0" autocomplete="off"/>
-										<span class="text-danger">${prepMinuteError}</span>
+								<div class="col-sm-3">	 <!-- style="margin:0; padding-left:0" -->
+									<div class="row">
+										<label class="control-label col-sm-1" for="inputPrepHour">	 <!-- style="padding-left: 0;" -->
+											<spring:message code="recipe.basics.hour"></spring:message></label>
+										<div class="col-sm-3 <c:if test="${not empty prepHourError}">has-error</c:if>">
+											<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" autocomplete="off"/>
+											<span class="text-danger">${prepHourError}</span>
+										</div>
+										<label class="control-label col-sm-2" for="inputPrepMinute">	<!-- style="padding-left: 0;" -->
+											<spring:message code="recipe.basics.minute"></spring:message></label>
+										<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
+											<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" autocomplete="off"/>
+											<span class="text-danger">${prepMinuteError}</span>
+										</div>
 									</div>
 								</div>
 								<div class="col-sm-3">
@@ -127,6 +107,52 @@ function redirectUrl() {
 									</div>
 								</div>
 							</div>
+						</div>							
+						<div class="form-group col-sm-12 spacer-vert-sm">
+							<div class="row">
+								<div class="col-sm-5">
+									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.ingredients.sections"></spring:message></label>
+								</div>
+								<div class="row col-sm-6">
+									<div class="radio-inline col-sm-1">
+										<input type="radio" name="ingredSet" value="true"><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline col-sm-1">
+										<input type="radio" name="ingredSet" value="false" checked><spring:message code="common.no"></spring:message>
+									</div>
+									<div class="row col-sm-6 ingredNum" style="margin:0; padding-left:0; display:none">
+										<label class="control-label col-sm-6" for="ingredSections"><spring:message code="recipe.basics.howmany"></spring:message></label>
+										<div class="col-sm-4 <c:if test="${not empty ingredSectError}">has-error</c:if>">
+											<form:input type="text" class="form-control" id="ingredSections" path="numIngredSections"/>
+											<form:hidden id="currIngredSect" path="currIngredSection"/>
+											<span class="text-danger">${ingredSectError}</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-sm-12">
+							<div class="row">
+								<div class="col-sm-5">
+									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.instructions.sections"></spring:message></label>
+								</div>
+								<div class="row col-sm-6">
+									<div class="radio-inline col-sm-1">
+										<input type="radio" name="instructSet" id="instructYes" value="true"><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline col-sm-1">
+										<input type="radio" name="instructSet" value="false" checked><spring:message code="common.no"></spring:message>
+									</div>
+									<div class="row col-sm-6 instructNum" style="margin:0; padding-left:0; display:none">
+										<label class="control-label col-sm-6" id="instructSectLabel" for="instructSections"><spring:message code="recipe.basics.howmany"></spring:message></label>
+										<div class="col-sm-4 <c:if test="${not empty instructSectError}">has-error</c:if>">
+											<form:input type="text" class="form-control" id="instructSections" path="numInstructSections"/>
+											<form:hidden id="currInstructSect" path="currInstructSection"/>
+											<span class="text-danger">${instructSectError}</span>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -135,21 +161,12 @@ function redirectUrl() {
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-sm-1">
-						<input type="text" id="numpages" name="numpages"/>						
-					</div>
-				</div>
 				<div class="row spacer-vert-lg">
 					<div class="col-sm-5">
 					</div>
 					<div class="col-sm-2">
-						<button class="btn btn-primary" type="submit" name="_eventId_proceed"><spring:message code="recipe.ingredients.button"></spring:message></button>
+						<button class="btn btn-primary" id="proceed" type="submit" name="_eventId_proceed"><spring:message code="recipe.ingredients.button"></spring:message></button>
 					</div>
-					<%-- <div class="col-sm-2">
-						<a href="javascript:void(0);" onclick="redirectUrl();" class="btn btn-primary" role="button">
-							<spring:message code="recipe.ingredients.button"></spring:message></a>
-					</div> --%>
 					<div class="col-sm-3">
 					</div>
 					<div class="col-sm-2">
@@ -158,7 +175,6 @@ function redirectUrl() {
 				</div>
 				<form:hidden id="userID" path="user.id"/>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
-				<input type="hidden" id="flowurl" name="_flowExecutionUrl" value="${flowExecutionUrl}"/>
 			</form:form>
 		</div>
 	</div>
@@ -171,4 +187,3 @@ function redirectUrl() {
 <script src="<c:url value="/resources/custom/basics.js" />"></script>
 
 </html>
-			

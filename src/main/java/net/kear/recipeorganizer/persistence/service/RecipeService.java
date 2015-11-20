@@ -21,6 +21,7 @@ public interface RecipeService {
     public List<Ingredient> getIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);
     public boolean lookupName(String lookupName, Long userId);
+    public void checkArraySizes(Recipe recipe);
     public void adjustInstructionList(Recipe recipe, RequestContext context);
     public void adjustRecipeIngredientList(Recipe recipe, RequestContext context);
 }

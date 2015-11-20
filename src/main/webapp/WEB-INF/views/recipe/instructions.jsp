@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document" onload="document.instructForm.inputDesc.focus();">
+<body role="document">
 
 <%@include file="../common/nav.jsp" %>
 
@@ -28,47 +28,52 @@
 		<p></p>
 	</c:forEach>
 	</spring:hasBindErrors>
-	<p></p>
-	<p></p>
 
 	<%-- <p><b>flowRequestContext</b></p>
 	<p>${flowRequestContext}</p>
 	<p></p> --%>
-	<p><b>flowScope</b></p>
+	<%-- <p><b>flowScope</b></p>
 	<p>${flowRequestContext.flowScope}</p>
 	<p></p>
 	<p><b>requestScope</b></p>
 	<p>${flowRequestContext.requestScope}</p>
-	<p></p>
-	<p><b>instructpages</b></p>
-	<p>${instructpages}</p>
-	<p></p>
-	
+	<p></p> --%>
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
+
+	<c:set var="currNdx" value="${recipe.currInstructSection}"/>
 	
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" name="instructForm" modelAttribute="recipe">
+				<spring:bind path="recipe.instructSections[${currNdx}]"></spring:bind>
 				<div class="row">
-					<div class="col-sm-12">
-						<!-- must bind the instruction array, even on initial display -->
-						<spring:bind path="recipe.instructSections[0]"></spring:bind>
-						<form:hidden class="" path="instructSections[0].sequenceNo"/>
-						<div class="form-group col-sm-2 <c:if test="${not empty nameError}">has-error</c:if>">
-							<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.basics.name"></spring:message></label>
-							<form:input type="text" class="form-control" id="name" path="instructSections[0].name" autocomplete="off"/>
-						</div>
-					</div>
+					<c:choose>
+						<c:when test="${recipe.numInstructSections > 1}">
+							<div class="col-sm-12">
+								<div class="form-group col-sm-3 <c:if test="${not empty nameError}">has-error</c:if>">
+									<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.instructions.sectionname"></spring:message>${currNdx+1}</label>
+									<form:input type="text" class="form-control" id="name" path="instructSections[${currNdx}].name" autocomplete="off"/>
+								</div>
+							</div>
+						</c:when>
+						<c:otherwise>
+							<form:hidden id="name" path="instructSections[${currNdx}].name" value="None"/>
+						</c:otherwise>
+					</c:choose>
 					<div class="col-sm-12">
 							<c:set var="instructplaceholder"><spring:message code="recipe.instructions.placeholder"></spring:message></c:set>
 							<label class="control-label" id="descLabel" for="inputDesc">*<spring:message code="recipe.instructions.step"></spring:message></label>
 							
 							<div class="col-sm-12">
-								<spring:bind path="recipe.instructSections[0].instructions[0]"></spring:bind>
-								<c:forEach items="${recipe.instructSections[0].instructions}" varStatus="loop">
-									<spring:bind path="instructSections[0].instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
+								<spring:bind path="recipe.instructSections[${currNdx}].instructions[0]"></spring:bind>
+								<c:forEach items="${recipe.instructSections[currNdx].instructions}" varStatus="loop">
+									<spring:bind path="instructSections[${currNdx}].instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
 									<div class="form-group <c:if test="${not empty instructError}">has-error</c:if>">
 										<div class="input-group instructGrp">
-											<form:hidden class="instructSeq instruct" path="instructSections[0].instructions[${loop.index}].sequenceNo"/>
-											<form:textarea class="form-control instructDesc instruct" id="inputDesc" rows="2" path="instructSections[0].instructions[${loop.index}].description"
+											<form:hidden class="instructSeq instruct" path="instructSections[${currNdx}].instructions[${loop.index}].sequenceNo"/>
+											<form:textarea class="form-control instructDesc instruct" id="inputDesc" rows="2" path="instructSections[${currNdx}].instructions[${loop.index}].description"
 												placeholder="${instructplaceholder}" />
 											<span class="input-group-btn">
 												<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
@@ -97,7 +102,15 @@
 					<div class="col-sm-3">
 					</div>
 					<div class="col-sm-2">
-						<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed"><spring:message code="recipe.optional.button"></spring:message></button>
+						<c:choose>
+							<c:when test="${recipe.numInstructSections > 1 && (recipe.currInstructSection < (recipe.numInstructSections - 1))}">
+								<c:set var="buttonName" value="Next Set"/>
+							</c:when>
+							<c:otherwise>
+								<c:set var="buttonName"><spring:message code="recipe.optional.button"></spring:message></c:set>
+							</c:otherwise>
+						</c:choose>
+						<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed">${buttonName}</button>
 					</div>
 					<div class="col-sm-3">
 					</div>
@@ -106,6 +119,8 @@
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
+				<form:hidden id="sectSeqNo" path="instructSections[${currNdx}].sequenceNo"/>				
+				<form:hidden id="currInstructSect" path="currInstructSection"/>
 			</form:form>
 		</div>
 	</div>
@@ -118,70 +133,3 @@
 <script src="<c:url value="/resources/custom/instructions.js" />"></script>
 
 </html>
-			
-			
-			
-				<%-- <div class="col-sm-12">
-						<!-- must bind the instruction array, even on initial display -->
-						<spring:bind path="recipe.instructions[0]"></spring:bind>
-						<c:set var="instructplaceholder"><spring:message code="recipe.instructions.placeholder"></spring:message></c:set>
-							<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.instructions.step"></spring:message></label>
-							<div class="col-sm-12">
-							<c:forEach items="${recipe.instructions}" var="instruction" varStatus="loop">
-								<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
-								<div class="form-group <c:if test="${not empty instructError}">has-error</c:if>">
-									<div class="input-group instructGrp">
-										<form:hidden class="instructId instruct" path="instructions[${loop.index}].id"/>
-										<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>
-										<form:textarea class="form-control instructDesc instruct" id="inputDesc" rows="2" path="instructions[${loop.index}].description"
-											placeholder="${instructplaceholder}" />
-										<span class="input-group-btn">
-											<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
-												<span class="glyphicon glyphicon-minus"></span>
-											</button>
-											<button class="btn btn-success addInstruction" type="button">
-												<span class="glyphicon glyphicon-plus"></span>
-											</button>
-										</span>
-									</div>
-									<span class="text-danger instructErr">${instructError}</span>
-								</div>
-							</c:forEach>
-						</div>
-					</div>
-					
-					
-						<c:forEach items="${recipe.instructSections}" varStatus="loop">					
-							<form:hidden class="" path="instructSections[${loop.index}].sequenceNo"/>
-							<form:input type="text" class="form-control" id="name" path="instructSections[${loop.index}].name" autocomplete="off"/>
-						
-							<c:set var="instructplaceholder"><spring:message code="recipe.instructions.placeholder"></spring:message></c:set>
-							<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.instructions.step"></spring:message></label>
-							
-							<div class="col-sm-12">
-								<spring:bind path="recipe.instructSections[0].instructions[0]"></spring:bind>
-								
-								<c:forEach items="${recipe.instructSections.instructions}" varStatus="ndx">
-								
-									<spring:bind path="recipe.instructions[${loop.index}].description"><c:set var="instructError">${status.errorMessage}</c:set></spring:bind>
-									<div class="form-group <c:if test="${not empty instructError}">has-error</c:if>">
-										<div class="input-group instructGrp">
-											<form:hidden class="instructId instruct" path="instructions[${ndx.index}].id"/>
-											<form:hidden class="instructSeq instruct" path="instructions[${ndx.index}].sequenceNo"/>
-											<form:textarea class="form-control instructDesc instruct" id="inputDesc" rows="2" path="instructions[${ndx.index}].description"
-												placeholder="${instructplaceholder}" />
-											<span class="input-group-btn">
-												<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${ndx.last}">display:none</c:if>">
-													<span class="glyphicon glyphicon-minus"></span>
-												</button>
-												<button class="btn btn-success addInstruction" type="button">
-													<span class="glyphicon glyphicon-plus"></span>
-												</button>
-											</span>
-										</div>
-										<span class="text-danger instructErr">${instructError}</span>
-									</div>
-								</c:forEach>
-							</div>
-						</c:forEach> --%>
-			
