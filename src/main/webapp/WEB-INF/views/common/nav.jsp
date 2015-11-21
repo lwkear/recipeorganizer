@@ -35,9 +35,10 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<c:if test="${isAuthor}">
+							<!-- TODO: RECIPE: replace this with the webflow version -->
+							<%-- <c:if test="${isAuthor}">
 							<li><a href="<c:url value="/recipe/addRecipe" />"><spring:message code="menu.addrecipe"></spring:message></a></li>
-							</c:if>
+							</c:if> --%>
 							<c:if test="${isGuest}">
 							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
 							</c:if>

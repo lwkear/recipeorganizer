@@ -68,7 +68,7 @@ function getIngredId(obj) {
 function fixArrayIndexes(element, sequence) {
 	console.log("fixArray:" + element);
 	$(element).each(function(index) {
-		$(this).attr('name',$(this).attr('name').replace(/\[[0-9]+\]/,'['+index+']'));
+		$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
 		if (sequence) {
 			$(this).val(index+1);
 		}

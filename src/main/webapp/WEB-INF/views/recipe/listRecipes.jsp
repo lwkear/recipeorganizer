@@ -54,7 +54,8 @@
 								</c:choose>							
 							</td>
 							<td>
-								<c:choose>
+								<!-- TODO: RECIPE: change to new edit process when completed -->
+								<%-- <c:choose>
 									<c:when test="${recipe.userId eq secUserId}">
 										<a class="btn btn-success btn-sm" href="../recipe/editRecipe/${recipe.id}">
 										<span class="glyphicon glyphicon-pencil"></span></a>
@@ -63,7 +64,9 @@
 										<a class="btn btn-default btn-sm disabled" href="../recipe/editRecipe/${recipe.id}">
 										<span class="glyphicon glyphicon-pencil"></span></a>
 									</c:otherwise>
-								</c:choose>							
+								</c:choose> --%>							
+								<a class="btn btn-default btn-sm disabled" href="#">
+								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td>
 								<c:choose>

@@ -34,12 +34,15 @@
 				<div class="col-sm-12 spacer-vert-sm">
 					<table class="table table-condensed table-striped" style="margin-bottom:0">
 						<tbody>
-							<c:forEach var="ingred" items="${recipe.recipeIngredients}" varStatus="loop">
-							<tr>
-								<td>${ingred.quantity}</td>
-								<td>${ingred.qtyType}</td>
-								<td>${ingredientList[loop.index].name}&nbsp;&nbsp;(${ingred.qualifier})</td>
-							</tr>
+							<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
+								<tr><td>${section.name}</td></tr>
+								<c:forEach var="ingred" items="${section.recipeIngredients}" varStatus="loop">
+								<tr>
+									<td>${ingred.quantity}</td>
+									<td>${ingred.qtyType}</td>
+									<%-- <td>${ingredientList[loop.index].name}&nbsp;&nbsp;(${ingred.qualifier})</td> --%>
+								</tr>
+								</c:forEach>
 							</c:forEach>
 						</tbody>
 					</table>

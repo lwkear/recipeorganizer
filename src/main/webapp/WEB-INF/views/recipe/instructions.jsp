@@ -65,7 +65,6 @@
 					<div class="col-sm-12">
 							<c:set var="instructplaceholder"><spring:message code="recipe.instructions.placeholder"></spring:message></c:set>
 							<label class="control-label" id="descLabel" for="inputDesc">*<spring:message code="recipe.instructions.step"></spring:message></label>
-							
 							<div class="col-sm-12">
 								<spring:bind path="recipe.instructSections[${currNdx}].instructions[0]"></spring:bind>
 								<c:forEach items="${recipe.instructSections[currNdx].instructions}" varStatus="loop">
@@ -119,8 +118,11 @@
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
-				<form:hidden id="sectSeqNo" path="instructSections[${currNdx}].sequenceNo"/>				
+				<form:hidden id="sectSeqNo" path="instructSections[${currNdx}].sequenceNo"/>
+				<form:hidden id="instructSections" path="numInstructSections"/>				
 				<form:hidden id="currInstructSect" path="currInstructSection"/>
+				<form:hidden id="ingredSections" path="numIngredSections"/>
+				<form:hidden id="currIngredSect" path="currIngredSection"/>				
 			</form:form>
 		</div>
 	</div>

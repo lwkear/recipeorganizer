@@ -100,7 +100,6 @@ function initTypeaheadDataset(name, displayKey, limit, source) {
 };
 
 var prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/ingredients.json', ingredPrefetchFilter);
-/* var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/addRecipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter); */
 var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
 var bhOpts = setBHOptions(50, ingredDatumToken, null, prefetchOpts, remoteOpts);
 var ingredBH = new Bloodhound(bhOpts);
@@ -109,18 +108,15 @@ prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/measures.jso
 bhOpts = setBHOptions(50, null, null, prefetchOpts, null);
 var measureBH = new Bloodhound(bhOpts);
 
-/* remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/addRecipe/getQualifiers?searchStr=%QUERY', null); */
 remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getQualifiers?searchStr=%QUERY', null);
 bhOpts = setBHOptions(50, null, null, null, remoteOpts);
 var qualifierBH = new Bloodhound(bhOpts);
 
-/* remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/addRecipe/getSources', null); */
 remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getSources', null);
 remoteOpts['replace'] = function(url, query) {return setSourceUrl(url, query);}; 
 bhOpts = setBHOptions(50, null, null, null, remoteOpts);
 var sourceBH = new Bloodhound(bhOpts);
 
-/* remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/addRecipe/getTags', null); */
 remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getTags', null);
 remoteOpts['replace'] = function(url, query) {return setTagsUrl(url, query);};
 bhOpts = setBHOptions(50, null, null, null, remoteOpts);

@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -57,6 +59,28 @@ public class ViewRecipeController {
 						logger.info("id = " + instruct.getId()); 
 						logger.info("desc= " + instruct.getDescription());
 						logger.info("seq= " + instruct.getSequenceNo());			
+					}					
+				}
+			}			
+		}
+
+		size = recipe.getIngredSections().size();
+		if (size > 0) {
+			Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
+			while (iterator1.hasNext()) {
+				IngredientSection ingredSection = iterator1.next();
+				logger.info("id= " + ingredSection.getId()); 
+				logger.info("seq= " + ingredSection.getSequenceNo());
+				logger.info("name= " + ingredSection.getName());
+				size = ingredSection.getRecipeIngredients().size();
+				if (size > 0) {
+					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
+					while (iterator2.hasNext()) {
+						RecipeIngredient recipeIngred = iterator2.next();
+						long ingredId = recipeIngred.getIngredientId();
+						logger.info("id = " + recipeIngred.getId()); 
+						logger.info("seq= " + recipeIngred.getSequenceNo());
+						logger.info("name= " + recipeIngred.getIngredient().getName());
 					}					
 				}
 			}			

@@ -6,6 +6,7 @@ import org.springframework.webflow.execution.RequestContext;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
  
 public interface RecipeService {
@@ -18,7 +19,7 @@ public interface RecipeService {
     public void deleteRecipe(Long id);
     public Recipe getRecipe(Long id);
     public List<RecipeListDto> listRecipes();
-    public List<Ingredient> getIngredients(Recipe recipe);
+    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
     public List<String> getTags(String searchStr, Long userId);
     public boolean lookupName(String lookupName, Long userId);
     public void checkArraySizes(Recipe recipe);

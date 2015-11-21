@@ -99,15 +99,11 @@ $(function() {
 		num = $('#ingredSections').val();
 		if (!num || !num.length || num === "0")
 			$('#ingredSections').val(1);
-		num = $('#currIngredSect').val();			
-		if (!num || !num.length)
-			$('#currIngredSect').val(0);
+		num = $('#currIngredSect').val(0);			
 		num = $('#instructSections').val();
 		if (!num || !num.length || num === "0")
 			$('#instructSections').val(1);
-		num = $('#currInstructSect').val();
-		if (!num || !num.length)
-			$('#currInstructSect').val(0);
+		num = $('#currInstructSect').val(0);
 	})
 	.on('click', 'input[name="instructSet"]:checked', function(e)
 	{

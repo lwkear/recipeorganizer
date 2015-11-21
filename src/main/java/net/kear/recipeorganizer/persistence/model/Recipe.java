@@ -1,6 +1,5 @@
 package net.kear.recipeorganizer.persistence.model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
@@ -24,7 +23,7 @@ import javax.validation.constraints.*;
 import javax.validation.GroupSequence;
 
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.util.TagList;
 
@@ -52,8 +51,8 @@ public class Recipe implements Serializable {
 	@GroupSequence({NotBlankGroup.class,SizeGroup.class,Category.CategoryGroup.class})
 	public interface RecipeBasicGroup {}
 	
-	@GroupSequence({MinSizeGroup1.class, RecipeIngredient.RecipeIngredientGroup.class})
-	public interface RecipeRecipeIngredientGroup {}
+	@GroupSequence({MinSizeGroup1.class, IngredientSection.IngredSectGroup.class})
+	public interface RecipeIngredGroup {}
 
 	@GroupSequence({MinSizeGroup2.class, InstructionSection.InstructSectGroup.class,})
 	public interface RecipeInstructGroup {}
@@ -106,14 +105,14 @@ public class Recipe implements Serializable {
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@Valid
 	@Size(min=1, groups=MinSizeGroup1.class)
-	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
+	private List<IngredientSection> ingredSections = new AutoPopulatingList<IngredientSection>(IngredientSection.class);
 
 	@Transient
 	private int numIngredSections;
 
 	@Transient
 	private int currIngredSection;
-
+	
 	/*** instructions page ***/
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
@@ -152,8 +151,7 @@ public class Recipe implements Serializable {
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
 				Integer prepMinutes, String notes, boolean allowShare, String photo, List<String> tags, 
-				List<InstructionSection> instructSections, 
-				List<RecipeIngredient> recipeIngredients, Source source) {
+				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source) {
 		super();
 		this.user = user;
 		this.name = name;
@@ -168,7 +166,7 @@ public class Recipe implements Serializable {
 		this.photo = photo;
 		this.tags = tags;
 		this.instructSections = instructSections;
-		this.recipeIngredients = recipeIngredients;
+		this.ingredSections = ingredSections;
 		this.source = source;
 	}
 
@@ -296,7 +294,7 @@ public class Recipe implements Serializable {
 		this.instructSections.set(ndx, instructionSection);
 	}
 	
-	public void addInstructSections(InstructionSection instructionSection) {
+	public void addInstructionSection(InstructionSection instructionSection) {
 		this.instructSections.add(instructionSection);
 	}
 
@@ -316,24 +314,24 @@ public class Recipe implements Serializable {
 		this.currInstructSection = currInstructSection;
 	}
 
-	public List<RecipeIngredient> getRecipeIngredients() {
-		return recipeIngredients;
+	public List<IngredientSection> getIngredSections() {
+		return ingredSections;
 	}
 
-	public RecipeIngredient getRecipeIngredient(int ndx) {
-		return this.recipeIngredients.get(ndx);
+	public IngredientSection getIngredientSection(int ndx) {
+		return this.ingredSections.get(ndx);
 	}
 	
-	public void setRecipeIngredients(List<RecipeIngredient> recipeIngredients) {
-		this.recipeIngredients = recipeIngredients;
+	public void setIngredSections(List<IngredientSection> ingredSections) {
+		this.ingredSections = ingredSections;
 	}
 
-	public void setRecipeIngredient(int ndx, RecipeIngredient recipeIngredient) {
-		this.recipeIngredients.set(ndx, recipeIngredient);
+	public void setIngredientSection(int ndx, IngredientSection ingredSection) {
+		this.ingredSections.set(ndx, ingredSection);
 	}
 	
-	public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
-		this.recipeIngredients.add(recipeIngredient);
+	public void addIngredientSection(IngredientSection ingredSection) {
+		this.ingredSections.add(ingredSection);
 	}
 
 	public Integer getNumIngredSections() {
@@ -437,10 +435,10 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!prepMinutes.equals(other.prepMinutes))
 			return false;
-		if (recipeIngredients == null) {
-			if (other.recipeIngredients != null)
+		if (ingredSections == null) {
+			if (other.ingredSections != null)
 				return false;
-		} else if (!recipeIngredients.equals(other.recipeIngredients))
+		} else if (!ingredSections.equals(other.ingredSections))
 			return false;
 		if (servings == null) {
 			if (other.servings != null)
@@ -469,7 +467,7 @@ public class Recipe implements Serializable {
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", recipeIngredients=" +  
-				recipeIngredients + ", source=" + source + "]";
+				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", ingredSections=" +  
+				ingredSections + ", source=" + source + "]";
 	}
 }

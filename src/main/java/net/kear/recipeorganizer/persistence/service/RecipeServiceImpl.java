@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -42,8 +43,9 @@ public class RecipeServiceImpl implements RecipeService {
     
     /*public Recipe createRecipe(String userName) {*/
 		/*User user = userService.findUserByEmail(userName);*/
+	//TODO: RECIPE: replace with above after testing!!!
     public Recipe createRecipe() {
-    	User user = userService.findUserByEmail("kear@outlook.com");	//TODO: RECIPE: remove this after testing!!!
+    	User user = userService.findUserByEmail("kear@outlook.com");
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
@@ -89,8 +91,8 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.listRecipes();
     }
     
-    public List<Ingredient> getIngredients(Recipe recipe) {
-    	return recipeRepository.getIngredients(recipe);
+    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {
+    	return recipeRepository.getIngredients(recipe, sectionNdx);
     }
     
     public List<String> getTags(String searchStr, Long userId) {
@@ -112,12 +114,24 @@ public class RecipeServiceImpl implements RecipeService {
     			recipe.getInstructSections().remove(ndx-1);
 			}    		
     	}
+
+    	sections = recipe.getNumIngredSections();
+    	size = recipe.getIngredSections().size();
+    	logger.info("numIngredientSections=" + sections);
+    	logger.info("ingredArraySize=" + size); 
+    	if (size > sections) {
+    		logger.info("need to adjust size");
+    		for (int ndx=size;ndx>sections;ndx--) {
+    			recipe.getIngredSections().remove(ndx-1);
+			}    		
+    	}
     }
     
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
     	logger.info("adjustInstructionList");
     	logger.info("parsing instructions");
-		int size = recipe.getInstructSections().size();
+
+    	int size = recipe.getInstructSections().size();
 		int ndx = 0;
 		if (size > 0) {
 			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
@@ -194,10 +208,11 @@ public class RecipeServiceImpl implements RecipeService {
     		if (key.contains("_back"))
     			back = true;
     	}
+
     	//replace the current list with the parsed list
     	if (requestInstruct.size() > 0) {
     		recipe.getInstructionSection(sectNdx).getInstructions().clear();
-    		recipe.getInstructionSection(sectNdx).setInstruction(requestInstruct);
+    		recipe.getInstructionSection(sectNdx).setInstructions(requestInstruct);
 	    	if (forward) {
 		    	recipe.getInstructionSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrInstructSection(sectNdx+1);
@@ -217,37 +232,61 @@ public class RecipeServiceImpl implements RecipeService {
 
 	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {
 		logger.info("adjustRecipeIngredientList");
-		
 		logger.info("parsing ingredients");
-		Iterator<RecipeIngredient> iterator2 = recipe.getRecipeIngredients().iterator();
-		while (iterator2.hasNext()) {
-			RecipeIngredient recipeIngred = iterator2.next();
-			/*logger.info("id= " + recipeIngred.getId());*/
-			logger.info("seq= " + recipeIngred.getSequenceNo());
-			logger.info("ingredId= " + recipeIngred.getIngredientId());
-			logger.info("qty= " + recipeIngred.getQuantity());
-			logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
-			logger.info("type= " + recipeIngred.getQtyType());			
-			logger.info("qual= " + recipeIngred.getQualifier());
-			logger.info("ingred= " + recipeIngred.getIngredient());
-		}	
-		
-		int seq = 1;
-		String key = null;
-		Object value = null;
-		RecipeIngredient ingred = null;
+
+		int size = recipe.getIngredSections().size();
+		int ndx = 0;
+		if (size > 0) {
+			Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
+			while (iterator1.hasNext()) {
+				IngredientSection ingredSection = iterator1.next();
+				logger.info("ndx= " + ndx++);
+				logger.info("id= " + ingredSection.getId()); 
+				logger.info("seq= " + ingredSection.getSequenceNo());
+				logger.info("name= " + ingredSection.getName());
+				size = ingredSection.getRecipeIngredients().size();
+				if (size > 0) {
+					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
+					while (iterator2.hasNext()) {
+						RecipeIngredient recipeIngred = iterator2.next();
+						long ingredId = recipeIngred.getIngredientId();
+						logger.info("id = " + recipeIngred.getId()); 
+						logger.info("seq= " + recipeIngred.getSequenceNo());
+						logger.info("qty= " + recipeIngred.getQuantity());
+						logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
+						logger.info("type= " + recipeIngred.getQtyType());			
+						logger.info("qual= " + recipeIngred.getQualifier());
+						logger.info("ingredId= " + recipeIngred.getIngredientId());
+					}					
+				}
+			}			
+		}
+
+    	String key = null;
+    	Object value = null;
+    	RecipeIngredient ingred = null;
+    	int seq = 1;
+    	int sectNdx = 0;
+    	boolean forward = false;
+    	boolean back = false;
 		
 		//get the parameters
 		ParameterMap requestParameters = context.getRequestParameters();
 		//create a new empty list
 		List<RecipeIngredient> requestIngred = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 	
-		//get the parameters from the request and parse the set looking for instructions
+		//get the parameters from the request and parse the set looking for ingredients
 		Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
 		for (Entry<String, Object> entry : entries) {
 			key = entry.getKey();
 			value = entry.getValue();
 			logger.info("key/value= " + key + "/" + value);
+
+    		if (key.contains("currIngredSection")) {
+				String str = (String)value;
+				sectNdx = Integer.parseInt(str);
+    		}
+			
 			if (key.contains("recipeIngredients")) {
 				/*if (key.contains(".id")) {
 					ingred = new RecipeIngredient();
@@ -279,12 +318,31 @@ public class RecipeServiceImpl implements RecipeService {
 					requestIngred.add(ingred);
 				}	
 			}
+    		if (key.contains("_proceed"))
+    			forward = true;
+    		if (key.contains("_back"))
+    			back = true;
 		}
-		
-		//replace the current list with the parsed list
-		if (requestIngred.size() > 0) {
-			recipe.getRecipeIngredients().clear();
-			recipe.setRecipeIngredients(requestIngred);
-		}
+
+    	//replace the current list with the parsed list
+    	if (requestIngred.size() > 0) {
+    		recipe.getIngredientSection(sectNdx).getRecipeIngredients().clear();
+			recipe.getIngredientSection(sectNdx).setRecipeIngredients(requestIngred);
+    		
+    		if (forward) {
+		    	recipe.getIngredientSection(sectNdx).setSequenceNo(sectNdx+1);
+				recipe.setCurrIngredSection(sectNdx+1);
+			}
+			if (back)
+				recipe.setCurrIngredSection(sectNdx-1);	
+    	}
+    	else {
+    		//back to previous page, but no ingredients so remove the section
+    		if (back) {
+    			if (sectNdx < recipe.getIngredSections().size())
+    				recipe.getIngredSections().remove(sectNdx);
+    			recipe.setCurrIngredSection(sectNdx-1);
+    		}
+    	}
 	}
 }

@@ -1,7 +1,6 @@
 function fixArrayIndexes(element, sequence) {
 	console.log("fixArray:" + element);
 	$(element).each(function(index) {
-		var str = $(this).attr('name');
 		$(this).attr('name',$(this).attr('name').replace(/instructions\[[0-9]+\]/,'instructions['+index+']'));
 		if (sequence) {
 			$(this).val(index+1);
@@ -66,6 +65,20 @@ $(function() {
 		    /*fixArrayIndexes('.instructId', false);*/
 			fixArrayIndexes('.instructDesc', false);
 		    fixArrayIndexes('.instructSeq', true);
+
+		    var name = $(this).attr('name');
+		    if (name == '_eventId_back') {
+				//set index for the last set of ingredients, which will be total sections minus one
+			    var ndx = $('#ingredSections').val();
+			    console.log("_eventId_back");
+			    console.log("ingredSects val:" + ndx);
+			    var num = parseInt(ndx);
+			    if (num > 0) {
+				    num = num-1;
+					console.log("currIngredSect new val:" + num);
+					$('#currIngredSect').val(num.toString());
+			    }
+		    }
 		})
 })
 

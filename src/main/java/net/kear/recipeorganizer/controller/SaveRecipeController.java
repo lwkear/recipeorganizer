@@ -1,14 +1,10 @@
 package net.kear.recipeorganizer.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
 import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -19,12 +15,10 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,12 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartFile;
 
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
-import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -75,7 +66,8 @@ public class SaveRecipeController {
 	/**************************/
 	/*** Add recipe handler ***/
 	/**************************/
-	@RequestMapping("recipe/addRecipe")
+	/* obsolete - replaced by webflow */
+	/*@RequestMapping("recipe/addRecipe")
 	public String addRecipe(Model model, HttpSession session) {
 		logger.info("recipe/addRecipe GET");
 
@@ -96,12 +88,13 @@ public class SaveRecipeController {
 		}
 					
 		return "recipe/addRecipe";
-	}
+	}*/
 
-	//save a recipe
-	@RequestMapping(value= {"recipe/addRecipe", "recipe/editRecipe"}, method = RequestMethod.POST)
+	/* obsolete - replaced by webflow */
+	//save a recipe	
+	/*@RequestMapping(value= {"recipe/addRecipe", "recipe/editRecipe"}, method = RequestMethod.POST)
 	public String saveRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result,
-			/*@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) {*/		
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) {		
 			HttpSession session) {
 		logger.info("recipe/addRecipe POST save");
 
@@ -112,7 +105,7 @@ public class SaveRecipeController {
 			//get the ingredient names and return the completed form with error messages
 			model.addAttribute("ingredientList", recipeService.getIngredients(recipe));			
 			return "recipe/addRecipe";
-		}
+		}*/
 		
 		//TODO: EXCEPTION: need to return an error message if the file upload is unsuccessful
 		//handle the file upload
@@ -141,7 +134,7 @@ public class SaveRecipeController {
 				recipe.getSources().clear();
 			}
 		}*/
-				
+		/*		
 		//add the object to the session in case of error
 		session.setAttribute("recipe", recipe);
 		
@@ -151,7 +144,7 @@ public class SaveRecipeController {
 		session.removeAttribute("recipe");
 		
 		return "redirect:viewRecipe/" + recipe.getId();
-	}
+	}*/
 
 	//update a recipe
 	/*@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
@@ -207,10 +200,11 @@ public class SaveRecipeController {
 		//return "redirect:listRecipes";
 	}*/
 
-	/**************************/
+	/***************************/
 	/*** Edit recipe handler ***/
-	/**************************/
-	@RequestMapping("recipe/editRecipe/{id}")
+	/***************************/
+	/* TODO: RECIPE: determine how to edit a recipe, e.g., webflow or single page with accordion panels
+	/*@RequestMapping("recipe/editRecipe/{id}")
 	public String editRecipe(Model model, @PathVariable Long id, HttpSession session) {
 		logger.info("recipe/editRecipe GET");
 
@@ -226,16 +220,16 @@ public class SaveRecipeController {
 			logger.info("editRecipe: session.getAttribute: recipe is NOT null!!!");
 		}
 
-		/*if (recipe.getSources().size() == 0) {
+		if (recipe.getSources().size() == 0) {
 			Source source = new Source(); 
 			recipe.getSources().add(source);
-		}*/
+		}
 
 		model.addAttribute("ingredientList", recipeService.getIngredients(recipe));
 		model.addAttribute("recipe", recipe);
 		
 		return "recipe/editRecipe";
-	}
+	}*/
 
 	
 	@RequestMapping(value="recipe/deleteRecipe/{id}")

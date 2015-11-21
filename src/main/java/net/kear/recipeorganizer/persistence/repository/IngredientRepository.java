@@ -11,5 +11,4 @@ public interface IngredientRepository {
     public void deleteIngredient(Long id);
     public List<Ingredient> listIngredient();
     public List<Ingredient> getIngredients(String searchStr);
-    
 }

@@ -14,19 +14,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.GroupSequence;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-import net.kear.recipeorganizer.persistence.model.Instruction;
-//import net.kear.recipeorganizer.persistence.model.Recipe.MinSizeGroup2;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.util.AutoPopulatingList;
 
 @Entity
-@Table(name = "INSTRUCTION_SECTION")
-public class InstructionSection implements Serializable {
+@Table(name = "INGREDIENT_SECTION")
+public class IngredientSection implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,13 +35,13 @@ public class InstructionSection implements Serializable {
 	public interface SizeGroup {}
 	public interface MinSizeGroup {}
 	
-	@GroupSequence({NotBlankGroup.class,SizeGroup.class,MinSizeGroup.class,Instruction.InstructGroup.class})
-	public interface InstructSectGroup {}
+	@GroupSequence({NotBlankGroup.class,SizeGroup.class,MinSizeGroup.class,RecipeIngredient.RecipeIngredientGroup.class})
+	public interface IngredSectGroup {}
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INSTRUCTION_SECTION_SEQ")
-	@SequenceGenerator(name = "INSTRUCTION_SECTION_SEQ", sequenceName = "INSTRUCTION_SECTION_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "INGREDIENT_SECTION_SEQ")
+	@SequenceGenerator(name = "INGREDIENT_SECTION_SEQ", sequenceName = "INGREDIENT_SECTION_SEQ", allocationSize = 1)
 	private long id;
 
 	@Column(name = "SEQUENCE_NO", nullable = false)
@@ -56,11 +56,14 @@ public class InstructionSection implements Serializable {
 	@JoinColumn(name="SECTION_ID", nullable=false)
 	@Valid
 	@Size(min=1, groups=MinSizeGroup.class)
-	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);
+	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 	
-	public InstructionSection() {}
+	/*@Transient
+	private List<Ingredient> ingredients;*/
 	
-	public InstructionSection(int seqNo, String name) {
+	public IngredientSection() {}
+	
+	public IngredientSection(int seqNo, String name) {
 		this.sequenceNo = seqNo;
 		this.name = name;
 	}
@@ -89,25 +92,45 @@ public class InstructionSection implements Serializable {
 		this.name = name;
 	}
 	
-	public List<Instruction> getInstructions() {
-		return instructions;
+	public List<RecipeIngredient> getRecipeIngredients() {
+		return recipeIngredients;
 	}
 	
-	public Instruction getInstruction(int ndx) {
-		return this.instructions.get(ndx);
+	public RecipeIngredient getRecipeIngredient(int ndx) {
+		return this.recipeIngredients.get(ndx);
 	}
 
-	public void setInstructions(List<Instruction> instructions) {
-		this.instructions = instructions;
+	public void setRecipeIngredients(List<RecipeIngredient> recipeIngredients) {
+		this.recipeIngredients = recipeIngredients;
 	}
 
-	public void setInstruction(int ndx, Instruction instruction) {
-		this.instructions.set(ndx, instruction);
+	public void setRecipeIngredient(int ndx, RecipeIngredient recipeIngredient) {
+		this.recipeIngredients.set(ndx, recipeIngredient);
 	}
 	
-	public void addInstruction(Instruction instruction) {
-		this.instructions.add(instruction);
+	public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
+		this.recipeIngredients.add(recipeIngredient);
 	}
+	
+	/*public List<Ingredient> getIngredients() {
+		return ingredients;
+	}
+	
+	public Ingredient getIngredient(int ndx) {
+		return this.ingredients.get(ndx);
+	}
+
+	public void setIngredients(List<Ingredient> ingredients) {
+		this.ingredients = ingredients;
+	}
+
+	public void setIngredient(int ndx, Ingredient ingredient) {
+		this.ingredients.set(ndx, ingredient);
+	}
+	
+	public void addIngredient(Ingredient ingredient) {
+		this.ingredients.add(ingredient);
+	}*/
 
 	@Override
 	public int hashCode() {
@@ -127,7 +150,7 @@ public class InstructionSection implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		InstructionSection other = (InstructionSection) obj;
+		IngredientSection other = (IngredientSection) obj;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -137,18 +160,18 @@ public class InstructionSection implements Serializable {
 			return false;
 		if (sequenceNo != other.sequenceNo)
 			return false;
-		if (instructions == null) {
-			if (other.instructions != null)
+		if (recipeIngredients == null) {
+			if (other.recipeIngredients != null)
 				return false;
-		} else if (!instructions.equals(other.instructions))
+		} else if (!recipeIngredients.equals(other.recipeIngredients))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Instruction [id=" + id  
+		return "InstructionSection [id=" + id  
 				+ ", sequenceNo=" + sequenceNo 
-				+ ", name=" + name + ", instructions=" + instructions + "]";
+				+ ", name=" + name + ", recipeIngredients=" + recipeIngredients + "]";
 	}
 }

@@ -49,7 +49,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     public Recipe getRecipe(Long id) {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
     	Hibernate.initialize(recipe.getInstructSections());
-        Hibernate.initialize(recipe.getRecipeIngredients());
+        Hibernate.initialize(recipe.getIngredSections());
         Hibernate.initialize(recipe.getSource());
         return recipe;
     }
@@ -75,17 +75,21 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public List<Ingredient> getIngredients(Recipe recipe) {
+    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {
 
     	List<Ingredient> ingreds = new ArrayList();
+    	
+    	int size = recipe.getIngredSections().size();
+    	if (size > sectionNdx) {
 
-    	Iterator<RecipeIngredient> iter = recipe.getRecipeIngredients().iterator();
-		while (iter.hasNext()) {
-			RecipeIngredient recipeIngred = iter.next();
-	    	Criteria criteria = getSession().createCriteria(Ingredient.class)
-	    		.add(Restrictions.eq("id", recipeIngred.getIngredientId()));
-			ingreds.add((Ingredient)criteria.uniqueResult());
-		}
+	    	Iterator<RecipeIngredient> iter = recipe.getIngredientSection(sectionNdx).getRecipeIngredients().iterator();
+			while (iter.hasNext()) {
+				RecipeIngredient recipeIngred = iter.next();
+		    	Criteria criteria = getSession().createCriteria(Ingredient.class)
+		    		.add(Restrictions.eq("id", recipeIngred.getIngredientId()));
+				ingreds.add((Ingredient)criteria.uniqueResult());
+			}
+    	}
 		
 		return ingreds;
     }
