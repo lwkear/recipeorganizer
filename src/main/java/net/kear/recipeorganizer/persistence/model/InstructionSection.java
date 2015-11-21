@@ -49,7 +49,7 @@ public class InstructionSection implements Serializable {
 	
 	@Column(name = "NAME")
 	@NotBlank(groups=NotBlankGroup.class)
-	@Size(max=10, groups=SizeGroup.class)	//50
+	@Size(max=50, groups=SizeGroup.class)	//50
 	private String name;
 
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)

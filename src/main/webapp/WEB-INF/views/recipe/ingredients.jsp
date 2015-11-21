@@ -29,14 +29,14 @@
 	</c:forEach>
 	</spring:hasBindErrors>
 
-	<p><b>flow.instructCount:</b>${instructCount}</p>
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
 	<p><b>flow.instructIndex:</b>${instructIndex}</p>
 	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
 	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p>
 	<p><b>flow.ingredCount:</b>${ingredCount}</p>
 	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
 	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p> --%>
 	
 	<c:set var="currNdx" value="${recipe.currIngredSection}"/>
 

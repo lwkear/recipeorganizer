@@ -32,12 +32,15 @@
 					<div class="col-sm-12">
 						<table class="table table-condensed table-striped" style="margin-bottom:0">
 							<tbody>
-								<c:forEach var="ingred" items="${recipe.recipeIngredients}">
-								<tr>
-									<td>${ingred.quantity}</td>
-									<td>${ingred.qtyType}</td>
-									<td>${ingred.ingredient.name}<c:if test="${not empty ingred.qualifier}"> (${ingred.qualifier}) </c:if></td>
-								</tr>
+								<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
+									<tr><td>${section.name}</td></tr>
+									<c:forEach var="ingred" items="${section.recipeIngredients}">
+									<tr>
+										<td>${ingred.quantity}</td>
+										<td>${ingred.qtyType}</td>
+										<td>${ingred.ingredient.name}<c:if test="${not empty ingred.qualifier}"> (${ingred.qualifier}) </c:if></td>
+									</tr>
+									</c:forEach>
 								</c:forEach>
 							</tbody>
 						</table>
