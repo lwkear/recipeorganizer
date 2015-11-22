@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
@@ -249,7 +247,6 @@ public class RecipeServiceImpl implements RecipeService {
 					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
 					while (iterator2.hasNext()) {
 						RecipeIngredient recipeIngred = iterator2.next();
-						long ingredId = recipeIngred.getIngredientId();
 						logger.info("id = " + recipeIngred.getId()); 
 						logger.info("seq= " + recipeIngred.getSequenceNo());
 						logger.info("qty= " + recipeIngred.getQuantity());

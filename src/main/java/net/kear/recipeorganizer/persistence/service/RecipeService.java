@@ -6,7 +6,6 @@ import org.springframework.webflow.execution.RequestContext;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
-import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
  
 public interface RecipeService {

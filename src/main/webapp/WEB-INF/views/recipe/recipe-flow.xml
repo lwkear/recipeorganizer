@@ -64,7 +64,7 @@
 		<if test="flowScope.instructCount > flowScope.instructIndex" then="instructions" else="optional"/>
 	</decision-state>
 	<decision-state id="instructLoopBack">
-		<if test="flowScope.instructIndex > -1" then="instructions" else="ingredLoopBack"/>
+		<if test="flowScope.instructIndex > -1" then="instructions" else="ingredients"/>
 	</decision-state>
 	
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
@@ -101,7 +101,7 @@
 			<binding property="numIngredSections"/>
 			<binding property="currIngredSection"/>
 		</binder>
-		<transition on="back" to="instructLoopBack" bind="true" validate="false">
+		<transition on="back" to="instructions" bind="true" validate="false">
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
 		<transition on="proceed" to="review" bind="true" validate="true" validation-hints="'recipeOptionalGroup'"></transition>		

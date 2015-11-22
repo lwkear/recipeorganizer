@@ -29,19 +29,14 @@
 	</c:forEach>
 	</spring:hasBindErrors>
 
-	<%-- <p><b>flowRequestContext</b></p>
-	<p>${flowRequestContext}</p>
-	<p></p> --%>
-	<%-- <p><b>flowScope</b></p>
-	<p>${flowRequestContext.flowScope}</p>
-	<p></p>
-	<p><b>requestScope</b></p>
-	<p>${flowRequestContext.requestScope}</p>
-	<p></p> --%>
-	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructCount:</b>${instructCount}</p>
 	<p><b>flow.instructIndex:</b>${instructIndex}</p>
 	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p>
+	<p><b>flow.ingredCount:</b>${ingredCount}</p>
+	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
+	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p>
 
 	<c:set var="currNdx" value="${recipe.currInstructSection}"/>
 	

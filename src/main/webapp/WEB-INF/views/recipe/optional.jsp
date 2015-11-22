@@ -66,7 +66,7 @@
 									<spring:message code="recipe.optional.source"></spring:message></label>
 								<label class="control-label col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">text-danger</c:if>" style="text-align: left; display:none" id="cookbookLabel">
 									<spring:message code="recipe.optional.source.cookbookname"></spring:message></label>
-								<label class="control-label col-sm-1 srcGroup bookGroup <c:if test="${not empty cookbookPageError}">text-danger</c:if>"" style="text-align: left; display:none">
+								<label class="control-label col-sm-1 srcGroup bookGroup <c:if test="${not empty cookbookPageError}">text-danger</c:if>" style="text-align: left; display:none">
 									<spring:message code="recipe.optional.source.cookbookpage"></spring:message></label>
 								<label class="control-label col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">text-danger</c:if>" style="text-align: left; display:none" id="zineLabel">
 									<spring:message code="recipe.optional.source.magazinename"></spring:message></label>
@@ -102,7 +102,7 @@
 									<form:input type="text" class="form-control col-sm-5 srcGroup bookGroup srcTA" id="inputBookName" style="display:none" path="source.cookbook"/>
 									<span class="text-danger">${cookbookError}</span>
 								</div>
-								<div class="col-sm-1 srcGroup bookGroup" <c:if test="${not empty cookbookPageError}">has-error</c:if>" style="display:none">
+								<div class="col-sm-1 srcGroup bookGroup <c:if test="${not empty cookbookPageError}">has-error</c:if>" style="display:none">
 									<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup" id="inputBookPage" style="display:none" path="source.cookbookPage" value="0" autocomplete="off"/>
 									<span class="text-danger">${cookbookPageError}</span>
 								</div>

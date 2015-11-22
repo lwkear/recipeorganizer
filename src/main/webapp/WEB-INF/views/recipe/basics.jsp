@@ -115,7 +115,7 @@
 								</div>
 								<div class="row col-sm-6">
 									<div class="radio-inline col-sm-1">
-										<input type="radio" name="ingredSet" value="true"><spring:message code="common.yes"></spring:message>
+										<input type="radio" name="ingredSet" id="ingredYes" value="true"><spring:message code="common.yes"></spring:message>
 									</div>
 									<div class="radio-inline col-sm-1">
 										<input type="radio" name="ingredSet" value="false" checked><spring:message code="common.no"></spring:message>

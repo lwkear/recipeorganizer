@@ -11,6 +11,10 @@ function fixArrayIndexes(element, sequence) {
 function removeEmptyRows(element, fields) {
 	console.log("removeEmptyRows");
 	console.log("element=" + element);
+	var numRows = $(element).length;
+	var rowZeroEmpty = false;
+	var numNotEmpty = 0;
+	console.log("#elements=" + numRows);
 	$(element).each(function(index) {
 		console.log("row#" + index);
 		var currentRow = $(this);
@@ -24,11 +28,27 @@ function removeEmptyRows(element, fields) {
 				break;
 			}
 		}
-		if (notEmpty === false) {
+		if (notEmpty === false && index === 0)
+			rowZeroEmpty = true;
+		else {
+			if (notEmpty)
+				numNotEmpty++;
+			else
+			{
+				console.log("removing row#" + index);
+				currentRow.remove();
+			}
+		}
+	});
+	
+	if (rowZeroEmpty === true && numNotEmpty > 0) {
+		$(element).each(function(index) {
 			console.log("removing row#" + index);
+			var currentRow = $(this);
 			currentRow.remove();
-		}									
-	});		
+			return false;
+		});
+	}
 }
 
 //shorthand for document.ready
@@ -68,16 +88,19 @@ $(function() {
 
 		    var name = $(this).attr('name');
 		    if (name == '_eventId_back') {
+		    	console.log("_eventId_back");
 				//set index for the last set of ingredients, which will be total sections minus one
-			    var ndx = $('#ingredSections').val();
-			    console.log("_eventId_back");
-			    console.log("ingredSects val:" + ndx);
-			    var num = parseInt(ndx);
-			    if (num > 0) {
-				    num = num-1;
-					console.log("currIngredSect new val:" + num);
-					$('#currIngredSect').val(num.toString());
-			    }
+		    	var currSect = $('#currInstructSect').val();
+		    	if (currSect === '0') {
+				    var ndx = $('#ingredSections').val();
+				    console.log("ingredSects val:" + ndx);
+				    var num = parseInt(ndx);
+				    if (num > 0) {
+					    num = num-1;
+						console.log("currIngredSect new val:" + num);
+						$('#currIngredSect').val(num.toString());
+				    }
+		    	}
 		    }
 		})
 })

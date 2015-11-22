@@ -77,7 +77,6 @@ public class ViewRecipeController {
 					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
 					while (iterator2.hasNext()) {
 						RecipeIngredient recipeIngred = iterator2.next();
-						long ingredId = recipeIngred.getIngredientId();
 						logger.info("id = " + recipeIngred.getId()); 
 						logger.info("seq= " + recipeIngred.getSequenceNo());
 						logger.info("name= " + recipeIngred.getIngredient().getName());

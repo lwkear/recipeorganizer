@@ -9,11 +9,18 @@ function setCategory() {
 }
 
 function checkSections() {
-	var num = $('#instructSections').val();
-	if (num == null || num < 2)
-		return;
-	$('#instructYes').prop('checked', true);
-	$('.instructNum').show();
+	var num = $('#ingredSections').val();
+	if (num != null && num > 1) {
+		$('#ingredYes').prop('checked', true);
+		$('.ingredNum').show();
+	}
+
+	num = $('#instructSections').val();
+	if (num != null && num > 1) {
+		$('#instructYes').prop('checked', true);
+		$('.instructNum').show();
+	}
+
 	return false;
 }
 
