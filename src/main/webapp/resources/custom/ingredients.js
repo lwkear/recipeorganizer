@@ -78,6 +78,10 @@ function fixArrayIndexes(element, sequence) {
 function removeEmptyRows(element, fields) {
 	console.log("removeEmptyRows");
 	console.log("element=" + element);
+	var numRows = $(element).length;
+	var rowZeroEmpty = false;
+	var numNotEmpty = 0;
+	console.log("#elements=" + numRows);
 	$(element).each(function(index) {
 		console.log("row#" + index);
 		var currentRow = $(this);
@@ -91,11 +95,27 @@ function removeEmptyRows(element, fields) {
 				break;
 			}
 		}
-		if (notEmpty === false) {
+		if (notEmpty === false && index === 0)
+			rowZeroEmpty = true;
+		else {
+			if (notEmpty)
+				numNotEmpty++;
+			else
+			{
+				console.log("removing row#" + index);
+				currentRow.remove();
+			}
+		}
+	});
+	
+	if (rowZeroEmpty === true && numNotEmpty > 0) {
+		$(element).each(function(index) {
 			console.log("removing row#" + index);
+			var currentRow = $(this);
 			currentRow.remove();
-		}									
-	});		
+			return false;
+		});
+	}
 }
 
 //shorthand for document.ready

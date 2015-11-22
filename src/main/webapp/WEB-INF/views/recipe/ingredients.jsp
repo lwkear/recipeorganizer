@@ -29,20 +29,21 @@
 	</c:forEach>
 	</spring:hasBindErrors>
 
-	<p><b>flow.instructCount:</b>${instructCount}</p>
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
 	<p><b>flow.instructIndex:</b>${instructIndex}</p>
 	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
 	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p>
 	<p><b>flow.ingredCount:</b>${ingredCount}</p>
 	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
 	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p> --%>
 	
 	<c:set var="currNdx" value="${recipe.currIngredSection}"/>
 
 		<div class="col-sm-12">
-			<form:form class="form-horizontal" role="form" name="ingredForm" modelAttribute="recipe">
-				<spring:bind path="recipe.ingredSections[${currNdx}]"></spring:bind>		
+			<form:form class="form-horizontal" role="form" name="ingredForm" modelAttribute="recipe" autocomplete="off">
+				<spring:bind path="recipe.ingredSections[${currNdx}]"></spring:bind>
+				<spring:bind path="recipe.ingredSections[${currNdx}].name"><c:set var="nameError">${status.errorMessage}</c:set></spring:bind>		
 				<div class="row">
 					<c:choose>
 						<c:when test="${recipe.numIngredSections > 1}">
@@ -50,6 +51,7 @@
 								<div class="form-group col-sm-3 <c:if test="${not empty nameError}">has-error</c:if>">
 									<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.ingredients.sectionname"></spring:message>${currNdx+1}</label>
 									<form:input type="text" class="form-control" id="name" path="ingredSections[${currNdx}].name"/>
+									<span class="text-danger">${nameError}</span>
 								</div>
 							</div>
 						</c:when>

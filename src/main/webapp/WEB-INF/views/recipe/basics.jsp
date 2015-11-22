@@ -18,6 +18,8 @@
 	<spring:bind path="recipe.prepHours"><c:set var="prepHourError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.prepMinutes"><c:set var="prepMinuteError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.category.id"><c:set var="categoryError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="recipe.numIngredSections"><c:set var="ingredSectError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="recipe.numInstructSections"><c:set var="instructSectError">${status.errorMessage}</c:set></spring:bind>
 
 	<c:if test="${not empty prepHourError}"><c:set var="prepTimeError">X</c:set></c:if>
 	<c:if test="${not empty prepMinuteError}"><c:set var="prepTimeError">X</c:set></c:if>

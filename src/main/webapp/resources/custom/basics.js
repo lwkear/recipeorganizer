@@ -10,13 +10,13 @@ function setCategory() {
 
 function checkSections() {
 	var num = $('#ingredSections').val();
-	if (num != null && num > 1) {
+	if (num != null && (num > 1 || isNaN(num))) {
 		$('#ingredYes').prop('checked', true);
 		$('.ingredNum').show();
 	}
 
 	num = $('#instructSections').val();
-	if (num != null && num > 1) {
+	if (num != null && (num > 1 || isNaN(num))) {
 		$('#instructYes').prop('checked', true);
 		$('.instructNum').show();
 	}

@@ -28,7 +28,7 @@
 			<binding property="category.id"/>
 			<binding property="category.name"/>
 		</binder>
-		<transition on="proceed" to="ingredLoopForward" validation-hints="'recipeBasicGroup'">
+		<transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'">
 			<set name="flowScope.instructCount" value="recipe.numInstructSections"/>
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 			<set name="flowScope.ingredCount" value="recipe.numIngredSections"/>
@@ -49,11 +49,11 @@
 		<on-render>
 			<evaluate expression="recipeService.getIngredients(recipe, flowScope.ingredIndex)" result="viewScope.ingredientList"></evaluate>
 		</on-render>
-		<transition on="back" to="ingredLoopBack" bind="true" validate="false">
+		<transition on="back" to="ingredLoopBack" bind="true" validate="true" validation-hints="'recipeIngredGroup'">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 		</transition>
-		<transition on="proceed" to="ingredLoopForward" bind="true">  <!-- validate="true" validation-hints="'recipeRecipeIngredientGroup'"> -->
+		<transition on="proceed" to="ingredLoopForward" bind="true" validate="true" validation-hints="'recipeIngredGroup'">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 		</transition>
@@ -68,7 +68,7 @@
 	</decision-state>
 	
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
-		<transition on="back" to="instructLoopBack" bind="true" validate="false">
+		<transition on="back" to="instructLoopBack" bind="true" validate="true" validation-hints="'recipeInstructGroup'">
 			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
