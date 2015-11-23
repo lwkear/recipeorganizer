@@ -18,6 +18,7 @@ import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 
+import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class RecipeServiceImpl implements RecipeService {
 		/*User user = userService.findUserByEmail(userName);*/
 	//TODO: RECIPE: replace with above after testing!!!
     public Recipe createRecipe() {
-    	User user = userService.findUserByEmail("kear@outlook.com");
+    	User user = userService.findUserByEmail("lwk@outlook.com");
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
@@ -153,7 +154,7 @@ public class RecipeServiceImpl implements RecipeService {
 		}
     	
     	String key = null;
-    	Object value = null;
+    	String value = null;
     	Instruction inst = null;
     	int seq = 1;
     	int sectNdx = 0;
@@ -169,7 +170,7 @@ public class RecipeServiceImpl implements RecipeService {
     	Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
     	for (Entry<String, Object> entry : entries) {
     		key = entry.getKey();
-    		value = entry.getValue();
+    		value = requestParameters.get(key);
     		logger.info("key/value= " + key + "/" + value);
     		//get the index of the instruction section
     		
@@ -183,8 +184,7 @@ public class RecipeServiceImpl implements RecipeService {
     		}*/
     		
     		if (key.contains("currInstructSection")) {
-				String str = (String)value;
-				sectNdx = Integer.parseInt(str);
+				sectNdx = Integer.parseInt(value);
     		}
     		
     		if (key.contains("instructions")) {
@@ -196,7 +196,7 @@ public class RecipeServiceImpl implements RecipeService {
     			}*/    			
     			if (key.contains("description")) {
     				inst = new Instruction();
-	    			inst.setDescription((String)value);
+	    			inst.setDescription(value);
 	    			inst.setSequenceNo(seq++);
 	    			requestInstruct.add(inst);	    			
     			}    			
@@ -260,7 +260,7 @@ public class RecipeServiceImpl implements RecipeService {
 		}
 
     	String key = null;
-    	Object value = null;
+    	String value = null;
     	RecipeIngredient ingred = null;
     	int seq = 1;
     	int sectNdx = 0;
@@ -276,12 +276,11 @@ public class RecipeServiceImpl implements RecipeService {
 		Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
 		for (Entry<String, Object> entry : entries) {
 			key = entry.getKey();
-			value = entry.getValue();
+			value = requestParameters.get(key);
 			logger.info("key/value= " + key + "/" + value);
 
     		if (key.contains("currIngredSection")) {
-				String str = (String)value;
-				sectNdx = Integer.parseInt(str);
+				sectNdx = Integer.parseInt(value);
     		}
 			
 			if (key.contains("recipeIngredients")) {
@@ -293,25 +292,26 @@ public class RecipeServiceImpl implements RecipeService {
 					ingred.setId(id);
 					ingred.setSequenceNo(seq++);
 				}
-				if (key.contains("ingredientId")) {
-					int id = Integer.parseInt((String)value);
-					ingred.setIngredientId(id);
-				}*/
+				*/
 				if (key.contains("ingredientId")) {
 					ingred = new RecipeIngredient();
-					String str = (String)value;
-					int id = Integer.parseInt((String)str);
+					int id = Integer.parseInt(value);
 					ingred.setIngredientId(id);
 					ingred.setSequenceNo(seq++);
 				}
 				if (key.contains("quantity")) {
-					ingred.setQuantity((String)value);
+					ingred.setQuantity(value);
+					if (!value.isEmpty()) {
+						Fraction fract = Fraction.getFraction(ingred.getQuantity());
+						float qty = fract.floatValue();
+						ingred.setQtyAmt(qty);
+					}
 				}
 				if (key.contains("qtyType")) {
-					ingred.setQtyType((String)value);
+					ingred.setQtyType(value);
 				}
 				if (key.contains("qualifier")) {
-					ingred.setQualifier((String)value);
+					ingred.setQualifier(value);
 					requestIngred.add(ingred);
 				}	
 			}

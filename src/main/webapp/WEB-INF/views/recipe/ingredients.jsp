@@ -12,34 +12,14 @@
 
 <%@include file="../common/nav.jsp" %>
 
+	<c:set var="currNdx" value="${recipe.currIngredSection}"/>
+
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="recipe.ingredients.title"></spring:message></h3>
 			</div>
 		</div>
-
-	<spring:hasBindErrors name="recipe">
-    <c:set var="errorCnt">${errors.errorCount}</c:set>
-    <p><b># of Errors:${errorCnt}</b></p>
-    <p></p>
-	<c:forEach var="error" items="${errors.allErrors}">
-		<b><c:out value="${error}" /></b>
-		<p></p>
-	</c:forEach>
-	</spring:hasBindErrors>
-
-	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
-	<p><b>flow.instructIndex:</b>${instructIndex}</p>
-	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p>
-	<p><b>flow.ingredCount:</b>${ingredCount}</p>
-	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
-	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p> --%>
-	
-	<c:set var="currNdx" value="${recipe.currIngredSection}"/>
-
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" name="ingredForm" modelAttribute="recipe" autocomplete="off">
 				<spring:bind path="recipe.ingredSections[${currNdx}]"></spring:bind>
@@ -165,4 +145,24 @@
 <script src="<c:url value="/resources/custom/ingredients.js" />"></script>
 
 </html>
+
+	<%-- <spring:hasBindErrors name="recipe">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors> --%>
+
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p>
+	<p><b>flow.ingredCount:</b>${ingredCount}</p>
+	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
+	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p> --%>
+	
 			

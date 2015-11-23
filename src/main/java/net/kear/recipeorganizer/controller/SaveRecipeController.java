@@ -203,7 +203,7 @@ public class SaveRecipeController {
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
-	/* TODO: RECIPE: determine how to edit a recipe, e.g., webflow or single page with accordion panels
+	/*
 	/*@RequestMapping("recipe/editRecipe/{id}")
 	public String editRecipe(Model model, @PathVariable Long id, HttpSession session) {
 		logger.info("recipe/editRecipe GET");

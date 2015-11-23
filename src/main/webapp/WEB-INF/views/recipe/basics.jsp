@@ -30,22 +30,6 @@
 				<h3><spring:message code="recipe.basics.title"></spring:message></h3>
 			</div>
 		</div>
-
-	<spring:hasBindErrors name="recipe">
-    <c:set var="errorCnt">${errors.errorCount}</c:set>
-    <p><b># of Errors:${errorCnt}</b></p>
-    <p></p>
-	<c:forEach var="error" items="${errors.allErrors}">
-		<b><c:out value="${error}" /></b>
-		<p></p>
-	</c:forEach>
-	</spring:hasBindErrors>
-	
-	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
-	<p><b>flow.instructIndex:</b>${instructIndex}</p>
-	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
-	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
-
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off">
 				<div class="row">
@@ -84,15 +68,15 @@
 									<form:input type="text" class="form-control col-sm-1" id="inputServings" path="servings" autocomplete="off"/>
 									<span class="text-danger">${servingsError}</span>
 								</div>
-								<div class="col-sm-3">	 <!-- style="margin:0; padding-left:0" -->
+								<div class="col-sm-3">
 									<div class="row">
-										<label class="control-label col-sm-1" for="inputPrepHour">	 <!-- style="padding-left: 0;" -->
+										<label class="control-label col-sm-1" for="inputPrepHour">
 											<spring:message code="recipe.basics.hour"></spring:message></label>
 										<div class="col-sm-3 <c:if test="${not empty prepHourError}">has-error</c:if>">
 											<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" autocomplete="off"/>
 											<span class="text-danger">${prepHourError}</span>
 										</div>
-										<label class="control-label col-sm-2" for="inputPrepMinute">	<!-- style="padding-left: 0;" -->
+										<label class="control-label col-sm-2" for="inputPrepMinute">
 											<spring:message code="recipe.basics.minute"></spring:message></label>
 										<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
 											<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" autocomplete="off"/>
@@ -189,3 +173,18 @@
 <script src="<c:url value="/resources/custom/basics.js" />"></script>
 
 </html>
+
+	<%-- <spring:hasBindErrors name="recipe">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors> --%>
+	
+	<%-- <p><b>flow.instructCount:</b>${instructCount}</p>
+	<p><b>flow.instructIndex:</b>${instructIndex}</p>
+	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
+	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>

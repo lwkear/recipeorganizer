@@ -113,10 +113,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword").permitAll()
 			.antMatchers("/testpage").permitAll()
-			.antMatchers("/recipe/**").permitAll()	//TODO: remove this after testing!!!
-			.antMatchers("/start").permitAll()		//TODO: remove this after testing!!!
+			.antMatchers("/recipe/**").permitAll()	//TODO: SECURITY: remove this after testing!!!
+			.antMatchers("/start").permitAll()		//TODO: SECURITY: remove this after testing!!!
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
-			.regexMatchers("/recipe/*.*").permitAll()	//TODO: remove this after testing!!!
+			.regexMatchers("/recipe/*.*").permitAll()	//TODO: SECURITY: remove this after testing!!!
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
 			.antMatchers("/recipe/listRecipes", "/ajax/auth/**").hasAuthority("GUEST")
