@@ -80,3 +80,13 @@ body {
 .spacer-vert-sm {
 	margin-top:30px;
 }
+
+.spacer-vert-xs {
+	margin-top:15px;
+}
+
+.recipe-table {
+	margin-bottom:0;
+	margin-left:20px;
+	width:auto;
+}
