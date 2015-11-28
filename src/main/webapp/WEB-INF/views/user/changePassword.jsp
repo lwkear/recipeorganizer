@@ -59,7 +59,7 @@
 					</div>
 					<div class="form-group col-sm-12">&nbsp;</div>
 			        <div class="form-group col-sm-2 col-sm-offset-5">
-						<button class="btn btn-lg btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
+						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<%-- <form:hidden path="userId" /> --%>
 	      		</form:form>

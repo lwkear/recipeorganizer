@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%-- <!DOCTYPE html>
 <html>
 <head>
 
@@ -718,9 +718,9 @@
 			<c:if test="${errors.hasFieldErrors('instructions')}">
 				<spring:bind path="recipe.instructions">
 					<c:set var="instructListError">${status.errorMessage}</c:set>
-			    	<%-- <c:out value="${status.errorMessage}"/>
+			    	<c:out value="${status.errorMessage}"/>
 			    	<c:out value="${status.displayValue}"/>
-			    	<c:out value="${status.errorCode}"/> --%>
+			    	<c:out value="${status.errorCode}"/>
 				</spring:bind>
 				<c:set var="instructErr" value="true"/>		
 			</c:if>
@@ -732,9 +732,9 @@
 			<c:if test="${errors.hasFieldErrors('recipeIngredients')}">
 				<spring:bind path="recipe.recipeIngredients">
 					<c:set var="ingredListError">${status.errorMessage}</c:set>
-			    	<%-- <c:out value="${status.errorMessage}"/>
+			    	<c:out value="${status.errorMessage}"/>
 			    	<c:out value="${status.displayValue}"/>
-			    	<c:out value="${status.errorCode}"/> --%>
+			    	<c:out value="${status.errorCode}"/>
 				</spring:bind>
 				<c:set var="ingredErr" value="true"/>		
 			</c:if>
@@ -788,22 +788,22 @@
 
 		<div class="row">
 			<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe" enctype="multipart/form-data">
-				<%-- <spring:bind path="recipe"> --%>
-				<%-- <form:hidden id="userID" path="userId" value="3" /> --%>
+				<spring:bind path="recipe">
+				<form:hidden id="userID" path="userId" value="3" />
 				<form:hidden id="userID" path="user.id" value="3" />
 				<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
 					<label class="control-label" id="nameLabel" for="inputName">Name:&nbsp;&nbsp;${nameError}</label>
-					<%-- <form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="recipe.name" autocomplete="off"/>		<!-- changed --> --%>
+					<form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="recipe.name" autocomplete="off"/>		<!-- changed -->
 					<form:input type="text" size="10" class="form-control recipeName" id="inputName" placeholder="Name" path="name" autocomplete="off"/>		<!-- changed -->
 				</div>
 				<div class="form-group col-sm-12">
 					<label class="control-label" for="inputDesc">Description:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="recipe.description"></form:textarea>		<!-- changed --> --%>
+					<form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="recipe.description"></form:textarea>		<!-- changed -->
 					<form:textarea class="form-control" rows="3" id="inputDesc" placeholder="Describe this recipe" path="description"></form:textarea>		<!-- changed -->
 				</div>
 				<div class="form-group col-sm-12">
 					<label class="control-label" for="inputBack">Background:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="recipe.background"></form:textarea>	<!-- changed --> --%>
+					<form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="recipe.background"></form:textarea>	<!-- changed -->
 					<form:textarea class="form-control" rows="3" id="inputBack" placeholder="Enter the history or background to this recipe" path="background"></form:textarea>	<!-- changed -->
 				</div>
 				
@@ -845,16 +845,16 @@
 							</div>
 							<div class="form-group">
 								<!--setting the path displays the previously entered content in an error display -->
-								<%-- <form:hidden class="ingredID" id="ingredientID" path="recipe.recipeIngredients[${loop.index}].ingredientId" />	<!-- changed --> --%>
+								<form:hidden class="ingredID" id="ingredientID" path="recipe.recipeIngredients[${loop.index}].ingredientId" />	<!-- changed -->
 								<form:hidden class="ingredID" id="ingredientID" path="recipeIngredients[${loop.index}].ingredientId" />	<!-- changed -->
-								<%-- <form:hidden class="ingredSeq" path="recipe.recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed --> --%>
+								<form:hidden class="ingredSeq" path="recipe.recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed -->
 								<form:hidden class="ingredSeq" path="recipeIngredients[${loop.index}].sequenceNo"/>		<!-- changed -->
 								<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
-									<%-- <form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipe.recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed --> --%>
+									<form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipe.recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed -->
 									<form:input type="text" class="form-control ingredQty" id="inputQty" placeholder="Qty." path="recipeIngredients[${loop.index}].quantity" autocomplete="off"/>	<!-- changed -->
 								</div>
 								<div class="col-sm-2 <c:if test="${not empty qtyTypeError}">has-error</c:if>">
-									<%-- <form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipe.recipeIngredients[${loop.index}].qtyType" />	<!-- changed --> --%>
+									<form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipe.recipeIngredients[${loop.index}].qtyType" />	<!-- changed -->
 									<form:input type="text" class="form-control ingredQtyType" id="inputQtyType" placeholder="Measure" path="recipeIngredients[${loop.index}].qtyType" />	<!-- changed -->
 								</div>
 								<div class="col-sm-5 <c:if test="${not empty ingredError}">has-error</c:if>">
@@ -862,7 +862,7 @@
 								</div>
 								<div class="col-sm-4 <c:if test="${not empty qualError}">has-error</c:if>">
 									<div class="entry input-group">
-										<%-- <form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipe.recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed --> --%>
+										<form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipe.recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed -->
 										<form:input type="text" class="form-control ingredQual" id="inputQual" placeholder="Special qualifier" path="recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>	<!-- changed -->
 										<span class="input-group-btn">
 											<button class="btn btn-danger removeIngredient" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
@@ -897,9 +897,9 @@
 						<div class="form-group col-sm-12 <c:if test="${not empty instructError}">has-error</c:if>">
 							<div class="input-group instructGrp">
 								<!--setting the path displays the previously entered content in an error display -->
-								<%-- <form:hidden class="instructSeq instruct" path="recipe.instructions[${loop.index}].sequenceNo"/>	<!-- changed --> --%>									
+								<form:hidden class="instructSeq instruct" path="recipe.instructions[${loop.index}].sequenceNo"/>	<!-- changed -->									
 								<form:hidden class="instructSeq instruct" path="instructions[${loop.index}].sequenceNo"/>	<!-- changed -->
-								<%-- <form:textarea class="form-control instructDesc instruct" rows="2" path="recipe.instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed --> --%>
+								<form:textarea class="form-control instructDesc instruct" rows="2" path="recipe.instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed -->
 								<form:textarea class="form-control instructDesc instruct" rows="2" path="instructions[${loop.index}].description" placeholder="Add a step"/>		<!-- changed -->
 								<span class="input-group-btn">
 									<button class="btn btn-danger removeInstruction" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
@@ -931,16 +931,16 @@
 		            		</form:select>
 		            	</div>
 						<div class="col-sm-3 <c:if test="${not empty servingsError}">has-error</c:if>">
-							<%-- <form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="recipe.servings" autocomplete="off"/>	<!-- changed --> --%>
+							<form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="recipe.servings" autocomplete="off"/>	<!-- changed -->
 							<form:input type="text" class="form-control col-sm-1" id="inputServings" placeholder="Enter # of servings" path="servings" autocomplete="off"/>	<!-- changed -->
 						</div>
 						<div class="col-sm-2">
 							<div class="radio-inline">
-								<%-- <form:radiobutton value="true" path="recipe.allowShare" checked="true"/>Yes		<!-- changed --> --%>
+								<form:radiobutton value="true" path="recipe.allowShare" checked="true"/>Yes		<!-- changed -->
 								<form:radiobutton value="true" path="allowShare" checked="true"/>Yes		<!-- changed -->
 							</div>
 							<div class="radio-inline">
-								<%-- <form:radiobutton value="false" path="recipe.allowShare" />No	<!-- changed --> --%>
+								<form:radiobutton value="false" path="recipe.allowShare" />No	<!-- changed -->
 								<form:radiobutton value="false" path="allowShare" />No	<!-- changed -->
 							</div>
 						</div>
@@ -949,7 +949,7 @@
 						</div>
 					</div>
 				</div>
-				<%-- </spring:bind> --%>
+				</spring:bind>
 
 				<c:if test="${errors.hasFieldErrors('sources')}">
 					<spring:bind path="recipe.sources[0]"></spring:bind>
@@ -1026,14 +1026,14 @@
 				<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>">
 					<label class="control-label" id="tagsLabel" for="inputTags">Tags:&nbsp;&nbsp;${tagsError}</label>
 					<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-						<%-- <form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="recipe.tags"/>	<!-- changed --> --%>
+						<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="recipe.tags"/>	<!-- changed -->
 						<form:input class="form-control col-sm-6" type="text" id="inputTags" autocomplete="off" placeholder="Enter tags for this recipe" path="tags"/>	<!-- changed -->
 					</div>					
 				</div>
 	
 				<div class="form-group col-sm-12">
 					<label class="control-label" for="inputNotes">Notes:</label>
-					<%-- <form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="recipe.notes"></form:textarea>	<!-- changed --> --%>					
+					<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="recipe.notes"></form:textarea>	<!-- changed -->					
 					<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="Enter any special notes, tips or instructions" path="notes"></form:textarea>	<!-- changed -->
 				</div>
 	
@@ -1056,3 +1056,4 @@
 <!-- Placed at the end of the document so the pages load faster -->
 
 </html>
+ --%>

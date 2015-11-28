@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
@@ -92,6 +93,18 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	}
 		
 		return ingreds;
+    }
+    
+    public void getAllIngredients(Recipe recipe) {
+    	List<IngredientSection> sections = recipe.getIngredSections();
+    	for (IngredientSection section : sections) {
+    		List<RecipeIngredient> ingreds = section.getRecipeIngredients();
+    		for (RecipeIngredient recipeIngred : ingreds) {
+	    		Criteria criteria = getSession().createCriteria(Ingredient.class)
+			    		.add(Restrictions.eq("id", recipeIngred.getIngredientId()));
+	    		recipeIngred.setIngredient((Ingredient)criteria.uniqueResult());
+    		}
+    	}	
     }
     
     @SuppressWarnings("unchecked")

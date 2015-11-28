@@ -93,6 +93,10 @@ public class RecipeServiceImpl implements RecipeService {
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {
     	return recipeRepository.getIngredients(recipe, sectionNdx);
     }
+
+    public void getAllIngredients(Recipe recipe) {
+    	recipeRepository.getAllIngredients(recipe);
+    }
     
     public List<String> getTags(String searchStr, Long userId) {
     	return recipeRepository.getTags(searchStr, userId);

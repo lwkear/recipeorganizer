@@ -109,9 +109,9 @@
 	</view-state>
 	
 	<view-state id="review" view="recipe/review" model="recipe">
-		<!-- <on-render>
-			<evaluate expression="recipeService.getIngredients(recipe)" result="viewScope.ingredientList"></evaluate>
-		</on-render> -->
+		<on-render>
+			<evaluate expression="recipeService.getAllIngredients(recipe)"></evaluate>
+		</on-render>
 		<transition on="back" to="instructLoopBack" bind="true" validate="false">
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>

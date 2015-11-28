@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%-- <!DOCTYPE html>
 <html>
 <head>
 
@@ -12,7 +12,7 @@
 
 <%@include file="../common/nav.jsp" %>
 
-    <%-- <spring:hasBindErrors name="recipe">
+    <spring:hasBindErrors name="recipe">
     <c:set var="errorCnt">${errors.errorCount}</c:set>
     <p><b># of Errors:${errorCnt}</b></p>
     <p></p>
@@ -22,16 +22,16 @@
 	</c:forEach>
 	</spring:hasBindErrors>
 	<p></p>
-	<p></p> --%>
+	<p></p>
 	
 	<!-- determine if instructions or ingredients have any errors -->
 	<spring:hasBindErrors name="recipe">
 		<c:if test="${errors.hasFieldErrors('instructions')}">
 			<spring:bind path="recipe.instructions">
 				<c:set var="instructListError">${status.errorMessage}</c:set>
-		    	<%-- <c:out value="${status.errorMessage}"/>
+		    	<c:out value="${status.errorMessage}"/>
 		    	<c:out value="${status.displayValue}"/>
-		    	<c:out value="${status.errorCode}"/> --%>
+		    	<c:out value="${status.errorCode}"/>
 			</spring:bind>
 			<c:set var="instructErr" value="true"/>		
 		</c:if>
@@ -43,9 +43,9 @@
 		<c:if test="${errors.hasFieldErrors('recipeIngredients')}">
 			<spring:bind path="recipe.recipeIngredients">
 				<c:set var="ingredListError">${status.errorMessage}</c:set>
-		    	<%-- <c:out value="${status.errorMessage}"/>
+		    	<c:out value="${status.errorMessage}"/>
 		    	<c:out value="${status.displayValue}"/>
-		    	<c:out value="${status.errorCode}"/> --%>
+		    	<c:out value="${status.errorCode}"/>
 			</spring:bind>
 			<c:set var="ingredErr" value="true"/>		
 		</c:if>
@@ -76,12 +76,12 @@
     	<c:set var="nameCode">${status.errorCode}</c:set>
     </spring:bind>
     <!-- TODO: EXCEPTION: move this to the server into a custom message interpolator -->
-	<%-- <c:if test="${fn:contains(nameCode,'Size')}">
+	<c:if test="${fn:contains(nameCode,'Size')}">
 		<c:set var="nameLen">${fn:length(nameDisplayValue)}</c:set>
 		<c:if test="${nameLen gt 0}">
 			<c:set var="nameError">${nameError += " (you entered " += nameLen += ")"}</c:set>  
 		</c:if>
-	</c:if> --%>	
+	</c:if>	
     
     <spring:bind path="recipe.category.id"><c:set var="categoryError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.servings"><c:set var="servingsError">${status.errorMessage}</c:set></spring:bind>
@@ -396,3 +396,4 @@
 <script src="<c:url value="/resources/custom/recipe.js" />"></script>
 
 </html>
+ --%>

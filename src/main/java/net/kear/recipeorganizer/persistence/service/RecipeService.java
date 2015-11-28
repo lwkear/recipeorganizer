@@ -19,6 +19,7 @@ public interface RecipeService {
     public Recipe getRecipe(Long id);
     public List<RecipeListDto> listRecipes();
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
+    public void getAllIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);
     public boolean lookupName(String lookupName, Long userId);
     public void checkArraySizes(Recipe recipe);

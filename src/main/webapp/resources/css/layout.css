@@ -61,9 +61,15 @@ body {
     font-size: 85%;
 }
 
-.glyphicon {
+/* .glyphicon {
 	font-size: 10px;
+} */
+
+.glyphicon-envelope
+.glyphicon-print  {
+	font-size: 60px;
 }
+
 
 .select-placeholder{color: #999;}
 .select-placeholder option:first-child{color: #999; display: none;}

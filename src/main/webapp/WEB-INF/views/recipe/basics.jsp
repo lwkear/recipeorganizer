@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off">
+			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off"> <!-- enctype="multipart/form-data"> -->
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
@@ -147,6 +147,16 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
+
+				<!-- <div class="row">
+					<div class="col-sm-12">
+						<label class="control-label col-sm-4" style="text-align: left;">Photo:</label>
+						<div class="col-sm-4" >
+							<input type="file" name="file"/>
+						</div>
+					</div>
+				</div> -->
+										
 				<div class="row spacer-vert-lg">
 					<div class="col-sm-5">
 					</div>

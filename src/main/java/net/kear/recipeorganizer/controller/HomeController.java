@@ -1,16 +1,29 @@
 package net.kear.recipeorganizer.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -21,6 +34,8 @@ import net.kear.recipeorganizer.util.UserInfo;
 public class HomeController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static String url = "http://localhost:8983/solr/recipe/";
+    private static HttpSolrClient solrCore = new HttpSolrClient(url);
 	
 	@Autowired
 	private UserService userService;
@@ -77,13 +92,50 @@ public class HomeController {
 	public String getAbout(Model model, HttpSession session) {
 		logger.info("getAbout");
 		
-		/*Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		String formattedDate = dateFormat.format(date);
-		model.addAttribute("serverTime", formattedDate);*/
-
 		return "about";
 	}
+	
+	@RequestMapping(value = "/about", method = RequestMethod.POST)
+	public ModelAndView postAbout(@RequestParam String searchTerm, RedirectAttributes redir) {
+		logger.info("postAbout");
+		
+		QueryResponse rsp = null;
+		
+		SolrQuery query = new SolrQuery();
+	    query.setQuery("name:" + searchTerm);
+	    query.add("name:" + searchTerm);
+	    //query.add("catname:" + searchTerm);
+	    query.addSort("name", SolrQuery.ORDER.asc);
+	    
+	    try {
+			rsp = solrCore.query( query );
+		} catch (SolrServerException | IOException e) {
+			//TODO: SOLR Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    ArrayList<String> recipeNames = new ArrayList<String>();
+	    
+	    SolrDocumentList docs = rsp.getResults();
+	    for (SolrDocument doc : docs) {
+	    	String rslt = doc.toString();
+	    	logger.info("doc: " + rslt);
+	    	
+	    	String name = (String)doc.getFieldValue("name");
+	    	
+	    	recipeNames.add(name);
+	    }
+	    
+	    long found = docs.getNumFound();
+	    
+	    ModelAndView mv = new ModelAndView();
+	    
+	    redir.addFlashAttribute("numFound", found);
+	    redir.addFlashAttribute("nameList", recipeNames);
+        mv.setViewName("redirect:/searchResults");
+		
+		return mv;
+	}	
 
 	@RequestMapping(value = "/thankyou", method = RequestMethod.GET)
 	public String getThankyou(Model model) {
@@ -118,6 +170,13 @@ public class HomeController {
 		return "start";
 	}
 
+	@RequestMapping(value = "/searchResults", method = RequestMethod.GET)
+	public String getResultspage(Model model) {
+		logger.info("getResultspage");
+
+		return "searchResults";
+	}
+	
 	/*@RequestMapping(value = "/recipe/end", method = RequestMethod.GET)
 	public String getEndpage(Model model) {
 		logger.info("getEndpage");

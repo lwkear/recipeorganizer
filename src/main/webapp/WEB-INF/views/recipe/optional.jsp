@@ -134,6 +134,12 @@
 								<span class="text-danger">${tagsError}</span>
 							</div>												
 						</div>
+
+						<!-- <label class="control-label col-sm-4" style="text-align: left;">Photo:</label>
+						<div class="col-sm-4" >
+							<input type="file" name="file"/>
+						</div> -->
+
 	
 						<div class="form-group col-sm-12">
 							<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
