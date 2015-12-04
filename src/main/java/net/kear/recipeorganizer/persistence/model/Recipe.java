@@ -134,9 +134,9 @@ public class Recipe implements Serializable {
 	@Column(name = "NOTES")
 	@Lob
 	private String notes;
-
+	
 	@Column(name = "PHOTO")
-	private String photo;
+	private String photoName;
 
 	@Column(name = "TAGS")
 	@Type(type = "tagList") 
@@ -150,7 +150,7 @@ public class Recipe implements Serializable {
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, String notes, boolean allowShare, String photo, List<String> tags, 
+				Integer prepMinutes, String notes, boolean allowShare, String photoName, List<String> tags, 
 				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source) {
 		super();
 		this.user = user;
@@ -163,7 +163,7 @@ public class Recipe implements Serializable {
 		this.prepMinutes = prepMinutes;
 		this.notes = notes;
 		this.allowShare = allowShare;
-		this.photo = photo;
+		this.photoName = photoName;
 		this.tags = tags;
 		this.instructSections = instructSections;
 		this.ingredSections = ingredSections;
@@ -258,12 +258,12 @@ public class Recipe implements Serializable {
 		this.allowShare = allowShare;
 	}
 
-	public String getPhoto() {
-		return photo;
+	public String getPhotoName() {
+		return photoName;
 	}
 
-	public void setPhoto(String photo) {
-		this.photo = photo;
+	public void setPhotoName(String photoName) {
+		this.photoName = photoName;
 	}
 	
 	public void setAllowShare(boolean allowShare) {
@@ -369,7 +369,7 @@ public class Recipe implements Serializable {
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
-		result = prime * result + ((photo == null) ? 0 : photo.hashCode());
+		result = prime * result + ((photoName == null) ? 0 : photoName.hashCode());
 		result = prime * result + ((prepHours == null) ? 0 : prepHours.hashCode());
 		result = prime * result + ((prepMinutes == null) ? 0 : prepMinutes.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
@@ -420,10 +420,10 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!notes.equals(other.notes))
 			return false;
-		if (photo == null) {
-			if (other.photo != null)
+		if (photoName == null) {
+			if (other.photoName != null)
 				return false;
-		} else if (!photo.equals(other.photo))
+		} else if (!photoName.equals(other.photoName))
 			return false;
 		if (prepHours == null) {
 			if (other.prepHours != null)
@@ -467,7 +467,7 @@ public class Recipe implements Serializable {
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", photo=" + photo + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", ingredSections=" +  
+				", photoName=" + photoName + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", ingredSections=" +  
 				ingredSections + ", source=" + source + "]";
 	}
 }

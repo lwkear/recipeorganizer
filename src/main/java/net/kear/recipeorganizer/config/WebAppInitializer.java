@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.config;
 
 import java.util.EnumSet;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionTrackingMode;
@@ -36,5 +37,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherServlet));
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
+        dispatcher.setMultipartConfig(new MultipartConfigElement("G:\\Temp", 1024*1024*5, 1024*1024*5*5, 1024*1024));
     }
 }

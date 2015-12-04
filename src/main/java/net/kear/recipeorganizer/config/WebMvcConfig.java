@@ -21,7 +21,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -84,6 +84,24 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return new MappingJackson2HttpMessageConverter();
     }
 	
+	/*** file upload configuration ***/
+	/*@Bean
+    public CommonsMultipartResolver filterMultipartResolver() {
+		logger.debug("CommonsMultipartResolver");
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setMaxUploadSize(20971520);
+		resolver.setDefaultEncoding("UTF-8");
+		return resolver;
+    }*/
+
+	@Bean
+	//public StandardServletMultipartResolver multipartResolver() {
+	public StandardServletMultipartResolver filterMultipartResolver() {
+		logger.debug("StandardServletMultipartResolver");
+		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+		return resolver;
+	}
+	
 	/*** view configuration ***/
 	@Bean
     public InternalResourceViewResolver viewResolver() {
@@ -107,15 +125,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         registry.addViewController("/recipe/optional.htm");
         registry.addViewController("/recipe/end.htm");
     }*/
-
-	/*** file upload configuration ***/
-	@Bean
-    public CommonsMultipartResolver multipartResolver() {
-		logger.debug("CommonsMultipartResolver");
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(20971520);
-		return resolver;
-    }
 
 	/*** webflow configuration ***/
 	@Bean

@@ -51,7 +51,7 @@
 	</logger>
 
 	<logger name="org.springframework.webflow">
-		<!-- <level value="debug" /> -->
+		<level value="debug" />
 		<!-- <level value="info" /> -->
 	</logger>
 

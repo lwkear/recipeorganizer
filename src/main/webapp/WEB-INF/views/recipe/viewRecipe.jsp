@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="blurInputFocus()">
 
 <%@include file="../common/nav.jsp" %>
 

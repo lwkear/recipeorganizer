@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<form:form class="form-horizontal" role="form" name="optionalForm" modelAttribute="recipe">
+			<form:form class="form-horizontal" role="form" name="optionalForm" modelAttribute="recipe" enctype="multipart/form-data">
 				<div class="row">
 					<div class="col-sm-12">
 						<c:set var="backgroundplaceholder"><spring:message code="recipe.optional.background.placeholder"></spring:message></c:set>
@@ -124,23 +124,60 @@
 								</div>
 							</div>
 						</div>
-	
-						<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>">
-							<label class="control-label" id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
-							<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-								<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
+						<div class="form-group col-sm-12">
+							<div class="row">
+								<label class="control-label col-sm-3 <c:if test="${not empty tagsError}">text-danger</c:if>" style="text-align: left;" 
+									id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
+								<c:choose>
+									<c:when test="${not empty recipe.photoName}">
+										<label class="control-label col-sm-3" style="text-align: left;" 
+											id="selectedLabel" for="selectedFile">Recipe Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+										<label class="control-label col-sm-2" style="text-align: left;" 
+											id="fileLabel" for="file">Photo Options</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+										<label class="control-label col-sm-3" style="text-align: left;" 
+											id="fileLabel" for="file">New Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+									</c:when>
+									<c:otherwise>
+										<label class="control-label col-sm-3" style="text-align: left;" 
+											id="fileLabel" for="file">Recipe Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+									</c:otherwise>
+								</c:choose>
 							</div>
-							<div class="col-sm-12">
-								<span class="text-danger">${tagsError}</span>
-							</div>												
-						</div>
+							<div class="row">						
+								<div class="col-sm-3 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
+									<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
+									<span class="text-danger">${tagsError}</span>
+								</div>
+								<c:choose>
+									<c:when test="${not empty recipe.photoName}">												
+										<div class="col-sm-3">
+											<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
+										</div>
+										<div class="col-sm-2">
+											<div class="radio">
+												<label><input  type="radio">Keep Photo</label>
+											</div>
+											<div class="radio">
+												<label><input type="radio">Remove Photo</label>
+											</div>
+											<div class="radio">
+												<label><input type="radio">Change Photo</label>
+											</div>
+										</div>
+										<div class="col-sm-3">
+											<input type="file" id="file" name="file"/>
+										</div>
+									</c:when>
+									<c:otherwise>									
+										<div class="col-sm-3">
+											<input type="file" id="file" name="file"/>
+										</div>
+									</c:otherwise>
+								</c:choose>
+							</div>
+						</div>							
 
-						<!-- <label class="control-label col-sm-4" style="text-align: left;">Photo:</label>
-						<div class="col-sm-4" >
-							<input type="file" name="file"/>
-						</div> -->
 
-	
 						<div class="form-group col-sm-12">
 							<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
 							<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="${notesplaceholder}" path="notes"></form:textarea>
@@ -194,4 +231,43 @@
 	<p><b>flow.instructIndex:</b>${instructIndex}</p>
 	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
 	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
-			
+
+<%-- 
+							<div class="form-group col-sm-4 <c:if test="${not empty tagsError}">has-error</c:if>">
+								<label class="control-label" id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
+								<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
+									<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
+								</div>
+								<div class="col-sm-12">
+									<span class="text-danger">${tagsError}</span>
+								</div>
+							</div>
+							<c:choose>
+								<c:when test="${not empty recipe.photoName}">												
+									<div class="form-group col-sm-3">
+										<label class="control-label" for="file">Selected Photo</label>
+										<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
+									</div>
+									<div class="form-group col-sm-1">
+									</div>
+									<div class="form-group col-sm-3">
+										<label class="control-label" for="file">Change Photo</label>
+										<input type="file" id="file" name="file"/>
+									</div>
+									<div class="form-group col-sm-2">
+										<label class="control-label" for="file">Remove Photo</label>
+										<input type="checkbox" id="removePhoto" name="file"/>
+									</div>
+								</c:when>
+								<c:otherwise>									
+									<div class="form-group col-sm-3">
+										<label class="control-label" for="file">Photo</label>
+										<input type="file" id="file" name="file"/>
+									</div>
+								</c:otherwise>
+							</c:choose>
+						</div>							
+
+
+
+			 --%>

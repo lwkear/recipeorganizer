@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<title>Thankyou</title>
+<title>Results</title>
 
 <%@include file="common/head.jsp" %>
 
@@ -19,19 +19,20 @@
 				<h1>Search Results</h1>
 			</div>
 		</div>
-		<div class="row">
-	        <div class="col-sm-12">
-	        	<h4>Your search returned ${numFound} results!</h4>
-       		</div>
-			<div class="col-sm-12">
-				<c:forEach var="recipe" items="${nameList}">
-					<p>Recipe: ${recipe}</p>
-				</c:forEach>
-			</div>
-		</div>	
+        <%-- <div class="col-sm-12">
+        	<h4>Your search returned ${numFound} results!</h4>
+      		</div> --%>
+		<div class="list-group col-sm-12">
+			<c:forEach var="recipe" items="${resultList}">
+				<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
+					<h4 class="list-group-item-heading header-blue">${recipe.name}</h4>
+					<p class="list-group-item-text">${recipe.description}</p>
+				</a>
+			</c:forEach>
+		</div>
 	</div>
 
 <%@include file="common/footer.jsp" %>
-	
+
 </body>
 </html>

@@ -10,7 +10,7 @@
 						<p>${recipe.background}</p>
 					</div>
 				</c:if>
-				<c:if test="${not empty recipe.background}">
+				<c:if test="${not empty recipe.notes}">
 					<div class="col-sm-12 spacer-vert-xs">
 						<p>${recipe.notes}</p>
 					</div>
@@ -20,6 +20,11 @@
 					<span><strong>Servings:</strong>&nbsp;&nbsp;${recipe.servings}</span>
 					</div>
 				</c:if>	
+				<%-- <c:if test="${not empty recipe.servings}"> --%>
+					<div class="col-sm-3 spacer-vert-xs">
+					<span><strong>Photo:</strong>&nbsp;&nbsp;${recipe.photoName}</span>
+					</div>
+				<%-- </c:if> --%>	
 				<c:if test="${not empty recipe.source}">
 					<div class="col-sm-9 spacer-vert-xs">
 					<span><strong><spring:message code="recipe.optional.source"></spring:message>:</strong>&nbsp;&nbsp;</span>

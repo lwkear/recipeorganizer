@@ -45,7 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.userDetailsService(userDetailsService)
 		.passwordEncoder(encoder());
 	}
-	
+
 	@Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
@@ -109,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
     	http
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
+			/*.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword").permitAll()
 			.antMatchers("/testpage").permitAll()
@@ -123,8 +123,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/user/profile", "/user/changePassword**").hasAuthority("GUEST")
 			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
-			.anyRequest().authenticated()
-			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
+			.anyRequest().authenticated()*/
+			.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()

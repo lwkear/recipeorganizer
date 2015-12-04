@@ -30,21 +30,21 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<c:if test="${isAuth}">
+				<%-- <c:if test="${isAuth}"> --%>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<!-- TODO: RECIPE: replace this with the webflow version -->
-							<%-- <c:if test="${isAuthor}">
-							<li><a href="<c:url value="/recipe/addRecipe" />"><spring:message code="menu.addrecipe"></spring:message></a></li>
-							</c:if> --%>
-							<c:if test="${isGuest}">
-							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
-							</c:if>
+							<!-- TODO: RECIPE: add back security check -->
+							<%-- <c:if test="${isAuthor}"> --%>
+								<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.addrecipe"></spring:message></a></li>
+							<%-- </c:if> --%>
+							<%-- <c:if test="${isGuest}"> --%>
+								<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
+							<%-- </c:if> --%>
 						</ul>
 					</li>
-				</c:if>
+				<%-- </c:if> --%>
 				<c:if test="${isAdmin}">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -58,10 +58,10 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/testpage" />"><spring:message code="menu.faq"></spring:message></a></li>
-						<%-- <li><a href=""><spring:message code="menu.contact"></spring:message></a></li> --%>							
-						<li><a href="<c:url value="/start" />">Start Web Flow</a></li>
+						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
+						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
+						<li><a href="<c:url value="/start" />">Start Web Flow</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -88,6 +88,17 @@
 				    </ul>
 				</c:otherwise>
 			</c:choose>
+			<div class="col-sm-3 pull-right">
+				<c:url var="searchUrl" value="/submitSearch"/>
+				<form:form class="navbar-form" id="searchForm" action="${searchUrl}" method="post">
+					<div class="input-group">
+						<input type="text" class="searchbox" placeholder="Search..." name="searchTerm" id="searchTerm" autocomplete="off"/>	
+						<div class="input-group-btn">
+							<button class="btn btn-default btn-sm" style="padding:3px 10px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+						</div>
+					</div>
+				</form:form>
+			</div>
 		</div>
 	</div>
 </nav>
@@ -96,4 +107,3 @@
 	<div class="container verticalFiller">
 	</div>
 </c:if>
-

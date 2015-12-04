@@ -71,9 +71,22 @@ function submitLogoutForm() {
 	document.forms["logoutForm"].submit();
 }
 
+function submitSearchForm() {
+	document.forms["searchForm"].submit();
+}
+
 function setInputFocus()
 {
-	$(':input:visible:enabled:first').focus(); 
+	//the first two controls on any page are the search input and button
+	//:eq(2) ensures that those controls do NOT get the focus
+	var control = $(':input:visible:enabled:eq(2)').focus();
+}
+
+function blurInputFocus()
+{
+	//for a few pages that should not have focus on any control
+	//add this to the body onload
+	$(':input:visible:enabled:focus').blur(); 
 }
 
 $(document).ready(function() {

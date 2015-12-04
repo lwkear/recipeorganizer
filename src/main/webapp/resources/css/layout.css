@@ -70,7 +70,6 @@ body {
 	font-size: 60px;
 }
 
-
 .select-placeholder{color: #999;}
 .select-placeholder option:first-child{color: #999; display: none;}
 .select-placeholder option{color: #555;} /* bootstrap default color */
@@ -96,3 +95,16 @@ body {
 	margin-left:20px;
 	width:auto;
 }
+
+.searchbox {
+	background-color:#264c73;
+	color:#ffffff;
+	border:none;
+	padding:3px;	
+}
+
+.header-blue {
+	color:#336699;
+}
+
+<!-- #990000 nice dark maroon color -->
