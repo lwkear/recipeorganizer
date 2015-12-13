@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class RepositoryConfig {
 
+	@Autowired
 	@Bean
 	public DataSource dataSource() {
 	    BasicDataSource dataSource = new BasicDataSource();

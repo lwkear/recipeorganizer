@@ -22,34 +22,34 @@
 				    <div class="panel-group" id="accordion">
 				    	<div class="panel panel-default">
 				            <div class="panel-heading">
-				                <h4 class="panel-title"><a data-toggle="collapse" href="#panel1"><spring:message code="recipe.general.title"></spring:message></a></h4>
+				                <h4 class="panel-title"><a data-toggle="collapse" href="#panel1"><spring:message code="recipe.basics.title"></spring:message></a></h4>
 				            </div>
 				            <div id="panel1" class="panel-collapse collapse">
 				            	<div class="panel-body">
 									<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
-										<label class="control-label" id="nameLabel" for="inputName"><spring:message code="recipe.general.name"></spring:message></label>
+										<label class="control-label" id="nameLabel" for="inputName"><spring:message code="recipe.basics.name"></spring:message></label>
 										<form:input type="text" class="form-control recipeName" id="inputName" path="name" autocomplete="off"/>
 										<span class="text-danger">${nameError}</span>
 									</div>
 									<div class="form-group col-sm-12">
-										<label class="control-label" for="inputDesc"><spring:message code="recipe.general.description"></spring:message></label>
+										<label class="control-label" for="inputDesc"><spring:message code="recipe.basics.description"></spring:message></label>
 										<form:textarea class="form-control" rows="3" id="inputDesc" path="description"></form:textarea>
 									</div>
 	
 									<div class="form-group col-sm-12">
 										<div class="row">
 											<label class="control-label col-sm-3" style="text-align: left;" id="categoryLabel" for="inputCategory">
-												<spring:message code="recipe.general.category"></spring:message></label>
+												<spring:message code="recipe.basics.category"></spring:message></label>
 											<label class="control-label col-sm-3" style="text-align: left;" id="servingsLabel" for="inputServings">
-												<spring:message code="recipe.general.servings"></spring:message></label>
+												<spring:message code="recipe.basics.servings"></spring:message></label>
 											<label class="control-label col-sm-2" style="text-align: left;">
-												<spring:message code="recipe.general.share"></spring:message></label>
+												<spring:message code="recipe.basics.share"></spring:message></label>
 										</div>
 										<div class="row">
 											<form:hidden id="catID" path="category.id"/>
 											<div class="col-sm-3 <c:if test="${not empty categoryError}">has-error</c:if>">
 												<form:select class="form-control col-sm-3 select-placeholder" id="inputCategory" path="category.name">
-													<option value="" style="display:none"><spring:message code="recipe.general.selectcat"></spring:message></option>
+													<option value="" style="display:none"><spring:message code="recipe.basics.selectcat"></spring:message></option>
 							            		</form:select>
 							            		<span class="text-danger">${categoryError}</span>
 							            	</div>

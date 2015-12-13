@@ -62,6 +62,8 @@
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
 						<li><a href="<c:url value="/start" />">Start Web Flow</a></li>
+						<li><a href="<c:url value="/testpage" />">Recipe with Panels</a></li>
+						<li><a href="<c:url value="/printtest" />">Print Test</a></li>
 					</ul>
 				</li>
 			</ul>

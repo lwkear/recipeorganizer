@@ -16,6 +16,7 @@
 		<hibernate-version>4.3.10.Final</hibernate-version>
 		<apache-connection-pooling-version>2.1.1</apache-connection-pooling-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jasper-version>6.2.0</jasper-version>
 	</properties>
 
 	<repositories>
@@ -245,7 +246,12 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-       
+
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>${jasper-version}</version>
+		</dependency>
 	</dependencies>
 
      <build>

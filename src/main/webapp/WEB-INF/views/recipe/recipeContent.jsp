@@ -20,11 +20,6 @@
 					<span><strong>Servings:</strong>&nbsp;&nbsp;${recipe.servings}</span>
 					</div>
 				</c:if>	
-				<%-- <c:if test="${not empty recipe.servings}"> --%>
-					<div class="col-sm-3 spacer-vert-xs">
-					<span><strong>Photo:</strong>&nbsp;&nbsp;${recipe.photoName}</span>
-					</div>
-				<%-- </c:if> --%>	
 				<c:if test="${not empty recipe.source}">
 					<div class="col-sm-9 spacer-vert-xs">
 					<span><strong><spring:message code="recipe.optional.source"></spring:message>:</strong>&nbsp;&nbsp;</span>

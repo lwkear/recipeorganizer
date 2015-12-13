@@ -70,6 +70,11 @@
 		<!-- <level value="info" /> -->
 	</logger>
 
+	<logger name="net.sf.jasperreports.engine">
+		<level value="debug" />
+		<!-- <level value="info" /> -->
+	</logger>
+
 	<!-- Root Logger -->
 	<root>
 		<priority value="warn" />

@@ -1,12 +1,24 @@
 package net.kear.recipeorganizer.controller;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +31,40 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperRunManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.HtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.util.SimpleFileResolver;
+import net.sf.jasperreports.export.ExporterInput;
+import net.sf.jasperreports.export.HtmlExporterOutput;
+import net.sf.jasperreports.export.OutputStreamExporterOutput;
+import net.sf.jasperreports.export.PdfReportConfiguration;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
+import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.export.SimplePrintServiceExporterConfiguration;
 
 @Controller
 public class HomeController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
 	private UserService userService;
 	
@@ -36,6 +73,12 @@ public class HomeController {
 	
 	@Autowired
 	private UserInfo userInfo;
+
+	@Autowired
+	private DataSource dataSource;	
+
+	@Autowired
+	private RecipeService recipeService;
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
@@ -109,6 +152,216 @@ public class HomeController {
 		return "contact";
 	}
 
+	@RequestMapping(value = "/printtest", method = RequestMethod.GET)
+	public String getPrintTest(Model model) {
+		logger.info("printtest");
+		
+		return "printtest";
+	}
+	
+	@RequestMapping(value = "/report/getpdf", method = RequestMethod.GET)
+	public void getReportPdf(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.info("report/getpdf");
+		
+		Map<String,Object> params = new HashMap<String,Object>();
+		params = null;
+    	//byte[] bytes = null;
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	//OutputStreamExporterOutput expOutput = null;
+		
+    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/TestPrint.jasper"));
+
+        try {
+        	/* version #1 - works, but displays pdf
+        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
+        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+			bytes = JasperRunManager.runReportToPdf(jasperReport, params);*/
+        	
+        	/*version #2 - works, but displays pdf
+        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
+        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params);
+        	JasperExportManager.exportReportToPdfStream(jasperPrint, baos);*/
+        	
+        	/*version #3 - works, pdf is displayed and print dialog appears automatically*/
+        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
+        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params);
+        	
+        	JRPdfExporter exporter = new JRPdfExporter();
+
+        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
+            exporter.setExporterInput(expInput);
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+            
+            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
+            configuration.setPdfJavaScript("this.print({bUI: false,bSilent: true,bShrinkToFit: true});");
+        	
+        	exporter.setConfiguration(configuration);
+        	exporter.exportReport();
+        	/*end of version #3*/
+        	
+		} catch (JRException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+        response.setContentType("application/x-pdf");
+        /*response.setHeader("Content-disposition", "attachment; filename=TestPrint.pdf");*/
+        response.setHeader("Content-disposition", "inline; filename=TestPrint.pdf");
+        ServletOutputStream outStream = null;
+
+        try {
+			/* version #1
+        	outStream = response.getOutputStream();
+	        outStream.write(bytes, 0, bytes.length);
+	        outStream.flush();
+	        outStream.close();*/
+			
+			/*version #2
+			outStream = response.getOutputStream();
+			response.setContentLength(baos.size());
+	        baos.writeTo(outStream);*/
+        	
+        	/*version #3 */
+        	outStream = response.getOutputStream();
+        	baos.writeTo(outStream);
+
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping(value = "/report/gethtmlConn", method = RequestMethod.GET)
+	public void getReportHtmlConn(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.info("report/gethtml");
+
+		Map<String,Object> params = new HashMap<String,Object>();
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipeConn.jasper"));    	
+    	//File subreport1File = new File(request.getSession().getServletContext().getRealPath("/jasper/ingredients.jasper"));
+    	//File subreport2File = new File(request.getSession().getServletContext().getRealPath("/jasper/instructions.jasper"));
+    	
+    	String dirPath = request.getSession().getServletContext().getRealPath("/jasper/");
+    	File reportsDir = new File(dirPath);
+
+    	Connection connection = null;
+    	
+    	try {
+			connection = dataSource.getConnection();
+		} catch (SQLException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+    	
+    	try {
+        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
+        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	
+        	//the sub-reports didn't work this way!!!
+        	//JasperReport jasperSubReport1 = (JasperReport)JRLoader.loadObjectFromFile(subreport1File.getPath());
+        	//jasperSubReport1.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	//JasperReport jasperSubReport2 = (JasperReport)JRLoader.loadObjectFromFile(subreport2File.getPath());
+        	//jasperSubReport2.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	//params.put("INGREDIENTRPT", jasperSubReport1);
+        	//params.put("INSTRUCTIONRPT", jasperSubReport2);
+
+        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
+        	params.put("REPORT_CONNECTION", connection);
+        	BigDecimal bd = new BigDecimal(1124);
+        	params.put("REPORTID", bd);
+        	
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, connection);
+        	
+        	HtmlExporter exporter = new HtmlExporter();
+
+        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
+            exporter.setExporterInput(expInput);
+            SimpleHtmlReportConfiguration reportExportConfiguration = new SimpleHtmlReportConfiguration();
+            exporter.setConfiguration(reportExportConfiguration);
+            
+            SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(baos);
+            exporter.setExporterOutput(htmlOutput);
+            exporter.exportReport();
+
+    	} catch (JRException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+        response.setContentType("text/html");
+        response.setHeader("Content-disposition", "inline; filename=TestPrint.html");
+        ServletOutputStream outStream = null;
+    	
+        try {
+        	outStream = response.getOutputStream();
+        	baos.writeTo(outStream);
+
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
+	@RequestMapping(value = "/report/gethtmlBean", method = RequestMethod.GET)
+	public void getReportHtmlBean(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		logger.info("report/gethtml");
+
+		Map<String,Object> params = new HashMap<String,Object>();
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		
+    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipeBean.jasper"));    	
+    	
+    	String dirPath = request.getSession().getServletContext().getRealPath("/jasper/");
+    	File reportsDir = new File(dirPath);
+
+    	Recipe recipe = recipeService.getRecipe(1124L);
+		List<Recipe> list = new ArrayList<Recipe>();
+		list.add(recipe);
+    	
+    	JRDataSource src = new JRBeanCollectionDataSource(list);
+    	
+    	try {
+        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
+        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	
+        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
+        	
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, src);
+        	
+        	HtmlExporter exporter = new HtmlExporter();
+
+        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
+            exporter.setExporterInput(expInput);
+            SimpleHtmlReportConfiguration reportExportConfiguration = new SimpleHtmlReportConfiguration();
+            exporter.setConfiguration(reportExportConfiguration);
+            
+            SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(baos);
+            exporter.setExporterOutput(htmlOutput);
+            exporter.exportReport();
+
+    	} catch (JRException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+        response.setContentType("text/html");
+        response.setHeader("Content-disposition", "inline; filename=TestPrint.html");
+        ServletOutputStream outStream = null;
+    	
+        try {
+        	outStream = response.getOutputStream();
+        	baos.writeTo(outStream);
+
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@RequestMapping(value = "/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model) {
 		logger.info("getTestpage");

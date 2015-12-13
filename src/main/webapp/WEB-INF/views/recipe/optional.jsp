@@ -131,15 +131,15 @@
 								<c:choose>
 									<c:when test="${not empty recipe.photoName}">
 										<label class="control-label col-sm-3" style="text-align: left;" 
-											id="selectedLabel" for="selectedFile">Recipe Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+											id="photoLabel" for="selectedFile"><spring:message code="recipe.optional.photo"></spring:message></label>
 										<label class="control-label col-sm-2" style="text-align: left;" 
-											id="fileLabel" for="file">Photo Options</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
-										<label class="control-label col-sm-3" style="text-align: left;" 
-											id="fileLabel" for="file">New Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+											id="photoOptionsLabel" for="file"><spring:message code="recipe.optional.photo.options"></spring:message></label>
+										<label class="control-label col-sm-3 newphoto" style="text-align: left; display:none" 
+											id="newPhotoLabel" for="file"><spring:message code="recipe.optional.photo.new"></spring:message></label>
 									</c:when>
 									<c:otherwise>
 										<label class="control-label col-sm-3" style="text-align: left;" 
-											id="fileLabel" for="file">Recipe Photo</label>	<%-- <spring:message code="recipe.optional.tags"></spring:message></label> --%>
+											id="fileLabel" for="file"><spring:message code="recipe.optional.photo"></spring:message></label>
 									</c:otherwise>
 								</c:choose>
 							</div>
@@ -151,33 +151,47 @@
 								<c:choose>
 									<c:when test="${not empty recipe.photoName}">												
 										<div class="col-sm-3">
-											<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
+											<input class="form-control" type="text" id="photoName" value="${recipe.photoName}" disabled/>
 										</div>
 										<div class="col-sm-2">
 											<div class="radio">
-												<label><input  type="radio">Keep Photo</label>
+												<label><input  type="radio" name="photoOpts" value="keep" checked><spring:message code="recipe.optional.photo.keep"></spring:message></label>
 											</div>
 											<div class="radio">
-												<label><input type="radio">Remove Photo</label>
+												<label><input type="radio" name="photoOpts" value="remove"><spring:message code="recipe.optional.photo.remove"></spring:message></label>
 											</div>
 											<div class="radio">
-												<label><input type="radio">Change Photo</label>
+												<label><input type="radio" name="photoOpts" value="change"><spring:message code="recipe.optional.photo.change"></spring:message></label>
 											</div>
 										</div>
-										<div class="col-sm-3">
-											<input type="file" id="file" name="file"/>
+										<div class="col-sm-4 newphoto" style="display:none">
+											<div class="input-group">
+												<span class="input-group-btn">
+													<span class="btn btn-default btn-file">
+														<spring:message code="common.selectfile"></spring:message>&hellip;
+														<input type="file" id="file" name="file">
+													</span>
+												</span>
+												<input type="text" id="photoname" class="form-control" readonly>
+											</div>
 										</div>
 									</c:when>
 									<c:otherwise>									
-										<div class="col-sm-3">
-											<input type="file" id="file" name="file"/>
+										<div class="col-sm-4">
+											<div class="input-group">
+												<span class="input-group-btn">
+													<span class="btn btn-default btn-file">
+														<spring:message code="common.selectfile"></spring:message>&hellip;
+														<input type="file" id="file" name="file">
+													</span>
+												</span>
+												<input type="text" id="photoname" class="form-control" disabled>
+											</div>
 										</div>
 									</c:otherwise>
 								</c:choose>
 							</div>
 						</div>							
-
-
 						<div class="form-group col-sm-12">
 							<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
 							<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="${notesplaceholder}" path="notes"></form:textarea>
@@ -232,42 +246,3 @@
 	<p><b>recipe.instructSections:</b>${recipe.numInstructSections}</p>
 	<p><b>recipe.currentSection:</b>${recipe.currInstructSection}</p> --%>
 
-<%-- 
-							<div class="form-group col-sm-4 <c:if test="${not empty tagsError}">has-error</c:if>">
-								<label class="control-label" id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
-								<div class="form-group col-sm-12 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-									<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
-								</div>
-								<div class="col-sm-12">
-									<span class="text-danger">${tagsError}</span>
-								</div>
-							</div>
-							<c:choose>
-								<c:when test="${not empty recipe.photoName}">												
-									<div class="form-group col-sm-3">
-										<label class="control-label" for="file">Selected Photo</label>
-										<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
-									</div>
-									<div class="form-group col-sm-1">
-									</div>
-									<div class="form-group col-sm-3">
-										<label class="control-label" for="file">Change Photo</label>
-										<input type="file" id="file" name="file"/>
-									</div>
-									<div class="form-group col-sm-2">
-										<label class="control-label" for="file">Remove Photo</label>
-										<input type="checkbox" id="removePhoto" name="file"/>
-									</div>
-								</c:when>
-								<c:otherwise>									
-									<div class="form-group col-sm-3">
-										<label class="control-label" for="file">Photo</label>
-										<input type="file" id="file" name="file"/>
-									</div>
-								</c:otherwise>
-							</c:choose>
-						</div>							
-
-
-
-			 --%>

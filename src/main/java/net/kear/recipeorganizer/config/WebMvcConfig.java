@@ -64,6 +64,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
+        registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(0);
     }
 	
 	/*** JSON configuration ***/

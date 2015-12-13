@@ -108,6 +108,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
     	http
+    	.headers()
+    		.frameOptions().disable()//.sameOrigin()
+    		.and()
     	.authorizeRequests()
 			/*.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()

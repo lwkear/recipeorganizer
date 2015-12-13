@@ -81,6 +81,8 @@ function setSource() {
 
 //shorthand for document.ready
 $(function() {
+	
+	var savePhotoName = $('#photoName').val();
 
 	//TODO: GUI: replace these JQuery UI controls with Bootstrap controls?
 	//TODO: GUI: try to get the calendar icon to appear
@@ -135,6 +137,15 @@ $(function() {
 			var page = $('#inputBookPage').val();
 			if (page == null)
 				$('#inputBookPage').val(0);
+			
+			var option = $('input[name="photoOpts"]:checked').val();
+			if (option == 'change') {
+				var filename = $('#photoname').val();
+				if (filename == null || filename == "") {
+					alert("New photo not selected");
+					return false;
+				}
+			}
 		})
 		.on('click', '#back', function(e) {
 			//set index for the last set of instructions, which will be total sections minus one
@@ -147,8 +158,33 @@ $(function() {
 				console.log("currInstructSect new val:" + num);
 				$('#currInstructSect').val(num.toString());
 		    }
-		})	
-		
+		})
+		.on('click', 'input[name="photoOpts"]:checked', function(e)
+		{
+			if ($(this).val() == 'change') {
+				$('.newphoto').show();
+				$('#photoName').val("");
+			}
+			else
+				$('.newphoto').hide();
+			if ($(this).val() == 'remove')
+				$('#photoName').val("");
+			if ($(this).val() == 'keep')
+				$('#photoName').val(savePhotoName);
+		})
+		.on('change', '.btn-file :file', function() {
+			var input = $(this),
+			label = input.val();
+			input.trigger('fileselect', [label]);
+		})
+
+	/* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */
+	$('.btn-file :file').on('fileselect', function(event, label) {
+		var input = $(this).parents('.input-group').find(':text');
+		if (input.length)
+			input.val(label);
+    });		
+	
 	$('.webGroup').on('blur', function() {
 		console.log("webGroup .on blur in document");
 		var ndx = $('#inputSource option:selected').index();
