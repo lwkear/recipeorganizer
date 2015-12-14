@@ -131,7 +131,7 @@ $(document).ready(function () {
 				<!-- <iframe id="iframepdf" width="100%" height="100%" src=""></iframe> -->
 				<%-- last version
 				<iframe id="iframepdf" name="iframepdf" width="100%" height="100%" src="<c:url value="/resources/TestPrint.pdf"/>"></iframe> --%>
-				<iframe id="iframetext" name="iframetext" width="100%" height="100%" src="<c:url value="/report/gethtmlBean"/>"></iframe>				
+				<iframe id="iframetext" name="iframetext" width="100%" height="300" src="<c:url value="/report/gethtmlBean"/>"></iframe>				
 			</div>
 			<div class="col-sm-12" >
 				<!-- <iframe width="100%" height="100%"> -->

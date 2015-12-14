@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
+<!-- 2015-12-14T15:18:50 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipe" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c4c18e8f-2ff4-480a-a1fc-ba136e77a047">
+	<field name="name" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="background" class="java.lang.String"/>
+	<field name="notes" class="java.lang.String"/>
+	<field name="servings" class="java.lang.String"/>
+	<field name="prepHours" class="java.lang.Integer"/>
+	<field name="prepMinutes" class="java.lang.Integer"/>
+	<field name="user.firstName" class="java.lang.String"/>
+	<field name="user.lastName" class="java.lang.String"/>
+	<field name="ingredSections" class="java.util.List"/>
+	<field name="instructSections" class="java.util.List"/>
+	<pageHeader>
+		<band height="60" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement x="0" y="40" width="80" height="20" uuid="0411c5b9-2ecd-4c51-8ecf-5c0e29ff93c4"/>
+				<textElement textAlignment="Left">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Submitted By ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="40" width="216" height="20" uuid="c1368aa6-0050-45fb-896a-c75c9b00fde1"/>
+				<textElement textAlignment="Left">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user.firstName} + " " + $F{user.lastName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="572" height="40" uuid="8d486a9d-4ae3-45d2-9e76-295590593f33">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="22" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="80">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<printWhenExpression><![CDATA[new Boolean($V{PAGE_NUMBER}.intValue() == 1)]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="60" width="60" height="20" uuid="165db9a3-776b-4450-912b-101b41c164db">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Servings]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="60" width="100" height="20" uuid="65c8c7ca-4b28-44d4-ae0b-3fa359f5a52c">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{servings}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="180" y="60" width="60" height="20" uuid="88fab195-a6a3-4b85-a807-322d38cf3f12">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<text><![CDATA[Preparation]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="240" y="60" width="20" height="20" uuid="43dcbaf8-1220-4416-a0cc-bf48f9006588">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{prepHours}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="60" width="20" height="20" uuid="f34a73d8-65aa-4e12-879d-177b25e4f6da">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{prepMinutes}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="" x="0" y="30" width="572" height="30" isRemoveLineWhenBlank="true" uuid="d8a016ab-5638-4815-a71f-4d2e807b15ff">
+					<printWhenExpression><![CDATA[$F{background}.length() > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{background}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="572" height="30" uuid="e8217b8e-3741-4e9c-a2a7-ccedba220639"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="51">
+			<subreport>
+				<reportElement x="-20" y="-1" width="612" height="50" uuid="8140bd74-814a-42ac-b481-304413938642"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{ingredSections})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["ingredientsSection.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="50">
+			<subreport>
+				<reportElement x="-20" y="-1" width="612" height="50" uuid="99073118-7fd0-4c86-a2db-d2ce1b131689"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{instructSections})]]></dataSourceExpression>
+				<subreportExpression><![CDATA["instructionsSection.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

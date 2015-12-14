@@ -19,9 +19,6 @@
 				<h1>Search Results</h1>
 			</div>
 		</div>
-        <%-- <div class="col-sm-12">
-        	<h4>Your search returned ${numFound} results!</h4>
-      		</div> --%>
 		<div class="list-group col-sm-12">
 			<c:forEach var="recipe" items="${resultList}">
 				<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">

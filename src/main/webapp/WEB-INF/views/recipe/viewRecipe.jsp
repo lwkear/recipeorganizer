@@ -6,6 +6,16 @@
 
 <%@include file="../common/head.jsp" %>
 
+<script type="text/javascript">
+$(document).ready(function () {
+	
+	$('#htmlPrint').on('click', function(e)
+	{
+		document.getElementById("iframerpt").contentWindow.print();
+	})
+});
+</script>
+
 </head>
 
 <body role="document" onload="blurInputFocus()">
@@ -16,11 +26,11 @@
 	 	<div class="col-sm-12">
 			<div class="page-header">
 				<h3>${recipe.name}
-					<button type="button" class="btn btn-link btn-sm" style="margin-left:30px;font-size:20px">
-					  <span class="glyphicon glyphicon-envelope"></span>
+					<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px">
+					  <span class="glyphicon glyphicon-print"></span>
 					</button>
 					<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px">
-					  <span class="glyphicon glyphicon-print"></span>
+					  <span class="glyphicon glyphicon-envelope"></span>
 					</button>
 					<!-- <a class="btn btn-default btn-sm disabled" href="#"><span class="glyphicon glyphicon-print"></span></a>
 					<a class="btn btn-default btn-sm disabled" href="#"><span class="glyphicon glyphicon-envelope"></span></a> -->
@@ -36,6 +46,10 @@
 			
 		</div>
 	</div>		
+	
+	<div class="col-sm-12" style="display:none">
+		<iframe id="iframerpt" name="iframerpt" width="100%" height="300" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
+	</div>
 
 <%@include file="../common/footer.jsp" %>
 

@@ -25,11 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -306,30 +308,27 @@ public class HomeController {
 	}
 
 	
-	@RequestMapping(value = "/report/gethtmlBean", method = RequestMethod.GET)
-	public void getReportHtmlBean(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		logger.info("report/gethtml");
+	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)
+	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws IOException {
+		logger.info("report/getHtmlRpt");
 
 		Map<String,Object> params = new HashMap<String,Object>();
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
-    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipeBean.jasper"));    	
+    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipe.jasper"));    	
     	
     	String dirPath = request.getSession().getServletContext().getRealPath("/jasper/");
     	File reportsDir = new File(dirPath);
 
-    	Recipe recipe = recipeService.getRecipe(1124L);
 		List<Recipe> list = new ArrayList<Recipe>();
+		Recipe recipe = recipeService.getRecipe(id);
 		list.add(recipe);
-    	
     	JRDataSource src = new JRBeanCollectionDataSource(list);
     	
     	try {
         	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
         	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
-        	
         	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	
         	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, src);
         	
         	HtmlExporter exporter = new HtmlExporter();
