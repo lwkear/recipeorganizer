@@ -16,7 +16,7 @@ import net.kear.recipeorganizer.persistence.service.CategoryService;
  * Handles requests for the application home page.
  */
 @Controller
-public class CategoryController {
+public class AdminController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

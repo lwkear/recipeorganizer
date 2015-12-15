@@ -43,25 +43,18 @@ public class SaveRecipeController {
 	
 	@Autowired
 	private CategoryService categoryService;
-	
 	@Autowired
 	private RecipeService recipeService;
-	
 	@Autowired
 	private IngredientService ingredientService;
-	
 	@Autowired
 	private RecipeIngredientService recipeIngredientService;
-	
 	@Autowired
 	private SourceService sourceService;
-	
 	@Autowired
 	private UserService userService;
-
 	@Autowired
 	private MessageSource messages;
-	
 	
 	/**************************/
 	/*** Add recipe handler ***/

@@ -14,8 +14,6 @@
 	<sec:authentication var="firstname" property="principal.firstName"/>
 	<sec:authentication var="lastname" property="principal.lastName" />
 	<sec:authentication var="userId" property="principal.id" />
-	<!-- TODO: GUI: figure out how to retrieve the user profile within the principal security object -->
-	<%-- <sec:authentication var="city" property="principal.userProfile.city" /> --%>
 </c:if>
 
 <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
@@ -30,21 +28,16 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<%-- <c:if test="${isAuth}"> --%>
+				<c:if test="${isAuthor}">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<!-- TODO: RECIPE: add back security check -->
-							<%-- <c:if test="${isAuthor}"> --%>
-								<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.addrecipe"></spring:message></a></li>
-							<%-- </c:if> --%>
-							<%-- <c:if test="${isGuest}"> --%>
-								<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
-							<%-- </c:if> --%>
+							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.addrecipe"></spring:message></a></li>
+							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
 						</ul>
 					</li>
-				<%-- </c:if> --%>
+				</c:if>
 				<c:if test="${isAdmin}">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -61,9 +54,9 @@
 						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<li><a href="<c:url value="/start" />">Start Web Flow</a></li>
-						<li><a href="<c:url value="/testpage" />">Recipe with Panels</a></li>
-						<li><a href="<c:url value="/printtest" />">Print Test</a></li>
+						<%-- <li><a href="<c:url value="/start" />">Start Web Flow</a></li> --%>
+						<%-- <li><a href="<c:url value="/testpage" />">Recipe with Panels</a></li> --%>
+						<%-- <li><a href="<c:url value="/printtest" />">Print Test</a></li> --%>
 					</ul>
 				</li>
 			</ul>

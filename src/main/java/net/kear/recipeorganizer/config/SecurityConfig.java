@@ -109,25 +109,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
     	http
     	.headers()
-    		.frameOptions().disable()//.sameOrigin()
+    		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
-			/*.antMatchers("/", "/home", "/about", "/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
+			.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
+    		.antMatchers("/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword").permitAll()
-			.antMatchers("/testpage").permitAll()
-			.antMatchers("/recipe/**").permitAll()	//TODO: SECURITY: remove this after testing!!!
-			.antMatchers("/start", "/searchResults").permitAll()		//TODO: SECURITY: remove this after testing!!!
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
-			.regexMatchers("/recipe/*.*").permitAll()	//TODO: SECURITY: remove this after testing!!!
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
 			.antMatchers("/recipe/listRecipes", "/ajax/auth/**").hasAuthority("GUEST")
 			.antMatchers("/user/profile", "/user/changePassword**").hasAuthority("GUEST")
+			.regexMatchers("/recipe/viewRecipe/.*","/report/gethtmlrpt/.*").hasAuthority("AUTHOR")
 			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**").hasAuthority("ADMIN")
-			.anyRequest().authenticated()*/
-			.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
+			.anyRequest().authenticated()
+			/*.anyRequest().permitAll()*/	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()
@@ -149,7 +147,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
 			.key("recipeOrganizer")
 			.tokenRepository(persistentTokenRepository())
-			.tokenValiditySeconds(180)		//TODO: SECURITY: figure out proper expiration length e.g. tokenValiditySeconds(1209600)
+			.tokenValiditySeconds(60 * 60 * 24 * 14)	//2 weeks
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()

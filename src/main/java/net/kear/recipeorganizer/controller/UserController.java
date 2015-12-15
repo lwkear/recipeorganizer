@@ -50,16 +50,12 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
-
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
 	@Autowired
 	private MessageSource messages;
-
-    @Autowired
+	@Autowired
     private ApplicationEventPublisher eventPublisher;
-
 	@Autowired
 	private EmailSender emailSender;
     

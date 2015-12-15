@@ -86,17 +86,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     }
 	
 	/*** file upload configuration ***/
-	/*@Bean
-    public CommonsMultipartResolver filterMultipartResolver() {
-		logger.debug("CommonsMultipartResolver");
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(20971520);
-		resolver.setDefaultEncoding("UTF-8");
-		return resolver;
-    }*/
-
 	@Bean
-	//public StandardServletMultipartResolver multipartResolver() {
 	public StandardServletMultipartResolver filterMultipartResolver() {
 		logger.debug("StandardServletMultipartResolver");
 		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();

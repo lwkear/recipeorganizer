@@ -38,4 +38,8 @@ $(function() {
 
 	convertFractions('.ingredqty');
 
+	$('#htmlPrint').on('click', function(e)
+	{
+		document.getElementById("iframerpt").contentWindow.print();
+	})
 })

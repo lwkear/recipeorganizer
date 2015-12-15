@@ -28,6 +28,9 @@
 <!-- Typeahead CSS -->	
 <link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">
 
+<!-- Datatables CSS -->
+<link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.css" />" rel="stylesheet">
+
 <!-- Custom styles for this app -->
 <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
 
@@ -35,4 +38,4 @@
 <sec:csrfMetaTags />
     
 <!-- Javascript for this app -->
-<%@include file="js.jsp" %>
+<%-- <%@include file="js.jsp" %> --%>

@@ -6,7 +6,7 @@ html {
 body {
 	margin-bottom: 50px;
 	box-sizing: border-box;
-	background: url("../recipes.jpg") no-repeat center center fixed;
+	background: url("../recipes.png") no-repeat center center fixed;
 	background-size: cover;
 }
 

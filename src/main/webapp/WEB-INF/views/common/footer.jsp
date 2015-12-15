@@ -1,6 +1,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
+<!-- Javascript for this app -->
+<%@include file="js.jsp" %>
+
 <c:set var="now" value="<%=new java.util.Date()%>" />
 
 <footer class="footer">

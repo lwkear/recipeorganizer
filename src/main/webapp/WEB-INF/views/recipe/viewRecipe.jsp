@@ -6,16 +6,6 @@
 
 <%@include file="../common/head.jsp" %>
 
-<script type="text/javascript">
-$(document).ready(function () {
-	
-	$('#htmlPrint').on('click', function(e)
-	{
-		document.getElementById("iframerpt").contentWindow.print();
-	})
-});
-</script>
-
 </head>
 
 <body role="document" onload="blurInputFocus()">
@@ -48,7 +38,7 @@ $(document).ready(function () {
 	</div>		
 	
 	<div class="col-sm-12" style="display:none">
-		<iframe id="iframerpt" name="iframerpt" width="100%" height="300" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
+		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
 	</div>
 
 <%@include file="../common/footer.jsp" %>
