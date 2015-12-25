@@ -14,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "USER_PROFILE")
 public class UserProfile implements Serializable {
@@ -41,8 +43,15 @@ public class UserProfile implements Serializable {
 	@Size(max=500)	//500
 	private String interests;
 
-    @OneToOne(fetch = FetchType.LAZY)
+	@Column(name = "AVATAR")
+	private String avatar;
+
+	//NOTE: the @JsonIgnore annotation prevents a recursive stack overflow when serializing a User object (see "public User getUser" function in AdminController)
+	//	the serializer parses through the <user> object first; when it gets to the <userProfile> object in User, it tries to serialize not just the UserProfile data
+	//	members but also its <user> element, which includes, of course, a <userProfile> element and hence the recursive loop
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
+    @JsonIgnore
     private User user;
 	
 	public UserProfile() {}
@@ -53,14 +62,16 @@ public class UserProfile implements Serializable {
 		this.state = user.state;
 		this.age = user.age;
 		this.interests = user.interests;
+		this.avatar = user.avatar;
 	}
 	
-	public UserProfile(String city, String state, int age, String interests) {
+	public UserProfile(String city, String state, int age, String interests, String avatar) {
 		super();
 		this.city = city;
 		this.state = state;
 		this.age = age;
 		this.interests = interests;
+		this.avatar = avatar;
 	}
 
 	public long getId() {
@@ -103,6 +114,14 @@ public class UserProfile implements Serializable {
 		this.interests = interests;
 	}
 
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
+
     public User getUser() {
         return user;
     }
@@ -119,6 +138,7 @@ public class UserProfile implements Serializable {
 		result = prime * result + ((city == null) ? 0 : city.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((interests == null) ? 0 : interests.hashCode());
+		result = prime * result + ((avatar == null) ? 0 : avatar.hashCode());
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
 		return result;
 	}
@@ -146,6 +166,11 @@ public class UserProfile implements Serializable {
 				return false;
 		} else if (!interests.equals(other.interests))
 			return false;
+		if (avatar == null) {
+			if (other.avatar != null)
+				return false;
+		} else if (!avatar.equals(other.avatar))
+			return false;
 		if (state == null) {
 			if (other.state != null)
 				return false;
@@ -156,6 +181,6 @@ public class UserProfile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "UserProfile [id=" + id + ", city=" + city + ", state=" + state + ", age=" + age + ", interests=" + interests + "]";
-	}    
+		return "UserProfile [id=" + id + ", city=" + city + ", state=" + state + ", age=" + age + ", interests=" + interests + ", avatar=" + avatar + "]";
+	}
 }

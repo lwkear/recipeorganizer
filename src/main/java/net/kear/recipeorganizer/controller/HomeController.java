@@ -1,20 +1,22 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-//import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-//import net.kear.recipeorganizer.persistence.service.RecipeService;
-//import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
 
@@ -23,21 +25,43 @@ public class HomeController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	//@Autowired
-	//private UserService userService;
 	@Autowired
 	private AuthCookie authCookie;
 	@Autowired
 	private UserInfo userInfo;
-	//@Autowired
-	//private DataSource dataSource;	
-	//@Autowired
-	//private RecipeService recipeService;
-	
+	@Autowired
+	private SessionRegistry sessionRegistry;
+
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("getHome");
 
+		Date createTime = new Date(session.getCreationTime());
+		Date lastAccess = new Date(session.getLastAccessedTime());
+		int maxInactive = session.getMaxInactiveInterval();
+		String sessID = session.getId();
+
+		logger.info("Session created on: " + createTime);
+		logger.info("Session last accessed on: " + lastAccess);
+		logger.info("Session expires after: " + maxInactive + " seconds");
+		logger.info("Session ID: " + sessID);
+
+		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
+
+		for (Object obj : allPrinc) {
+			final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
+
+			for (SessionInformation sess : sessions) {
+				Object princ = sess.getPrincipal();
+				String sessId = sess.getSessionId();
+				Date sessDate = sess.getLastRequest();
+				
+				logger.info("sessionRegistry.princ: " + princ);
+				logger.info("sessionRegistry.sessId: " + sessId);
+				logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+			}
+		}
+		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		
@@ -55,9 +79,9 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/thankyou", method = RequestMethod.GET)
-	public String getThankyou(Model model) {
+	public String getThankyou(Model model, HttpSession session) {
 		logger.info("getThankyou");
-
+	
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		
@@ -281,3 +305,31 @@ model.addAttribute("sess", sess);
 model.addAttribute("sessID", sID);
 model.addAttribute("country", sCountry);
 model.addAttribute("language", sLanguage);*/
+
+/*	session registry stuff...
+Date createTime = new Date(session.getCreationTime());
+Date lastAccess = new Date(session.getLastAccessedTime());
+int maxInactive = session.getMaxInactiveInterval();
+String sessID = session.getId();
+
+logger.info("Session created on: " + createTime);
+logger.info("Session last accessed on: " + lastAccess);
+logger.info("Session expires after: " + maxInactive + " seconds");
+logger.info("Session ID: " + sessID);
+
+List<Object> allPrinc = sessionRegistry.getAllPrincipals();
+
+for (Object obj : allPrinc) {
+	final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
+
+	for (SessionInformation sess : sessions) {
+		Object princ = sess.getPrincipal();
+		String sessId = sess.getSessionId();
+		Date sessDate = sess.getLastRequest();
+		
+		logger.info("sessionRegistry.princ: " + princ);
+		logger.info("sessionRegistry.sessId: " + sessId);
+		logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+	}
+}
+*/

@@ -26,19 +26,14 @@ public class UserServiceImpl implements UserService {
  
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private UserProfileRepository userProfileRepository;
-    
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
-
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
     
@@ -66,8 +61,8 @@ public class UserServiceImpl implements UserService {
     	userRepository.deleteUser(id);
     }
     
-	public List<User> listUsers() {
-    	return userRepository.listUsers();
+	public List<User> getUsers() {
+    	return userRepository.getUsers();
     }
     
     public User getUser(Long id) {

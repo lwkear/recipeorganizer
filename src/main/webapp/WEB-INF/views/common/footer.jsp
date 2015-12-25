@@ -17,3 +17,5 @@
 	    </div>
 	</nav>
 </footer>
+
+<%@include file="dialogs.jsp" %>

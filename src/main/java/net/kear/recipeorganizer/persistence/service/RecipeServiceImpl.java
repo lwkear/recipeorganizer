@@ -40,11 +40,11 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private UserService userService;
     
-    /*public Recipe createRecipe(String userName) {*/
-		/*User user = userService.findUserByEmail(userName);*/
+    public Recipe createRecipe(String userName) {
+		User user = userService.findUserByEmail(userName);
 	//TODO: RECIPE: replace with above after testing!!!
-    public Recipe createRecipe() {
-    	User user = userService.findUserByEmail("lwk@outlook.com");
+    //public Recipe createRecipe() {
+    	//User user = userService.findUserByEmail("lwk@outlook.com");
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
@@ -86,8 +86,12 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.getRecipe(id);
     }
 
-    public List<RecipeListDto> listRecipes() {
-    	return recipeRepository.listRecipes();
+    public List<RecipeListDto> listRecipes(Long userId) {
+    	return recipeRepository.listRecipes(userId);
+    }
+    
+    public Long getRecipeCount(Long userId) {
+    	return recipeRepository.getRecipeCount(userId);
     }
     
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {

@@ -56,10 +56,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<RecipeListDto> listRecipes() {
+    public List<RecipeListDto> listRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("category", "c")
     		.createAlias("user", "u")
+    		.add(Restrictions.eq("user.id", userId))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
     			.add(Projections.property("u.id").as("userId"))
@@ -73,6 +74,13 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 
     	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
     	return recipes;
+    }
+    
+    public Long getRecipeCount(Long userId) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class)
+   			.add(Restrictions.eq("user.id", userId))
+    		.setProjection(Projections.rowCount());
+    	return (Long)criteria.uniqueResult();
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -109,7 +117,6 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     
     @SuppressWarnings("unchecked")
     public List<String> getTags(String searchStr, Long userId) {
-
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
 			"select distinct t.column_value as tag from recipe r, table(r.tags) t where r.user_id = :id and lower(t.column_value) like :str")
 			.addScalar("tag", StringType.INSTANCE)

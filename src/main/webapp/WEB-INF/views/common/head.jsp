@@ -36,6 +36,3 @@
 
 <!-- Security tags -->
 <sec:csrfMetaTags />
-    
-<!-- Javascript for this app -->
-<%-- <%@include file="js.jsp" %> --%>

@@ -12,8 +12,7 @@ function closeTimeout() {
 
 function displayTimeout() {
 	console.log('displayTimeout()');
-	var msg = "Your session will expire in " + remainTime + " seconds";
-	$("#timeoutText").text(msg);
+	$("#timeLeft").text(remainTime);
 	$("#sessionTimeout").modal();
 	closeModalTimer = setTimeout(closeTimeout, ((remainTime-15)*1000));	
 }
@@ -26,7 +25,7 @@ function setSessionTimeout() {
 
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/ajax/auth/setSessionTimeout',
+		url: '/recipeorganizer/setSessionTimeout',
 		dataType: 'json',
 		data: token,
 		beforeSend: function(xhr) {
@@ -35,7 +34,6 @@ function setSessionTimeout() {
 	})
 	.done(function(data) {
 		console.log('setSessionTimeout() done');
-		alert('setTimeout done')
 		setTimeout(displayTimeout, timeout);
 	})
 	.fail(function(jqXHR, status, error) {
@@ -52,7 +50,7 @@ function getSessionTimeout() {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/ajax/anon/getSessionTimeout',
+		url: '/recipeorganizer/getSessionTimeout',
 		dataType: 'json'
 	})
 	.done(function(data) {
@@ -99,4 +97,6 @@ $(document).ready(function() {
     $(document).ajaxSend(function(e, xhr, options) {
         xhr.setRequestHeader(header, token);
     });
+    
+    getSessionTimeout();
 });

@@ -29,8 +29,8 @@ public class Privilege implements Serializable {
 	@Size(max=10)	//10
 	private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
+    /*@ManyToMany(mappedBy = "privileges")
+    private Collection<Role> roles;*/
 	
 	public Privilege() {};
 	
@@ -55,13 +55,13 @@ public class Privilege implements Serializable {
 		this.name = name;
 	}
 
-    public Collection<Role> getRoles() {
+    /*public Collection<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(final Collection<Role> roles) {
         this.roles = roles;
-    }
+    }*/
 
     @Override
     public boolean equals(final Object obj) {

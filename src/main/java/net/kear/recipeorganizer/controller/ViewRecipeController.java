@@ -32,8 +32,10 @@ import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.UserInfo;
 //import net.kear.recipeorganizer.persistence.service.UserService;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -61,14 +63,15 @@ public class ViewRecipeController {
 	private CategoryService categoryService;
 	@Autowired
 	private RecipeService recipeService;
-	//@Autowired
-	//private UserService userService;
+	@Autowired
+	private UserInfo userInfo;
 	
 	@RequestMapping("recipe/listRecipes")
 	public String listRecipeS(ModelMap model) {
 		logger.info("recipe/listRecipes");
-
-		List<RecipeListDto> recipes = recipeService.listRecipes();
+		
+		User user = (User)userInfo.getUserDetails();
+		List<RecipeListDto> recipes = recipeService.listRecipes(user.getId());
 		model.addAttribute("recipes", recipes);
 
 		return "recipe/listRecipes";

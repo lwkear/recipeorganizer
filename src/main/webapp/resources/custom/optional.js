@@ -82,8 +82,6 @@ function setSource() {
 //shorthand for document.ready
 $(function() {
 	
-	var savePhotoName = $('#photoName').val();
-
 	//TODO: GUI: replace these JQuery UI controls with Bootstrap controls?
 	//TODO: GUI: try to get the calendar icon to appear
 	$.datepicker.setDefaults({
@@ -163,14 +161,9 @@ $(function() {
 		{
 			if ($(this).val() == 'change') {
 				$('.newphoto').show();
-				$('#photoName').val("");
 			}
 			else
 				$('.newphoto').hide();
-			if ($(this).val() == 'remove')
-				$('#photoName').val("");
-			if ($(this).val() == 'keep')
-				$('#photoName').val(savePhotoName);
 		})
 		.on('change', '.btn-file :file', function() {
 			var input = $(this),

@@ -27,7 +27,7 @@ public class ExceptionController {
 		return view;
 	}
 	
-	@ExceptionHandler(Exception.class)
+	/*@ExceptionHandler(Exception.class)
 	public ModelAndView handleException(Exception ex) {
 		logger.info("Exception exception!");
 
@@ -36,5 +36,5 @@ public class ExceptionController {
 		
 		view.addObject("errorMessage", errorMsg);
 		return view;
-	}
+	}*/
 }

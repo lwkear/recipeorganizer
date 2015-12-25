@@ -23,7 +23,7 @@
 				<h3><spring:message code="profile.title"></spring:message></h3>
 			</div>			
 			<div class="row">
-				<form:form name="profileForm" role="form" method="post" modelAttribute="userProfile">
+				<form:form name="profileForm" role="form" method="post" modelAttribute="userProfile" enctype="multipart/form-data">
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
 							<label class="control-label" for="city"><spring:message code="profile.city"></spring:message></label>
@@ -32,7 +32,7 @@
 						</div>
 			        	<div class="form-group col-sm-2 <c:if test="${not empty stateError}">has-error</c:if>">
 							<label class="control-label" for="state"><spring:message code="profile.state"></spring:message></label>
-							<form:input class="form-control" type="text" id="state" path="state" autocomplete="off"/>
+							<form:input class="form-control" type="text" id="state" path="state"/>
 							<span class="text-danger">${stateError}</span>
 						</div>
 					</div>
@@ -68,9 +68,67 @@
 							<span class="text-danger">${interestsError}</span>
 						</div>
 					</div>
-					<div class="form-group col-sm-12">
+					<div class="col-sm-12">
+						<c:choose>
+							<c:when test="${not empty userProfile.avatar}">
+								<label class="control-label col-sm-3 col-sm-offset-2" style="text-align: left;" 
+									id="photoLabel" for="selectedFile"><spring:message code="profile.photo"></spring:message></label>
+								<label class="control-label col-sm-2" style="text-align: left;" 
+									id="photoOptionsLabel" for="file"><spring:message code="common.photo.options"></spring:message></label>
+								<label class="control-label col-sm-3 newphoto" style="text-align: left; display:none" 
+									id="newPhotoLabel" for="file"><spring:message code="common.photo.new"></spring:message></label>
+							</c:when>
+							<c:otherwise>
+								<label class="control-label col-sm-3 col-sm-offset-2" style="text-align: left;" 
+									id="fileLabel" for="file"><spring:message code="profile.photo"></spring:message></label>
+							</c:otherwise>
+						</c:choose>
 					</div>
-			        <div class="form-group col-sm-2 col-sm-offset-5">
+					<div class="col-sm-12">					
+						<c:choose>
+							<c:when test="${not empty userProfile.avatar}">												
+								<div class="col-sm-3 col-sm-offset-2">
+									<input class="form-control" type="text" id="photoName" value="${userProfile.avatar}" disabled/>
+								</div>
+								<div class="col-sm-2">
+									<div class="radio">
+										<label><input  type="radio" name="photoOpts" value="keep" checked><spring:message code="common.photo.keep"></spring:message></label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="photoOpts" value="remove"><spring:message code="common.photo.remove"></spring:message></label>
+									</div>
+									<div class="radio">
+										<label><input type="radio" name="photoOpts" value="change"><spring:message code="common.photo.change"></spring:message></label>
+									</div>
+								</div>
+								<div class="col-sm-3 newphoto" style="display:none">
+									<div class="input-group">
+										<span class="input-group-btn">
+											<span class="btn btn-default btn-file">
+												<spring:message code="common.selectfile"></spring:message>&hellip;
+												<input type="file" id="file" name="file">
+											</span>
+										</span>
+										<input type="text" id="photoname" class="form-control" readonly>
+									</div>
+								</div>
+							</c:when>
+							<c:otherwise>									
+								<div class="col-sm-4 col-sm-offset-2">
+									<div class="input-group">
+										<span class="input-group-btn">
+											<span class="btn btn-default btn-file">
+												<spring:message code="common.selectfile"></spring:message>&hellip;
+												<input type="file" id="file" name="file">
+											</span>
+										</span>
+										<input type="text" id="photoname" class="form-control" disabled>
+									</div>
+								</div>
+							</c:otherwise>
+						</c:choose>
+					</div>	        		
+			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 						<button class="btn btn-primary btn-block" type="submit" name="submit">
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
@@ -85,18 +143,7 @@
 
 </body>
 
-<script type="text/javascript">
+<script src="<c:url value="/resources/custom/typeahead.js" />"></script>
+<script src="<c:url value="/resources/custom/userprofile.js" />"></script>
 
-function setAge() {
-	var age = $('#age').val();
-	console.log("age=" + age);
-	$("#age" + age).prop('checked',true);
-}
-
-//shorthand for document.ready
-$(function() {
-	setAge();
-});
-
-</script>
 </html>

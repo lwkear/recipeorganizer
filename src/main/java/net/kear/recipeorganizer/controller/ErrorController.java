@@ -59,7 +59,7 @@ public class ErrorController {
 	}
 	
 	//AJAX/JSON request for getting the timeout interval for the current user
-	@RequestMapping(value="/ajax/anon/getSessionTimeout")
+	@RequestMapping(value="/getSessionTimeout")
 	@ResponseBody 
 	public Integer getSessionTimeout(HttpSession session, HttpServletResponse response) {
 		
@@ -71,7 +71,7 @@ public class ErrorController {
 	}
 
 	//AJAX/JSON request for resetting the session timeout
-	@RequestMapping(value="/ajax/auth/setSessionTimeout", method = RequestMethod.POST)
+	@RequestMapping(value="/setSessionTimeout", method = RequestMethod.POST)
 	@ResponseBody 
 	public String setSessionTimeout(HttpSession session, HttpServletResponse response) {
 		

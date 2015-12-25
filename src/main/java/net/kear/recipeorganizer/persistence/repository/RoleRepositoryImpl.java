@@ -1,5 +1,7 @@
 package net.kear.recipeorganizer.persistence.repository;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -34,6 +36,11 @@ public class RoleRepositoryImpl implements RoleRepository {
        		return (Role) result;
         	
        	return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Role> getRoles() {
+    	return getSession().createCriteria(Role.class).list();
     }
     
 	private Session getSession() {

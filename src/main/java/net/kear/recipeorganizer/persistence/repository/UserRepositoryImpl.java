@@ -68,7 +68,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public List<User> listUsers() {
+    public List<User> getUsers() {
     	return getSession().createCriteria(User.class).list();
     }
     

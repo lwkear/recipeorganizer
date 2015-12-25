@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +39,7 @@ import net.kear.recipeorganizer.security.UserSecurityService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	DataSource dataSource;	
+	DataSource dataSource;
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth, UserDetailsService userDetailsService) throws Exception {
@@ -58,13 +60,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return roleHier;		
 	}
 	
-	@Bean
+	/*@Bean
 	public PersistentTokenRepository persistentTokenRepository() {
 		JdbcTokenRepositoryImpl db = new JdbcTokenRepositoryImpl();
 		db.setCreateTableOnStartup(false);
 		db.setDataSource(dataSource);
 		return db;
-	}
+	}*/
 
 	@Bean
 	public SessionManagementBeanPostProcessor sessionManagementBeanPostProcessor() {
@@ -73,12 +75,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public LoginSuccessHandler loginSuccessHandler() {
-		return new LoginSuccessHandler();
+		LoginSuccessHandler handler = new LoginSuccessHandler();
+		handler.setDefaultTargetUrl("/user/dashboard");
+		return handler;
 	}
 
 	@Bean
 	public RememberMeSuccessHandler rememberMeSuccessHandler() {
-		return new RememberMeSuccessHandler();
+		RememberMeSuccessHandler handler = new RememberMeSuccessHandler();
+		handler.setDefaultTargetUrl("/user/dashboard");
+		return handler;
 	}
 	
 	@Bean
@@ -86,6 +92,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		CustomLogoutSuccessHandler handler = new CustomLogoutSuccessHandler();
 		handler.setTargetUrlParameter("/thankyou");
 		return handler;
+	}
+	
+	@Bean
+	public SessionRegistry sessionRegistry() {
+		return new SessionRegistryImpl();
 	}
 
 	@Override
@@ -97,9 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		;
 	}
 
-	//.antMatchers("/resources/**")	
-	
-    //Note: the regexMatcher is required because signup uses an AJAX call to check if the email is already registered and
+	//Note: the regexMatcher is required because signup uses an AJAX call to check if the email is already registered and
 	//antMatcher does not handle the /?{} parameter to the url
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	//TODO: SECURITY: look into putting URLs with their roles into a DB table?
@@ -108,22 +117,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
     	http
+    	//.csrf()
+    		//.disable()
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
     		.antMatchers("/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
-			.antMatchers("/messages/**", "/errors/**", "/ajax/anon/**").permitAll()
+			.antMatchers("/messages/**", "/errors/**", "/getSessionTimeout", "/lookupUser").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword").permitAll()
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
-			.antMatchers("/recipe/listRecipes", "/ajax/auth/**").hasAuthority("GUEST")
-			.antMatchers("/user/profile", "/user/changePassword**").hasAuthority("GUEST")
-			.regexMatchers("/recipe/viewRecipe/.*","/report/gethtmlrpt/.*").hasAuthority("AUTHOR")
+			.antMatchers("/recipe/listRecipes", "/setSessionTimeout").hasAuthority("GUEST")
+			.antMatchers("/user/profile", "/user/dashboard", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
+			.regexMatchers("user/avatar/.*").hasAuthority("GUEST")
+			.regexMatchers("/recipe/viewRecipe/.*","/recipe/getRecipeCount/.*","/report/gethtmlrpt/.*").hasAuthority("AUTHOR")
 			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
-			.antMatchers("/admin/**").hasAuthority("ADMIN")
+			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*", "/admin/updateUser").hasAuthority("ADMIN")
 			.anyRequest().authenticated()
 			/*.anyRequest().permitAll()*/	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
@@ -145,19 +157,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
-			.key("recipeOrganizer")
-			.tokenRepository(persistentTokenRepository())
+			.key("recipeOrganizer-rmkey")
 			.tokenValiditySeconds(60 * 60 * 24 * 14)	//2 weeks
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()
     		.sessionAuthenticationErrorUrl("/errors/402")
     		.maximumSessions(1)
+    		.sessionRegistry(sessionRegistry())
     		.maxSessionsPreventsLogin(true)
     		.expiredUrl("/errors/expiredSession")
-   		;
+    	;
     }
-
+	
+	//.tokenRepository(persistentTokenRepository()) //rememberMe	
+	
 	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
 	protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
 

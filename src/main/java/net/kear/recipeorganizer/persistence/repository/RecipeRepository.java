@@ -12,7 +12,8 @@ public interface RecipeRepository {
     public void updateRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
     public Recipe getRecipe(Long id);
-    public List<RecipeListDto> listRecipes();
+    public List<RecipeListDto> listRecipes(Long userId);
+    public Long getRecipeCount(Long userId);
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
     public void getAllIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);

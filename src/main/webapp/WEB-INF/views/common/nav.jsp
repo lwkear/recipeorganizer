@@ -43,6 +43,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.admin"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
+							<li><a href="<c:url value="/admin/userMaint" />"><spring:message code="menu.users"></spring:message></a></li>
 							<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
 						</ul>
 					</li>
@@ -54,6 +55,7 @@
 						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
+						<%-- <li><a href="<c:url value="/user/dashboard" />">Dashboard</a></li> --%>
 						<%-- <li><a href="<c:url value="/start" />">Start Web Flow</a></li> --%>
 						<%-- <li><a href="<c:url value="/testpage" />">Recipe with Panels</a></li> --%>
 						<%-- <li><a href="<c:url value="/printtest" />">Print Test</a></li> --%>

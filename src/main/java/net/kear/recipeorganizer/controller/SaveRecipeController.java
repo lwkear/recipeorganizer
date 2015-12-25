@@ -384,6 +384,24 @@ public class SaveRecipeController {
 
 		return msg;
 	}
+
+	@RequestMapping(value="recipe/getRecipeCount")
+	@ResponseBody 
+	public Long getRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) {
+		
+		logger.info("recipe/getRecipeCount");
+		logger.info("userId=" + userId);
+		
+		//set default response
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		//get the count for the user
+		Long count = recipeService.getRecipeCount(userId);
+		
+		logger.info("count result=" + count);
+		
+		return count;
+	}
 }
 
 

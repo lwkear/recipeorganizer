@@ -12,7 +12,7 @@ public interface UserRepository {
     public User findUserByEmail(String email);
     public boolean doesUserEmailExist(String email);
     public boolean validateUser(String email, String password);
-    public List<User> listUsers();
+    public List<User> getUsers();
     public String getUserFullName(Long id);
     public User getUser(Long id);
     public User getUserWithProfile(Long id);

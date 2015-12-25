@@ -9,8 +9,8 @@
 	<!-- <secured attributes="GUEST" /> -->
 	
 	<on-start>
-    	<!-- <evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" /> -->
-    	<evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" />
+    	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
+    	<!-- <evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" /> -->
 	</on-start>
 	
 	<!-- <view-state id="photo" view="recipe/photoupload" model="recipe">

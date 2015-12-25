@@ -24,8 +24,8 @@ public class VerificationToken implements Serializable {
 	private static final long serialVersionUID = 1L;	
 	
 	//TODO: SECURITY: reset expiration to 24 hours
-	/*private static final int EXPIRATION = 60 * 24;*/
-    private static final int EXPIRATION = 30;
+	private static final int EXPIRATION = 60 * 24;
+    //private static final int EXPIRATION = 30;
 
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)

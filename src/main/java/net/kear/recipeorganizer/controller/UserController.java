@@ -1,10 +1,13 @@
 package net.kear.recipeorganizer.controller;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
@@ -15,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.hibernate.validator.constraints.Email;
@@ -42,6 +48,8 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.EmailSender;
+import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
 public class UserController {
@@ -58,13 +66,45 @@ public class UserController {
     private ApplicationEventPublisher eventPublisher;
 	@Autowired
 	private EmailSender emailSender;
-    
+	@Autowired
+	private UserInfo userInfo;
+	@Autowired
+	private SessionRegistry sessionRegistry;
+	@Autowired
+	private FileActions fileAction;
+	
     /*********************/
     /*** Login handler ***/
     /*********************/
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
-	public String getLogin(Model model) {
+	public String getLogin(Model model, HttpSession session) {
 		logger.info("login GET");
+
+		Date createTime = new Date(session.getCreationTime());
+		Date lastAccess = new Date(session.getLastAccessedTime());
+		int maxInactive = session.getMaxInactiveInterval();
+		String sessID = session.getId();
+
+		logger.info("Session created on: " + createTime);
+		logger.info("Session last accessed on: " + lastAccess);
+		logger.info("Session expires after: " + maxInactive + " seconds");
+		logger.info("Session ID: " + sessID);
+
+		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
+		
+		for (Object obj : allPrinc) {
+			final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
+
+			for (SessionInformation sess : sessions) {
+				Object princ = sess.getPrincipal();
+				String sessId = sess.getSessionId();
+				Date sessDate = sess.getLastRequest();
+				
+				logger.info("sessionRegistry.princ: " + princ);
+				logger.info("sessionRegistry.sessId: " + sessId);
+				logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+			}
+		}
 		
 		return "user/login";
 	}
@@ -117,10 +157,10 @@ public class UserController {
 	}
 
 	//AJAX/JSON request for checking user (email) duplication
-	@RequestMapping(value="/ajax/anon/lookupUser", produces="text/javascript")
+	@RequestMapping(value="/lookupUser", produces="text/javascript")
 	@ResponseBody 
 	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
-		logger.info("ajax/anon/lookupUser");
+		logger.info("/lookupUser");
 		logger.info("email =" + lookupEmail);
 		
 		String msg = "{}";
@@ -177,8 +217,7 @@ public class UserController {
 	
 	//resend a registration email
 	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    public ModelAndView resendRegistrationToken(final HttpServletRequest request, @RequestParam("token") final String token,
-    		RedirectAttributes redir) {
+    public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir) {
 		logger.info("resendRegistrationToken GET");
 		
 		ModelAndView mv = new ModelAndView();
@@ -207,7 +246,8 @@ public class UserController {
 	public String getProfile(Model model) {
 		logger.info("profile GET");
 		
-		User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User currentUser = (User)userInfo.getUserDetails();
 		User user = userService.getUserWithProfile(currentUser.getId());
 		UserProfile userProfile = user.getUserProfile(); 
 		if (userProfile == null) {
@@ -221,13 +261,25 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
-	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale) {
+	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) {
 		logger.info("profile POST");
 
 		if (result.hasErrors()) {
 			logger.info("Validation errors");
 			return "user/profile";
 		}
+
+		//TODO: EXCEPTION: need to return an error message if the file upload is unsuccessful
+		//handle the file upload
+		if (!file.isEmpty()) {
+			String rslt = fileAction.uploadFile(file);
+			userProfile.setAvatar(file.getOriginalFilename());
+			logger.info("File update result: " + rslt);
+			
+        } else {
+        	logger.info("Empty file");
+        }
 		
 		//.jsp page saves off user.id and userprofile.id
 		userService.saveUserProfile(userProfile);
@@ -240,9 +292,33 @@ public class UserController {
      	emailSender.setMessageCode("user.email.profileChange");
      	emailSender.sendSimpleEmailMessage();
 		
-		return "redirect:/home";
+		return "redirect:/user/dashboard";
 	}
 
+	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
+	public String getDashboard(Model model) {
+		logger.info("getDashboard");
+
+		User currentUser = (User)userInfo.getUserDetails();
+		User user = userService.getUserWithProfile(currentUser.getId());
+		
+		model.addAttribute("user", user);
+		
+		return "user/dashboard";
+	}
+	
+	@RequestMapping(value = "user/avatar", method = RequestMethod.GET)
+	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
+		logger.info("avatar GET");
+		
+		String msg = "";
+
+		msg = fileAction.downloadFile(fileName, response);
+		logger.info("File update result: " + msg);
+		
+		//return msg;
+	}
+	
 	/*******************************/
 	/*** Change password handler ***/
 	/*******************************/

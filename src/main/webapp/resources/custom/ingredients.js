@@ -248,7 +248,6 @@ $(function() {
 			        'Content-Type': 'application/json' 
 			    },
 				type: 'POST',
-				/* url: '/recipeorganizer/recipe/addRecipe/addIngredient', */
 				url: '/recipeorganizer/recipe/addIngredient',
 				dataType: 'json',
 				data: JSON.stringify(data)

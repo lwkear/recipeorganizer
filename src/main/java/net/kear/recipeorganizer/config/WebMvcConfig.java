@@ -34,6 +34,9 @@ import org.springframework.web.servlet.view.JstlView;
 import org.springframework.webflow.mvc.servlet.FlowHandlerAdapter;
 import org.springframework.webflow.mvc.servlet.FlowHandlerMapping;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+
 @EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"net.kear.recipeorganizer"})
@@ -80,10 +83,16 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-    public MappingJackson2HttpMessageConverter msgConverter() {
-		logger.debug("MappingJackson2HttpMessageConverter");
-		return new MappingJackson2HttpMessageConverter();
-    }
+	public MappingJackson2HttpMessageConverter msgConverter(){
+		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+	
+		ObjectMapper mapper = new ObjectMapper();
+		//register Hibernate4Module to support lazy objects
+		mapper.registerModule(new Hibernate4Module());
+		
+		messageConverter.setObjectMapper(mapper);
+		return messageConverter;
+	}	
 	
 	/*** file upload configuration ***/
 	@Bean

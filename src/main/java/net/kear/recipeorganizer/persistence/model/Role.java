@@ -36,15 +36,14 @@ public class Role implements Serializable {
 	@Column(name = "DEFAULT_ROLE")
 	private int defaultRole;
 	
-    //@ManyToMany(mappedBy = "roles")
-    //private Collection<UserDto> user;
-    @OneToMany(mappedBy = "role")
-    private Collection<User> user;
+    /*@OneToMany(mappedBy = "role")
+    private Collection<User> user;*/
 	
-    @ManyToMany(fetch=FetchType.EAGER)
+    //need to rethink how privileges work - this version returns multiple records for each user's role object
+    /*@ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name = "ROLES_PRIVILEGES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), 
     	inverseJoinColumns = @JoinColumn(name = "PRIVILEGE_ID", referencedColumnName = "ID") )
-    private Collection<Privilege> privileges;
+    private Collection<Privilege> privileges;*/
     
 	public Role() {};
 	
@@ -77,21 +76,21 @@ public class Role implements Serializable {
 		this.defaultRole = defaultRole;
 	}
 
-	public Collection<User> getUsers() {
+	/*public Collection<User> getUsers() {
         return user;
     }
 
     public void setUsers(final Collection<User> user) {
         this.user = user;
-    }
+    }*/
 
-    public Collection<Privilege> getPrivileges() {
+    /*public Collection<Privilege> getPrivileges() {
         return privileges;
     }
 
     public void setPrivileges(final Collection<Privilege> privileges) {
         this.privileges = privileges;
-    }
+    }*/
 
     @Override
     public boolean equals(final Object obj) {
@@ -110,10 +109,9 @@ public class Role implements Serializable {
         }
         return true;
     }
-    
-    @Override
+
+	@Override
 	public String toString() {
-		return "Role [id=" + id + ", name=" + name + "]";
-	}
-	
+		return "Role [id=" + id + ", name=" + name + ", defaultRole=" + defaultRole + "]";
+	}   
 }

@@ -1,7 +1,9 @@
 package net.kear.recipeorganizer.persistence.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +16,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "USERS")
@@ -51,12 +60,28 @@ public class User implements Serializable {
 	@Column(name = "EXPIRED")
 	private int expired;
 
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "DATE_ADDED", insertable=false, updatable=false)
+	private Date dateAdded;
+
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern="MM/dd/yyyy")
+	@Column(name = "LAST_LOGIN")
+	private Date lastLogin;
+
+	@Transient
+	private boolean loggedIn = false;
+	
+	@Transient
+	private long numRecipes = 0;
+	
 	@ManyToOne(fetch=FetchType.EAGER)
     @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
     	inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
     private Role role;
 
-    @OneToOne(mappedBy = "user", orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade=CascadeType.ALL, orphanRemoval=true, optional = true, fetch = FetchType.LAZY)
     private UserProfile userProfile;
 	
 	public User() {}
@@ -116,6 +141,14 @@ public class User implements Serializable {
 		this.email = email;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 	public int getEnabled() {
 		return enabled;
 	}
@@ -148,6 +181,11 @@ public class User implements Serializable {
 		this.locked = locked;
 	}
 	
+	public boolean isLocked() {
+		return (locked == 1 ? true : false);
+	}
+	
+	@JsonIgnore
 	public boolean isAccountNonLocked() {
 		return (locked == 1 ? false : true);
 	}
@@ -160,18 +198,51 @@ public class User implements Serializable {
 		this.expired = expired;
 	}
 	
+	public boolean isExpired() {
+		return (expired == 1 ? true : false);
+	}
+	
+	@JsonIgnore
 	public boolean isAccountNonExpired() {
 		return (expired == 1 ? false : true);
 	}
 
-	public String getPassword() {
-		return password;
+	public Date getDateAdded() {
+		return dateAdded;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setDateAdded(Date dateAdded) {
+		this.dateAdded = dateAdded;
+	}
+
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public boolean getLoggedIn() {
+		return loggedIn;
 	}
 	
+	public void setLoggedIn(boolean loggedIn) {
+		this.loggedIn = loggedIn;
+	}
+
+	public boolean isLoggedIn() {
+		return loggedIn;
+	}
+
+	public long getNumRecipes() {
+		return numRecipes;
+	}
+
+	public void setNumRecipes(long numRecipes) {
+		this.numRecipes = numRecipes;
+	}
+
     public Role getRole() {
         return role;
     }
@@ -209,12 +280,14 @@ public class User implements Serializable {
             return false;
         }
         return true;
-    }	
-	
+    }
+
 	@Override
 	public String toString() {
-		return "UserDto [id=" + id + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", email=" + email + ", password=" + password
-				+ ", enabled=" + enabled + ", " + ", tokenExpired=" + tokenExpired + "]";
-	}
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", enabled=" + enabled + ", tokenExpired=" + tokenExpired
+				+ ", locked=" + locked + ", expired=" + expired + ", dateAdded=" + dateAdded + ", lastLogin=" + lastLogin + ", loggedIn=" + loggedIn + ", numRecipes=" + numRecipes 
+				+ ", role=" + role
+				+ ", userProfile=" + userProfile 
+				+ "]";
+	}	
 }
