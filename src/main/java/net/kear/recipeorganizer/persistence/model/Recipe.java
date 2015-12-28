@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.persistence.model;
 
+import java.util.Date;
 import java.util.List;
 import java.io.Serializable;
 
@@ -17,6 +18,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -31,6 +34,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import org.hibernate.validator.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.AutoPopulatingList;
 
 @Entity
@@ -146,6 +150,11 @@ public class Recipe implements Serializable {
 	@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	@Valid
 	private Source source;
+	
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "DATE_ADDED", insertable=false, updatable=false)
+	private Date dateAdded;
 	
 	public Recipe() {}
 
@@ -358,6 +367,14 @@ public class Recipe implements Serializable {
 		this.source = source;
 	}
 	
+	public Date getDateAdded() {
+		return dateAdded;
+	}
+
+	public void setDateAdded(Date dateAdded) {
+		this.dateAdded = dateAdded;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.persistence.repository;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
  
@@ -13,6 +14,7 @@ public interface RecipeRepository {
     public void deleteRecipe(Long id);
     public Recipe getRecipe(Long id);
     public List<RecipeListDto> listRecipes(Long userId);
+    public List<SearchResultsDto> listRecipes(List<Long> ids);
     public Long getRecipeCount(Long userId);
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
     public void getAllIngredients(Recipe recipe);

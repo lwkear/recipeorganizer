@@ -2,11 +2,9 @@
 <html>
 <head>
 
-<title>End</title>
-
-<title>About</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="recipe.cancel.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -17,7 +15,7 @@
 	<div class="container container-white">
 		<div class="col-sm-12">
 			<div class="page-header">
-				<h3>Recipe cancelled!</h3>
+				<h3><spring:message code="recipe.cancel.title"></spring:message></h3>
 			</div>
 		</div>
 	</div>

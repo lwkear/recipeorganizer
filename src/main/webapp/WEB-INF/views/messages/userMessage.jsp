@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Message</title>
-</head>
 
 <%@include file="../common/head.jsp"%>
+
+<title><spring:message code="menu.product"></spring:message></title>
+
+</head>
 
 <body role="document">
 

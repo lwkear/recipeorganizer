@@ -2,11 +2,9 @@
 <html>
 <head>
 
-<title>End</title>
-
-<title>About</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="recipe.end.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 

@@ -24,7 +24,14 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="<c:url value="/home" />">RecipeOrganizer</a>
+			<c:choose>
+				<c:when test="${isAuth}">
+					<a class="navbar-brand" href="<c:url value="/user/dashboard" />"><spring:message code="menu.product"></spring:message></a>
+				</c:when>
+				<c:otherwise>
+					<a class="navbar-brand" href="<c:url value="/home" />"><spring:message code="menu.product"></spring:message></a>
+				</c:otherwise>
+			</c:choose>			
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
@@ -34,7 +41,7 @@
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.addrecipe"></spring:message></a></li>
-							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.listrecipe"></spring:message></a></li>
+							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.myrecipes"></spring:message></a></li>
 						</ul>
 					</li>
 				</c:if>
@@ -55,10 +62,6 @@
 						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<%-- <li><a href="<c:url value="/user/dashboard" />">Dashboard</a></li> --%>
-						<%-- <li><a href="<c:url value="/start" />">Start Web Flow</a></li> --%>
-						<%-- <li><a href="<c:url value="/testpage" />">Recipe with Panels</a></li> --%>
-						<%-- <li><a href="<c:url value="/printtest" />">Print Test</a></li> --%>
 					</ul>
 				</li>
 			</ul>
@@ -89,7 +92,7 @@
 				<c:url var="searchUrl" value="/submitSearch"/>
 				<form:form class="navbar-form" id="searchForm" action="${searchUrl}" method="post">
 					<div class="input-group">
-						<input type="text" class="searchbox" placeholder="Search..." name="searchTerm" id="searchTerm" autocomplete="off"/>	
+						<input type="text" class="searchbox" placeholder=<spring:message code="common.search"></spring:message> name="searchTerm" id="searchTerm" autocomplete="off"/>	
 						<div class="input-group-btn">
 							<button class="btn btn-default btn-sm" style="padding:3px 10px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
 						</div>

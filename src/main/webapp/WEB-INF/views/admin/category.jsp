@@ -3,10 +3,8 @@
 <head>
 
 <%@include file="../common/head.jsp" %>
-	
-<title>Category</title>
 
-<%@include file="../common/js.jsp" %>
+<title><spring:message code="category.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 

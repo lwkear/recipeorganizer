@@ -2,13 +2,12 @@
 <html>
 <head>
 
-<title>New Password</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="newpswd.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
-<!-- <body role="document" onload="document.passwordForm.password.focus();"> -->
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
@@ -52,8 +51,7 @@
 							<span class="text-danger">${confirmPasswordError}</span>
 						</div>
 					</div>
-					<div class="form-group col-sm-12">&nbsp;</div>
-			        <div class="form-group col-sm-2 col-sm-offset-5">
+			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<form:hidden path="userId" />

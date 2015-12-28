@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<title>ListRecipes</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="menu.myrecipes"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -20,65 +20,37 @@
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<%-- <h3><spring:message code="signup.title"></spring:message></h3> --%>
-				<h3>Recipes</h3>
+				<h3><spring:message code="menu.myrecipes"></spring:message></h3>
 			</div>			
-			<table class="table table-condensed table-striped">
+			<table class="table" id="recipeList">
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Category</th>
-						<th>Submitted By</th>
-						<th>Share</th>
+						<th><spring:message code="recipe.table.name"></spring:message></th>
+						<th><spring:message code="recipe.table.description"></spring:message></th>
+						<th><spring:message code="recipe.table.submitted"></spring:message></th>
+						<th><spring:message code="recipe.table.category"></spring:message></th>
+						<th><spring:message code="recipe.table.source"></spring:message></th>
+						<th></th>
+						<th></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach var="recipe" items="${recipes}">
 						<tr>
-							<%-- <td>${recipe.id}</td> --%>
 							<td>${recipe.name}</td>
+							<td>${recipe.desc}</td>
+							<td>${recipe.submitted}</td>
 							<td>${recipe.category}</td>
-							<td>${recipe.firstName}&nbsp;${recipe.lastName}</td>
-							<%-- <td>${recipe.source}</td> --%>
-							<td><c:choose><c:when test="${recipe.allowShare}">Yes</c:when><c:otherwise>No</c:otherwise></c:choose></td>
-							<td>
-								<c:choose>
-									<c:when test="${recipe.allowShare}">
-										<a class="btn btn-info btn-sm" href="../recipe/viewRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-list-alt"></span></a>
-									</c:when>
-									<c:otherwise>
-										<a class="btn btn-default btn-sm disabled" href="../recipe/viewRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-list-alt"></span></a>
-									</c:otherwise>
-								</c:choose>							
+							<td>${recipe.sourcetype}</td>
+							<td><a class="btn btn-info btn-sm" href="../recipe/viewRecipe/${recipe.id}">
+								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td>
-								<!-- TODO: RECIPE: change to new edit process when completed -->
-								<%-- <c:choose>
-									<c:when test="${recipe.userId eq secUserId}">
-										<a class="btn btn-success btn-sm" href="../recipe/editRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-pencil"></span></a>
-									</c:when>
-									<c:otherwise>
-										<a class="btn btn-default btn-sm disabled" href="../recipe/editRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-pencil"></span></a>
-									</c:otherwise>
-								</c:choose> --%>							
-								<a class="btn btn-default btn-sm disabled" href="#">
+							<td><a class="btn btn-default btn-sm disabled" href="#">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
-							<td>
-								<c:choose>
-									<c:when test="${recipe.userId eq secUserId}">
-										<a class="btn btn-danger btn-sm" href="../recipe/deleteRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-remove"></span></a>
-									</c:when>
-									<c:otherwise>
-										<a class="btn btn-default btn-sm disabled" href="../recipe/deleteRecipe/${recipe.id}">
-										<span class="glyphicon glyphicon-remove"></span></a>
-									</c:otherwise>
-								</c:choose>							
+							<td><a class="btn btn-danger btn-sm" href="../recipe/deleteRecipe/${recipe.id}">
+								<span class="glyphicon glyphicon-remove"></span></a>
 							</td>
 						</tr>
 					</c:forEach>
@@ -91,6 +63,16 @@
 
 </body>
 
-<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$('#recipeList').DataTable({
+    	columnDefs: [{
+    	      targets: [-1,-2,-3],
+    	      orderable: false
+    	    }]		
+	});
+})
+</script>
 
 </html>

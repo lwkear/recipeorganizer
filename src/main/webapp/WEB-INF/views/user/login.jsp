@@ -4,11 +4,10 @@
 
 <%@include file="../common/head.jsp" %>
 
-<title>Login</title>
+<title><spring:message code="login.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
-<!-- <body role="document" onload="document.loginForm.username.focus();"> -->
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
@@ -46,16 +45,22 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group col-sm-12">&nbsp;</div>
-					<div>
-				        <div class="form-group col-sm-2 col-sm-offset-5">
-							<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
-		        		</div>
+			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
+						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
+			        <div class="col-sm-12 spacer-vert-sm text-center">
+			        	<div>
+			        		<spring:message code="login.notamemebr1"></spring:message>&nbsp;
+							<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">
+								<spring:message code="menu.signup"></spring:message>
+							</a>
+							&nbsp;<spring:message code="login.notamemebr2"></spring:message>
+						</div>
+	        		</div>
+	        		
 					<div class="col-sm-12 text-center">
 						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
 					</div>
-
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	      		</form>
 			</div>

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -38,6 +40,7 @@ public class SearchController {
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "name or catname or ingredname or description or source");
+		query.setParam("fl", "id, name, description, photo");
 		query.setHighlight(true);
 		query.addHighlightField("name or description");
 		query.setHighlightSimplePre("<strong>");
@@ -54,16 +57,18 @@ public class SearchController {
 			e.printStackTrace();
 		}
 	    
-	    List<SearchResults> resultsList = new ArrayList<SearchResults>();
+	    List<SearchResultsDto> resultsList = new ArrayList<SearchResultsDto>();
 	    
 	    SolrDocumentList docs = rsp.getResults();
 	    for (SolrDocument doc : docs) {
 	    	String result = doc.toString();
 	    	logger.info("doc: " + result);
 	    	
-	    	String id = (String)doc.getFieldValue("id");
+	    	String idStr = (String)doc.getFieldValue("id");
+	    	Long id = Long.valueOf(idStr);
 	    	String name = (String)doc.getFieldValue("name");
 	    	String desc = (String)doc.getFieldValue("description");
+	    	String photo = (String)doc.getFieldValue("photo");
 
 	    	if (rsp.getHighlighting().get(id) != null) {
 	        	List<String> highList = rsp.getHighlighting().get(id).get("name");
@@ -82,7 +87,7 @@ public class SearchController {
 	        	}
 	        }
 	    	
-	    	SearchResults rslts = new SearchResults(id, name, desc);
+	    	SearchResultsDto rslts = new SearchResultsDto(id, name, desc, photo);
 	    	resultsList.add(rslts);
 	    }
 	    
@@ -104,42 +109,4 @@ public class SearchController {
 		return "searchResults";
 	}
 	
-	public static class SearchResults {
-		
-		private String id;
-		private String name;
-		private String description;
-		
-		public SearchResults() {};
-		
-		public SearchResults(String id, String name, String description) {
-			this.id = id;
-			this.name = name;
-			this.description = description;
-		};
-	
-		public String getId() {
-			return id;
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-		
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-		
-		public void setDescription(String description) {
-			this.description = description;
-		}
-	}
 }

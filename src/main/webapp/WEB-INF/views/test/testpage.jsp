@@ -2,13 +2,13 @@
 <html>
 <head>
 
-<%@include file="common/head.jsp"%>
+<%@include file="../common/head.jsp"%>
 
 </head>
 
 <body role="document">
 
-<%@include file="common/nav.jsp" %>
+<%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
@@ -295,7 +295,7 @@
 		</form:form>
 	</div>
 
-<%@include file="common/footer.jsp" %>
+<%@include file="../common/footer.jsp" %>
 
 </body>
 

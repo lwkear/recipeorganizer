@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<title>DisplayRecipe</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title>${recipe.name} - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -22,17 +22,13 @@
 					<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px">
 					  <span class="glyphicon glyphicon-envelope"></span>
 					</button>
-					<!-- <a class="btn btn-default btn-sm disabled" href="#"><span class="glyphicon glyphicon-print"></span></a>
-					<a class="btn btn-default btn-sm disabled" href="#"><span class="glyphicon glyphicon-envelope"></span></a> -->
-					<!-- <a class="" style="margin-left:30px" href="#"><span class="glyphicon glyphicon-print"></span></a>
-					<a class="" style="margin-left:10px" href="#"><span class="glyphicon glyphicon-envelope"></span></a> -->
 				</h3>
 				<h5>
 					<spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}
 				</h5>
 			</div>
 			
-<%@include file="recipeContent.jsp" %>
+			<%@include file="recipeContent.jsp" %>
 			
 		</div>
 	</div>		

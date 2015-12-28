@@ -1,28 +1,26 @@
 package net.kear.recipeorganizer.persistence.dto;
 
+import java.util.Date;
+
 public class RecipeListDto {
 
 	private long id;
-	private long userId;
-	private String name;	
-	private boolean allowShare;
-	private String firstName;
-	private String lastName;
+	private String name;
+	private String desc;
+	private Date submitted;
 	private String category;
-	private String source;
+	private String sourcetype;
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, long userId, String name, boolean allowShare, String firstName, String lastName, String category, String source) {
+	public RecipeListDto(long id, String name, String desc, Date submitted, String category, String sourcetype) {
 		super();
-		this.userId = userId;
 		this.id = id;
 		this.name = name;
-		this.allowShare = allowShare;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.desc = desc;
+		this.submitted = submitted;
 		this.category = category;
-		this.source = source;
+		this.sourcetype = sourcetype;
 	}
 
 	public long getId() {
@@ -33,44 +31,12 @@ public class RecipeListDto {
 		this.id = id;
 	}
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
 	public String getName() {
 		return name;
 	}
 	
 	public void setName(String name) {
 		this.name = name;
-	}
-	
-	public boolean isAllowShare() {
-		return allowShare;
-	}
-	
-	public void setAllowShare(boolean allowShare) {
-		this.allowShare = allowShare;
-	}
-	
-	public String getFirstName() {
-		return firstName;
-	}
-	
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	
-	public String getLastName() {
-		return lastName;
-	}
-	
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
 	}
 	
 	public String getCategory() {
@@ -81,11 +47,27 @@ public class RecipeListDto {
 		this.category = category;
 	}
 
-	public String getSource() {
-		return source;
+	public String getDesc() {
+		return desc;
 	}
-	
-	public void setSource(String source) {
-		this.source = source;
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+
+	public String getSourcetype() {
+		return sourcetype;
+	}
+
+	public void setSourcetype(String sourcetype) {
+		this.sourcetype = sourcetype;
+	}
+
+	public Date getSubmitted() {
+		return submitted;
+	}
+
+	public void setSubmitted(Date submitted) {
+		this.submitted = submitted;
 	}
 }

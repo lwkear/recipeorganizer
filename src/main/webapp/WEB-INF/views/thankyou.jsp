@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<title>Thankyou</title>
-
 <%@include file="common/head.jsp" %>
+
+<title><spring:message code="head.thankyou"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -15,7 +15,7 @@
 	<div class="container container-opaque">	
 	 	<div class="col-sm-12">
 			<div class="page-header">
-				<h1><spring:message code="thankyou.title"></spring:message></h1>
+				<h1><spring:message code="title.thankyou"></spring:message></h1>
 			</div>
 		</div>
 	</div>

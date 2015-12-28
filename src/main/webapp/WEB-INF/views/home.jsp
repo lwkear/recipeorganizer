@@ -2,9 +2,9 @@
 <html>
 <head>
 	
-<title>Home</title>
-
 <%@include file="common/head.jsp" %>
+
+<title><spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -15,7 +15,7 @@
 	<div class="container container-opaque">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h1><spring:message code="home.title"></spring:message></h1>
+				<h1><spring:message code="title.home"></spring:message></h1>
 			</div>
 			<div class="lead text-center"> 		
 				<h3><spring:message code="home.description1"></spring:message></h3>
@@ -34,7 +34,9 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-2 col-sm-offset-5">
-					<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">Sign Up</a>
+					<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">
+						<spring:message code="menu.signup"></spring:message>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -44,44 +46,3 @@
 
 </body>
 </html>
-
-
-<%-- 
-<h3><spring:message code="label.servertime"></spring:message>&nbsp;&nbsp;${serverTime}.</h3>
-				<div>
-					<c:if test="${isAuth}">
-						<p>Logged in as ${email} / ${firstname}&nbsp;${lastname}</p>
-					</c:if>
-				</div>
-				<div>
-					<p>${create}</p>
-				</div>
-				<div>
-					<p>${last}</p>
-				</div>
-				<div>
-					<p>${inactive}</p>
-				</div>
-				<div>
-					<p>${sessID}</p>
-				</div>
-				<div>
-					<p>${sess}</p>
-				</div>
-				<div>
-					<p>${country}</p>
-				</div>
-				<div>
-					<p>${language}</p>
-				</div>
-				
-				<p></p>
-				<p></p>
-				<p></p>
-				<c:if test="${isAuth}"><p>User is authorized</p></c:if>
-				<c:if test="${isGuest}"><p>User is guest</p></c:if>
-				<c:if test="${isAuthor}"><p>User is author</p></c:if>
-				<c:if test="${isEditor}"><p>User is editor</p></c:if>
-				<c:if test="${isAdmin}"><p>User is admin</p></c:if> 
-				<p></p>
-				<p></p> --%>

@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<title>User Admin</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="useradmin.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -15,15 +15,12 @@
 <spring:message var="yesLabel" code="common.yes"></spring:message>
 <spring:message var="noLabel" code="common.no"></spring:message>
 
-<%-- <spring:message var="yesLabel" code="common.yes"></spring:message>
-<spring:message var="noLabel" code="common.no"></spring:message> --%>
-
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="useradmin.title"></spring:message></h3>
 			</div>			
-			<table class="table table-condensed table-striped" id="userList">
+			<table class="table" id="userList">
 				<thead>
 					<tr>
 						<th><spring:message code="useradmin.column.email"></spring:message></th>
@@ -50,7 +47,7 @@
 							<td><c:out value="${user.locked ? yesLabel : noLabel}"/></td>
 							<td>${user.role.name}</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="updateUser(${user.id})"><span class="glyphicon glyphicon-remove"></span></button>
+								<button class="btn btn-success btn-xs" type="button" onclick="updateUser(${user.id})"><span class="glyphicon glyphicon-pencil"></span></button>
 							</td>
 							<td>
 								<button class="btn btn-danger btn-xs" type="button" onclick="checkRecipeCount(${user.id},'${user.firstName}','${user.lastName}')">
@@ -74,11 +71,13 @@
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><spring:message code="useradmin.delete.title"></spring:message></h4>
 			</div>
-			<div class="modal-body" id="hasRecipes" style="display:none">
-				<div class="text-center"><span class="userName"></span>&nbsp;has submitted&nbsp;<span id="recipeCount"></span>&nbsp;recipes.&nbsp;<spring:message code="useradmin.delete.areyousure"></spring:message>&nbsp;this user?</div>
-			</div>
 			<div class="modal-body" id="noRecipes" style="display:none">			
-				<div class="text-center"><spring:message code="useradmin.delete.areyousure"></spring:message>&nbsp;<span class="userName"></span>?</div>
+				<div class="text-center"><spring:message code="useradmin.delete.areyousure1"></spring:message>&nbsp;<span class="userName"></span>?</div>
+			</div>
+			<div class="modal-body" id="hasRecipes" style="display:none">
+				<div class="text-center"><span class="userName"></span>&nbsp;<spring:message code="useradmin.delete.hasrecipe1"></spring:message>&nbsp;
+					<span id="recipeCount"></span>&nbsp;<spring:message code="useradmin.delete.hasrecipe2"></spring:message>&nbsp;
+					<spring:message code="useradmin.delete.areyousure2"></spring:message></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="deleteUser()"><spring:message code="common.yes"></spring:message></button>

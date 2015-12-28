@@ -4,7 +4,7 @@
 
 <title>Print</title>
 
-<%@include file="common/head.jsp" %>
+<%@include file="../common/head.jsp" %>
 
 <!-- <style type="text/css">
 @page { size: auto;  margin: .5mm; }
@@ -114,7 +114,7 @@ $(document).ready(function () {
 
 <body role="document">
 
-<%@include file="common/nav.jsp" %>
+<%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">
 		<div class="col-sm-12">
@@ -177,7 +177,7 @@ $(document).ready(function () {
 		</div>
 	</div>
    
-<%@include file="common/footer.jsp" %>	
+<%@include file="../common/footer.jsp" %>	
 	
 </body>
 </html>

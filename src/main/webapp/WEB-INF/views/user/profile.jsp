@@ -2,13 +2,12 @@
 <html>
 <head>
 
-<title>UserProfile</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="profile.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
-<!-- <body role="document" onload="document.profileForm.city.focus();"> -->
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>

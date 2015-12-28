@@ -1,11 +1,13 @@
 package net.kear.recipeorganizer.persistence.service;
  
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
@@ -88,6 +90,15 @@ public class RecipeServiceImpl implements RecipeService {
 
     public List<RecipeListDto> listRecipes(Long userId) {
     	return recipeRepository.listRecipes(userId);
+    }
+    
+    public List<SearchResultsDto> listRecipes(List<String> ids) {
+    	ArrayList<Long> recipeIds = new ArrayList<Long>();
+    	for (String id : ids) {
+    		recipeIds.add(Long.valueOf(id));
+    	}
+	    	
+    	return recipeRepository.listRecipes(recipeIds);
     }
     
     public Long getRecipeCount(Long userId) {

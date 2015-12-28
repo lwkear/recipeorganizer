@@ -2,9 +2,9 @@
 <html>
 <head>
 
-<title>DisplayRecipe</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="recipe.review.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -21,7 +21,7 @@
 	 	<div class="col-sm-12">
 			<h3>${recipe.name}</h3>
 			
-		<%@include file="recipeContent.jsp" %>
+			<%@include file="recipeContent.jsp" %>
 
 			<form:form role="form" modelAttribute="recipe">
 				<div class="row spacer-vert-lg">

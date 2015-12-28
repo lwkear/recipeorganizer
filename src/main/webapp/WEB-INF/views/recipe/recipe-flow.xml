@@ -6,23 +6,10 @@
       	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
       	<!-- use this to examine the xsd: https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
 	
-	<!-- <secured attributes="GUEST" /> -->
-	
 	<on-start>
     	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
-    	<!-- <evaluate expression="recipeService.createRecipe()" result="flowScope.recipe" /> -->
 	</on-start>
 	
-	<!-- <view-state id="photo" view="recipe/photoupload" model="recipe">
-		<transition on="proceed" to="upload-action" bind="true" validate="false"></transition>
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
-	</view-state>
-	
-	<action-state id="upload-action">
-		<evaluate expression="fileActions.uploadFile(flowRequestContext)"/>
-		<transition to="basics"/>
-	</action-state> -->
-
 	<view-state id="basics" view="recipe/basics" model="recipe">
 		<binder>
 			<binding property="name"/>

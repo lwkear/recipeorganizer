@@ -12,12 +12,14 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -59,20 +61,34 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     public List<RecipeListDto> listRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("category", "c")
-    		.createAlias("user", "u")
+    		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
     		.add(Restrictions.eq("user.id", userId))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
-    			.add(Projections.property("u.id").as("userId"))
-    			.add(Projections.property("u.firstName").as("firstName"))
-    			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("desc"))
+    			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("r.allowShare").as("allowShare")))
+    			.add(Projections.property("s.type").as("sourcetype")))
     		.addOrder(Order.asc("name"))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
     	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
+    	return recipes;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<SearchResultsDto> listRecipes(List<Long> ids) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.add(Restrictions.in("id", ids))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.photoName").as("photo")))
+    		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
+
+    	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
     	return recipes;
     }
     

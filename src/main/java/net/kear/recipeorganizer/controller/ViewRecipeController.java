@@ -4,12 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,21 +21,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
-import net.kear.recipeorganizer.persistence.model.IngredientSection;
-import net.kear.recipeorganizer.persistence.model.Instruction;
-import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.CookieUtil;
+import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.UserInfo;
 //import net.kear.recipeorganizer.persistence.service.UserService;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -65,6 +66,10 @@ public class ViewRecipeController {
 	private RecipeService recipeService;
 	@Autowired
 	private UserInfo userInfo;
+	@Autowired
+	private FileActions fileAction;
+	@Autowired
+	private CookieUtil cookieUtil;
 	
 	@RequestMapping("recipe/listRecipes")
 	public String listRecipeS(ModelMap model) {
@@ -78,56 +83,41 @@ public class ViewRecipeController {
 	}
 
 	@RequestMapping("recipe/viewRecipe/{id}")
-	public String displayRecipe(ModelMap model, @PathVariable Long id) {
+	public String displayRecipe(ModelMap model, @PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
 		logger.info("recipe/viewRecipe GET");
 
+		User user = (User)userInfo.getUserDetails();
 		Recipe recipe = recipeService.getRecipe(id);
-		
-		int size = recipe.getInstructSections().size();
-		if (size > 0) {
-			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
-			while (iterator1.hasNext()) {
-				InstructionSection instructSection = iterator1.next();
-				logger.info("id= " + instructSection.getId()); 
-				logger.info("seq= " + instructSection.getSequenceNo());
-				logger.info("name= " + instructSection.getName());
-				size = instructSection.getInstructions().size();
-				if (size > 0) {
-					Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
-					while (iterator2.hasNext()) {
-						Instruction instruct = iterator2.next();
-						logger.info("id = " + instruct.getId()); 
-						logger.info("desc= " + instruct.getDescription());
-						logger.info("seq= " + instruct.getSequenceNo());			
-					}					
-				}
-			}			
-		}
+		String idStr = id.toString();
+		String cookieName = "recentRecipes";
 
-		size = recipe.getIngredSections().size();
-		if (size > 0) {
-			Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
-			while (iterator1.hasNext()) {
-				IngredientSection ingredSection = iterator1.next();
-				logger.info("id= " + ingredSection.getId()); 
-				logger.info("seq= " + ingredSection.getSequenceNo());
-				logger.info("name= " + ingredSection.getName());
-				size = ingredSection.getRecipeIngredients().size();
-				if (size > 0) {
-					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
-					while (iterator2.hasNext()) {
-						RecipeIngredient recipeIngred = iterator2.next();
-						logger.info("id = " + recipeIngred.getId()); 
-						logger.info("seq= " + recipeIngred.getSequenceNo());
-						logger.info("name= " + recipeIngred.getIngredient().getName());
-					}					
-				}
-			}			
+		Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, cookieName, user.getId()); 
+		if (recentRecipesCookie == null) {
+			cookieUtil.setUserCookie(request, response, cookieName, user.getId(), idStr);
+		}
+		else {
+			String recipeIds = recentRecipesCookie.getValue();
+			ArrayList<String> cookieIds = new ArrayList<String>(Arrays.asList(recipeIds.split(",")));
+			if (!cookieIds.contains(idStr)) {
+				cookieIds.add(0, idStr);
+				if (cookieIds.size() > 3)
+					cookieIds.remove(3);				
+			}
+			String newStr = cookieIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
+			cookieUtil.setUserCookie(request, response, cookieName, user.getId(), newStr);
 		}
 		
 		model.addAttribute("recipe", recipe);
 
 		return "recipe/viewRecipe";
+	}
+	
+	@RequestMapping(value = "recipe/photo", method = RequestMethod.GET)
+	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
+		logger.info("photo GET");
+
+		if (!fileName.isEmpty())
+			fileAction.downloadFile(fileName, response);
 	}
 	
 	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)
@@ -261,3 +251,47 @@ public class ViewRecipeController {
 		return view;
 	}
 }
+
+/*
+int size = recipe.getInstructSections().size();
+if (size > 0) {
+	Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
+	while (iterator1.hasNext()) {
+		InstructionSection instructSection = iterator1.next();
+		logger.info("id= " + instructSection.getId()); 
+		logger.info("seq= " + instructSection.getSequenceNo());
+		logger.info("name= " + instructSection.getName());
+		size = instructSection.getInstructions().size();
+		if (size > 0) {
+			Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
+			while (iterator2.hasNext()) {
+				Instruction instruct = iterator2.next();
+				logger.info("id = " + instruct.getId()); 
+				logger.info("desc= " + instruct.getDescription());
+				logger.info("seq= " + instruct.getSequenceNo());			
+			}					
+		}
+	}			
+}
+
+size = recipe.getIngredSections().size();
+if (size > 0) {
+	Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
+	while (iterator1.hasNext()) {
+		IngredientSection ingredSection = iterator1.next();
+		logger.info("id= " + ingredSection.getId()); 
+		logger.info("seq= " + ingredSection.getSequenceNo());
+		logger.info("name= " + ingredSection.getName());
+		size = ingredSection.getRecipeIngredients().size();
+		if (size > 0) {
+			Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
+			while (iterator2.hasNext()) {
+				RecipeIngredient recipeIngred = iterator2.next();
+				logger.info("id = " + recipeIngred.getId()); 
+				logger.info("seq= " + recipeIngred.getSequenceNo());
+				logger.info("name= " + recipeIngred.getIngredient().getName());
+			}					
+		}
+	}			
+}
+*/

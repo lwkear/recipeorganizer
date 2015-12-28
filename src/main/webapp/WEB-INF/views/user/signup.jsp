@@ -2,13 +2,12 @@
 <html>
 <head>
 
-<title>SignUp</title>
-
 <%@include file="../common/head.jsp" %>
+
+<title><spring:message code="signup.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
-<!-- <body role="document" onload="document.signupForm.email.focus();"> -->
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
@@ -80,8 +79,7 @@
 							<span class="text-danger">${lastNameError}</span>
 						</div>
 					</div>
-					<div class="form-group col-sm-12">&nbsp;</div>
-			        <div class="form-group col-sm-2 col-sm-offset-5">
+			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	      		</form:form>
@@ -93,88 +91,6 @@
 
 </body>
 
-<script type="text/javascript">
-
-$(function() {
-
-	$(document)
-	.on('blur', '#email', function(e)
-	{
-		e.preventDefault();
-
-		var emailStr = $(this).val();
-		//nothing to do
-		if (!emailStr)
-			return;
-
-		//save off the variable for the .done and .fail methods
-		var username = $(this);
-
-		//allow jquery to create the query string from the data parameters to handle special characters
-		$.ajax({
-			type: 'GET',
-			url: '/recipeorganizer/lookupUser',
-			dataType: 'json',
-			data: {
-				email : emailStr
-			}
-		})
-		.done(function(jqXHR, status, msg) {
-			//TODO: GUI: probably need to check for a success status?
-			console.log('done xhr.status: '+ jqXHR.status);
-			console.log('done status: '+ status);
-			console.log('done msg: '+ msg);
-			//fix the appearance in case a name was entered in error
-			username.parent('div').removeClass('has-error');
-			$('#emailErrMsg').html("");
-		})
-		.fail(function(jqXHR, status, error) {
-			console.log('fail status: '+ jqXHR.status);
-			console.log('fail error: '+ error);
-
-			//server sets CONFLICT error if name exists
-			if (jqXHR.status == 409) {
-				//server currently returns a simple error message
-				var respText = jqXHR.responseText;
-				console.log('respText: '+ respText);
-				//set the error indicator
-				username.parent('div').addClass('has-error');
-				$('#emailErrMsg').html(respText);
-				return;
-			}
-		});
-	});
-});
-
-</script>
+<script src="<c:url value="/resources/custom/usersignup.js" />"></script>
 
 </html>
-
-
-		<%-- <spring:hasBindErrors name="userDto">
-	    <c:set var="errorCnt">${errors.errorCount}</c:set>
-	    <p><b># of Errors:${errorCnt}</b></p>
-	    <p></p>
-		<c:forEach var="error" items="${errors.allErrors}">
-			<b><c:out value="${error}" /></b>
-			<p></p>
-		</c:forEach>
-		</spring:hasBindErrors>
-		<p></p>
-		<p></p> --%>
-		
-		
-		<%-- <p><b><c:out value="${emailError}" /></b></p>
-		<p><b><c:out value="${passwordError}" /></b></p>
-		<p><b><c:out value="${confirmPasswordError}" /></b></p>
-		<p><b><c:out value="${firstNameError}" /></b></p>
-		<p><b><c:out value="${lastNameError}" /></b></p> --%>
-
-<%-- 
-	      		<div class="form-group col-sm-12"></div>
-	      		<div class="form-group col-sm-12">
-	      			<div class="form-group col-sm-4 col-sm-offset-2">
-	      				<small><spring:message code="common.requiredfield"></spring:message></small>
-	      			</div>
-	      		</div>
---%>

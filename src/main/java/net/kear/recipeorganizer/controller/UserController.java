@@ -1,10 +1,13 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -26,6 +29,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,13 +44,16 @@ import org.hibernate.validator.constraints.NotBlank;
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.dto.PasswordDto;
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.UserInfo;
@@ -61,6 +68,8 @@ public class UserController {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	@Autowired
+	private RecipeService recipeService;
+	@Autowired
 	private MessageSource messages;
 	@Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -72,6 +81,8 @@ public class UserController {
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private FileActions fileAction;
+	@Autowired
+	private CookieUtil cookieUtil;
 	
     /*********************/
     /*** Login handler ***/
@@ -295,14 +306,28 @@ public class UserController {
 		return "redirect:/user/dashboard";
 	}
 
+	/*************************/
+	/*** Dashboard handler ***/
+	/*************************/
 	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
-	public String getDashboard(Model model) {
+	public String getDashboard(Model model, HttpServletRequest request) {
 		logger.info("getDashboard");
 
 		User currentUser = (User)userInfo.getUserDetails();
 		User user = userService.getUserWithProfile(currentUser.getId());
+		Long count = recipeService.getRecipeCount(user.getId());
 		
+		List<SearchResultsDto> viewedRecipes = null;		
+		Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, "recentRecipes", user.getId()); 
+		if (recentRecipesCookie != null) {
+			String recipes = recentRecipesCookie.getValue();
+			ArrayList<String> recipeIds = new ArrayList<String>(Arrays.asList(recipes.split(",")));
+			viewedRecipes = recipeService.listRecipes(recipeIds);
+		}
+
 		model.addAttribute("user", user);
+		model.addAttribute("recipeCount", count);
+		model.addAttribute("viewedRecipes", viewedRecipes);
 		
 		return "user/dashboard";
 	}
@@ -311,12 +336,7 @@ public class UserController {
 	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("avatar GET");
 		
-		String msg = "";
-
-		msg = fileAction.downloadFile(fileName, response);
-		logger.info("File update result: " + msg);
-		
-		//return msg;
+		fileAction.downloadFile(fileName, response);
 	}
 	
 	/*******************************/
