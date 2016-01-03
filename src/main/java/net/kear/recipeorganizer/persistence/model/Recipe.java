@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
@@ -107,6 +108,7 @@ public class Recipe implements Serializable {
 	/*** ingredients page ***/
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="RECIPE_ID", nullable=false)
+	@OrderBy("sequenceNo")
 	@Valid
 	@Size(min=1, groups=MinSizeGroup1.class)
 	private List<IngredientSection> ingredSections = new AutoPopulatingList<IngredientSection>(IngredientSection.class);
@@ -118,8 +120,9 @@ public class Recipe implements Serializable {
 	private int currIngredSection;
 	
 	/*** instructions page ***/
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)	//mappedBy="recipe", 
 	@JoinColumn(name="RECIPE_ID", nullable=false)
+	@OrderBy("sequenceNo")
 	@Valid
 	@Size(min=1, groups=MinSizeGroup2.class)
 	private List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);

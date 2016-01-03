@@ -11,7 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.GroupSequence;
@@ -19,7 +21,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import net.kear.recipeorganizer.persistence.model.Instruction;
-//import net.kear.recipeorganizer.persistence.model.Recipe.MinSizeGroup2;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.util.AutoPopulatingList;
@@ -52,8 +53,17 @@ public class InstructionSection implements Serializable {
 	@Size(max=50, groups=SizeGroup.class)	//50
 	private String name;
 
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	/*@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="RECIPE_ID") //, nullable = false, updatable=false)
+	Recipe recipe;
+	
+	public Recipe getRecipe() {
+		return recipe;
+	}*/
+	
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY) //EAGER)	//mappedBy="instructionSection", 
 	@JoinColumn(name="SECTION_ID", nullable=false)
+	@OrderBy("sequenceNo")
 	@Valid
 	@Size(min=1, groups=MinSizeGroup.class)
 	private List<Instruction> instructions = new AutoPopulatingList<Instruction>(Instruction.class);

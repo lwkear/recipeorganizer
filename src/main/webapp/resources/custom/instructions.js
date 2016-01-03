@@ -1,4 +1,4 @@
-function fixArrayIndexes(element, sequence) {
+function fixInstructArrayIndexes(element, sequence) {
 	console.log("fixArray:" + element);
 	$(element).each(function(index) {
 		$(this).attr('name',$(this).attr('name').replace(/instructions\[[0-9]+\]/,'instructions['+index+']'));
@@ -7,49 +7,6 @@ function fixArrayIndexes(element, sequence) {
 		}
 	});
 };
-
-function removeEmptyRows(element, fields) {
-	console.log("removeEmptyRows");
-	console.log("element=" + element);
-	var numRows = $(element).length;
-	var rowZeroEmpty = false;
-	var numNotEmpty = 0;
-	console.log("#elements=" + numRows);
-	$(element).each(function(index) {
-		console.log("row#" + index);
-		var currentRow = $(this);
-		var notEmpty = false;
-		for	(ndx = 0; ndx < fields.length; ndx++) {
-			console.log("field[" + ndx + "]=" + fields[ndx]);
-			var str = currentRow.find(fields[ndx]).val().trim();
-			if (str.length > 0) {
-				console.log("notempty");
-				notEmpty = true;
-				break;
-			}
-		}
-		if (notEmpty === false && index === 0)
-			rowZeroEmpty = true;
-		else {
-			if (notEmpty)
-				numNotEmpty++;
-			else
-			{
-				console.log("removing row#" + index);
-				currentRow.remove();
-			}
-		}
-	});
-	
-	if (rowZeroEmpty === true && numNotEmpty > 0) {
-		$(element).each(function(index) {
-			console.log("removing row#" + index);
-			var currentRow = $(this);
-			currentRow.remove();
-			return false;
-		});
-	}
-}
 
 //shorthand for document.ready
 $(function() {
@@ -60,8 +17,9 @@ $(function() {
 		.on('click', '.addInstruction', function(e) {
 			e.preventDefault();
 			//see addIngredient notes above 
-			var currentEntry = $(this).parents('.form-group:first');
+			var currentEntry = $(this).parents('.instructGrp:first');
 			var	newEntry = $(currentEntry.clone()).insertAfter(currentEntry);
+			newEntry.find('input').val('');
 			newEntry.find('textarea').val('');
 			newEntry.removeClass('has-error');
 			newEntry.find('.instructErr').hide();
@@ -70,9 +28,8 @@ $(function() {
 		.on('click', '.removeInstruction', function(e)
 		{
 			e.preventDefault();
-			//there are 2 separate <div> sections that need to be removed
-			$(this).parents('.form-group:first').prev('.instructErr').remove();
-			$(this).parents('.form-group:first').remove();
+			//remove the parent <div> of this ingredient
+			$(this).closest('.instructGrp').remove();
 			return false;
 		})
 		.on('click', '.row-adjust', function(e) {
@@ -82,10 +39,16 @@ $(function() {
 		    removeEmptyRows('.instructGrp',fields);
 		    
 			//each of the individual elements require their array indexes to be set/reset
-		    /*fixArrayIndexes('.instructId', false);*/
-			fixArrayIndexes('.instructDesc', false);
-		    fixArrayIndexes('.instructSeq', true);
+		    fixInstructArrayIndexes('.instructId', false);
+		    fixInstructArrayIndexes('.instructDesc', false);			
+		    fixInstructArrayIndexes('.instructSeq', true);
 
+		    $('.instructId').each(function() {
+				var id = $(this).val();
+				if (id == "")
+					$(this).val(0);
+			});	    
+		    
 		    var name = $(this).attr('name');
 		    if (name == '_eventId_back') {
 		    	console.log("_eventId_back");

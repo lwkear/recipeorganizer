@@ -46,7 +46,7 @@
 							<td><a class="btn btn-info btn-sm" href="../recipe/viewRecipe/${recipe.id}">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td><a class="btn btn-default btn-sm disabled" href="#">
+							<td><a class="btn btn-success btn-sm" href="../recipe/editRecipe/${recipe.id}">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td><a class="btn btn-danger btn-sm" href="../recipe/deleteRecipe/${recipe.id}">

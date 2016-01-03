@@ -45,7 +45,6 @@ public class RepositoryConfig {
 	@Bean
 	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
 	    HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
-	 
 	    return transactionManager;
 	}
 	
@@ -53,6 +52,7 @@ public class RepositoryConfig {
 	    Properties properties = new Properties();
 	    properties.put("hibernate.show_sql", "true");
 	    properties.put("hibernate.format_sql", "true");
+	    properties.put("hibernate.use_sql_comments", "true");
 	    properties.put("hibernate.dialect", "org.hibernate.dialect.Oracle10gDialect");
 	    properties.put("hibernate.connection.pool_size", "1");
 	    

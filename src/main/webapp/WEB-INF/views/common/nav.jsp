@@ -40,7 +40,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.addrecipe"></spring:message></a></li>
+							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.submitrecipe"></spring:message></a></li>
 							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.myrecipes"></spring:message></a></li>
 						</ul>
 					</li>

@@ -58,7 +58,8 @@
 				</div>
 				<div class="col-sm-12">
 					<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
-						<c:if test="${(not empty section.name) && (section.name != 'None')}">
+						<%-- <c:if test="${(not empty section.name) && (section.name != 'None')}"> --%>
+						<c:if test="${(not empty section.name)}">
 							<p><strong>${section.name}</strong></p>
 						</c:if>
 						<table class="table table-condensed recipe-table">
@@ -66,7 +67,8 @@
 								<c:forEach var="ingred" items="${section.recipeIngredients}">
 								<tr>
 									<td class="ingredqty">${ingred.qtyAmt}</td>
-									<td>${ingred.qtyType}&nbsp;${ingred.ingredient.name}<c:if test="${not empty ingred.qualifier}">&nbsp;(${ingred.qualifier})</c:if></td>
+									<td>${ingred.qtyType}</td>
+									<td>${ingred.ingredient.name}&nbsp;&nbsp;<c:if test="${not empty ingred.qualifier}">(${ingred.qualifier})</c:if></td>
 								</tr>
 								</c:forEach>
 							</tbody>
@@ -78,7 +80,8 @@
 				</div>
 				<div class="col-sm-12">
 					<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
-						<c:if test="${(not empty section.name) && (section.name != 'None')}">
+						<%-- <c:if test="${(not empty section.name) && (section.name != 'None')}"> --%>
+						<c:if test="${(not empty section.name)}">
 							<p><strong>${section.name}</strong></p>
 						</c:if>
 						<table class="table table-condensed recipe-table">

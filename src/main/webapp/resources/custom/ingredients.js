@@ -65,58 +65,16 @@ function getIngredId(obj) {
 	return ingredId;
 }
 
-function fixArrayIndexes(element, sequence) {
-	console.log("fixArray:" + element);
+function fixIngredArrayIndexes(element, sequence) {
+	console.log("fixIngredArray:" + element);
 	$(element).each(function(index) {
+		console.log("element:" + $(this).val());
 		$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
 		if (sequence) {
 			$(this).val(index+1);
 		}
 	});
 };
-
-function removeEmptyRows(element, fields) {
-	console.log("removeEmptyRows");
-	console.log("element=" + element);
-	var numRows = $(element).length;
-	var rowZeroEmpty = false;
-	var numNotEmpty = 0;
-	console.log("#elements=" + numRows);
-	$(element).each(function(index) {
-		console.log("row#" + index);
-		var currentRow = $(this);
-		var notEmpty = false;
-		for	(ndx = 0; ndx < fields.length; ndx++) {
-			console.log("field[" + ndx + "]=" + fields[ndx]);
-			var str = currentRow.find(fields[ndx]).val().trim();
-			if (str.length > 0) {
-				console.log("notempty");
-				notEmpty = true;
-				break;
-			}
-		}
-		if (notEmpty === false && index === 0)
-			rowZeroEmpty = true;
-		else {
-			if (notEmpty)
-				numNotEmpty++;
-			else
-			{
-				console.log("removing row#" + index);
-				currentRow.remove();
-			}
-		}
-	});
-	
-	if (rowZeroEmpty === true && numNotEmpty > 0) {
-		$(element).each(function(index) {
-			console.log("removing row#" + index);
-			var currentRow = $(this);
-			currentRow.remove();
-			return false;
-		});
-	}
-}
 
 //shorthand for document.ready
 $(function() {
@@ -154,9 +112,8 @@ $(function() {
 		.on('click', '.removeIngredient', function(e)
 		{
 			e.preventDefault();
-			//there are 2 separate <div> sections that need to be removed
-			$(this).parents('.form-group:first').prev('.ingredErrGrp').remove();
-			$(this).parents('.form-group:first').remove();    	
+			//remove the parent <div> of this ingredient
+			$(this).closest('.ingredGrp').remove();
 			return false;
 		})
 		.on('click', '.row-adjust', function(e)
@@ -170,13 +127,20 @@ $(function() {
 		    removeEmptyRows('.ingredGrp',fields);
 		    
 			//each of the individual elements require their array indexes to be set/reset
-		    /*fixArrayIndexes('.recipeIngredID', false);*/
-			fixArrayIndexes('.ingredID', false);
-			fixArrayIndexes('.ingredQty', false);
-			fixArrayIndexes('.ingredQtyType', false);
-			fixArrayIndexes('.ingredQual', false);
-			fixArrayIndexes('.ingredSeq', true);
+		    fixIngredArrayIndexes('.recipeIngredID', false);
+			fixIngredArrayIndexes('.ingredID', false);
+			fixIngredArrayIndexes('.ingredQty', false);
+			fixIngredArrayIndexes('.ingredQtyType', false);
+			fixIngredArrayIndexes('.ingredQual', false);
+			fixIngredArrayIndexes('.ingredSeq', true);
 			
+			//set new row id's to zero to avoid empty string conversion error
+		    $('.recipeIngredID').each(function() {
+				var id = $(this).val();
+				if (id == "")
+					$(this).val(0);
+			});	    
+
 		    var name = $(this).attr('name');
 		    if (name == '_eventId_proceed') {
 		    	//set default initial value in case the user has navigated back from instructions 

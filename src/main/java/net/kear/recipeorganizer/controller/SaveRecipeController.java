@@ -1,10 +1,12 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -15,10 +17,12 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,15 +30,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.webflow.execution.RequestContext;
 
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
+import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
+import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.FileActions;
 
 @Controller
 public class SaveRecipeController {
@@ -55,6 +67,8 @@ public class SaveRecipeController {
 	private UserService userService;
 	@Autowired
 	private MessageSource messages;
+	@Autowired
+	private FileActions fileAction;
 	
 	/**************************/
 	/*** Add recipe handler ***/
@@ -196,35 +210,95 @@ public class SaveRecipeController {
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
-	/*
-	/*@RequestMapping("recipe/editRecipe/{id}")
-	public String editRecipe(Model model, @PathVariable Long id, HttpSession session) {
+	@RequestMapping("recipe/editRecipe/{id}")
+	public String editRecipe(Model model, @PathVariable Long id) {
 		logger.info("recipe/editRecipe GET");
 
-		//check if a recipe object is present as a result of an error
-		Recipe recipe = (Recipe)session.getAttribute("recipe");
-		
-		if (recipe == null) {
-			logger.info("editRecipe: session.getAttribute: recipe is null!!!");
-			recipe = recipeService.getRecipe(id);
-		}
-		else {
-			//get the ingredient names
-			logger.info("editRecipe: session.getAttribute: recipe is NOT null!!!");
-		}
-
-		if (recipe.getSources().size() == 0) {
-			Source source = new Source(); 
-			recipe.getSources().add(source);
-		}
-
-		model.addAttribute("ingredientList", recipeService.getIngredients(recipe));
+		Recipe recipe = recipeService.getRecipe(id);
 		model.addAttribute("recipe", recipe);
 		
 		return "recipe/editRecipe";
-	}*/
+	}
 
+	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
+	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource,
+			@RequestParam(value = "file", required = false) MultipartFile file) {		
+		logger.info("recipe/editRecipe POST save");
+
+		int size = recipe.getIngredSections().size();
+		int ndx = 0;
+		if (size > 0) {
+			for (IngredientSection section : recipe.getIngredSections()) {
+				logger.info("ingredient section");
+				logger.info("ndx= " + ndx++);
+				logger.info("id= " + section.getId()); 
+				logger.info("seq= " + section.getSequenceNo());
+				logger.info("name= " + section.getName());
+				size = section.getRecipeIngredients().size();
+				if (size > 0) {
+					for (RecipeIngredient recipeIngred : section.getRecipeIngredients()) {
+						logger.info("recipe ingredient");						
+						logger.info("id = " + recipeIngred.getId()); 
+						logger.info("seq= " + recipeIngred.getSequenceNo());
+						logger.info("qty= " + recipeIngred.getQuantity());
+						logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
+						logger.info("type= " + recipeIngred.getQtyType());			
+						logger.info("qual= " + recipeIngred.getQualifier());
+						logger.info("ingredId= " + recipeIngred.getIngredientId());
+					}
+				}				
+			}
+		}		
+
+		size = recipe.getInstructSections().size();
+		ndx = 0;
+		if (size > 0) {
+			for (InstructionSection section : recipe.getInstructSections()) {
+				logger.info("instruction section");
+				logger.info("ndx= " + ndx++);
+				logger.info("id= " + section.getId()); 
+				logger.info("seq= " + section.getSequenceNo());
+				logger.info("name= " + section.getName());
+				size = section.getInstructions().size();
+				if (size > 0) {
+					for (Instruction instruct : section.getInstructions()) {
+						logger.info("instruction");						
+						logger.info("id = " + instruct.getId()); 
+						logger.info("seq= " + instruct.getSequenceNo());
+						logger.info("desc= " + instruct.getDescription());
+					}
+				}				
+			}
+		}		
+		
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			model.addAttribute("ingredientList", recipeService.getIngredients(recipe, 0));
+			return "recipe/editRecipe";
+		}
+		
+		//TODO: EXCEPTION: need to return an error message if the file upload is unsuccessful
+		//handle the file upload
+		if (!file.isEmpty()) {
+			String rslt = fileAction.uploadFile(file);
+			recipe.setPhotoName(file.getOriginalFilename());
+			logger.info("File update result: " + rslt);
+			
+        } else {
+        	logger.info("Empty file");
+        }
+		
+		recipeService.saveRecipe(recipe);
+		
+		logger.info("Recipe ID = " + recipe.getId());
+		
+		return "redirect:/recipe/viewRecipe/" + recipe.getId();
+		//return "redirect:/home";
+	}
 	
+	/***************************/
+	/*** Delete recipe handler ***/
+	/***************************/
 	@RequestMapping(value="recipe/deleteRecipe/{id}")
 	public String deleteRecipe(@PathVariable Long id) {
 		logger.info("recipe/deleteRecipe");
@@ -234,6 +308,9 @@ public class SaveRecipeController {
 		return "redirect:/recipe/listRecipes";
 	}	
 
+	/**************************/
+	/*** Support functions  ***/
+	/**************************/
 	//JSON request for a list of categories
 	@RequestMapping("recipe/getCategories")
 	@ResponseBody
@@ -451,3 +528,52 @@ while (iterator4.hasNext()) {
 	logger.info("default error: " +  objErr.getDefaultMessage());
 	logger.info("code: " +  objErr.getCode());
 }*/
+
+/*int size = recipe.getIngredSections().size();
+int ndx = 0;
+if (size > 0) {
+	for (IngredientSection section : recipe.getIngredSections()) {
+		logger.info("ingredient section");
+		logger.info("ndx= " + ndx++);
+		logger.info("id= " + section.getId()); 
+		logger.info("seq= " + section.getSequenceNo());
+		logger.info("name= " + section.getName());
+		size = section.getRecipeIngredients().size();
+		if (size > 0) {
+			for (RecipeIngredient recipeIngred : section.getRecipeIngredients()) {
+				logger.info("recipe ingredient");						
+				logger.info("id = " + recipeIngred.getId()); 
+				logger.info("seq= " + recipeIngred.getSequenceNo());
+				logger.info("qty= " + recipeIngred.getQuantity());
+				logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
+				logger.info("type= " + recipeIngred.getQtyType());			
+				logger.info("qual= " + recipeIngred.getQualifier());
+				logger.info("ingredId= " + recipeIngred.getIngredientId());
+			}
+		}				
+	}
+}
+
+		int size = recipe.getInstructSections().size();
+		int ndx = 0;
+		if (size > 0) {
+			for (InstructionSection section : recipe.getInstructSections()) {
+				logger.info("instruction section");
+				logger.info("ndx= " + ndx++);
+				logger.info("id= " + section.getId()); 
+				logger.info("seq= " + section.getSequenceNo());
+				logger.info("name= " + section.getName());
+				size = section.getInstructions().size();
+				if (size > 0) {
+					for (Instruction instruct : section.getInstructions()) {
+						logger.info("instruction");						
+						logger.info("id = " + instruct.getId()); 
+						logger.info("seq= " + instruct.getSequenceNo());
+						logger.info("desc= " + instruct.getDescription());
+					}
+				}				
+			}
+		}		
+
+*/
+

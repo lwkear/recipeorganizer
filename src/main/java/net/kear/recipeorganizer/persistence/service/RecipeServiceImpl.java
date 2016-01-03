@@ -42,15 +42,26 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private UserService userService;
     
-    public Recipe createRecipe(String userName) {
+    //called by webflow to initialize the recipe object
+	public Recipe createRecipe(String userName) {
 		User user = userService.findUserByEmail(userName);
-	//TODO: RECIPE: replace with above after testing!!!
-    //public Recipe createRecipe() {
-    	//User user = userService.findUserByEmail("lwk@outlook.com");
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
 		recipe.setCategory(new Category());
+		
+		/*IngredientSection ingredSection = new IngredientSection();
+		ingredSection.setRecipeIngredients(new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class));
+		List<IngredientSection> ingredSections = new AutoPopulatingList<IngredientSection>(IngredientSection.class);
+		ingredSections.add(ingredSection);
+		recipe.setIngredSections(ingredSections);*/
+		
+		/*InstructionSection instructSection = new InstructionSection();
+		instructSection.setInstructions(new AutoPopulatingList<Instruction>(Instruction.class));
+		List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);
+		instructSections.add(instructSection);
+		recipe.setInstructSections(instructSections);*/
+		
 		Source source = new Source();
 		source.setRecipe(recipe);
 		recipe.setSource(source);
@@ -68,10 +79,48 @@ public class RecipeServiceImpl implements RecipeService {
 
     public void saveRecipe(Recipe recipe) {
 	
-    	String type = recipe.getSource().getType(); 
+    	String type = recipe.getSource().getType();
     	if (type == null || type.isEmpty()) {
 			recipe.setSource(null);
 		}
+    	else
+    		recipe.getSource().setRecipe(recipe);
+    	
+    	//the NAME field in both section headers is a required field so the default value is set to "XXXX"
+    	//if there is only one section, however, that name must be removed so it does not appear when
+    	//when the recipe is displayed or printed
+    	int ndx = 0;
+    	for (IngredientSection section : recipe.getIngredSections()) {
+    		if (section.getName().equalsIgnoreCase("XXXX")) {
+    			section.setName("");
+    			//recipe.getIngredSections().set(ndx, section);
+    		}
+    		
+    		//convert the qty string to a float
+    		for (RecipeIngredient ingred : section.getRecipeIngredients()) {
+    			String value = ingred.getQuantity();
+    			float amt = ingred.getQtyAmt();
+    			if (!value.isEmpty() && amt == 0) {
+    				Fraction fract = Fraction.getFraction(value);
+    				float qty = fract.floatValue();
+    				ingred.setQtyAmt(qty);
+    			}    			
+    		}
+    		ndx++;    	
+    	}
+    	
+    	ndx = 0;
+    	for (InstructionSection section : recipe.getInstructSections()) {
+    		if (section.getName().equalsIgnoreCase("XXXX")) {
+    			section.setName("");
+    			//recipe.getInstructSections().set(ndx, section);
+    		}
+    		
+    		//for (Instruction instruct : section.getInstructions()) {
+    		//	instruct.setInstructionSection(section);
+    		//}    		
+    		ndx++;
+    	}
     	
     	//assume if the recipe has an ID then it must already exist
     	if (recipe.getId() > 0)
@@ -127,16 +176,16 @@ public class RecipeServiceImpl implements RecipeService {
     	logger.info("numInstructSections=" + sections);
     	logger.info("instructArraySize=" + size); 
     	if (size > sections) {
-    		logger.info("need to adjust size");
     		for (int ndx=size;ndx>sections;ndx--) {
+    			logger.info("remove section " + (ndx-1));
     			recipe.getInstructSections().remove(ndx-1);
-			}    		
+			}
     	}
-
+    	
     	sections = recipe.getNumIngredSections();
     	size = recipe.getIngredSections().size();
     	logger.info("numIngredientSections=" + sections);
-    	logger.info("ingredArraySize=" + size); 
+    	logger.info("ingredArraySize=" + size);
     	if (size > sections) {
     		logger.info("need to adjust size");
     		for (int ndx=size;ndx>sections;ndx--) {
@@ -177,6 +226,7 @@ public class RecipeServiceImpl implements RecipeService {
     	Instruction inst = null;
     	int seq = 1;
     	int sectNdx = 0;
+    	int numSections = 0;
     	boolean forward = false;
     	boolean back = false;
     	
@@ -191,28 +241,12 @@ public class RecipeServiceImpl implements RecipeService {
     		key = entry.getKey();
     		value = requestParameters.get(key);
     		logger.info("key/value= " + key + "/" + value);
-    		//get the index of the instruction section
     		
-    		//code to get the section index with a regex
-    		/*if (key.contains("name")) {    			
-    			Pattern arrayNdx = Pattern.compile("\\d+");
-    			Matcher makeMatch = arrayNdx.matcher(key);
-    			makeMatch.find();
-    			String index = makeMatch.group();
-    			sectNdx = Integer.parseInt(index);   			
-    		}*/
-    		
-    		if (key.contains("currInstructSection")) {
+    		if (key.contains("currInstructSection"))
 				sectNdx = Integer.parseInt(value);
-    		}
-    		
+    		if (key.contains("numInstructSections"))
+    			numSections = Integer.parseInt(value);
     		if (key.contains("instructions")) {
-    			/*if (key.contains(".id")) {
-	    			inst = new Instruction();
-					int id = Integer.parseInt((String)value);
-					inst.setId(id);
-	    			inst.setSequenceNo(seq++);
-    			}*/    			
     			if (key.contains("description")) {
     				inst = new Instruction();
 	    			inst.setDescription(value);
@@ -233,7 +267,15 @@ public class RecipeServiceImpl implements RecipeService {
 	    	if (forward) {
 		    	recipe.getInstructionSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrInstructSection(sectNdx+1);
-			}
+
+				//recipe is initialized with a single section, so additional sections are added on the fly
+				/*if (numSections > recipe.getInstructSections().size()) {
+					List<Instruction> instructs = new AutoPopulatingList<Instruction>(Instruction.class);
+					InstructionSection section = new InstructionSection();
+					section.setInstructions(instructs);
+					recipe.getInstructSections().add(section);
+				}*/
+	    	}
 			if (back)
 				recipe.setCurrInstructSection(sectNdx-1);	
     	}
@@ -283,6 +325,7 @@ public class RecipeServiceImpl implements RecipeService {
     	RecipeIngredient ingred = null;
     	int seq = 1;
     	int sectNdx = 0;
+    	int numSections = 0;
     	boolean forward = false;
     	boolean back = false;
 		
@@ -298,20 +341,11 @@ public class RecipeServiceImpl implements RecipeService {
 			value = requestParameters.get(key);
 			logger.info("key/value= " + key + "/" + value);
 
-    		if (key.contains("currIngredSection")) {
+    		if (key.contains("currIngredSection"))
 				sectNdx = Integer.parseInt(value);
-    		}
-			
+    		if (key.contains("numIngredSections"))
+    			numSections = Integer.parseInt(value);
 			if (key.contains("recipeIngredients")) {
-				/*if (key.contains(".id")) {
-					ingred = new RecipeIngredient();
-					String str = (String)value;
-					//int id = Integer.parseInt((String)str);
-					int id = Integer.parseInt(str);
-					ingred.setId(id);
-					ingred.setSequenceNo(seq++);
-				}
-				*/
 				if (key.contains("ingredientId")) {
 					ingred = new RecipeIngredient();
 					int id = Integer.parseInt(value);
@@ -325,10 +359,11 @@ public class RecipeServiceImpl implements RecipeService {
 						float qty = fract.floatValue();
 						ingred.setQtyAmt(qty);
 					}
+					else
+						ingred.setQtyAmt(0);
 				}
-				if (key.contains("qtyType")) {
+				if (key.contains("qtyType"))
 					ingred.setQtyType(value);
-				}
 				if (key.contains("qualifier")) {
 					ingred.setQualifier(value);
 					requestIngred.add(ingred);
@@ -348,6 +383,14 @@ public class RecipeServiceImpl implements RecipeService {
     		if (forward) {
 		    	recipe.getIngredientSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrIngredSection(sectNdx+1);
+				
+				//recipe is initialized with a single section, so additional sections are added on the fly
+				/*if (numSections > recipe.getIngredSections().size()) {
+					List<RecipeIngredient> ingreds = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
+					IngredientSection section = new IngredientSection();
+					section.setRecipeIngredients(ingreds);
+					recipe.getIngredSections().add(section);
+				}*/
 			}
 			if (back)
 				recipe.setCurrIngredSection(sectNdx-1);	

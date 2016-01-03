@@ -34,7 +34,10 @@
 			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off">
 				<div class="row">
 					<div class="col-sm-12">
-						<div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
+					
+						<%@include file="basicsFields.jsp" %>
+						
+						<%-- <div class="form-group col-sm-9 <c:if test="${not empty nameError}">has-error</c:if>">
 							<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.basics.name"></spring:message></label>
 							<form:input type="text" class="form-control recipeName" id="inputName" path="name" autocomplete="off"/>
 							<span class="text-danger">${nameError}</span>
@@ -93,7 +96,7 @@
 									</div>
 								</div>
 							</div>
-						</div>							
+						</div> --%>							
 						<div class="form-group col-sm-12 spacer-vert-sm">
 							<div class="row">
 								<div class="col-sm-5">

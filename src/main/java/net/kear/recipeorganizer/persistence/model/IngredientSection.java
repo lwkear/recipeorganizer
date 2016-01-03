@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.GroupSequence;
@@ -51,14 +52,12 @@ public class IngredientSection implements Serializable {
 	@Size(max=50, groups=SizeGroup.class)	//50
 	private String name;
 
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="SECTION_ID", nullable=false)
+	@OrderBy("sequenceNo ASC")
 	@Valid
 	@Size(min=1, groups=MinSizeGroup.class)
 	private List<RecipeIngredient> recipeIngredients = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
-	
-	/*@Transient
-	private List<Ingredient> ingredients;*/
 	
 	public IngredientSection() {}
 	
@@ -111,26 +110,6 @@ public class IngredientSection implements Serializable {
 		this.recipeIngredients.add(recipeIngredient);
 	}
 	
-	/*public List<Ingredient> getIngredients() {
-		return ingredients;
-	}
-	
-	public Ingredient getIngredient(int ndx) {
-		return this.ingredients.get(ndx);
-	}
-
-	public void setIngredients(List<Ingredient> ingredients) {
-		this.ingredients = ingredients;
-	}
-
-	public void setIngredient(int ndx, Ingredient ingredient) {
-		this.ingredients.set(ndx, ingredient);
-	}
-	
-	public void addIngredient(Ingredient ingredient) {
-		this.ingredients.add(ingredient);
-	}*/
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -91,20 +91,22 @@ public class ViewRecipeController {
 		String idStr = id.toString();
 		String cookieName = "recentRecipes";
 
-		Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, cookieName, user.getId()); 
-		if (recentRecipesCookie == null) {
-			cookieUtil.setUserCookie(request, response, cookieName, user.getId(), idStr);
-		}
-		else {
-			String recipeIds = recentRecipesCookie.getValue();
-			ArrayList<String> cookieIds = new ArrayList<String>(Arrays.asList(recipeIds.split(",")));
-			if (!cookieIds.contains(idStr)) {
-				cookieIds.add(0, idStr);
-				if (cookieIds.size() > 3)
-					cookieIds.remove(3);				
+		if (user != null) {
+			Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, cookieName, user.getId()); 
+			if (recentRecipesCookie == null) {
+				cookieUtil.setUserCookie(request, response, cookieName, user.getId(), idStr);
 			}
-			String newStr = cookieIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
-			cookieUtil.setUserCookie(request, response, cookieName, user.getId(), newStr);
+			else {
+				String recipeIds = recentRecipesCookie.getValue();
+				ArrayList<String> cookieIds = new ArrayList<String>(Arrays.asList(recipeIds.split(",")));
+				if (!cookieIds.contains(idStr)) {
+					cookieIds.add(0, idStr);
+					if (cookieIds.size() > 3)
+						cookieIds.remove(3);				
+				}
+				String newStr = cookieIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
+				cookieUtil.setUserCookie(request, response, cookieName, user.getId(), newStr);
+			}
 		}
 		
 		model.addAttribute("recipe", recipe);

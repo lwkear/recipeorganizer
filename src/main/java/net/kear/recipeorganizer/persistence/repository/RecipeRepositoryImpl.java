@@ -17,11 +17,13 @@ import org.hibernate.transform.Transformers;
 import org.hibernate.type.StringType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.AutoPopulatingList;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
@@ -38,7 +40,10 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 
     public void updateRecipe(Recipe recipe) {
         if (recipe != null) {
-        	getSession().merge(recipe);
+        	Session sess = getSession();
+        	if (sess.contains(recipe))
+        		sess.clear();
+        	sess.merge(recipe);
         }
     }
     
@@ -51,9 +56,22 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 
     public Recipe getRecipe(Long id) {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
+    	
+    	//all of the collections are LAZY-loaded, so it's necessary to initialize each one
+    	Hibernate.initialize(recipe.getIngredSections());
+    	List<IngredientSection> ingredSections = recipe.getIngredSections();
+    	for (IngredientSection section : ingredSections)
+    		Hibernate.initialize(section.getRecipeIngredients());
+    	
     	Hibernate.initialize(recipe.getInstructSections());
-        Hibernate.initialize(recipe.getIngredSections());
-        Hibernate.initialize(recipe.getSource());
+    	/*List<InstructionSection> instructSections = recipe.getInstructSections();*/
+    	for (InstructionSection section : recipe.getInstructSections())
+    		Hibernate.initialize(section.getInstructions());
+    	
+    	Hibernate.initialize(recipe.getSource());
+    	
+    	recipe.setNumIngredSections(recipe.getIngredSections().size());
+    	recipe.setNumInstructSections(recipe.getInstructSections().size());
         return recipe;
     }
     
