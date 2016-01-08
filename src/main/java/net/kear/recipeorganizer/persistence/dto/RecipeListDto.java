@@ -8,17 +8,21 @@ public class RecipeListDto {
 	private String name;
 	private String desc;
 	private Date submitted;
+	private String firstName;
+	private String lastName;
 	private String category;
 	private String sourcetype;
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, String name, String desc, Date submitted, String category, String sourcetype) {
+	public RecipeListDto(long id, String name, String desc, Date submitted, String firstName, String lastName, String category, String sourcetype) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
 		this.submitted = submitted;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.category = category;
 		this.sourcetype = sourcetype;
 	}
@@ -70,4 +74,20 @@ public class RecipeListDto {
 	public void setSubmitted(Date submitted) {
 		this.submitted = submitted;
 	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}	
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}	
 }

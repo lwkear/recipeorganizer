@@ -58,34 +58,8 @@
 					</c:forEach>
 				</tbody>
 			</table>
-			<input id="yesText" style="display:none" value="${yesLabel}"/>
-			<input id="noText" style="display:none" value="${noLabel}"/>
 		</div>
 	</div>	
-
-<!-- Delete user dialog -->
-<div class="modal fade" id="deleteUser" role="dialog">
-	<div class="modal-dialog modal-sm">
-	    <div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><spring:message code="useradmin.delete.title"></spring:message></h4>
-			</div>
-			<div class="modal-body" id="noRecipes" style="display:none">			
-				<div class="text-center"><spring:message code="useradmin.delete.areyousure1"></spring:message>&nbsp;<span class="userName"></span>?</div>
-			</div>
-			<div class="modal-body" id="hasRecipes" style="display:none">
-				<div class="text-center"><span class="userName"></span>&nbsp;<spring:message code="useradmin.delete.hasrecipe1"></spring:message>&nbsp;
-					<span id="recipeCount"></span>&nbsp;<spring:message code="useradmin.delete.hasrecipe2"></spring:message>&nbsp;
-					<spring:message code="useradmin.delete.areyousure2"></spring:message></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="deleteUser()"><spring:message code="common.yes"></spring:message></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.no"></spring:message></button>
-			</div>
-		</div>
-	</div>
-</div>
 
 <!-- update user dialog -->
 <div class="modal fade" id="updateUser" role="dialog">
@@ -98,7 +72,7 @@
 			<div class="modal-body">
 				<form role="form" class="form">
 					<div class="form-group">
-						<div class="userName2"></div>
+						<div class="userName"></div>
 					</div>
 					<div class="form-group">
 			            <label class="control-label" for="inputRole"><spring:message code="useradmin.common.role"></spring:message>:</label>
@@ -118,28 +92,23 @@
 					<div class="form-group">
 						<label class="control-label sm_col-2" for="locked"><spring:message code="useradmin.common.locked"></spring:message>:</label>
 						<div class="radio" style="margin-top:0">
-							<label><input  type="radio" name="locked" value="1" checked><spring:message code="common.yes"></spring:message></label>&nbsp;
+							<label><input type="radio" name="locked" value="1"><spring:message code="common.yes"></spring:message></label>&nbsp;
 							<label><input type="radio" name="locked" value="0"><spring:message code="common.no"></spring:message></label>
 						</div>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="postUser()"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submit"><spring:message code="common.submit"></spring:message></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>
 	</div>
 </div>
 
-<%@include file="../common/footer.jsp" %>	
+<%@include file="../common/footer.jsp" %>
 
 </body>
-
-<script type="text/javascript">
-var yesText = $('#yesText').val();
-var noText = $('#noText').val();
-</script>
 
 <!-- include user admin-specific routines -->
 <script src="<c:url value="/resources/custom/useradmin.js" />"></script>

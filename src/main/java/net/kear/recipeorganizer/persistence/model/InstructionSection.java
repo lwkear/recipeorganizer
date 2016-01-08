@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
@@ -53,14 +52,6 @@ public class InstructionSection implements Serializable {
 	@Size(max=50, groups=SizeGroup.class)	//50
 	private String name;
 
-	/*@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="RECIPE_ID") //, nullable = false, updatable=false)
-	Recipe recipe;
-	
-	public Recipe getRecipe() {
-		return recipe;
-	}*/
-	
 	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY) //EAGER)	//mappedBy="instructionSection", 
 	@JoinColumn(name="SECTION_ID", nullable=false)
 	@OrderBy("sequenceNo")

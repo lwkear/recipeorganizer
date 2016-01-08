@@ -8,6 +8,8 @@
 
 </head>
 
+<c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
+
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
@@ -49,18 +51,6 @@
 				<h3>${recipe.name}</h3>
 			</div>
 		</div>
-
-	<spring:hasBindErrors name="recipe">
-    <c:set var="errorCnt">${errors.errorCount}</c:set>
-    <p><b># of Errors:${errorCnt}</b></p>
-    <p></p>
-	<c:forEach var="error" items="${errors.allErrors}">
-		<b><c:out value="${error}" /></b>
-		<p></p>
-	</c:forEach>
-	</spring:hasBindErrors>
-	
-
 
 		<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe"  enctype="multipart/form-data" autocomplete="off">
 		
@@ -164,7 +154,7 @@
 			<div class="form-group col-sm-12 spacer-vert-md">
 				<div class="col-sm-offset-5 col-sm-2 text-center">
 					<button type="submit" class="btn btn-primary pull-left" id="save"><spring:message code="common.save"></spring:message></button>
-					<button class="btn btn-default pull-right" id="cancel"><spring:message code="common.cancel"></spring:message></button>
+					<a class="btn btn-default pull-right" href="${returnUrl}"><spring:message code="common.cancel"></spring:message></a>
 				</div>
 			</div>
 		</form:form>
@@ -175,12 +165,23 @@
 </body>
 
 <!-- include recipe-specific routines -->
-<script src="<c:url value="/resources/custom/addrecipe.js" />"></script>
+<script src="<c:url value="/resources/custom/emptyrows.js" />"></script>
 <script src="<c:url value="/resources/custom/basics.js" />"></script>
 <script src="<c:url value="/resources/custom/typeahead.js" />"></script>
 <script src="<c:url value="/resources/custom/ingredients.js" />"></script>
 <script src="<c:url value="/resources/custom/instructions.js" />"></script>
 <script src="<c:url value="/resources/custom/optional.js" />"></script>
-<script src="<c:url value="/resources/custom/editrecipe.js" />"></script>
+<script src="<c:url value="/resources/custom/recipeedit.js" />"></script>
 
 </html>
+
+
+<%-- 	<spring:hasBindErrors name="recipe">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors> --%>

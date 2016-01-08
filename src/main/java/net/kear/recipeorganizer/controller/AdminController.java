@@ -96,7 +96,6 @@ public class AdminController {
 	@RequestMapping(value="admin/deleteUser")
 	@ResponseBody 
 	public String getRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) {
-		
 		logger.info("admin/deleteUser");
 		logger.info("userId=" + userId);
 		
@@ -145,7 +144,6 @@ public class AdminController {
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
 	@ResponseBody 
 	public String updateUser(@RequestBody User user, HttpServletResponse response) {
-		
 		logger.info("admin/updateUser");
 		logger.info("user=" + user);
 		

@@ -26,10 +26,30 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<h4><spring:message code="dashboard.membersince"></spring:message>&nbsp;${user.dateAdded}</h4>
+			<h4><spring:message code="dashboard.membersince"></spring:message>&nbsp;
+				<span><fmt:formatDate type="date" value="${user.dateAdded}" /></span>
+			</h4>
 		</div>
 		<div class="col-sm-12">
-			<h4><spring:message code="dashboard.recipessubmitted"></spring:message>&nbsp;${recipeCount}</h4>
+			<h4><spring:message code="dashboard.recipessubmitted"></spring:message>&nbsp;
+				<span>${recipeCount}</span>
+			</h4>
+		</div>
+		<div class="col-sm-12">
+			<h4><spring:message code="dashboard.recentlysubmitted"></spring:message></h4>
+			<div class="list-group col-sm-12">
+				<c:forEach var="recipe" items="${recentRecipes}">
+					<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
+						<c:if test="${not empty recipe.photo}">
+							<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
+						</c:if>	
+						<h4 class="list-group-item-heading header-blue">${recipe.name}</h4>
+						<p class="list-group-item-text">${recipe.description}</p>
+						<p class="clearfix"></p>										
+					</a>
+				</c:forEach>
+
+			</div>
 		</div>
 		<div class="col-sm-12">
 			<h4><spring:message code="dashboard.recentlyviewed"></spring:message></h4>

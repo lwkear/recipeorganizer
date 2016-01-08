@@ -1,7 +1,6 @@
 package net.kear.recipeorganizer.persistence.service;
  
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -9,6 +8,7 @@ import java.util.Set;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
+import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Instruction;
@@ -49,19 +49,6 @@ public class RecipeServiceImpl implements RecipeService {
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
 		recipe.setCategory(new Category());
-		
-		/*IngredientSection ingredSection = new IngredientSection();
-		ingredSection.setRecipeIngredients(new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class));
-		List<IngredientSection> ingredSections = new AutoPopulatingList<IngredientSection>(IngredientSection.class);
-		ingredSections.add(ingredSection);
-		recipe.setIngredSections(ingredSections);*/
-		
-		/*InstructionSection instructSection = new InstructionSection();
-		instructSection.setInstructions(new AutoPopulatingList<Instruction>(Instruction.class));
-		List<InstructionSection> instructSections = new AutoPopulatingList<InstructionSection>(InstructionSection.class);
-		instructSections.add(instructSection);
-		recipe.setInstructSections(instructSections);*/
-		
 		Source source = new Source();
 		source.setRecipe(recipe);
 		recipe.setSource(source);
@@ -89,11 +76,9 @@ public class RecipeServiceImpl implements RecipeService {
     	//the NAME field in both section headers is a required field so the default value is set to "XXXX"
     	//if there is only one section, however, that name must be removed so it does not appear when
     	//when the recipe is displayed or printed
-    	int ndx = 0;
     	for (IngredientSection section : recipe.getIngredSections()) {
     		if (section.getName().equalsIgnoreCase("XXXX")) {
     			section.setName("");
-    			//recipe.getIngredSections().set(ndx, section);
     		}
     		
     		//convert the qty string to a float
@@ -106,20 +91,11 @@ public class RecipeServiceImpl implements RecipeService {
     				ingred.setQtyAmt(qty);
     			}    			
     		}
-    		ndx++;    	
     	}
     	
-    	ndx = 0;
     	for (InstructionSection section : recipe.getInstructSections()) {
-    		if (section.getName().equalsIgnoreCase("XXXX")) {
+    		if (section.getName().equalsIgnoreCase("XXXX"))
     			section.setName("");
-    			//recipe.getInstructSections().set(ndx, section);
-    		}
-    		
-    		//for (Instruction instruct : section.getInstructions()) {
-    		//	instruct.setInstructionSection(section);
-    		//}    		
-    		ndx++;
     	}
     	
     	//assume if the recipe has an ID then it must already exist
@@ -136,6 +112,18 @@ public class RecipeServiceImpl implements RecipeService {
     public Recipe getRecipe(Long id) {
     	return recipeRepository.getRecipe(id);
     }
+    
+    public void addFavorite(Favorites favorite) {
+    	recipeRepository.addFavorite(favorite);
+    }
+    
+    public void removeFavorite(Favorites favorite) {
+    	recipeRepository.removeFavorite(favorite);
+    }
+    
+    public boolean isFavorite(Long userId, Long recipeId) {
+    	return recipeRepository.isFavorite(userId, recipeId);
+    }
 
     public List<RecipeListDto> listRecipes(Long userId) {
     	return recipeRepository.listRecipes(userId);
@@ -148,6 +136,25 @@ public class RecipeServiceImpl implements RecipeService {
     	}
 	    	
     	return recipeRepository.listRecipes(recipeIds);
+    }
+
+    public List<SearchResultsDto> recentRecipes(Long userId) {
+    	return recipeRepository.recentRecipes(userId);
+    }
+
+    public List<RecipeListDto> favoriteRecipes(Long userId) {
+    	List<Favorites> favorites = recipeRepository.getFavorites(userId);
+    	List<Long> recipeIds = new AutoPopulatingList<Long>(Long.class);
+    	List<RecipeListDto> recipes = null;
+    	
+    	if (favorites.size() > 0) {
+    		for (Favorites fav : favorites) {
+    			recipeIds.add(fav.getId().getRecipeId());
+    		}
+    		recipes = recipeRepository.favoriteRecipes(recipeIds);     		
+    	}
+    	
+    	return recipes;
     }
     
     public Long getRecipeCount(Long userId) {
@@ -196,37 +203,12 @@ public class RecipeServiceImpl implements RecipeService {
     
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
     	logger.info("adjustInstructionList");
-    	logger.info("parsing instructions");
-
-    	int size = recipe.getInstructSections().size();
-		int ndx = 0;
-		if (size > 0) {
-			Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
-			while (iterator1.hasNext()) {
-				InstructionSection instructSection = iterator1.next();
-				logger.info("ndx= " + ndx++);
-				logger.info("id= " + instructSection.getId()); 
-				logger.info("seq= " + instructSection.getSequenceNo());
-				logger.info("name= " + instructSection.getName());
-				size = instructSection.getInstructions().size();
-				if (size > 0) {
-					Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
-					while (iterator2.hasNext()) {
-						Instruction instruct = iterator2.next();
-						logger.info("id = " + instruct.getId()); 
-						logger.info("desc= " + instruct.getDescription());
-						logger.info("seq= " + instruct.getSequenceNo());			
-					}					
-				}
-			}			
-		}
-    	
+  	
     	String key = null;
     	String value = null;
     	Instruction inst = null;
     	int seq = 1;
     	int sectNdx = 0;
-    	int numSections = 0;
     	boolean forward = false;
     	boolean back = false;
     	
@@ -244,8 +226,6 @@ public class RecipeServiceImpl implements RecipeService {
     		
     		if (key.contains("currInstructSection"))
 				sectNdx = Integer.parseInt(value);
-    		if (key.contains("numInstructSections"))
-    			numSections = Integer.parseInt(value);
     		if (key.contains("instructions")) {
     			if (key.contains("description")) {
     				inst = new Instruction();
@@ -267,14 +247,6 @@ public class RecipeServiceImpl implements RecipeService {
 	    	if (forward) {
 		    	recipe.getInstructionSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrInstructSection(sectNdx+1);
-
-				//recipe is initialized with a single section, so additional sections are added on the fly
-				/*if (numSections > recipe.getInstructSections().size()) {
-					List<Instruction> instructs = new AutoPopulatingList<Instruction>(Instruction.class);
-					InstructionSection section = new InstructionSection();
-					section.setInstructions(instructs);
-					recipe.getInstructSections().add(section);
-				}*/
 	    	}
 			if (back)
 				recipe.setCurrInstructSection(sectNdx-1);	
@@ -291,41 +263,12 @@ public class RecipeServiceImpl implements RecipeService {
 
 	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {
 		logger.info("adjustRecipeIngredientList");
-		logger.info("parsing ingredients");
-
-		int size = recipe.getIngredSections().size();
-		int ndx = 0;
-		if (size > 0) {
-			Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
-			while (iterator1.hasNext()) {
-				IngredientSection ingredSection = iterator1.next();
-				logger.info("ndx= " + ndx++);
-				logger.info("id= " + ingredSection.getId()); 
-				logger.info("seq= " + ingredSection.getSequenceNo());
-				logger.info("name= " + ingredSection.getName());
-				size = ingredSection.getRecipeIngredients().size();
-				if (size > 0) {
-					Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
-					while (iterator2.hasNext()) {
-						RecipeIngredient recipeIngred = iterator2.next();
-						logger.info("id = " + recipeIngred.getId()); 
-						logger.info("seq= " + recipeIngred.getSequenceNo());
-						logger.info("qty= " + recipeIngred.getQuantity());
-						logger.info("qtyAmt= " + recipeIngred.getQtyAmt());
-						logger.info("type= " + recipeIngred.getQtyType());			
-						logger.info("qual= " + recipeIngred.getQualifier());
-						logger.info("ingredId= " + recipeIngred.getIngredientId());
-					}					
-				}
-			}			
-		}
 
     	String key = null;
     	String value = null;
     	RecipeIngredient ingred = null;
     	int seq = 1;
     	int sectNdx = 0;
-    	int numSections = 0;
     	boolean forward = false;
     	boolean back = false;
 		
@@ -343,8 +286,6 @@ public class RecipeServiceImpl implements RecipeService {
 
     		if (key.contains("currIngredSection"))
 				sectNdx = Integer.parseInt(value);
-    		if (key.contains("numIngredSections"))
-    			numSections = Integer.parseInt(value);
 			if (key.contains("recipeIngredients")) {
 				if (key.contains("ingredientId")) {
 					ingred = new RecipeIngredient();
@@ -383,14 +324,6 @@ public class RecipeServiceImpl implements RecipeService {
     		if (forward) {
 		    	recipe.getIngredientSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrIngredSection(sectNdx+1);
-				
-				//recipe is initialized with a single section, so additional sections are added on the fly
-				/*if (numSections > recipe.getIngredSections().size()) {
-					List<RecipeIngredient> ingreds = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
-					IngredientSection section = new IngredientSection();
-					section.setRecipeIngredients(ingreds);
-					recipe.getIngredSections().add(section);
-				}*/
 			}
 			if (back)
 				recipe.setCurrIngredSection(sectNdx-1);	

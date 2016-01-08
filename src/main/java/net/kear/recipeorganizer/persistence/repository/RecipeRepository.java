@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
  
@@ -13,8 +14,14 @@ public interface RecipeRepository {
     public void updateRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
     public Recipe getRecipe(Long id);
+    public void addFavorite(Favorites favorite);
+    public void removeFavorite(Favorites favorite);
+    public boolean isFavorite(Long userId, Long recipeId);
+    public List<Favorites> getFavorites(Long userId);
     public List<RecipeListDto> listRecipes(Long userId);
     public List<SearchResultsDto> listRecipes(List<Long> ids);
+    public List<SearchResultsDto> recentRecipes(Long userId);
+    public List<RecipeListDto> favoriteRecipes(List<Long> ids);
     public Long getRecipeCount(Long userId);
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
     public void getAllIngredients(Recipe recipe);

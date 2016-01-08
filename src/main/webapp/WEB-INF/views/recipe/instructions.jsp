@@ -70,7 +70,7 @@
 </body>
 
 <!-- include recipe-specific routines -->
-<script src="<c:url value="/resources/custom/addrecipe.js" />"></script>
+<script src="<c:url value="/resources/custom/emptyrows.js" />"></script>
 <script src="<c:url value="/resources/custom/instructions.js" />"></script>
 
 </html>

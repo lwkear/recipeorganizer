@@ -4,6 +4,12 @@ var closeModalTimer;
 var maxInactiveInterval;
 var remainTime = 30;
 
+var messageMap = new Map();
+$('.spring-messages > p').each(function(index) {
+	messageMap.set($(this).attr('id'), $(this).text());
+});
+console.log('messageMap updated');
+
 function closeTimeout() {
 	$("#sessionTimeout").modal('hide');
 	//TODO: SECURITY: check if already logged out (more than one tab/window expires at once)
@@ -91,7 +97,7 @@ $(document).ready(function() {
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
 
 	setInputFocus();
-	
+
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend(function(e, xhr, options) {

@@ -27,21 +27,21 @@ public class ErrorController {
 	private AuthCookie authCookie;
 	
 	@RequestMapping(value = "/errors/402", method = RequestMethod.GET)
-	public ModelAndView error402(Locale locale, Model model) {
+	public ModelAndView error402(Model model, Locale locale) {
 		ModelAndView view = new ModelAndView("/errors/402");
 
 		return view;
 	}
 	
 	@RequestMapping(value = "/errors/403", method = RequestMethod.GET)
-	public ModelAndView error403(Locale locale, Model model) {
+	public ModelAndView error403(Model model, Locale locale) {
 		ModelAndView view = new ModelAndView("/errors/403");
 
 		return view;
 	}
 
 	@RequestMapping(value = "/errors/expiredSession", method = RequestMethod.GET)
-	public ModelAndView expiredSession(Locale locale, Model model, HttpServletRequest request, HttpServletResponse response) {
+	public ModelAndView expiredSession(Model model, Locale locale, HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView view = new ModelAndView("/errors/expiredSession");
 
 		//this page may be called from the client if a user's session times out, so need to reset the cookie
@@ -52,7 +52,7 @@ public class ErrorController {
 	}
 	
 	@RequestMapping(value = "/errors/invalidSession", method = RequestMethod.GET)
-	public ModelAndView invalidSession(Locale locale, Model model) {
+	public ModelAndView invalidSession(Model model, Locale locale) {
 		ModelAndView view = new ModelAndView("/errors/invalidSession");
 
 		return view;

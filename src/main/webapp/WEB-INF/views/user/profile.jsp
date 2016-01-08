@@ -87,6 +87,8 @@
 						<c:choose>
 							<c:when test="${not empty userProfile.avatar}">												
 								<div class="col-sm-3 col-sm-offset-2">
+									<!-- NOTE: disabled inputs are not submitted to the controller, hence the need for a hidden field -->
+									<form:hidden id="avatar" path="avatar"/>
 									<input class="form-control" type="text" id="photoName" value="${userProfile.avatar}" disabled/>
 								</div>
 								<div class="col-sm-2">
@@ -128,7 +130,7 @@
 						</c:choose>
 					</div>	        		
 			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
-						<button class="btn btn-primary btn-block" type="submit" name="submit">
+						<button class="btn btn-primary btn-block" onclick="checkAvatarOptions()" type="submit" id="submit" name="submit">
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<form:hidden path="id" />

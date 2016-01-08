@@ -21,6 +21,7 @@ import org.springframework.util.AutoPopulatingList;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
@@ -59,26 +60,52 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	
     	//all of the collections are LAZY-loaded, so it's necessary to initialize each one
     	Hibernate.initialize(recipe.getIngredSections());
-    	List<IngredientSection> ingredSections = recipe.getIngredSections();
-    	for (IngredientSection section : ingredSections)
+    	for (IngredientSection section : recipe.getIngredSections())
     		Hibernate.initialize(section.getRecipeIngredients());
     	
     	Hibernate.initialize(recipe.getInstructSections());
-    	/*List<InstructionSection> instructSections = recipe.getInstructSections();*/
     	for (InstructionSection section : recipe.getInstructSections())
     		Hibernate.initialize(section.getInstructions());
+
+    	recipe.setNumIngredSections(recipe.getIngredSections().size());
+    	recipe.setNumInstructSections(recipe.getInstructSections().size());
     	
     	Hibernate.initialize(recipe.getSource());
     	
-    	recipe.setNumIngredSections(recipe.getIngredSections().size());
-    	recipe.setNumInstructSections(recipe.getInstructSections().size());
         return recipe;
+    }
+
+    public void addFavorite(Favorites favorite) {
+    	getSession().save(favorite);
+    }
+    
+    public void removeFavorite(Favorites favorite) {
+    	getSession().delete(favorite);
+    }
+    
+    public boolean isFavorite(Long userId, Long recipeId) {
+    	Criteria criteria = getSession().createCriteria(Favorites.class)
+    		.add(Restrictions.eq("id.userId", userId))
+    		.add(Restrictions.eq("id.recipeId", recipeId))
+    		.setProjection(Projections.rowCount());
+    	long count = (Long)criteria.uniqueResult();;        	
+    	return (count > 0 ? true : false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Favorites> getFavorites(Long userId) {
+    	Criteria criteria = getSession().createCriteria(Favorites.class)
+    		.add(Restrictions.eq("id.userId", userId));
+
+    	List<Favorites> favorites = (List<Favorites>) criteria.list();
+    	return favorites;
     }
     
     @SuppressWarnings("unchecked")
     public List<RecipeListDto> listRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("category", "c")
+    		.createAlias("user", "u")    		
     		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
     		.add(Restrictions.eq("user.id", userId))
     		.setProjection(Projections.projectionList()
@@ -86,6 +113,8 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("desc"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("u.firstName").as("firstName"))
+    			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
     			.add(Projections.property("s.type").as("sourcetype")))
     		.addOrder(Order.asc("name"))
@@ -107,6 +136,57 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
 
     	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
+    	List<SearchResultsDto> sorted = new AutoPopulatingList<SearchResultsDto>(SearchResultsDto.class);
+    	for (Long id : ids) {
+    		for (SearchResultsDto dto : recipes) {
+    			if (id == dto.getId()) {
+    				sorted.add(dto);
+    				break;
+    			}
+    		}
+    	}
+    	
+    	return sorted;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<SearchResultsDto> recentRecipes(Long userId) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.add(Restrictions.eq("user.id", userId))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.photoName").as("photo")))
+    		.addOrder(Order.desc("r.dateAdded"))
+    		.setMaxResults(3)
+    		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
+
+    	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
+
+        return recipes;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<RecipeListDto> favoriteRecipes(List<Long> ids) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("category", "c")
+    		.createAlias("user", "u")
+    		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
+    		.add(Restrictions.in("r.id", ids))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("desc"))
+    			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("u.firstName").as("firstName"))
+    			.add(Projections.property("u.lastName").as("lastName"))
+    			.add(Projections.property("c.name").as("category"))
+    			.add(Projections.property("s.type").as("sourcetype")))
+    		//.addOrder(Order.asc("name"))
+    		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
+
+    	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
     	return recipes;
     }
     

@@ -58,8 +58,7 @@
 				</div>
 				<div class="col-sm-12">
 					<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
-						<%-- <c:if test="${(not empty section.name) && (section.name != 'None')}"> --%>
-						<c:if test="${(not empty section.name)}">
+						<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
 							<p><strong>${section.name}</strong></p>
 						</c:if>
 						<table class="table table-condensed recipe-table">
@@ -80,8 +79,7 @@
 				</div>
 				<div class="col-sm-12">
 					<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
-						<%-- <c:if test="${(not empty section.name) && (section.name != 'None')}"> --%>
-						<c:if test="${(not empty section.name)}">
+						<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
 							<p><strong>${section.name}</strong></p>
 						</c:if>
 						<table class="table table-condensed recipe-table">

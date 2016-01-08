@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -18,26 +19,28 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.User;
-import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.UserInfo;
-//import net.kear.recipeorganizer.persistence.service.UserService;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -56,39 +59,66 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 @Controller
-public class ViewRecipeController {
+public class DisplayController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	@Autowired
-	private CategoryService categoryService;
 	@Autowired
 	private RecipeService recipeService;
 	@Autowired
 	private UserInfo userInfo;
 	@Autowired
+	private MessageSource messages;
+	@Autowired
 	private FileActions fileAction;
 	@Autowired
 	private CookieUtil cookieUtil;
 	
+	/****************************/
+	/*** List recipes handler ***/
+	/****************************/
 	@RequestMapping("recipe/listRecipes")
-	public String listRecipeS(ModelMap model) {
+	public String listRecipes(ModelMap model, Locale locale) {
 		logger.info("recipe/listRecipes");
+	
+		String title = messages.getMessage("menu.submittedrecipes", null, "Submitted Recipes", locale);
 		
 		User user = (User)userInfo.getUserDetails();
 		List<RecipeListDto> recipes = recipeService.listRecipes(user.getId());
+		model.addAttribute("title", title);
+		model.addAttribute("fav", false);
 		model.addAttribute("recipes", recipes);
 
 		return "recipe/listRecipes";
 	}
 
-	@RequestMapping("recipe/viewRecipe/{id}")
-	public String displayRecipe(ModelMap model, @PathVariable Long id, HttpServletResponse response, HttpServletRequest request) {
+	@RequestMapping("recipe/favorites")
+	public String favoriteRecipeS(ModelMap model, Locale locale) {
+		logger.info("recipe/favoriteRecipes");
+		
+		String title = messages.getMessage("menu.favorites", null, "Favorites", locale);
+
+		User user = (User)userInfo.getUserDetails();
+		List<RecipeListDto> recipes = recipeService.favoriteRecipes(user.getId());
+		model.addAttribute("userId", user.getId());
+		model.addAttribute("title", title);
+		model.addAttribute("fav", true);
+		model.addAttribute("recipes", recipes);
+
+		return "recipe/listRecipes";
+	}
+	
+	/***************************/
+	/*** View recipe handler ***/
+	/***************************/
+	@RequestMapping("recipe/viewRecipe/{recipeId}")
+	public String viewRecipe(ModelMap model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, 
+			HttpServletResponse response, HttpServletRequest request) {
 		logger.info("recipe/viewRecipe GET");
 
 		User user = (User)userInfo.getUserDetails();
-		Recipe recipe = recipeService.getRecipe(id);
-		String idStr = id.toString();
+		Recipe recipe = recipeService.getRecipe(recipeId);
+		String idStr = recipeId.toString();
 		String cookieName = "recentRecipes";
 
 		if (user != null) {
@@ -104,18 +134,31 @@ public class ViewRecipeController {
 					if (cookieIds.size() > 3)
 						cookieIds.remove(3);				
 				}
+				else {
+					cookieIds.remove(idStr);
+					cookieIds.add(0, idStr);
+				}
 				String newStr = cookieIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
 				cookieUtil.setUserCookie(request, response, cookieName, user.getId(), newStr);
 			}
 		}
 		
+		
+		if (!refer.contains("edit")) {
+			request.getSession().setAttribute("returnLabel", getReturnMessage(refer));
+			request.getSession().setAttribute("returnUrl", refer);
+		}
+		
+		boolean fav = recipeService.isFavorite(user.getId(), recipeId);
+		
+		model.addAttribute("favorite", fav);
 		model.addAttribute("recipe", recipe);
 
 		return "recipe/viewRecipe";
 	}
 	
 	@RequestMapping(value = "recipe/photo", method = RequestMethod.GET)
-	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
+	public void getPhoto(@RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("photo GET");
 
 		if (!fileName.isEmpty())
@@ -229,6 +272,76 @@ public class ViewRecipeController {
 		}
 	}
 	
+	/*************************/
+	/*** Favorites handler ***/
+	/*************************/
+	@RequestMapping(value = "/recipe/addFavorite", method = RequestMethod.POST)
+	@ResponseBody
+	public String addFavorite(@RequestBody Favorites favorite, HttpServletResponse response) {
+		logger.info("recipe/addFavorite");
+		logger.info("userId=" + favorite.getId().getUserId());
+		logger.info("recipeId=" + favorite.getId().getRecipeId());
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			recipeService.addFavorite(favorite);
+		} catch (DataAccessException ex) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = ExceptionUtils.getRootCauseMessage(ex);			
+		}
+		
+		return msg;
+	}
+	
+	@RequestMapping(value = "/recipe/removeFavorite", method = RequestMethod.POST)
+	@ResponseBody
+	public String removeFavorite(@RequestBody Favorites favorite, HttpServletResponse response) {
+		logger.info("recipe/removeFavorite");
+		logger.info("userId=" + favorite.getId().getUserId());
+		logger.info("recipeId=" + favorite.getId().getRecipeId());
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			recipeService.removeFavorite(favorite);
+		} catch (DataAccessException ex) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = ExceptionUtils.getRootCauseMessage(ex);			
+		}
+		
+		return msg;
+	}
+	
+	/****************************/
+	/*** Navigation from view ***/
+	/****************************/
+	public String getReturnMessage(String referer) {
+
+		String returnLabel = null;
+		
+		logger.info("referer: " + referer);
+		if (referer.contains("searchResults"))
+			returnLabel = "title.searchresults";
+		else
+		if (referer.contains("listRecipes"))
+			returnLabel = "menu.submittedrecipes";
+		else
+		if (referer.contains("favorites"))
+			returnLabel = "menu.favorites";
+		else
+		if (referer.contains("dashboard"))
+			returnLabel = "dashboard.head";
+		else
+			returnLabel = "";
+
+		return returnLabel;
+	}
+	
 	@ExceptionHandler(DataAccessException.class)
 	public ModelAndView handleDataAccessException(DataAccessException ex) {
 		ModelAndView view = new ModelAndView("/errors/errorData");
@@ -253,47 +366,3 @@ public class ViewRecipeController {
 		return view;
 	}
 }
-
-/*
-int size = recipe.getInstructSections().size();
-if (size > 0) {
-	Iterator<InstructionSection> iterator1 = recipe.getInstructSections().iterator();
-	while (iterator1.hasNext()) {
-		InstructionSection instructSection = iterator1.next();
-		logger.info("id= " + instructSection.getId()); 
-		logger.info("seq= " + instructSection.getSequenceNo());
-		logger.info("name= " + instructSection.getName());
-		size = instructSection.getInstructions().size();
-		if (size > 0) {
-			Iterator<Instruction> iterator2 = instructSection.getInstructions().iterator();
-			while (iterator2.hasNext()) {
-				Instruction instruct = iterator2.next();
-				logger.info("id = " + instruct.getId()); 
-				logger.info("desc= " + instruct.getDescription());
-				logger.info("seq= " + instruct.getSequenceNo());			
-			}					
-		}
-	}			
-}
-
-size = recipe.getIngredSections().size();
-if (size > 0) {
-	Iterator<IngredientSection> iterator1 = recipe.getIngredSections().iterator();
-	while (iterator1.hasNext()) {
-		IngredientSection ingredSection = iterator1.next();
-		logger.info("id= " + ingredSection.getId()); 
-		logger.info("seq= " + ingredSection.getSequenceNo());
-		logger.info("name= " + ingredSection.getName());
-		size = ingredSection.getRecipeIngredients().size();
-		if (size > 0) {
-			Iterator<RecipeIngredient> iterator2 = ingredSection.getRecipeIngredients().iterator();
-			while (iterator2.hasNext()) {
-				RecipeIngredient recipeIngred = iterator2.next();
-				logger.info("id = " + recipeIngred.getId()); 
-				logger.info("seq= " + recipeIngred.getSequenceNo());
-				logger.info("name= " + recipeIngred.getIngredient().getName());
-			}					
-		}
-	}			
-}
-*/

@@ -121,7 +121,9 @@
 								<c:choose>
 									<c:when test="${not empty recipe.photoName}">												
 										<div class="col-sm-3">
-											<input class="form-control" type="text" id="photoName" value="${recipe.photoName}" disabled/>
+											<!-- NOTE: disabled inputs are not submitted to the controller, hence the need for a hidden field -->
+											<form:hidden id="hiddenphoto" path="photoName"/>
+											<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
 										</div>
 										<div class="col-sm-2">
 											<div class="radio">

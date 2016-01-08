@@ -41,7 +41,8 @@
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.submitrecipe"></spring:message></a></li>
-							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.myrecipes"></spring:message></a></li>
+							<li><a href="<c:url value="/recipe/listRecipes" />"><spring:message code="menu.submittedrecipes"></spring:message></a></li>
+							<li><a href="<c:url value="/recipe/favorites" />"><spring:message code="menu.favorites"></spring:message></a></li>
 						</ul>
 					</li>
 				</c:if>
@@ -107,3 +108,6 @@
 	<div class="container verticalFiller">
 	</div>
 </c:if>
+
+<!-- load messages needed by the popup modal dialogs -->
+<%@include file="../common/messages.jsp" %>

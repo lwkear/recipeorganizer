@@ -134,7 +134,7 @@ public class UserController {
 	
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
 	public ModelAndView postSignup(@ModelAttribute @Validated(UserDtoSequence.class) UserDto userDto, 
-			BindingResult result, HttpServletRequest request, RedirectAttributes redir) {
+			BindingResult result, HttpServletRequest request, RedirectAttributes redir, Locale locale) {
 		logger.info("login POST");
 
 		ModelAndView mv = new ModelAndView("user/signup");
@@ -148,7 +148,7 @@ public class UserController {
 		boolean exists = userService.doesUserEmailExist(userDto.getEmail());
 		if (exists) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.duplicateEmail", null, LocaleContextHolder.getLocale());
+			String msg = messages.getMessage("user.duplicateEmail", null, locale);
 			FieldError err = new FieldError("userDto","email", msg);
 			result.addError(err);
 			return mv;
@@ -160,8 +160,8 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
 	}
@@ -323,11 +323,14 @@ public class UserController {
 			ArrayList<String> recipeIds = new ArrayList<String>(Arrays.asList(recipes.split(",")));
 			viewedRecipes = recipeService.listRecipes(recipeIds);
 		}
+		
+		List<SearchResultsDto> recentRecipes = recipeService.recentRecipes(user.getId());
 
 		model.addAttribute("user", user);
 		model.addAttribute("recipeCount", count);
+		model.addAttribute("recentRecipes", recentRecipes);
 		model.addAttribute("viewedRecipes", viewedRecipes);
-		
+
 		return "user/dashboard";
 	}
 	

@@ -80,6 +80,10 @@ $(function() {
 				return false;
 			}
 		}
+		else {
+		if (option == 'remove')
+			$('#hiddenphoto').val("");					
+		}
 	})
 
 })

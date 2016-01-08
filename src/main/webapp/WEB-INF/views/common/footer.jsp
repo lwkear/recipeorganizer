@@ -19,3 +19,4 @@
 </footer>
 
 <%@include file="dialogs.jsp" %>
+<%@include file="messages.jsp" %>

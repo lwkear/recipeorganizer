@@ -21,6 +21,12 @@ function initStatesTA() {
 	$('#state').typeahead(options,dataset);
 };
 
+function checkAvatarOptions() {
+	var opt = $('input[name="photoOpts"]:checked').val();
+	if (opt == 'remove')
+		$('#avatar').val("");
+};
+
 //shorthand for document.ready
 $(function() {
 
@@ -39,8 +45,7 @@ $(function() {
 			var input = $(this),
 			label = input.val();
 			input.trigger('fileselect', [label]);
-		})
-		
+		});
 	$('.btn-file :file').on('fileselect', function(event, label) {
 		var input = $(this).parents('.input-group').find(':text');
 		if (input.length)

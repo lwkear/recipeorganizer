@@ -144,6 +144,10 @@ $(function() {
 					return false;
 				}
 			}
+			else {
+			if (option == 'remove')
+				$('#hiddenphoto').val("");					
+			}
 		})
 		.on('click', '#back', function(e) {
 			//set index for the last set of instructions, which will be total sections minus one
