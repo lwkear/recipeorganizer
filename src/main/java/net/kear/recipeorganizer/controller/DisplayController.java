@@ -33,9 +33,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeMade;
+import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
@@ -143,16 +149,34 @@ public class DisplayController {
 			}
 		}
 		
-		
 		if (!refer.contains("edit")) {
 			request.getSession().setAttribute("returnLabel", getReturnMessage(refer));
 			request.getSession().setAttribute("returnUrl", refer);
 		}
 		
 		boolean fav = recipeService.isFavorite(user.getId(), recipeId);
+		RecipeMade recipeMade = recipeService.getRecipeMade(user.getId(), recipeId);
+		RecipeNote recipeNote = recipeService.getRecipeNote(user.getId(), recipeId);
+				
+		String jsonNote = null;
+		if (recipeNote != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				jsonNote = mapper.writeValueAsString(recipeNote);
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
+		model.addAttribute("madeCount", recipeMade.getMadeCount());
+		model.addAttribute("lastMade", recipeMade.getLastMade());
+		model.addAttribute("recipeNote", recipeNote.getNote());
+		model.addAttribute("jsonNote", jsonNote);
 		model.addAttribute("favorite", fav);
 		model.addAttribute("recipe", recipe);
+		
+		recipeService.addView(recipe);
 
 		return "recipe/viewRecipe";
 	}
@@ -309,6 +333,54 @@ public class DisplayController {
 		
 		try {
 			recipeService.removeFavorite(favorite);
+		} catch (DataAccessException ex) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = ExceptionUtils.getRootCauseMessage(ex);			
+		}
+		
+		return msg;
+	}
+
+	/************************/
+	/*** LastMade handler ***/
+	/************************/
+	@RequestMapping(value = "/recipe/recipeMade", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateRecipeMade(@RequestBody RecipeMade recipeMade, HttpServletResponse response) {
+		logger.info("recipe/updateRecipeMade");
+		logger.info("userId=" + recipeMade.getId().getUserId());
+		logger.info("recipeId=" + recipeMade.getId().getRecipeId());
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			recipeService.updateRecipeMade(recipeMade);
+		} catch (DataAccessException ex) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = ExceptionUtils.getRootCauseMessage(ex);			
+		}
+		
+		return msg;
+	}
+
+	/**************************/
+	/*** RecipeNote handler ***/
+	/**************************/
+	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateRecipeNote(@RequestBody RecipeNote recipeNote, HttpServletResponse response) {
+		logger.info("recipe/updateRecipeNote");
+		logger.info("userId=" + recipeNote.getId().getUserId());
+		logger.info("recipeId=" + recipeNote.getId().getRecipeId());
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			recipeService.updateRecipeNote(recipeNote);
 		} catch (DataAccessException ex) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			

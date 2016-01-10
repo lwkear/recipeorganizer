@@ -23,9 +23,11 @@
 	<p id="recipe.table.zeroRecords"/><spring:message code="recipe.table.zeroRecords"></spring:message>
 	<p id="recipe.delete.title"/><spring:message code="recipe.delete.title"></spring:message>
 	<p id="recipe.delete.areyousure"/><spring:message code="recipe.delete.areyousure"></spring:message>
+	<p id="recipe.add.favorite"/><spring:message code="recipe.add.favorite"></spring:message>
 	<p id="recipe.remove.favorite.title"/><spring:message code="recipe.remove.favorite.title"></spring:message>
 	<p id="recipe.remove.favorite.areyousure1"/><spring:message code="recipe.remove.favorite.areyousure1"></spring:message>
 	<p id="recipe.remove.favorite.areyousure2"/><spring:message code="recipe.remove.favorite.areyousure2"></spring:message>
+	<p id="recipe.note.label"/><spring:message code="recipe.note.label"></spring:message>
 	<p id="common.table.search"/><spring:message code="common.table.search"></spring:message>
 	<p id="common.table.paginate.first"/><spring:message code="common.table.paginate.first"></spring:message>
 	<p id="common.table.paginate.last"/><spring:message code="common.table.paginate.last"></spring:message>

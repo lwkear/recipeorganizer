@@ -55,6 +55,7 @@
 		<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe"  enctype="multipart/form-data" autocomplete="off">
 		
 			<form:hidden id="userID" path="user.id"/>
+			<form:input type="text" style="display:none" path="views"/>
 			<form:hidden id="ingredSections" path="numIngredSections"/>
 			<form:hidden id="currIngredSect" path="currIngredSection"/>
 			<form:hidden id="instructSections" path="numInstructSections"/>

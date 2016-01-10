@@ -159,11 +159,14 @@ public class Recipe implements Serializable {
 	@Column(name = "DATE_ADDED", insertable=false, updatable=false)
 	private Date dateAdded;
 	
+	@Column(name = "VIEWS")
+	private Integer views;
+	
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
 				Integer prepMinutes, String notes, boolean allowShare, String photoName, List<String> tags, 
-				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source) {
+				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
 		super();
 		this.user = user;
 		this.name = name;
@@ -180,6 +183,7 @@ public class Recipe implements Serializable {
 		this.instructSections = instructSections;
 		this.ingredSections = ingredSections;
 		this.source = source;
+		this.views = views;
 	}
 
 	public long getId() {
@@ -378,6 +382,14 @@ public class Recipe implements Serializable {
 		this.dateAdded = dateAdded;
 	}
 
+	public Integer getViews() {
+		return views;
+	}
+
+	public void setViews(Integer views) {
+		this.views = views;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -488,6 +500,6 @@ public class Recipe implements Serializable {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
 				", photoName=" + photoName + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", ingredSections=" +  
-				ingredSections + ", source=" + source + "]";
+				ingredSections + ", source=" + source + ", views=" + views + "]";
 	}
 }

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+//import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -169,7 +169,7 @@ public class UserController {
 	//AJAX/JSON request for checking user (email) duplication
 	@RequestMapping(value="/lookupUser", produces="text/javascript")
 	@ResponseBody 
-	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response) {
+	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response, Locale locale) {
 		logger.info("/lookupUser");
 		logger.info("email =" + lookupEmail);
 		
@@ -183,7 +183,7 @@ public class UserController {
 		
 		//name was found
 		if (result) {
-			Locale locale = LocaleContextHolder.getLocale();
+			//Locale locale = LocaleContextHolder.getLocale();
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 			msg = messages.getMessage("user.duplicateEmail", null, "This email is not available", locale);
 		}
@@ -193,14 +193,14 @@ public class UserController {
 
 	//respond to user click on email link
 	@RequestMapping(value = "/confirmRegistration", method = RequestMethod.GET)
-	public ModelAndView confirmRegistration(@RequestParam("token") final String token, RedirectAttributes redir) {
+	public ModelAndView confirmRegistration(@RequestParam("token") final String token, RedirectAttributes redir, Locale locale) {
 		logger.info("confirmRegistration GET");		
 		
 		ModelAndView mv = new ModelAndView();
 	
         final VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.invalidToken", null, LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.register.invalidToken", null, locale)); //LocaleContextHolder.getLocale()));
         	redir.addFlashAttribute("register", true);
         	mv.setViewName("redirect:/errors/invalidToken");
         	return mv;     	
@@ -209,7 +209,7 @@ public class UserController {
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, locale)); //LocaleContextHolder.getLocale()));
         	redir.addFlashAttribute("register", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
@@ -227,7 +227,7 @@ public class UserController {
 	
 	//resend a registration email
 	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir) {
+    public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir, Locale locale) {
 		logger.info("resendRegistrationToken GET");
 		
 		ModelAndView mv = new ModelAndView();
@@ -243,8 +243,8 @@ public class UserController {
      	emailSender.setMessageCode("user.email.signupSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, locale)); //LocaleContextHolder.getLocale()));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -325,9 +325,11 @@ public class UserController {
 		}
 		
 		List<SearchResultsDto> recentRecipes = recipeService.recentRecipes(user.getId());
+		long views = recipeService.getUserViewCount(user.getId());
 
 		model.addAttribute("user", user);
 		model.addAttribute("recipeCount", count);
+		model.addAttribute("viewCount", views);
 		model.addAttribute("recentRecipes", recentRecipes);
 		model.addAttribute("viewedRecipes", viewedRecipes);
 
@@ -417,7 +419,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.POST)
-	public ModelAndView postForgotPassword(@ModelAttribute @Valid UserEmail userEmail, BindingResult result, HttpServletRequest request, RedirectAttributes redir) {
+	public ModelAndView postForgotPassword(@ModelAttribute @Valid UserEmail userEmail, BindingResult result, HttpServletRequest request, RedirectAttributes redir, Locale locale) {
 		logger.info("forgotPassword POST");
 		
 		ModelAndView mv = new ModelAndView("user/forgotPassword");
@@ -431,7 +433,7 @@ public class UserController {
 
 		if (user == null) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.userNotFound", null, LocaleContextHolder.getLocale());
+			String msg = messages.getMessage("user.userNotFound", null, locale); //LocaleContextHolder.getLocale());
 			FieldError err = new FieldError("userEmail","email", msg);
 			result.addError(err);
 			return mv;
@@ -441,8 +443,8 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, locale)); //LocaleContextHolder.getLocale()));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -450,7 +452,7 @@ public class UserController {
 	//respond to user click on email link
 	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
     public ModelAndView confirmPassword(@RequestParam("id") final long id, @RequestParam("token") final String token,
-    		RedirectAttributes redir) {
+    		RedirectAttributes redir, Locale locale) {
 		logger.info("confirmPassword GET");		
 		
 		ModelAndView mv = new ModelAndView();
@@ -462,7 +464,7 @@ public class UserController {
         }
         
     	if (passwordResetToken == null || user == null || user.getId() != id) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, locale)); //LocaleContextHolder.getLocale()));
         	redir.addFlashAttribute("password", true);
         	mv.setViewName("redirect:/errors/invalidToken");
         	return mv;     	
@@ -470,7 +472,7 @@ public class UserController {
 		
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, locale)); //LocaleContextHolder.getLocale()));
         	redir.addFlashAttribute("password", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
@@ -493,7 +495,7 @@ public class UserController {
 
 	//resend a password reset email
 	@RequestMapping(value = "/user/resendPasswordToken", method = RequestMethod.GET)
-    public ModelAndView resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String token, RedirectAttributes redir) {
+    public ModelAndView resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String token, RedirectAttributes redir, Locale locale) {
 		logger.info("resendPasswordToken GET");
 
 		ModelAndView mv = new ModelAndView();
@@ -509,8 +511,8 @@ public class UserController {
      	emailSender.setMessageCode("user.email.resetSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, locale)); //LocaleContextHolder.getLocale()));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }

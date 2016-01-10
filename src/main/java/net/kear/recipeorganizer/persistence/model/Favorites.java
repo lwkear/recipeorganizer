@@ -19,7 +19,7 @@ public class Favorites implements Serializable {
 	private static final long serialVersionUID = 1L;	
 
 	@EmbeddedId
-	private FavoritesKey id;
+	private FavoritesKey id = new FavoritesKey();
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
@@ -41,11 +41,6 @@ public class Favorites implements Serializable {
 	public void setId(FavoritesKey id) {
 		this.id = id;
 	}
-	
-	/*public void setId(long userId, long recipeId) {
-		this.id.setUserId(userId);
-		this.id.setRecipeId(recipeId);
-	}*/	
 	
 	public Date getDateAdded() {
 		return dateAdded;

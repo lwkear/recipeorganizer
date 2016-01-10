@@ -49,40 +49,25 @@
 
 <script type="text/javascript">
 
-$("#recipeList").dataTable({
+$('#recipeList').DataTable({
 	language : {
-		emptyTable:     "No recipes were found",
-	    info:           "Showing _START_ to _END_ of _TOTAL_ recipes",
-	    infoEmpty:      "Showing 0 to 0 of 0 recipes",
-	    infoFiltered:	"(filtered from _MAX_ total recipes)",
-	    lengthMenu:		"Show  _MENU_  recipes",
-	    zeroRecords:	"No matching recipes found"
+    	emptyTable:     messageMap.get('recipe.table.emptyTable'),
+	    info:           messageMap.get('recipe.table.info'),
+	    infoEmpty:      messageMap.get('recipe.table.infoEmpty'),
+	    infoFiltered:	messageMap.get('recipe.table.infoFiltered'),
+	    lengthMenu:		messageMap.get('recipe.table.lengthMenu'),
+	    zeroRecords:	messageMap.get('recipe.table.zeroRecords'),
+	    search:			messageMap.get('common.table.search'),
+	    paginate: {
+	    	first:      messageMap.get('common.table.paginate.first'),
+	    	last:       messageMap.get('common.table.paginate.last'),
+	    	next:       messageMap.get('common.table.paginate.next'),
+	    	previous:   messageMap.get('common.table.paginate.previous')
+	    }
 	},	
-	stateSave		: true,
-	fnDrawCallback: function() {
-		$("#recipeList thead").remove();
-	}
+	stateSave : true
 });
 
 </script>
 
 </html>
-
-
-
-							
-			<%-- <div class="col-sm-12">
-				<div class="list-group col-sm-12">
-					<c:forEach var="recipe" items="${resultList}">
-						<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
-							<c:if test="${not empty recipe.photo}">
-								<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
-							</c:if>	
-							<h4 class="list-group-item-heading header-blue">${recipe.name}</h4>
-							<p class="list-group-item-text">${recipe.description}</p>
-							<p class="clearfix"></p>										
-						</a>
-					</c:forEach>
-				</div>
-			</div> --%>
-							

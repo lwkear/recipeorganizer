@@ -114,7 +114,6 @@ function getUser(userId, callback) {
 
 //modify the user in popup dialog
 function displayUser(user) {
-	//userObj = user;
 	$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
 	$("input[name='enabled'][value='" + user.enabled + "']").prop('checked',true);
 	$("input[name='locked'][value='" + user.locked + "']").prop('checked',true);

@@ -27,6 +27,8 @@ import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.RecipeMade;
+import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 
 @Repository
@@ -88,10 +90,72 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.add(Restrictions.eq("id.userId", userId))
     		.add(Restrictions.eq("id.recipeId", recipeId))
     		.setProjection(Projections.rowCount());
-    	long count = (Long)criteria.uniqueResult();;        	
+    	long count = (Long)criteria.uniqueResult();        	
     	return (count > 0 ? true : false);
     }
+
+    public void updateRecipeMade(RecipeMade recipeMade) {
+    	getSession().merge(recipeMade);
+    }
     
+    public RecipeMade getRecipeMade(Long userId, Long recipeId) {
+    	Criteria criteria = getSession().createCriteria(RecipeMade.class)
+       		.add(Restrictions.eq("id.userId", userId))
+       		.add(Restrictions.eq("id.recipeId", recipeId));
+       	RecipeMade recipeMade = (RecipeMade)criteria.uniqueResult();
+       	if (recipeMade == null) {
+       		recipeMade = new RecipeMade();
+       		recipeMade.getId().setUserId(userId);
+       		recipeMade.getId().setRecipeId(recipeId);
+       		recipeMade.setMadeCount(0);
+       		recipeMade.setLastMade(null);
+       	}
+       	
+       	return recipeMade;
+    }
+
+    public void updateRecipeNote(RecipeNote recipeNote) {
+    	getSession().merge(recipeNote);
+    }
+    
+    public RecipeNote getRecipeNote(Long userId, Long recipeId) {
+    	Criteria criteria = getSession().createCriteria(RecipeNote.class)
+       		.add(Restrictions.eq("id.userId", userId))
+       		.add(Restrictions.eq("id.recipeId", recipeId));
+        RecipeNote recipeNote = (RecipeNote)criteria.uniqueResult();
+       	if (recipeNote == null) {
+       		recipeNote = new RecipeNote();
+       		recipeNote.getId().setUserId(userId);
+       		recipeNote.getId().setRecipeId(recipeId);
+       	}
+        return recipeNote;
+    }
+    
+    public void addView(Recipe recipe) {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+			"update recipe set views = :num where id = :id")
+			.setInteger("num", recipe.getViews())
+			.setLong("id", recipe.getId());
+
+    	query.executeUpdate();
+    }
+    
+    public Long getRecipeViewCount(Long recipeId) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class)
+    		.add(Restrictions.eq("id", recipeId))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("views")));
+        	return (Long)criteria.uniqueResult();    	
+    }
+    
+    public Long getUserViewCount(Long userId) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class)
+       			.add(Restrictions.eq("user.id", userId))
+        		.setProjection(Projections.sum("views"));
+        	long views = (Long)criteria.uniqueResult();
+        	return views;
+    }
+  
     @SuppressWarnings("unchecked")
     public List<Favorites> getFavorites(Long userId) {
     	Criteria criteria = getSession().createCriteria(Favorites.class)

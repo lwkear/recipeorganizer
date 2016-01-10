@@ -7,6 +7,8 @@ import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeMade;
+import net.kear.recipeorganizer.persistence.model.RecipeNote;
  
 public interface RecipeRepository {
 
@@ -17,6 +19,13 @@ public interface RecipeRepository {
     public void addFavorite(Favorites favorite);
     public void removeFavorite(Favorites favorite);
     public boolean isFavorite(Long userId, Long recipeId);
+    public void updateRecipeMade(RecipeMade recipeMade);
+    public RecipeMade getRecipeMade(Long userId, Long recipeId);
+    public void updateRecipeNote(RecipeNote recipeNote);
+    public RecipeNote getRecipeNote(Long userId, Long recipeId);
+    public void addView(Recipe recipe);
+    public Long getRecipeViewCount(Long recipeId);
+    public Long getUserViewCount(Long userId);
     public List<Favorites> getFavorites(Long userId);
     public List<RecipeListDto> listRecipes(Long userId);
     public List<SearchResultsDto> listRecipes(List<Long> ids);
@@ -26,5 +35,5 @@ public interface RecipeRepository {
     public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
     public void getAllIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);
-    public boolean lookupName(String lookupName, Long userId);    
+    public boolean lookupName(String lookupName, Long userId);
 }

@@ -103,6 +103,7 @@
 					</div>
 				</div>
 				<form:hidden id="userID" path="user.id"/>
+				<form:input type="text" style="display:none" path="views"/>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
 			</form:form>
 		</div>

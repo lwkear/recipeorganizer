@@ -15,6 +15,8 @@ import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.model.RecipeMade;
+import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
@@ -124,6 +126,36 @@ public class RecipeServiceImpl implements RecipeService {
     public boolean isFavorite(Long userId, Long recipeId) {
     	return recipeRepository.isFavorite(userId, recipeId);
     }
+    
+    public void updateRecipeMade(RecipeMade recipeMade) {
+    	recipeRepository.updateRecipeMade(recipeMade);
+    }
+    
+    public RecipeMade getRecipeMade(Long userId, Long recipeId) {
+    	return recipeRepository.getRecipeMade(userId, recipeId);
+    }
+    
+    public void updateRecipeNote(RecipeNote recipeNote) {
+    	recipeRepository.updateRecipeNote(recipeNote);
+    }
+    
+    public RecipeNote getRecipeNote(Long userId, Long recipeId) {
+    	return recipeRepository.getRecipeNote(userId, recipeId);
+    }    
+    
+    public void addView(Recipe recipe) {
+    	int views = recipe.getViews() + 1;
+    	recipe.setViews(views);
+    	recipeRepository.addView(recipe);
+    }
+    
+    public Long getRecipeViewCount(Long recipeId) {
+    	return recipeRepository.getRecipeViewCount(recipeId);
+    }
+    
+    public Long getUserViewCount(Long userId) {
+    	return recipeRepository.getUserViewCount(userId);
+    }    
 
     public List<RecipeListDto> listRecipes(Long userId) {
     	return recipeRepository.listRecipes(userId);

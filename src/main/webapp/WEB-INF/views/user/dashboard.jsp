@@ -36,9 +36,14 @@
 			</h4>
 		</div>
 		<div class="col-sm-12">
-			<h4><spring:message code="dashboard.recentlysubmitted"></spring:message></h4>
+			<%-- <h4><spring:message code="dashboard.recipessubmitted"></spring:message>&nbsp; --%>
+			<h4>Your recipes have been viewed&nbsp;<span>${viewCount}</span>&nbsp;times
+			</h4>
+		</div>
+		<div class="col-sm-12">
+			<h4><spring:message code="dashboard.recentlyviewed"></spring:message></h4>
 			<div class="list-group col-sm-12">
-				<c:forEach var="recipe" items="${recentRecipes}">
+				<c:forEach var="recipe" items="${viewedRecipes}">
 					<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 						<c:if test="${not empty recipe.photo}">
 							<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
@@ -48,13 +53,12 @@
 						<p class="clearfix"></p>										
 					</a>
 				</c:forEach>
-
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<h4><spring:message code="dashboard.recentlyviewed"></spring:message></h4>
+			<h4><spring:message code="dashboard.recentlysubmitted"></spring:message></h4>
 			<div class="list-group col-sm-12">
-				<c:forEach var="recipe" items="${viewedRecipes}">
+				<c:forEach var="recipe" items="${recentRecipes}">
 					<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 						<c:if test="${not empty recipe.photo}">
 							<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>

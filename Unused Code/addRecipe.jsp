@@ -75,7 +75,7 @@
     	<c:set var="nameDisplayValue">${status.displayValue}</c:set>
     	<c:set var="nameCode">${status.errorCode}</c:set>
     </spring:bind>
-    <!-- TODO: EXCEPTION: move this to the server into a custom message interpolator -->
+    
 	<c:if test="${fn:contains(nameCode,'Size')}">
 		<c:set var="nameLen">${fn:length(nameDisplayValue)}</c:set>
 		<c:if test="${nameLen gt 0}">
