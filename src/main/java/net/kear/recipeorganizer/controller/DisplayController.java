@@ -37,12 +37,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 
+import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeComment;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
@@ -71,6 +75,8 @@ public class DisplayController {
 	
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private CommentService commentService;
 	@Autowired
 	private UserInfo userInfo;
 	@Autowired
@@ -157,6 +163,8 @@ public class DisplayController {
 		boolean fav = recipeService.isFavorite(user.getId(), recipeId);
 		RecipeMade recipeMade = recipeService.getRecipeMade(user.getId(), recipeId);
 		RecipeNote recipeNote = recipeService.getRecipeNote(user.getId(), recipeId);
+		long commentCount = commentService.getCommentCount(recipeId);
+		List<CommentDto> commentList = commentService.listComments(recipeId);
 				
 		String jsonNote = null;
 		if (recipeNote != null) {
@@ -174,6 +182,8 @@ public class DisplayController {
 		model.addAttribute("recipeNote", recipeNote.getNote());
 		model.addAttribute("jsonNote", jsonNote);
 		model.addAttribute("favorite", fav);
+		model.addAttribute("commentCount", commentCount);
+		model.addAttribute("commentList", commentList);
 		model.addAttribute("recipe", recipe);
 		
 		recipeService.addView(recipe);
@@ -381,6 +391,30 @@ public class DisplayController {
 		
 		try {
 			recipeService.updateRecipeNote(recipeNote);
+		} catch (DataAccessException ex) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = ExceptionUtils.getRootCauseMessage(ex);			
+		}
+		
+		return msg;
+	}
+
+	/*****************************/
+	/*** RecipeComment handler ***/
+	/*****************************/
+	@RequestMapping(value = "/recipe/recipeComment", method = RequestMethod.POST)
+	@ResponseBody
+	public String addRecipeComment(@RequestBody RecipeComment recipeComment, HttpServletResponse response) {
+		logger.info("recipe/addRecipeComment");
+		logger.info("userId=" + recipeComment.getUserId());
+		logger.info("recipeId=" + recipeComment.getRecipeId());
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			commentService.addComment(recipeComment);
 		} catch (DataAccessException ex) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			

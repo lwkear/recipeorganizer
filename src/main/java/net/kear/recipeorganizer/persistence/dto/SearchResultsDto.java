@@ -1,20 +1,13 @@
 package net.kear.recipeorganizer.persistence.dto;
 
 public class SearchResultsDto {
-	//private String id;
+
 	private long id;
 	private String name;
 	private String description;
 	private String photo;
 	
 	public SearchResultsDto() {};
-	
-	/*public SearchResultsDto(String id, String name, String description, String photo) {
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.photo = photo;
-	};*/
 	
 	public SearchResultsDto(Long id, String name, String description, String photo) {
 		this.id = id;
@@ -23,20 +16,11 @@ public class SearchResultsDto {
 		this.photo = photo;
 	};	
 
-	/*public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}*/
-	
 	public long getId() {
 		return id;
 	}
 	
 	public void setId(Long id) {
-		//this.id = String.valueOf(id);
 		this.id = id;
 	}
 

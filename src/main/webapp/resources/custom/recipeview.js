@@ -34,6 +34,29 @@ function convertFractions(element) {
 	});
 }
 
+function setIcons() {
+	var fav = $('#isFav').val();
+	var madeCount = $('#displayCount').text();
+	var note = $('#inputNote').val();
+	
+	if (fav === 'true') {
+		$('#favLeft').show();
+		$('#favRight').hide();
+	}
+	if (madeCount > 0) {
+		$('#madeLeft').show();
+		$('#madeRight').hide();
+	}
+	if (note.length > 0) {
+		$('#noteLeft').show();
+		$('#noteRight').hide();
+	}
+}
+
+function toggleComments() {
+    $("#commentDiv").toggleClass('hidden');
+}
+
 /**********************************/
 /*** update made date functions ***/
 /**********************************/
@@ -71,7 +94,9 @@ function postMadeDate(e) {
 	})
 	.done(function(data) {
 		console.log('postMadeDate done');
-		$(".madeDate").prop("disabled", true);
+		$('#madeLeft').show();
+		$('#madeRight').hide();
+		$("#madeLeft").prop("disabled", true);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -109,7 +134,47 @@ function postNote(e) {
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
+		$('#noteLeft').show();
+		$('#noteRight').hide();
 		console.log('postNote done');
+	})
+	.fail(function(jqXHR, status, error) {
+		console.log('fail status: '+ jqXHR.status);
+		console.log('fail error: '+ error);
+		postFailed(error);
+	});
+}
+
+/*******************************/
+/*** enter comment functions ***/
+/*******************************/
+//enter a comment in popup dialog
+function addComment(viewerId, recipeId) {
+	$("#submitComment").one('click', {viewerId : viewerId, recipeId : recipeId}, postComment);
+	$("#commentDlg").modal('show');
+} 
+
+//request server to update the note
+function postComment(e) {
+	$("#commentDlg").modal('hide');
+	console.log('postComment: viewer=' + e.data.viewerId + ' recipe='+ e.data.recipeId);
+
+	var viewerId = e.data.viewerId;
+	var recipeId = e.data.recipeId;
+	var comment = $('#inputComment').val();
+	note = $.trim(comment);
+
+	var data = {"id":0,"userId":viewerId,"recipeId":recipeId,"userComment":comment,"dateAdded":null};
+
+	$.ajax({
+	    type: 'POST',
+		contentType: 'application/json',
+	    url: '/recipeorganizer/recipe/recipeComment',
+		dataType: 'json',
+		data: JSON.stringify(data)
+	})
+	.done(function(data) {
+		console.log('postComment done');
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -135,13 +200,9 @@ function addFavorite(viewerId, recipeId) {
 	.done(function(data) {
 		//TODO: AJAX: probably need to check for a success status?
 		console.log('recipe added to favorites');
-		var name = $('#recipeName').val();
-		$("#messageTitle").text(name);
-		$("#messageMsg").text(messageMap.get('recipe.add.favorite'));
-		$(".msgDlgBtn").hide();
-		$("#okBtn").show();
-		$("#messageDlg").modal();
-		$(".favorite").prop("disabled", true);
+		$('#favLeft').show();
+		$('#favRight').hide();
+		$("#favLeft").prop("disabled", true);		
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail request: '+ jqXHR);
@@ -166,6 +227,8 @@ function postFailed(error) {
 $(function() {
 
 	convertFractions('.ingredqty');	
+
+	setIcons();
 	
 	$.datepicker.setDefaults({
 		dateFormat: "mm/dd/yy",

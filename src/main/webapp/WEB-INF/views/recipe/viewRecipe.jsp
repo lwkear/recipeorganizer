@@ -23,22 +23,15 @@
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
 				</c:if>
 				<h3>${recipe.name}
-					<c:if test="${favorite}">
-						<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px" disabled>
-						  <span class="glyphicon glyphicon-star"></span>
-						</button>
-						<!-- <span class="btn-sm glyphicon glyphicon-star" style="margin-left:5px;font-size:20px"></span> -->
-					</c:if>
-					<c:if test="${madeCount > 0}">
-						<button type="button" class="btn btn-link btn-sm madeDate" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-cutlery"></span>
-						</button>
-					</c:if>
-					<c:if test="${not empty recipeNote}">
-						<button type="button" class="btn btn-link btn-sm" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-paperclip"></span>
-						</button>
-					</c:if>
+					<button type="button" class="btn btn-link btn-sm" id="favLeft" style="margin-left:5px;font-size:20px;display:none">
+					  <span class="glyphicon glyphicon-star"></span>
+					</button>
+					<button type="button" class="btn btn-link btn-sm" id="madeLeft" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none">
+					  <span class="glyphicon glyphicon-cutlery"></span>
+					</button>
+					<button type="button" class="btn btn-link btn-sm" id="noteLeft" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px;display:none">
+					  <span class="glyphicon glyphicon-paperclip"></span>
+					</button>
 					<span class="pull-right">
 						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px">
 						  <span class="glyphicon glyphicon-print"></span>
@@ -46,21 +39,15 @@
 						<button type="button" class="btn btn-link btn-sm" id="email" style="margin-left:5px;font-size:20px">
 						  <span class="glyphicon glyphicon-envelope"></span>
 						</button>
-						<c:if test="${not favorite}">
-							<button type="button" class="btn btn-link btn-sm favorite" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
-							  <span class="glyphicon glyphicon-star"></span>
-							</button>
-						</c:if>
-						<c:if test="${madeCount eq 0}">
-							<button type="button" class="btn btn-link btn-sm madeDate" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
-							  <span class="glyphicon glyphicon-cutlery"></span>
-							</button>
-						</c:if>
-						<c:if test="${empty recipeNote}">
-							<button type="button" class="btn btn-link btn-sm" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px">
-							  <span class="glyphicon glyphicon-paperclip"></span>
-							</button>
-						</c:if>
+						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
+						  <span class="glyphicon glyphicon-star"></span>
+						</button>
+						<button type="button" class="btn btn-link btn-sm" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
+						  <span class="glyphicon glyphicon-cutlery"></span>
+						</button>
+						<button type="button" class="btn btn-link btn-sm" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px">
+						  <span class="glyphicon glyphicon-paperclip"></span>
+						</button>
 						<c:if test="${isAuth && (userId == recipe.user.id)}">
 							<a class="btn btn-link btn-sm" id="edit" style="margin-left:5px;font-size:20px" href="../editRecipe/${recipe.id}">
 								<span class="glyphicon glyphicon-pencil"></span>
@@ -75,6 +62,30 @@
 			
 			<%@include file="recipeContent.jsp" %>
 			
+			<div class="page-header" style="margin-top:0;padding-bottom:0">
+				<h5>
+					<button type="button" class="btn btn-link btn-sm" onclick="toggleComments()"><spring:message code="recipe.comments"></spring:message>
+						<span class="badge" style="background-color:#337ab7">${commentCount}</span>
+					</button>
+					<button type="button" class="btn btn-link btn-sm" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px">
+						<span class="glyphicon glyphicon-comment"></span>
+					</button>
+				</h5>
+			</div>
+			<div class="list-group col-sm-12 hidden" id="commentDiv">
+				<c:forEach var="comment" items="${commentList}">
+					<div class="list-group-item">
+						<h5 class="list-group-item-heading">
+							<c:if test="${not empty comment.avatar}">
+								<span><img src="<c:url value="/user/avatar?filename=${comment.avatar}"/>" style="width:25px;height:25px;"/></span>
+							</c:if>
+							<span><fmt:formatDate type="both" timeStyle="short" value="${comment.dateAdded}" /></span>
+							<%-- <span><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${comment.dateAdded}" /></span> --%>
+							&nbsp;&nbsp;&nbsp;${comment.firstName}&nbsp;${comment.lastName}</h5>
+						<p class="list-group-item-text">${comment.userComment}</p>
+					</div>
+				</c:forEach>
+			</div>
 		</div>
 	</div>		
 	
@@ -86,6 +97,7 @@
 	<input type="hidden" id="recipeId" value="${recipe.id}"/>
 	<input type="hidden" id="recipeName" value="${recipe.name}"/>
 	<input type="hidden" id="returnUrl" value="${returnUrl}"/>
+	<input type="hidden" id="isFav" value="${favorite}"/>
 
 <%@include file="../common/footer.jsp" %>
 
@@ -139,6 +151,30 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitNote"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- add comment dialog -->
+<div class="modal fade" id="commentDlg" role="dialog">
+	<div class="modal-dialog modal-sm">
+	    <div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">${recipe.name}</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form">
+					<div class="form-group">
+			            <label class="control-label" for="recipeComment"><spring:message code="recipe.comments.label"></spring:message></label>
+			            <textarea class="form-control" rows="5" id="inputComment"></textarea>
+				    </div>           
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitComment"><spring:message code="common.submit"></spring:message></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>

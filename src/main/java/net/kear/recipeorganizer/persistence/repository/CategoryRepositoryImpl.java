@@ -31,7 +31,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public void deleteCategory(Long id) {
     	Category category = (Category) getSession().load(Category.class, id);
         if (null != category) {
-            sessionFactory.getCurrentSession().delete(category);
+            getSession().delete(category);
         }
     }
     

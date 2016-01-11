@@ -61,10 +61,6 @@ body {
     font-size: 85%;
 }
 
-/* .glyphicon {
-	font-size: 10px;
-} */
-
 .glyphicon-envelope
 .glyphicon-print  {
 	font-size: 60px;
@@ -74,6 +70,7 @@ body {
 .select-placeholder option:first-child{color: #999; display: none;}
 .select-placeholder option{color: #555;} /* bootstrap default color */
 
+/* vertical spacers */
 .spacer-vert-lg {
 	margin-top:60px;
 }
@@ -103,8 +100,16 @@ body {
 	padding:3px;	
 }
 
+/* list-group-item-heading replacement */
 .header-blue {
 	color:#336699;
+	margin-top:0px;
+	margin-bottom:5px;
+}
+
+/* override of page-header bottom border*/
+.page-header {
+	border-bottom: 1px solid #000;
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */
