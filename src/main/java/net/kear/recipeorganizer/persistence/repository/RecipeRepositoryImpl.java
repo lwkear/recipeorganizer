@@ -1,7 +1,5 @@
 package net.kear.recipeorganizer.persistence.repository;
  
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
@@ -22,11 +20,9 @@ import org.springframework.util.AutoPopulatingList;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
-import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
@@ -38,11 +34,19 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     private SessionFactory sessionFactory;
  
     public void addRecipe(Recipe recipe) {
+    	if (recipe.getViews() == null)
+    		recipe.setViews(0);
+    	if (recipe.getPhotoName() == null)
+    		recipe.setPhotoName("");
     	getSession().save(recipe);
     }
 
     public void updateRecipe(Recipe recipe) {
         if (recipe != null) {
+        	if (recipe.getViews() == null)
+        		recipe.setViews(0);
+        	if (recipe.getPhotoName() == null)
+        		recipe.setPhotoName("");
         	Session sess = getSession();
         	if (sess.contains(recipe))
         		sess.clear();
@@ -72,6 +76,10 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	recipe.setNumIngredSections(recipe.getIngredSections().size());
     	recipe.setNumInstructSections(recipe.getInstructSections().size());
     	
+    	if (recipe.getViews() == null)
+    		recipe.setViews(0);
+    	if (recipe.getPhotoName() == null)
+    		recipe.setPhotoName("");
     	Hibernate.initialize(recipe.getSource());
     	
         return recipe;
@@ -223,7 +231,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.photoName").as("photo")))
     		.addOrder(Order.desc("r.dateAdded"))
-    		.setMaxResults(3)
+    		.setMaxResults(5)
     		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
 
     	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
@@ -247,7 +255,6 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
     			.add(Projections.property("s.type").as("sourcetype")))
-    		//.addOrder(Order.asc("name"))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
     	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
@@ -259,38 +266,6 @@ public class RecipeRepositoryImpl implements RecipeRepository {
    			.add(Restrictions.eq("user.id", userId))
     		.setProjection(Projections.rowCount());
     	return (Long)criteria.uniqueResult();
-    }
-    
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {
-
-    	List<Ingredient> ingreds = new ArrayList();
-    	
-    	int size = recipe.getIngredSections().size();
-    	if (size > sectionNdx) {
-
-	    	Iterator<RecipeIngredient> iter = recipe.getIngredientSection(sectionNdx).getRecipeIngredients().iterator();
-			while (iter.hasNext()) {
-				RecipeIngredient recipeIngred = iter.next();
-		    	Criteria criteria = getSession().createCriteria(Ingredient.class)
-		    		.add(Restrictions.eq("id", recipeIngred.getIngredientId()));
-				ingreds.add((Ingredient)criteria.uniqueResult());
-			}
-    	}
-		
-		return ingreds;
-    }
-    
-    public void getAllIngredients(Recipe recipe) {
-    	List<IngredientSection> sections = recipe.getIngredSections();
-    	for (IngredientSection section : sections) {
-    		List<RecipeIngredient> ingreds = section.getRecipeIngredients();
-    		for (RecipeIngredient recipeIngred : ingreds) {
-	    		Criteria criteria = getSession().createCriteria(Ingredient.class)
-			    		.add(Restrictions.eq("id", recipeIngred.getIngredientId()));
-	    		recipeIngred.setIngredient((Ingredient)criteria.uniqueResult());
-    		}
-    	}	
     }
     
     @SuppressWarnings("unchecked")
@@ -327,5 +302,4 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 		}
 		return sess;
 	}
-
 }

@@ -44,9 +44,6 @@
 	</decision-state>
 
 	<view-state id="ingredients" view="recipe/ingredients" model="recipe">
-		<on-render>
-			<evaluate expression="recipeService.getIngredients(recipe, flowScope.ingredIndex)" result="viewScope.ingredientList"></evaluate>
-		</on-render>
 		<transition on="back" to="ingredLoopBack" bind="true" validate="true" validation-hints="'recipeIngredGroup'">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
@@ -113,9 +110,6 @@
 	</action-state>
 		
 	<view-state id="review" view="recipe/review" model="recipe">
-		<on-render>
-			<evaluate expression="recipeService.getAllIngredients(recipe)"></evaluate>
-		</on-render>
 		<transition on="back" to="optional" bind="false" validate="false"></transition>
 		<transition on="save" to="end" bind="true">
 			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>

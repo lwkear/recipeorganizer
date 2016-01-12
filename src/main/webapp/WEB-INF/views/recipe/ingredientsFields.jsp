@@ -30,8 +30,8 @@
 				<!-- bind server-side validation errors -->
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity"><c:set var="qtyError">${status.errorMessage}</c:set></spring:bind>
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].qtyType"><c:set var="qtyTypeError">${status.errorMessage}</c:set></spring:bind>
-				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredientId"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].qualifier"><c:set var="qualError">${status.errorMessage}</c:set></spring:bind>
+				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
 				<div class="ingredGrp">
 					<!-- display ajax validation errors -->						
 					<div class="form-group ingredErrGrp" style="margin-bottom:0; display:none">
@@ -42,7 +42,7 @@
 					</div>
 					<div class="form-group">
 						<form:hidden class="recipeIngredID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].id"/>
-						<form:hidden class="ingredID" id="ingredientID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredientId"/>
+						<form:hidden class="ingredID" id="ingredientID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.id"/>
 						<form:hidden class="ingredSeq" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].sequenceNo"/>
 						<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
 							<form:input type="text" class="form-control ingredQty" id="inputQty" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity" autocomplete="off"/>
@@ -53,8 +53,7 @@
 							<span class="text-danger ingredErrGrp">${qtyTypeError}</span>
 						</div>
 						<div class="col-sm-5 <c:if test="${not empty ingredError}">has-error</c:if>">
-							<%-- <input type="text" class="form-control ingredDesc" id="ingredient" value="${ingredientList[loop.index].name}"/> --%>
-							<input type="text" class="form-control ingredDesc" id="ingredient" value="${ingred.ingredient.name}"/>
+							<form:input type="text" class="form-control ingredDesc" id="ingredient" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.name"/>
 							<span class="text-danger ingredErrGrp">${ingredError}</span>
 						</div>
 						<div class="col-sm-4 <c:if test="${not empty qualError}">has-error</c:if>">

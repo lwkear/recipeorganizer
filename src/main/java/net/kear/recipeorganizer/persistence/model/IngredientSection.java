@@ -148,7 +148,7 @@ public class IngredientSection implements Serializable {
 
 	@Override
 	public String toString() {
-		return "InstructionSection [id=" + id  
+		return "IngredientSection [id=" + id  
 				+ ", sequenceNo=" + sequenceNo 
 				+ ", name=" + name + ", recipeIngredients=" + recipeIngredients + "]";
 	}

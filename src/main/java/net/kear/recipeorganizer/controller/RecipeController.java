@@ -85,7 +85,6 @@ public class RecipeController {
 	
 		if (result.hasErrors()) {
 			logger.info("Validation errors");
-			model.addAttribute("ingredientList", recipeService.getIngredients(recipe, 0));
 			return "recipe/editRecipe";
 		}
 		

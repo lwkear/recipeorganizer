@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
+import net.kear.recipeorganizer.persistence.model.Instruction;
+import net.kear.recipeorganizer.persistence.model.InstructionSection;
+import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -13,6 +18,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,8 +28,8 @@ public class SolrUtil {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-    private static String url = "http://localhost:8983/solr/recipe/";
-    private static HttpSolrClient solrCore = new HttpSolrClient(url);
+    private static final String url = "http://localhost:8983/solr/recipe/";
+    private static final HttpSolrClient solrCore = new HttpSolrClient(url);
 	
 	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) {
 		
@@ -32,7 +38,7 @@ public class SolrUtil {
 		SolrQuery query = new SolrQuery();
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
-		query.setParam("qf", "name or catname or ingredname or description or source");
+		query.setParam("qf", "name or catname or ingredname or description or source or notes");
 		query.setParam("fl", "id, name, description, photo");
 		query.setParam("start", "0");
 		query.setParam("rows", "50");
@@ -87,6 +93,85 @@ public class SolrUtil {
 	    }
 	    
 	    return resultsList;
+	}
+	
+	public void addRecipe(Recipe recipe) {
 
+		SolrInputDocument document = new SolrInputDocument();
+		document.addField("id", recipe.getId());
+		document.addField("name", recipe.getName());
+		document.addField("catname", recipe.getCategory().getName());
+		document.addField("description", recipe.getDescription());
+		if (!recipe.getServings().isEmpty())
+			document.addField("servings", recipe.getServings());
+		if (!recipe.getNotes().isEmpty())
+			document.addField("notes", recipe.getNotes());
+		if (!recipe.getBackground().isEmpty())
+			document.addField("background", recipe.getBackground());
+		if (!recipe.getPhotoName().isEmpty())
+			document.addField("photo", recipe.getPhotoName());
+		if (recipe.getSource() != null) {
+			document.addField("sourcetype", recipe.getSource().getType());
+			if (!recipe.getSource().getCookbook().isEmpty()) {
+				document.addField("cookbook", recipe.getSource().getCookbook());
+				document.addField("source", recipe.getSource().getCookbook());
+			}
+			if (!recipe.getSource().getCookbook().isEmpty()) {
+				document.addField("magazine", recipe.getSource().getMagazine());
+				document.addField("source", recipe.getSource().getMagazine());
+			}
+			if (!recipe.getSource().getCookbook().isEmpty()) {
+				document.addField("newspaper", recipe.getSource().getNewspaper());
+				document.addField("source", recipe.getSource().getNewspaper());
+			}
+			if (!recipe.getSource().getCookbook().isEmpty()) {
+				document.addField("person", recipe.getSource().getPerson());
+				document.addField("source", recipe.getSource().getPerson());
+			}
+			if (!recipe.getSource().getCookbook().isEmpty()) {
+				document.addField("other", recipe.getSource().getOther());
+				document.addField("source", recipe.getSource().getOther());
+			}
+			if (!recipe.getSource().getCookbook().isEmpty())
+				document.addField("website", recipe.getSource().getWebsiteUrl());
+		}
+		for (InstructionSection section : recipe.getInstructSections()) {
+			List<Instruction> instructs = section.getInstructions();
+			for (Instruction instruct : instructs)
+				document.addField("instructdesc", instruct.getDescription());
+		}
+		for (IngredientSection section : recipe.getIngredSections()) {
+			List<RecipeIngredient> ingreds = section.getRecipeIngredients();
+			for (RecipeIngredient recipeIngred : ingreds) {
+				document.addField("ingredname", recipeIngred.getIngredient().getName());
+			}			
+		}
+		
+		try {
+			solrCore.add(document);
+			solrCore.commit();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteRecipe(Long recipeId) {
+		
+		String idStr = recipeId.toString();
+		
+		try {
+			solrCore.deleteById(idStr);
+			solrCore.commit();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

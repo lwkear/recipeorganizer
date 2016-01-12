@@ -21,6 +21,7 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.SolrUtil;
 
 import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
@@ -40,9 +41,10 @@ public class RecipeServiceImpl implements RecipeService {
 	
     @Autowired
     private RecipeRepository recipeRepository;
-
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private SolrUtil solrUtil;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -50,6 +52,8 @@ public class RecipeServiceImpl implements RecipeService {
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
+		recipe.setViews(0);
+		recipe.setPhotoName("");
 		recipe.setCategory(new Category());
 		Source source = new Source();
 		source.setRecipe(recipe);
@@ -101,14 +105,20 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	//assume if the recipe has an ID then it must already exist
-    	if (recipe.getId() > 0)
+    	if (recipe.getId() > 0) {
     		recipeRepository.updateRecipe(recipe);
-    	else
+    		solrUtil.deleteRecipe(recipe.getId());
+    		solrUtil.addRecipe(recipe);
+    	}
+    	else {
     		recipeRepository.addRecipe(recipe);
+        	solrUtil.addRecipe(recipe);
+    	}
     }
     
     public void deleteRecipe(Long id) {
     	recipeRepository.deleteRecipe(id);
+    	solrUtil.deleteRecipe(id);
     }
 
     public Recipe getRecipe(Long id) {
@@ -191,14 +201,6 @@ public class RecipeServiceImpl implements RecipeService {
     
     public Long getRecipeCount(Long userId) {
     	return recipeRepository.getRecipeCount(userId);
-    }
-    
-    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx) {
-    	return recipeRepository.getIngredients(recipe, sectionNdx);
-    }
-
-    public void getAllIngredients(Recipe recipe) {
-    	recipeRepository.getAllIngredients(recipe);
     }
     
     public List<String> getTags(String searchStr, Long userId) {
@@ -298,7 +300,8 @@ public class RecipeServiceImpl implements RecipeService {
 
     	String key = null;
     	String value = null;
-    	RecipeIngredient ingred = null;
+    	RecipeIngredient recipeIngred = null;
+    	Ingredient ingred = null;
     	int seq = 1;
     	int sectNdx = 0;
     	boolean forward = false;
@@ -307,7 +310,7 @@ public class RecipeServiceImpl implements RecipeService {
 		//get the parameters
 		ParameterMap requestParameters = context.getRequestParameters();
 		//create a new empty list
-		List<RecipeIngredient> requestIngred = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
+		List<RecipeIngredient> ingredList = new AutoPopulatingList<RecipeIngredient>(RecipeIngredient.class);
 	
 		//get the parameters from the request and parse the set looking for ingredients
 		Set<Entry<String, Object>> entries = requestParameters.asMap().entrySet();
@@ -319,27 +322,33 @@ public class RecipeServiceImpl implements RecipeService {
     		if (key.contains("currIngredSection"))
 				sectNdx = Integer.parseInt(value);
 			if (key.contains("recipeIngredients")) {
-				if (key.contains("ingredientId")) {
-					ingred = new RecipeIngredient();
-					int id = Integer.parseInt(value);
-					ingred.setIngredientId(id);
-					ingred.setSequenceNo(seq++);
+				//ingredient.id signals a new ingredient
+				if (key.contains("ingredient.id")) {
+					recipeIngred = new RecipeIngredient();
+					ingred = new Ingredient();
+					recipeIngred.setIngredient(ingred);
+					//add to list
+					ingredList.add(recipeIngred);
+					recipeIngred.setSequenceNo(seq++);
+					int id = Integer.parseInt(value);					
+					ingred.setId(id);					
 				}
+				if (key.contains("ingredient.name"))
+					ingred.setName(value);
 				if (key.contains("quantity")) {
-					ingred.setQuantity(value);
+					recipeIngred.setQuantity(value);
 					if (!value.isEmpty()) {
-						Fraction fract = Fraction.getFraction(ingred.getQuantity());
+						Fraction fract = Fraction.getFraction(recipeIngred.getQuantity());
 						float qty = fract.floatValue();
-						ingred.setQtyAmt(qty);
+						recipeIngred.setQtyAmt(qty);
 					}
 					else
-						ingred.setQtyAmt(0);
+						recipeIngred.setQtyAmt(0);
 				}
 				if (key.contains("qtyType"))
-					ingred.setQtyType(value);
+					recipeIngred.setQtyType(value);
 				if (key.contains("qualifier")) {
-					ingred.setQualifier(value);
-					requestIngred.add(ingred);
+					recipeIngred.setQualifier(value);
 				}	
 			}
     		if (key.contains("_proceed"))
@@ -349,9 +358,9 @@ public class RecipeServiceImpl implements RecipeService {
 		}
 
     	//replace the current list with the parsed list
-    	if (requestIngred.size() > 0) {
+    	if (ingredList.size() > 0) {
     		recipe.getIngredientSection(sectNdx).getRecipeIngredients().clear();
-			recipe.getIngredientSection(sectNdx).setRecipeIngredients(requestIngred);
+			recipe.getIngredientSection(sectNdx).setRecipeIngredients(ingredList);
     		
     		if (forward) {
 		    	recipe.getIngredientSection(sectNdx).setSequenceNo(sectNdx+1);

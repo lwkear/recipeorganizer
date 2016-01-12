@@ -9,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.GroupSequence;
@@ -38,10 +38,6 @@ public class RecipeIngredient implements Serializable {
 	@SequenceGenerator(name = "RECIPE_INGREDIENTS_SEQ", sequenceName = "RECIPE_INGREDIENTS_SEQ", allocationSize = 1)
 	private long id;
 
-	@Column(name = "INGREDIENT_ID", nullable = false)
-	@Min(value=1, groups=SizeGroup.class)
-	private long ingredientId;
-		
 	@Column(name = "QUANTITY")
 	@NotBlank(groups=NotBlankGroup.class)
 	@Size(max=20, groups=SizeGroup.class)
@@ -61,19 +57,19 @@ public class RecipeIngredient implements Serializable {
 	@Column(name = "SEQUENCE_NO")
 	private int sequenceNo;
 	
-	@OneToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "INGREDIENT_ID", nullable = false, insertable = false, updatable = false)
-	private Ingredient ingredient;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "INGREDIENT_ID", referencedColumnName = "ID")
+	private Ingredient ingredient = new Ingredient();
 	
 	public RecipeIngredient() {}
 			
-	public RecipeIngredient(long ingredientId, String quantity, float qtyAmt, String qtyType, String qualifier) {
+	public RecipeIngredient(String quantity, float qtyAmt, String qtyType, String qualifier, Ingredient ingredient) {
 		super();
-		this.ingredientId = ingredientId;
 		this.quantity = quantity;
 		this.qtyAmt = qtyAmt;
 		this.qtyType = qtyType;
 		this.qualifier = qualifier;
+		this.ingredient = ingredient;
 	}
 
 	public long getId() {
@@ -82,14 +78,6 @@ public class RecipeIngredient implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public long getIngredientId() {
-		return ingredientId;
-	}
-
-	public void setIngredientId(long ingredientId) {
-		this.ingredientId = ingredientId;
 	}
 
 	public String getQuantity() {
@@ -146,7 +134,6 @@ public class RecipeIngredient implements Serializable {
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((ingredient == null) ? 0 : ingredient.hashCode());
-		result = prime * result + (int) (ingredientId ^ (ingredientId >>> 32));
 		result = prime * result + Float.floatToIntBits(qtyAmt);
 		result = prime * result + ((qtyType == null) ? 0 : qtyType.hashCode());
 		result = prime * result + ((qualifier == null) ? 0 : qualifier.hashCode());
@@ -170,8 +157,6 @@ public class RecipeIngredient implements Serializable {
 			if (other.ingredient != null)
 				return false;
 		} else if (!ingredient.equals(other.ingredient))
-			return false;
-		if (ingredientId != other.ingredientId)
 			return false;
 		if (Float.floatToIntBits(qtyAmt) != Float.floatToIntBits(other.qtyAmt))
 			return false;
@@ -198,7 +183,6 @@ public class RecipeIngredient implements Serializable {
 	@Override
 	public String toString() {
 		return "RecipeIngredient [id=" + id 
-				+ ", ingredientId=" + ingredientId 
 				+ ", quantity=" + quantity 
 				+ ", qtyAmt=" + qtyAmt 
 				+ ", qtyType=" + qtyType 

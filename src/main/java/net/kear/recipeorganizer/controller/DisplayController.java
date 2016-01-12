@@ -35,11 +35,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeComment;
@@ -143,8 +141,8 @@ public class DisplayController {
 				ArrayList<String> cookieIds = new ArrayList<String>(Arrays.asList(recipeIds.split(",")));
 				if (!cookieIds.contains(idStr)) {
 					cookieIds.add(0, idStr);
-					if (cookieIds.size() > 3)
-						cookieIds.remove(3);				
+					if (cookieIds.size() > 5)
+						cookieIds.remove(5);				
 				}
 				else {
 					cookieIds.remove(idStr);

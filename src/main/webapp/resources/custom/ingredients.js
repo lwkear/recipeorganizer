@@ -131,6 +131,7 @@ $(function() {
 			fixIngredArrayIndexes('.ingredID', false);
 			fixIngredArrayIndexes('.ingredQty', false);
 			fixIngredArrayIndexes('.ingredQtyType', false);
+			fixIngredArrayIndexes('.ingredDesc', false);
 			fixIngredArrayIndexes('.ingredQual', false);
 			fixIngredArrayIndexes('.ingredSeq', true);
 			

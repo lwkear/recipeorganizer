@@ -7,7 +7,6 @@ import org.springframework.webflow.execution.RequestContext;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
-import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
@@ -35,8 +34,6 @@ public interface RecipeService {
     public List<SearchResultsDto> recentRecipes(Long userId);
     public List<RecipeListDto> favoriteRecipes(Long userId);
     public Long getRecipeCount(Long userId);
-    public List<Ingredient> getIngredients(Recipe recipe, int sectionNdx);
-    public void getAllIngredients(Recipe recipe);
     public List<String> getTags(String searchStr, Long userId);
     public boolean lookupName(String lookupName, Long userId);
     public void checkArraySizes(Recipe recipe);

@@ -233,12 +233,9 @@ $(function() {
 	$.datepicker.setDefaults({
 		dateFormat: "mm/dd/yy",
 		defaultDate: null,
-		//buttonImage: "/recipeorganizer/resources/jqueryui-smoothness/images/calendar-icon.png",
-		//showOn: "both",
-	    /*beforeShow: function() {
-	    	$(this).css("z-index", 999);	//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
-	    }*/
 	});
+	
+	$('[data-toggle="tooltip"]').tooltip();
 	
 	$('#madeDate').datepicker();
 

@@ -23,33 +23,42 @@
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
 				</c:if>
 				<h3>${recipe.name}
-					<button type="button" class="btn btn-link btn-sm" id="favLeft" style="margin-left:5px;font-size:20px;display:none">
-					  <span class="glyphicon glyphicon-star"></span>
+					<button type="button" class="btn btn-link btn-sm" id="favLeft" style="margin-left:5px;font-size:20px;display:none"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
+						<span class="glyphicon glyphicon-star"></span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" id="madeLeft" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none">
-					  <span class="glyphicon glyphicon-cutlery"></span>
+					<button type="button" class="btn btn-link btn-sm" id="madeLeft" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
+						<span class="glyphicon glyphicon-cutlery"></span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" id="noteLeft" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px;display:none">
-					  <span class="glyphicon glyphicon-paperclip"></span>
+					<button type="button" class="btn btn-link btn-sm" id="noteLeft" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px;display:none"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
+						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
 					<span class="pull-right">
-						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px">
-						  <span class="glyphicon glyphicon-print"></span>
+						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px" 
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
+							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="email" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-envelope"></span>
+						<button type="button" class="btn btn-link btn-sm" id="email" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
+							<span class="glyphicon glyphicon-envelope"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-star"></span>
+						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
+							<span class="glyphicon glyphicon-star"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-cutlery"></span>
+						<button type="button" class="btn btn-link btn-sm" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
+							<span class="glyphicon glyphicon-cutlery"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px">
-						  <span class="glyphicon glyphicon-paperclip"></span>
+						<button type="button" class="btn btn-link btn-sm" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
+							<span class="glyphicon glyphicon-paperclip"></span>
 						</button>
 						<c:if test="${isAuth && (userId == recipe.user.id)}">
-							<a class="btn btn-link btn-sm" id="edit" style="margin-left:5px;font-size:20px" href="../editRecipe/${recipe.id}">
+							<a class="btn btn-link btn-sm" id="edit" style="margin-left:5px;font-size:20px" href="../editRecipe/${recipe.id}"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span>
 							</a>
 						</c:if>
@@ -67,7 +76,8 @@
 					<button type="button" class="btn btn-link btn-sm" onclick="toggleComments()"><spring:message code="recipe.comments"></spring:message>
 						<span class="badge" style="background-color:#337ab7">${commentCount}</span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px">
+					<button type="button" class="btn btn-link btn-sm" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.comment"></spring:message>">
 						<span class="glyphicon glyphicon-comment"></span>
 					</button>
 				</h5>
@@ -80,7 +90,6 @@
 								<span><img src="<c:url value="/user/avatar?filename=${comment.avatar}"/>" style="width:25px;height:25px;"/></span>
 							</c:if>
 							<span><fmt:formatDate type="both" timeStyle="short" value="${comment.dateAdded}" /></span>
-							<%-- <span><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${comment.dateAdded}" /></span> --%>
 							&nbsp;&nbsp;&nbsp;${comment.firstName}&nbsp;${comment.lastName}</h5>
 						<p class="list-group-item-text">${comment.userComment}</p>
 					</div>
@@ -89,9 +98,9 @@
 		</div>
 	</div>		
 	
-	<div class="col-sm-12" style="display:none">
+	<%-- <div class="col-sm-12" style="display:none">
 		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
-	</div>
+	</div> --%>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>
 	<input type="hidden" id="viewerId" value="${viewerId}"/>
 	<input type="hidden" id="recipeId" value="${recipe.id}"/>

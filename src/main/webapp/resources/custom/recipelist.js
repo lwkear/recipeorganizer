@@ -10,6 +10,7 @@ function deleteRecipe(id, name) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {recipeId : id}, postDeleteRecipe);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false})  
 	$("#messageDlg").modal('show');
 } 
 
@@ -58,6 +59,7 @@ function removeFavorite(userId, recipeId, name) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {userId : userId, recipeId : recipeId}, postRemoveFavorite);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false})
 	$("#messageDlg").modal('show');
 } 
 
