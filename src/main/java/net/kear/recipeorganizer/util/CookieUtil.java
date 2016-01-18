@@ -1,7 +1,5 @@
 package net.kear.recipeorganizer.util;
 
-import java.io.Serializable;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,11 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CookieUtil implements Serializable {
+public class CookieUtil {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	private static final long serialVersionUID = 1L;
 	
 	public CookieUtil() {}
 	

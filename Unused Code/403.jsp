@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%-- <!DOCTYPE html>
 <html>
 <head>
 <title>Error</title>
@@ -27,3 +27,4 @@
 	
 </body>
 </html>
+ --%>

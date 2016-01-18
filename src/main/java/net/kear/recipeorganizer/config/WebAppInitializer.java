@@ -30,11 +30,14 @@ public class WebAppInitializer implements WebApplicationInitializer {
         container.addListener(new SessionListener());
     	container.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
     	
-    	AnnotationConfigWebApplicationContext dispatcherServlet = new AnnotationConfigWebApplicationContext();
-    	dispatcherServlet.addApplicationListener(new RegistrationListener());
-    	dispatcherServlet.addApplicationListener(new PasswordResetListener());
+    	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+    	applicationContext.addApplicationListener(new RegistrationListener());
+    	applicationContext.addApplicationListener(new PasswordResetListener());
+
+    	DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
+    	dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
     	
-        ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", new DispatcherServlet(dispatcherServlet));
+        ServletRegistration.Dynamic dispatcher = container.addServlet("dispatcher", dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
         dispatcher.setMultipartConfig(new MultipartConfigElement("G:\\Temp", 1024*1024*5, 1024*1024*5*5, 1024*1024));

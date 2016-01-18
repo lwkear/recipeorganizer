@@ -81,6 +81,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	if (recipe.getPhotoName() == null)
     		recipe.setPhotoName("");
     	Hibernate.initialize(recipe.getSource());
+    	Hibernate.initialize(recipe.getUser());    	
     	
         return recipe;
     }
@@ -98,7 +99,9 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.add(Restrictions.eq("id.userId", userId))
     		.add(Restrictions.eq("id.recipeId", recipeId))
     		.setProjection(Projections.rowCount());
-    	long count = (Long)criteria.uniqueResult();        	
+    	
+    	Object result = criteria.uniqueResult();
+    	Long count = (result == null ? 0L : (Long)result); 
     	return (count > 0 ? true : false);
     }
 
@@ -153,15 +156,18 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.add(Restrictions.eq("id", recipeId))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("views")));
-        	return (Long)criteria.uniqueResult();    	
+        
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
     }
     
     public Long getUserViewCount(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class)
-       			.add(Restrictions.eq("user.id", userId))
-        		.setProjection(Projections.sum("views"));
-        	long views = (Long)criteria.uniqueResult();
-        	return views;
+       		.add(Restrictions.eq("user.id", userId))
+        	.setProjection(Projections.sum("views"));
+        	
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
     }
   
     @SuppressWarnings("unchecked")
@@ -235,8 +241,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
 
     	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
-
-        return recipes;
+    	return recipes;
     }
 
     @SuppressWarnings("unchecked")
@@ -265,7 +270,9 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	Criteria criteria = getSession().createCriteria(Recipe.class)
    			.add(Restrictions.eq("user.id", userId))
     		.setProjection(Projections.rowCount());
-    	return (Long)criteria.uniqueResult();
+    	
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
     }
     
     @SuppressWarnings("unchecked")

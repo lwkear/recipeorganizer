@@ -14,7 +14,7 @@
 
 	<div class="container container-opaque">	
 	 	<div class="col-sm-12">
-			<div class="page-header"> 		
+			<div class="page-header-white"> 		
 				<h1><spring:message code="title.home"></spring:message></h1>
 			</div>
 			<div class="lead text-center"> 		

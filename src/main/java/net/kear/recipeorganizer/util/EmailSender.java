@@ -23,10 +23,8 @@ public class EmailSender {
 	
     @Autowired
     private MessageSource messages;
-	
 	@Autowired
     private JavaMailSender mailSender;
-
 	@Autowired
     private Environment env;
 

@@ -71,8 +71,8 @@ public class Recipe implements Serializable {
 	@SequenceGenerator(name = "RECIPE_SEQ", sequenceName = "RECIPE_SEQ", allocationSize = 1)
 	private long id;
 
-	@ManyToOne(optional = false) //, fetch=FetchType.LAZY)
-	@JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+	@ManyToOne(optional = false, fetch=FetchType.LAZY)
+	@JoinColumn(name = "USER_ID", referencedColumnName = "ID", nullable = false)
 	private User user;
 
 	/*** basics page ***/

@@ -105,11 +105,28 @@ body {
 	color:#336699;
 	margin-top:0px;
 	margin-bottom:5px;
+	font-weight:bold;
 }
 
-/* override of page-header bottom border*/
+.bold-blue {
+	color:#336699;
+	font-weight:bold;
+}
+
+.bold-maroon {
+	color:#990000;
+	font-weight:bold;
+}
+
+/* override of page-header bottom border */
 .page-header {
 	border-bottom: 1px solid #000;
+	color:#990000;	
+}
+
+/* original page-header bottom border for home and thankyou pages */
+.page-header-white {
+  border-bottom: 1px solid #eee;
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */

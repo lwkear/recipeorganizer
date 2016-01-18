@@ -15,9 +15,12 @@
 			<div class="page-header">
 				<h3><spring:message code="common.error"></spring:message></h3>
 			</div>			
-			<div class="row">
-				<div class="span12 center alert alert-danger text-center">
-					<span><spring:message code="common.error.message"></spring:message>&nbsp;${errorMessage}</span>
+			<div class="col-sm-12">			
+				<!-- <div class="center alert alert-danger text-center"> -->
+				<div class="center alert text-danger text-center strong">
+				<c:forEach var="msg" items="${errorMsgs}">
+					<div><h4>${msg}</h4></div>
+				</c:forEach>
 				</div>
 			</div>
 		</div>

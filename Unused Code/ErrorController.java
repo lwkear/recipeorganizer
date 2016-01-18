@@ -25,20 +25,6 @@ public class ErrorController {
 	
 	@Autowired
 	private AuthCookie authCookie;
-	
-	@RequestMapping(value = "/errors/402", method = RequestMethod.GET)
-	public ModelAndView error402(Model model, Locale locale) {
-		ModelAndView view = new ModelAndView("/errors/402");
-
-		return view;
-	}
-	
-	@RequestMapping(value = "/errors/403", method = RequestMethod.GET)
-	public ModelAndView error403(Model model, Locale locale) {
-		ModelAndView view = new ModelAndView("/errors/403");
-
-		return view;
-	}
 
 	@RequestMapping(value = "/errors/expiredSession", method = RequestMethod.GET)
 	public ModelAndView expiredSession(Model model, Locale locale, HttpServletRequest request, HttpServletResponse response) {
@@ -85,26 +71,3 @@ public class ErrorController {
 		return "{}";
 	}
 }
-
-
-
-/*	sample code
-@RequestMapping(value = "/403", method = RequestMethod.GET)
-public ModelAndView accesssDenied() {
-
-    ModelAndView model = new ModelAndView();
-
-    // check if user is login
-    Authentication auth = SecurityContextHolder.getContext()
-            .getAuthentication();
-    if (!(auth instanceof AnonymousAuthenticationToken)) {
-        UserDetails userDetail = (UserDetails) auth.getPrincipal();
-        System.out.println(userDetail);
-
-        model.addObject("username", userDetail.getUsername());
-
-    }
-
-    model.setViewName("403");
-    return model;
-}*/

@@ -21,7 +21,6 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
-import net.kear.recipeorganizer.util.SolrUtil;
 
 import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
@@ -43,8 +42,6 @@ public class RecipeServiceImpl implements RecipeService {
     private RecipeRepository recipeRepository;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private SolrUtil solrUtil;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -105,20 +102,14 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	//assume if the recipe has an ID then it must already exist
-    	if (recipe.getId() > 0) {
+    	if (recipe.getId() > 0)
     		recipeRepository.updateRecipe(recipe);
-    		solrUtil.deleteRecipe(recipe.getId());
-    		solrUtil.addRecipe(recipe);
-    	}
-    	else {
+    	else
     		recipeRepository.addRecipe(recipe);
-        	solrUtil.addRecipe(recipe);
-    	}
     }
     
     public void deleteRecipe(Long id) {
     	recipeRepository.deleteRecipe(id);
-    	solrUtil.deleteRecipe(id);
     }
 
     public Recipe getRecipe(Long id) {

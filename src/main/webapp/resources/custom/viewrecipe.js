@@ -224,6 +224,10 @@ function postFailed(error) {
 	$("#messageDlg").modal();
 }
 
+function rptLoaded() {
+	alert("report loaded");
+}
+
 $(function() {
 
 	convertFractions('.ingredqty');	
@@ -239,8 +243,18 @@ $(function() {
 	
 	$('#madeDate').datepicker();
 
-	$('#htmlPrint').on('click', function(e)
-	{
-		document.getElementById("iframerpt").contentWindow.print();
-	});
+	$(document)
+		.on('click', '#htmlPrint', function(e) {
+			//a jasper report contains tables; if none are found then the report did not load
+			var len = $("#iframerpt").contents().find("body > table").length;
+			if (len > 0)
+				document.getElementById("iframerpt").contentWindow.print();
+			else {
+				$("#messageTitle").text(messageMap.get('errordlg.title'));
+				$("#messageMsg").text("Unable to print at this time.");
+				$(".msgDlgBtn").hide();
+				$("#okBtn").show();
+				$("#messageDlg").modal();
+			}
+		})
 })

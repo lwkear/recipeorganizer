@@ -121,7 +121,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
+			//.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
+			.antMatchers("/", "/home", "/about", "/contact", "/submitsearch", "/searchresults").permitAll()
     		.antMatchers("/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/getSessionTimeout", "/lookupUser").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**").permitAll()
@@ -134,8 +135,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.regexMatchers("/recipe/getRecipeCount/.*","/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
 			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*", "/admin/updateUser").hasAuthority("ADMIN")
+			.antMatchers("/faq" ).hasAuthority("ADMIN")	//test accessed denied
 			.anyRequest().authenticated()
-			/*.anyRequest().permitAll()*/	//comment out to test if above configs are causing a problem
+			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()
@@ -151,7 +153,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.logoutSuccessHandler(logoutSuccessHandler())
 			.and()
 		.exceptionHandling()
-			.accessDeniedPage("/errors/403")
+			.accessDeniedPage("/accessDenied")	//403
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
@@ -160,11 +162,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()
-    		.sessionAuthenticationErrorUrl("/errors/402")
+    		.sessionAuthenticationErrorUrl("/authenticationError")	//402
     		.maximumSessions(1)
     		.sessionRegistry(sessionRegistry())
     		.maxSessionsPreventsLogin(true)
-    		.expiredUrl("/errors/expiredSession")
+    		.expiredUrl("/expiredSession")
     	;
     }
 	
@@ -177,7 +179,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
 	        if (bean instanceof SessionManagementFilter) {
 	            SessionManagementFilter filter = (SessionManagementFilter) bean;
-	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/errors/invalidSession"));
+	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/invalidSession"));
 	        }
 	        return bean;
 	    }

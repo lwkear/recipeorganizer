@@ -37,6 +37,7 @@
 	
 	<logger name="org.springframework.context">
 		<!-- <level value="debug" /> -->
+		<!-- <level value="trace" /> -->
 		<!-- <level value="info" /> -->
 	</logger>
 
@@ -46,7 +47,7 @@
 	</logger>
 	
 	<logger name="org.springframework.web.servlet">
-		<!-- <level value="debug" /> -->
+		<!-- <level value="trace" /> -->
 		<!-- <level value="info" /> -->
 	</logger>
 
@@ -77,6 +78,18 @@
 
 	<logger name="net.sf.jasperreports.engine">
 		<!-- <level value="debug" /> -->
+		<!-- <level value="info" /> -->
+	</logger>
+	
+	<logger name="javax.servlet">
+		<!-- <level value="debug" /> -->
+		<!-- <level value="trace" /> -->
+		<!-- <level value="info" /> -->
+	</logger>
+
+	<logger name="org.apache">
+		<!-- <level value="debug" /> -->
+		<!-- <level value="trace" /> -->
 		<!-- <level value="info" /> -->
 	</logger>
 

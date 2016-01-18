@@ -58,7 +58,7 @@ public class RecipeIngredient implements Serializable {
 	private int sequenceNo;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "INGREDIENT_ID", referencedColumnName = "ID")
+	@JoinColumn(name = "INGREDIENT_ID", referencedColumnName = "ID", nullable = false)
 	private Ingredient ingredient = new Ingredient();
 	
 	public RecipeIngredient() {}

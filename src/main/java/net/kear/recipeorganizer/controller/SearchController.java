@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.SolrUtil;
 import net.kear.recipeorganizer.util.UserInfo;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ public class SearchController {
 	private SolrUtil solrUtil;
 	
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
-	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir) {
+	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir) throws SolrServerException, IOException {
 		logger.info("postTestSearch");
 		logger.info("searchTerm: " + searchTerm);
 		
@@ -53,7 +55,7 @@ public class SearchController {
 	}	
 
 	@RequestMapping(value = "/searchResults", method = RequestMethod.GET)
-	public String getResultspage(Model model) { //,
+	public String getResultspage(Model model) throws SolrServerException, IOException {
 		logger.info("getResultspage");
 		
 		HashMap<String, Object> modelMap = (HashMap<String, Object>) model.asMap();

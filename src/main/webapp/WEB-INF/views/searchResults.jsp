@@ -6,6 +6,13 @@
 
 <title><spring:message code="head.search"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
+<style type="text/css">
+.dataTable > thead > tr > th[class*="sort"]:after{
+    content: "" !important;
+}
+
+</style>
+
 </head>
 
 <body role="document">
@@ -20,21 +27,21 @@
 			<table class="table" id="recipeList">
 				<thead>
 					<tr>
-						<th></th>
+						<th data-orderable="false"></th>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach var="recipe" items="${resultList}">
-						<tr>
+						<tr id="${recipe.id}">
 							<td>
 								<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 								<c:if test="${not empty recipe.photo}">
 									<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
 								</c:if>	
-								<h4 class="list-group-item-heading header-blue">${recipe.name}</h4>
+								<h4 class="header-blue">${recipe.name}</h4>
 								<p class="list-group-item-text">${recipe.description}</p>
 								<p class="clearfix"></p>										
-								</a>							
+								</a>
 							</td>
 						</tr>
 					</c:forEach>

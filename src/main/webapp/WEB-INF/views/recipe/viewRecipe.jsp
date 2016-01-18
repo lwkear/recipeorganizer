@@ -97,10 +97,9 @@
 			</div>
 		</div>
 	</div>		
-	
-	<%-- <div class="col-sm-12" style="display:none">
+	<div class="col-sm-12" style="display:none">
 		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
-	</div> --%>
+	</div>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>
 	<input type="hidden" id="viewerId" value="${viewerId}"/>
 	<input type="hidden" id="recipeId" value="${recipe.id}"/>
@@ -193,6 +192,6 @@
 </body>
 
 <!-- include recipe-specific routines -->
-<script src="<c:url value="/resources/custom/recipeview.js" />"></script>
+<script src="<c:url value="/resources/custom/viewrecipe.js" />"></script>
 
 </html>

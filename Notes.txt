@@ -669,7 +669,7 @@ Here is the important HTML:
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="sessWarnLabel">Your session is about to expire<a class="sectionlink" title="Section permalink" href="#sessWarnLabel">¶</a></h4>
+                        <h4 class="modal-title" id="sessWarnLabel">Your session is about to expire<a class="sectionlink" title="Section permalink" href="#sessWarnLabel">ï¿½</a></h4>
                     </div>
                     <div class="modal-body">
                         Your session will expire in <span id="remaining-time"></span> minutes due to inactivity.
@@ -862,3 +862,16 @@ public String postPassword(@RequestBody Map<String, String> map, HttpServletResp
 	}
 	String oldPassword = map.get("oldpassword");
 	String newPassword = map.get("newpassword");
+
+	
+***********************
+*** exceptions ********
+
+1) manually entered a recipe ID into viewRecipe URL
+ObjectNotFoundException: No row with the given identifier exists: [net.kear.recipeorganizer.persistence.model.Recipe#112]
+NumberFormatException: For parameter string: "abc"
+2) used a recipe view bookmark (referer is null)
+NullPointerException
+3) solr not running
+NullPointerException
+	

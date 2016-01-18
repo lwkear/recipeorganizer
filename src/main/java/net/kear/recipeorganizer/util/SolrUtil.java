@@ -31,7 +31,7 @@ public class SolrUtil {
     private static final String url = "http://localhost:8983/solr/recipe/";
     private static final HttpSolrClient solrCore = new HttpSolrClient(url);
 	
-	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) {
+	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) throws SolrServerException, IOException {
 		
 		QueryResponse rsp = null;
 		
@@ -51,12 +51,7 @@ public class SolrUtil {
 	    String qstr = ClientUtils.toQueryString(query, false);
 	    logger.info("qstr: " + qstr);
 	    
-	    try {
-			rsp = solrCore.query(query);
-		} catch (SolrServerException | IOException e) {
-			//TODO: SOLR Auto-generated catch block
-			e.printStackTrace();
-		}
+	    rsp = solrCore.query(query);
 	    
 	    ArrayList<SearchResultsDto> resultsList = new ArrayList<SearchResultsDto>();
 	    
@@ -95,7 +90,7 @@ public class SolrUtil {
 	    return resultsList;
 	}
 	
-	public void addRecipe(Recipe recipe) {
+	public void addRecipe(Recipe recipe) throws SolrServerException, IOException {
 
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", recipe.getId());
@@ -146,32 +141,16 @@ public class SolrUtil {
 				document.addField("ingredname", recipeIngred.getIngredient().getName());
 			}			
 		}
-		
-		try {
-			solrCore.add(document);
-			solrCore.commit();
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
+		solrCore.add(document);
+		solrCore.commit();
+}
 	
-	public void deleteRecipe(Long recipeId) {
+	public void deleteRecipe(Long recipeId) throws SolrServerException, IOException {
 		
 		String idStr = recipeId.toString();
 		
-		try {
-			solrCore.deleteById(idStr);
-			solrCore.commit();
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		solrCore.deleteById(idStr);
+		solrCore.commit();
 	}
 }

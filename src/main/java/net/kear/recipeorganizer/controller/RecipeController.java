@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -7,14 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +42,8 @@ import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.SolrUtil;
+import net.kear.recipeorganizer.util.ViewReferer;
 
 @Controller
 public class RecipeController {
@@ -64,23 +66,31 @@ public class RecipeController {
 	private MessageSource messages;
 	@Autowired
 	private FileActions fileAction;
+	@Autowired
+	private ViewReferer viewReferer;
+	@Autowired
+	private SolrUtil solrUtil;
 	
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
 	@RequestMapping("recipe/editRecipe/{id}")
-	public String editRecipe(Model model, @PathVariable Long id) {
+	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long id,
+			HttpServletRequest request) {
 		logger.info("recipe/editRecipe GET");
 
 		Recipe recipe = recipeService.getRecipe(id);
 		model.addAttribute("recipe", recipe);
+
+		if (!refer.contains("view"))
+			viewReferer.setReferer(refer, request);
 		
 		return "recipe/editRecipe";
 	}
 
 	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
 	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource,
-			@RequestParam(value = "file", required = false) MultipartFile file) { //, HttpSession session) {		
+			@RequestParam(value = "file", required = false) MultipartFile file) throws SolrServerException, IOException { //, HttpSession session) {		
 		logger.info("recipe/editRecipe POST save");
 	
 		if (result.hasErrors()) {
@@ -98,19 +108,50 @@ public class RecipeController {
         	logger.info("Empty file");
         }
 		
+		boolean newRecipe = recipe.getId() > 0 ? true : false;
+		
 		recipeService.saveRecipe(recipe);
+		
+		if (!newRecipe)
+			solrUtil.deleteRecipe(recipe.getId());
+		
+		solrUtil.addRecipe(recipe);
 		
 		logger.info("Recipe ID = " + recipe.getId());
 		
 		return "redirect:/recipe/viewRecipe/" + recipe.getId();
 	}
 	
+	/****************************/
+	/*** Navigation from view ***/
+	/****************************/
+	public String getReturnMessage(String referer) {
+
+		String returnLabel = null;
+		
+		if (referer.contains("searchResults"))
+			returnLabel = "title.searchresults";
+		else
+		if (referer.contains("listRecipes"))
+			returnLabel = "menu.submittedrecipes";
+		else
+		if (referer.contains("favorites"))
+			returnLabel = "menu.favorites";
+		else
+		if (referer.contains("dashboard"))
+			returnLabel = "dashboard.head";
+		else
+			returnLabel = "";
+
+		return returnLabel;
+	}
+
 	/*****************************/
 	/*** Delete recipe handler ***/
 	/*****************************/
 	@RequestMapping(value="recipe/deleteRecipe")
 	@ResponseBody
-	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) {
+	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) throws SolrServerException, IOException {
 		logger.info("recipe/deleteRecipe");
 		logger.info("recipeId=" + recipeId);
 		
@@ -118,13 +159,9 @@ public class RecipeController {
 		String msg = "{}";
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		//delete the recipe
-		try {
-			recipeService.deleteRecipe(recipeId);
-		} catch (DataAccessException ex) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
-		}
+		recipeService.deleteRecipe(recipeId);
+		
+		solrUtil.deleteRecipe(recipeId);
 		
 		return msg;
 	}	
@@ -161,51 +198,6 @@ public class RecipeController {
 		
 		return ingredient;
 	}
-	
-	//Exception handler for ingredient validation errors
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
-	@ResponseBody
-	public String handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException ex) {
-		
-		logger.info("Caught exception");
-
-		BindingResult result = ex.getBindingResult();
-		List<FieldError> fieldErrors = result.getFieldErrors();
-		
-		Locale locale = LocaleContextHolder.getLocale();
-		String errorCode = "";
-		String defaultMsg = "";
-		String errorMsg = "";
-		
-		if (fieldErrors.size() > 0) {
-			
-			FieldError fieldErr = fieldErrors.get(0);
-			defaultMsg = fieldErr.getDefaultMessage();
-			errorCode = fieldErr.getCode() + "." + fieldErr.getObjectName() + "." + fieldErr.getField();
-	
-			//getMessage throws an error if the message is not found
-			try {
-				errorMsg = messages.getMessage(errorCode, null, locale);
-			}
-			catch (NoSuchMessageException e) {
-				errorMsg = "";
-			};
-
-			if (errorMsg.isEmpty()) {
-				errorMsg = defaultMsg;
-			}
-		}
-
-		if (errorMsg.isEmpty()) {
-			errorMsg = "Unknown error occurred";
-		}
-		
-		logger.info("errorCode: " + errorCode);
-		logger.info("errorMsg: " + errorMsg);
-		
-		return errorMsg;
-	}	
 	
 	//AJAX/JSON request for a typeahead list of ingredients
 	@RequestMapping("recipe/getIngredients")
@@ -299,5 +291,32 @@ public class RecipeController {
 		logger.info("count result=" + count);
 		
 		return count;
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public String handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException ex) {
+		logger.info("MethodArgumentNotValidException exception!");
+
+		BindingResult result = ex.getBindingResult();
+		List<FieldError> fieldErrors = result.getFieldErrors();
+		
+		Locale locale = LocaleContextHolder.getLocale();
+		String errorCode = "";
+		String defaultMsg = "Unknown error";
+		String errorMsg = "";
+		
+		if (fieldErrors.size() > 0) {
+			FieldError fieldErr = fieldErrors.get(0);
+			defaultMsg = fieldErr.getDefaultMessage();
+			errorCode = fieldErr.getCode() + "." + fieldErr.getObjectName() + "." + fieldErr.getField();
+			errorMsg = messages.getMessage(errorCode, null, defaultMsg, locale);
+		}
+
+		logger.info("errorCode: " + errorCode);
+		logger.info("errorMsg: " + errorMsg);
+		
+		return errorMsg;
 	}
 }

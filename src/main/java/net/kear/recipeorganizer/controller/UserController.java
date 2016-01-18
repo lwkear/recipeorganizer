@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -40,6 +41,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.dto.PasswordDto;
@@ -52,6 +55,7 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
 import net.kear.recipeorganizer.util.FileActions;
@@ -82,6 +86,8 @@ public class UserController {
 	private FileActions fileAction;
 	@Autowired
 	private CookieUtil cookieUtil;
+	@Autowired
+	private AuthCookie authCookie;
 	
     /*********************/
     /*** Login handler ***/
@@ -272,7 +278,7 @@ public class UserController {
 
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
 	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
-			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) {
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) throws IOException {
 		logger.info("profile POST");
 
 		if (result.hasErrors()) {
@@ -280,13 +286,10 @@ public class UserController {
 			return "user/profile";
 		}
 
-		//TODO: EXCEPTION: need to return an error message if the file upload is unsuccessful
-		//handle the file upload
 		if (!file.isEmpty()) {
 			String rslt = fileAction.uploadFile(file);
 			userProfile.setAvatar(file.getOriginalFilename());
 			logger.info("File update result: " + rslt);
-			
         } else {
         	logger.info("Empty file");
         }
@@ -340,7 +343,12 @@ public class UserController {
 	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("avatar GET");
 		
-		fileAction.downloadFile(fileName, response);
+		try {
+			fileAction.downloadFile(fileName, response);
+		}
+		catch (IOException ex) {
+			//do nothing - the absence of the photo should not be fatal
+		}
 	}
 	
 	/*******************************/
@@ -433,7 +441,7 @@ public class UserController {
 
 		if (user == null) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.userNotFound", null, locale); //LocaleContextHolder.getLocale());
+			String msg = messages.getMessage("user.userNotFound", null, locale);
 			FieldError err = new FieldError("userEmail","email", msg);
 			result.addError(err);
 			return mv;
@@ -443,8 +451,8 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale)); //LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -464,7 +472,7 @@ public class UserController {
         }
         
     	if (passwordResetToken == null || user == null || user.getId() != id) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, locale)); //LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, locale));
         	redir.addFlashAttribute("password", true);
         	mv.setViewName("redirect:/errors/invalidToken");
         	return mv;     	
@@ -472,7 +480,7 @@ public class UserController {
 		
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, locale)); //LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, locale));
         	redir.addFlashAttribute("password", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
@@ -511,8 +519,8 @@ public class UserController {
      	emailSender.setMessageCode("user.email.resetSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale)); //LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -596,6 +604,47 @@ public class UserController {
      	emailSender.sendSimpleEmailMessage();
 		
 		return "redirect:/user/login";
+	}
+
+	/**********************/
+	/*** session errors ***/
+	/**********************/
+	@RequestMapping(value = "/expiredSession", method = RequestMethod.GET)
+	public ModelAndView expiredSession(Model model, Locale locale, HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView view = new ModelAndView("/errors/expiredSession");
+
+		//this page may be called from the client if a user's session times out, so need to reset the cookie
+		//otherwise, the client cookie will continue to hold the user authentication and the timeout popup will be displayed repeatedly
+		authCookie.setCookie(request, response, "anonymousUser");
+		
+		return view;
+	}
+	
+	@RequestMapping(value = "/invalidSession", method = RequestMethod.GET)
+	public ModelAndView invalidSession(Model model, Locale locale) {
+		ModelAndView view = new ModelAndView("/errors/invalidSession");
+
+		return view;
+	}
+
+	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
+	public ModelAndView accessDeniedError(Model model, Locale locale) {
+		List<String> errorMsgs = new ArrayList<String>();
+		errorMsgs.add(messages.getMessage("exception.AccessDeniedException", null, "Accessed Denied", locale));
+		ModelAndView view = new ModelAndView("/errors/errorMessage");
+		view.addObject("errorMsgs", errorMsgs);
+		
+		return view;
+	}
+
+	@RequestMapping(value = "/authenticationError", method = RequestMethod.GET)
+	public ModelAndView authenticationError(Model model, Locale locale) {
+		List<String> errorMsgs = new ArrayList<String>();
+		errorMsgs.add(messages.getMessage("exception.AuthenticationError", null, "Authentication Error", locale));
+		ModelAndView view = new ModelAndView("/errors/errorMessage");
+		view.addObject("errorMsgs", errorMsgs);
+
+		return view;
 	}
 	
 	/********************/

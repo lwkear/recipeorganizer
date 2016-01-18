@@ -23,7 +23,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -31,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +47,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.UserInfo;
+import net.kear.recipeorganizer.util.ViewReferer;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -83,6 +82,8 @@ public class DisplayController {
 	private FileActions fileAction;
 	@Autowired
 	private CookieUtil cookieUtil;
+	@Autowired
+	private ViewReferer viewReferer;
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -122,8 +123,8 @@ public class DisplayController {
 	/*** View recipe handler ***/
 	/***************************/
 	@RequestMapping("recipe/viewRecipe/{recipeId}")
-	public String viewRecipe(ModelMap model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, 
-			HttpServletResponse response, HttpServletRequest request) {
+	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
+			HttpServletResponse response, HttpServletRequest request) throws JsonProcessingException {
 		logger.info("recipe/viewRecipe GET");
 
 		User user = (User)userInfo.getUserDetails();
@@ -154,8 +155,7 @@ public class DisplayController {
 		}
 		
 		if (!refer.contains("edit")) {
-			request.getSession().setAttribute("returnLabel", getReturnMessage(refer));
-			request.getSession().setAttribute("returnUrl", refer);
+			viewReferer.setReferer(refer, request);
 		}
 		
 		boolean fav = recipeService.isFavorite(user.getId(), recipeId);
@@ -169,9 +169,8 @@ public class DisplayController {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				jsonNote = mapper.writeValueAsString(recipeNote);
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (JsonProcessingException ex) {
+				throw ex;
 			}
 		}
 		
@@ -184,7 +183,10 @@ public class DisplayController {
 		model.addAttribute("commentList", commentList);
 		model.addAttribute("recipe", recipe);
 		
-		recipeService.addView(recipe);
+		if (user.getId() != recipe.getUser().getId())
+			recipeService.addView(recipe);
+		if (!refer.contains("edit"))
+			viewReferer.setReferer(refer, request);
 
 		return "recipe/viewRecipe";
 	}
@@ -193,12 +195,18 @@ public class DisplayController {
 	public void getPhoto(@RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("photo GET");
 
-		if (!fileName.isEmpty())
-			fileAction.downloadFile(fileName, response);
+		if (!fileName.isEmpty()) {
+			try {
+				fileAction.downloadFile(fileName, response);
+			}
+			catch (IOException ex) {
+				//do nothing - the absence of the photo should not be fatal
+			}
+		}
 	}
 	
 	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)
-	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws IOException {
+	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
 		logger.info("report/getHtmlRpt");
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -231,27 +239,25 @@ public class DisplayController {
             exporter.setExporterOutput(htmlOutput);
             exporter.exportReport();
 
-    	} catch (JRException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+    	} catch (JRException ex) {
+			//do nothing - the client will report the lack of a report
+    		return;
 		}
-
+    	
         response.setContentType("text/html");
-        response.setHeader("Content-disposition", "inline; filename=TestPrint.html");
+        response.setHeader("Content-disposition", "inline; filename=RecipePrint.html");
         ServletOutputStream outStream = null;
     	
         try {
         	outStream = response.getOutputStream();
         	baos.writeTo(outStream);
-
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        } catch (IOException ex) {
+        	//do nothing - the client will report the lack of a report
 		}
 	}
 
 	@RequestMapping(value = "/report/getPdfRpt/{id}", method = RequestMethod.GET)
-	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws IOException {
+	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
 		logger.info("report/getHtmlRpt");
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -284,10 +290,8 @@ public class DisplayController {
         	
         	exporter.setConfiguration(configuration);
         	exporter.exportReport();
-        	
-        } catch (JRException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+        } catch (JRException ex) {
+        	//do nothing - the client will report the lack of a report
 		}
 
         response.setContentType("text/html");
@@ -297,10 +301,8 @@ public class DisplayController {
         try {
         	outStream = response.getOutputStream();
         	baos.writeTo(outStream);
-
-        } catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        } catch (IOException ex) {
+        	//do nothing - the client will report the lack of a report
 		}
 	}
 	
@@ -419,54 +421,5 @@ public class DisplayController {
 		}
 		
 		return msg;
-	}
-	
-	/****************************/
-	/*** Navigation from view ***/
-	/****************************/
-	public String getReturnMessage(String referer) {
-
-		String returnLabel = null;
-		
-		logger.info("referer: " + referer);
-		if (referer.contains("searchResults"))
-			returnLabel = "title.searchresults";
-		else
-		if (referer.contains("listRecipes"))
-			returnLabel = "menu.submittedrecipes";
-		else
-		if (referer.contains("favorites"))
-			returnLabel = "menu.favorites";
-		else
-		if (referer.contains("dashboard"))
-			returnLabel = "dashboard.head";
-		else
-			returnLabel = "";
-
-		return returnLabel;
-	}
-	
-	@ExceptionHandler(DataAccessException.class)
-	public ModelAndView handleDataAccessException(DataAccessException ex) {
-		ModelAndView view = new ModelAndView("/errors/errorData");
-
-		logger.info("Recipe: DataAccessException exception!");
-		
-		String errorMsg = ExceptionUtils.getRootCauseMessage(ex);
-		
-		view.addObject("errorMessage", errorMsg);
-		return view;
-	}
-
-	@ExceptionHandler(Exception.class)
-	public ModelAndView handleException(Exception ex) {
-		ModelAndView view = new ModelAndView("/errors/errorData");
-
-		logger.info("Recipe: Exception exception!");
-		
-		String errorMsg = ExceptionUtils.getRootCauseMessage(ex);
-		
-		view.addObject("errorMessage", errorMsg);
-		return view;
 	}
 }

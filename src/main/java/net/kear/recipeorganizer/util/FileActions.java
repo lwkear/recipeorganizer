@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.util;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -26,8 +27,9 @@ public class FileActions {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());	
 	
-	public String uploadFile(Recipe recipe, RequestContext requestContext) {
-	    ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
+	public String uploadFile(Recipe recipe, RequestContext requestContext) throws IOException {
+	    
+		ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
 	    MultipartHttpServletRequest multipartRequest = new StandardMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());
 	    MultipartFile file = multipartRequest.getFile("file");
 	    
@@ -48,8 +50,9 @@ public class FileActions {
             	result = file.getName();
                 recipe.setPhotoName(file.getOriginalFilename());
                 logger.info("Successful upload");                
-            } catch (Exception e) {
-            	logger.info("Exception: " + e.getMessage());
+            } catch (IOException ex) {
+            	logger.info("Exception: " + ex.getMessage());
+            	throw ex;
             }
         } else {
         	logger.info("Empty file");
@@ -58,7 +61,7 @@ public class FileActions {
 	    return result;
 	}
 
-	public String uploadFile(MultipartFile file) {
+	public String uploadFile(MultipartFile file) throws IOException {
 		
 		String result = "";
 		
@@ -71,14 +74,15 @@ public class FileActions {
 	        stream.write(file.getBytes());
 	        stream.close();
 	        logger.info("Successful upload");
-	    } catch (Exception e) {
-	    	logger.info("Exception: " + e.getMessage());
+	    } catch (IOException ex) {
+	    	logger.info("Exception: " + ex.getMessage());
+	    	throw ex;
 	    }
 	    
 	    return result;
 	}	
 	
-	public String downloadFile(String fileName, HttpServletResponse response) {
+	public String downloadFile(String fileName, HttpServletResponse response) throws IOException {
 		
 		String result = "";
 		
@@ -91,8 +95,9 @@ public class FileActions {
         	Files.copy(path, stream);
         	stream.flush();
         	logger.info("Successful download");                
-        } catch (Exception e) {
-        	logger.info("Exception: " + e.getMessage());
+        } catch (IOException ex) {
+        	logger.info("Exception: " + ex.getMessage());
+        	throw ex;
         }
 
         return result;
