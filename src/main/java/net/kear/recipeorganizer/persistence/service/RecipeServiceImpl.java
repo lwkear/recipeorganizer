@@ -21,6 +21,9 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.SolrUtil;
 
 import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
@@ -42,6 +45,10 @@ public class RecipeServiceImpl implements RecipeService {
     private RecipeRepository recipeRepository;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private FileActions fileAction;
+	@Autowired
+	private SolrUtil solrUtil;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -104,8 +111,19 @@ public class RecipeServiceImpl implements RecipeService {
     	//assume if the recipe has an ID then it must already exist
     	if (recipe.getId() > 0)
     		recipeRepository.updateRecipe(recipe);
-    	else
+    	else {
     		recipeRepository.addRecipe(recipe);
+    		
+    		String photoName = recipe.getPhotoName(); 
+    		if (photoName!= null && !photoName.isEmpty()) {
+    			String newName = recipe.getId() + "." + photoName;
+    			//errors are not fatal and will be logged by FileAction
+    			fileAction.renameFile(FileTypes.RECIPE, recipe.getPhotoName(), newName);
+    		}
+
+    		//errors are not fatal and will be logged by SolrUtil
+    		solrUtil.addRecipe(recipe);
+    	}    		
     }
     
     public void deleteRecipe(Long id) {

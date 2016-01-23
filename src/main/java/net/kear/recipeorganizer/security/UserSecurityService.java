@@ -64,9 +64,20 @@ public class UserSecurityService implements UserDetailsService {
 		public String getUsername() {
 			return getEmail();
 		}
-		
+
+		@Override
+		public boolean isAccountNonExpired() {
+			return !isAccountExpired();
+		}
+
+		@Override
+		public boolean isAccountNonLocked() {
+			return !isLocked();
+		}
+
+		@Override
 		public boolean isCredentialsNonExpired() {
-			return true;
+			return !isPasswordExpired();
 		}
 	}
 }

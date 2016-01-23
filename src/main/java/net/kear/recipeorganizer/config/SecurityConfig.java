@@ -24,6 +24,7 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.session.SessionManagementFilter;
 
+import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
 import net.kear.recipeorganizer.security.LoginSuccessHandler;
 import net.kear.recipeorganizer.security.RedirectInvalidSession;
@@ -72,12 +73,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
+	public AuthenticationFailureHandler authenticationFailureHandler() {
+		return new AuthenticationFailureHandler();
+	}
+	
+	@Bean
 	public LoginSuccessHandler loginSuccessHandler() {
 		LoginSuccessHandler handler = new LoginSuccessHandler();
 		handler.setDefaultTargetUrl("/user/dashboard");
 		return handler;
 	}
-
+	
 	@Bean
 	public RememberMeSuccessHandler rememberMeSuccessHandler() {
 		RememberMeSuccessHandler handler = new RememberMeSuccessHandler();
@@ -88,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CustomLogoutSuccessHandler logoutSuccessHandler() {
 		CustomLogoutSuccessHandler handler = new CustomLogoutSuccessHandler();
-		handler.setTargetUrlParameter("/thankyou");
+		//handler.setTargetUrlParameter("/thankyou");
 		return handler;
 	}
 	
@@ -122,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.and()
     	.authorizeRequests()
 			//.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
-			.antMatchers("/", "/home", "/about", "/contact", "/submitsearch", "/searchresults").permitAll()
+			.antMatchers("/", "/home", "/about", "/contact", "/submitsearch", "/searchresults", "/system*").permitAll()
     		.antMatchers("/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
 			.antMatchers("/messages/**", "/errors/**", "/getSessionTimeout", "/lookupUser").permitAll()
 			.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**").permitAll()
@@ -135,21 +141,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.regexMatchers("/recipe/getRecipeCount/.*","/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
 			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
 			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*", "/admin/updateUser").hasAuthority("ADMIN")
-			.antMatchers("/faq" ).hasAuthority("ADMIN")	//test accessed denied
+			.antMatchers("/faq" ).hasAuthority("ADMIN")	//TODO: test accessed denied; remove this for production
 			.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()
 			.loginPage("/user/login")
-			.failureUrl("/user/login?err=1")
 			.permitAll()
+			.failureHandler(authenticationFailureHandler())
 			.successHandler(loginSuccessHandler())
 			.and()
 		.logout()
 			.deleteCookies("JSESSIONID")
 			.invalidateHttpSession(true)
-			.logoutSuccessUrl("/thankyou")
 			.logoutSuccessHandler(logoutSuccessHandler())
 			.and()
 		.exceptionHandling()
@@ -166,7 +171,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.maximumSessions(1)
     		.sessionRegistry(sessionRegistry())
     		.maxSessionsPreventsLogin(true)
-    		.expiredUrl("/expiredSession")
+    		.expiredUrl("/errors/expiredSession")
     	;
     }
 	
@@ -179,7 +184,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
 	        if (bean instanceof SessionManagementFilter) {
 	            SessionManagementFilter filter = (SessionManagementFilter) bean;
-	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/invalidSession"));
+	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/errors/invalidSession"));
 	        }
 	        return bean;
 	    }

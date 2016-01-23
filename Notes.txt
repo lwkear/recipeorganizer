@@ -875,3 +875,62 @@ NullPointerException
 3) solr not running
 NullPointerException
 	
+	
+*************************************
+*** session and logout stuff ********
+	
+		//HttpSession session = request.getSession();
+
+		/*Enumeration<String> attrNames = session.getAttributeNames();
+		while (attrNames.hasMoreElements())
+			logger.info("getContact before: session attrNames " + attrNames.nextElement());
+
+		attrNames = request.getAttributeNames();
+		while (attrNames.hasMoreElements())
+			logger.info("getContact before: request attrNames " + attrNames.nextElement());
+
+		Collection<String> hdrNames = response.getHeaderNames();
+		for (String name : hdrNames) {
+			logger.info("getContact before: response names " + name);
+		}
+		
+		DefaultCsrfToken token = null;
+		
+		Object obj = session.getAttribute("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN");
+		if (obj != null) {
+			logger.info("getContact before: csrf token: " + obj.toString());
+			token = (DefaultCsrfToken)obj;
+		}
+		
+		//HttpSessionCsrfTokenRepository repo = new HttpSessionCsrfTokenRepository();
+		//token = repo.loadToken(request);
+		
+		//HttpSessionCsrfTokenRepository repo = HttpSessionCsrfTokenRepository
+		//CsrfTokenRepository repo = (CsrfTokenRepository)obj;
+		//HttpSessionCsrfTokenRepository repo = (HttpSessionCsrfTokenRepository)obj;
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null) {
+			//new CookieClearingLogoutHandler().logout(request, response, auth);
+			//new TokenBasedRememberMeServices().logout(request, response, auth);
+			//repo.saveToken(null, request, response);
+			//session.removeAttribute("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN");
+			//new CsrfLogoutHandler(repo).logout(request, response, auth);
+			new SecurityContextLogoutHandler().logout(request, response, auth);
+		}
+		
+		attrNames = request.getAttributeNames();
+		while (attrNames.hasMoreElements())
+			logger.info("getContact after: request attrNames " + attrNames.nextElement());
+		
+		hdrNames = response.getHeaderNames();
+		for (String name : hdrNames) {
+			logger.info("getContact after: response names " + name);
+		}
+		
+		//obj = request.getAttribute("_csrf");
+		//request.setAttribute("_csrf", null);
+		
+		return "redirect:about";
+*/		
+	

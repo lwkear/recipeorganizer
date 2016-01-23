@@ -10,6 +10,7 @@ import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -21,12 +22,16 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SolrUtil {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private ExceptionLogService logService;
 	
     private static final String url = "http://localhost:8983/solr/recipe/";
     private static final HttpSolrClient solrCore = new HttpSolrClient(url);
@@ -90,7 +95,7 @@ public class SolrUtil {
 	    return resultsList;
 	}
 	
-	public void addRecipe(Recipe recipe) throws SolrServerException, IOException {
+	public void addRecipe(Recipe recipe) {
 
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", recipe.getId());
@@ -142,15 +147,27 @@ public class SolrUtil {
 			}			
 		}
 
-		solrCore.add(document);
-		solrCore.commit();
+		try {
+			solrCore.add(document);
+			solrCore.commit();
+		} catch (SolrServerException ex) {
+	    	logService.addException(ex);
+	    } catch (IOException ex) {
+	    	logService.addException(ex);
+	    }		
 }
 	
-	public void deleteRecipe(Long recipeId) throws SolrServerException, IOException {
+	public void deleteRecipe(Long recipeId) {
 		
 		String idStr = recipeId.toString();
 		
-		solrCore.deleteById(idStr);
-		solrCore.commit();
+		try {
+			solrCore.deleteById(idStr);
+			solrCore.commit();
+		} catch (SolrServerException ex) {
+	    	logService.addException(ex);
+	    } catch (IOException ex) {
+	    	logService.addException(ex);
+	    }		
 	}
 }

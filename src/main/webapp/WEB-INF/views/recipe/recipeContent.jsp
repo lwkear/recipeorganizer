@@ -79,7 +79,7 @@
 		</div>
 		<c:if test="${not empty recipe.photoName}">			
 			<div class="col-sm-3">
-				<span><img src="<c:url value="/recipe/photo?filename=${recipe.photoName}"/>" style="width:250px;height:188px;"/></span>
+				<span><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photoName}"/>" alt="" style="width:250px;height:188px;"/></span>
 			</div>
 		</c:if>	
 	</div>

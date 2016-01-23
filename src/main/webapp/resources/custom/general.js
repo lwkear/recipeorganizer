@@ -43,7 +43,7 @@ function setSessionTimeout() {
 		setTimeout(displayTimeout, timeout);
 	})
 	.fail(function(jqXHR, status, error) {
-		alert('setTimeout fail')
+		console.log('setTimeout fail');
 		console.log('fail status: '+ jqXHR.status);
 		console.log('fail error: '+ error);
 	});
@@ -91,6 +91,14 @@ function blurInputFocus()
 	//for a few pages that should not have focus on any control
 	//add this to the body onload
 	$(':input:visible:enabled:focus').blur(); 
+}
+
+function displayOKMsg(title, msg) {
+	$("#messageTitle").text(title);
+	$("#messageMsg").text(msg);
+	$(".msgDlgBtn").hide();
+	$("#okBtn").show();
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false});
 }
 
 $(document).ready(function() {

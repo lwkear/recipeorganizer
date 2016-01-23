@@ -23,14 +23,44 @@ function initStatesTA() {
 
 function checkAvatarOptions() {
 	var opt = $('input[name="photoOpts"]:checked').val();
-	if (opt == 'remove')
-		$('#avatar').val("");
+	if (opt == 'remove') {
+		var photo = $('#avatar').val();
+		$('#avatar').val('xxxREMOVExxx' + photo);
+	}
+	if (opt == 'change') {
+		var filename = $('#photoname').val();
+		if (filename == null || filename == "") {
+			displayOKMsg(messageMap.get('profile.photo'), messageMap.get('recipe.optional.photo.noneselected'));
+			return false;
+		}
+	}	
 };
+
+function checkForFileError() {
+	var avatarErr = $("#avatarErr").val();
+	if (avatarErr.length) {
+		$("#messageTitle").text(messageMap.get('errordlg.title'));
+		$("#messageMsg").text(avatarErr);
+		$(".msgDlgBtn").hide();
+		$("#okBtn").show();
+		$("#cnclBtn").show();
+		$("#okBtn").one('click', saveProfile);
+		$("#messageDlg").modal('show');
+	}
+}
+
+function saveProfile(e) {
+	$("#messageDlg").modal('hide');
+	//remove the file object
+	$("#file").val(null);
+	document.forms["profileForm"].submit();
+}
 
 //shorthand for document.ready
 $(function() {
 
 	initStatesTA();
+	checkForFileError();
 
 	$(document)
 		.on('click', 'input[name="photoOpts"]:checked', function(e)
@@ -46,6 +76,7 @@ $(function() {
 			label = input.val();
 			input.trigger('fileselect', [label]);
 		});
+	
 	$('.btn-file :file').on('fileselect', function(event, label) {
 		var input = $(this).parents('.input-group').find(':text');
 		if (input.length)

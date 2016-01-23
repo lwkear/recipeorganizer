@@ -46,7 +46,7 @@
 						<c:forEach var="recipe" items="${viewedRecipes}">
 							<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 								<c:if test="${not empty recipe.photo}">
-									<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:50px;height:50px;"/></span>
+									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:50px;height:50px;"/></span>
 								</c:if>	
 								<h4 class="header-blue">${recipe.name}</h4>
 								<p class="list-group-item-text">${recipe.description}</p>
@@ -61,7 +61,7 @@
 						<c:forEach var="recipe" items="${recentRecipes}">
 							<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 								<c:if test="${not empty recipe.photo}">
-									<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:50px;height:50px;"/></span>
+									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:50px;height:50px;"/></span>
 								</c:if>	
 								<h4 class="header-blue">${recipe.name}</h4>
 								<p class="list-group-item-text">${recipe.description}</p>

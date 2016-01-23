@@ -1,6 +1,5 @@
 package net.kear.recipeorganizer.controller;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.FileTypes;
 import net.kear.recipeorganizer.util.SolrUtil;
 import net.kear.recipeorganizer.util.ViewReferer;
 
@@ -89,35 +88,47 @@ public class RecipeController {
 	}
 
 	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
-	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource,
-			@RequestParam(value = "file", required = false) MultipartFile file) throws SolrServerException, IOException { //, HttpSession session) {		
+	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource, Locale locale,
+			@RequestParam(value = "file", required = false) MultipartFile file) {		
 		logger.info("recipe/editRecipe POST save");
 	
 		if (result.hasErrors()) {
 			logger.info("Validation errors");
 			return "recipe/editRecipe";
 		}
-		
-		//TODO: EXCEPTION: need to return an error message if the file upload is unsuccessful
-		//handle the file upload
-		if (!file.isEmpty()) {
-			String rslt = fileAction.uploadFile(file);
+
+		if (file != null && !file.isEmpty()) {
+			boolean rslt = fileAction.uploadFile(FileTypes.RECIPE, recipe.getId(), file);
+			if (!rslt) {
+				String msg = messages.getMessage("exception.file.IOException", null, locale);
+				FieldError fieldError = new FieldError("recipe", "photoName", msg);
+				result.addError(fieldError);
+				return "recipe/editRecipe";
+			}
+			String currPhoto = recipe.getPhotoName();
+			if (currPhoto != null && !currPhoto.isEmpty()) {
+				String newPhoto = file.getOriginalFilename();
+				if (!currPhoto.equalsIgnoreCase(newPhoto))
+					fileAction.deleteFile(FileTypes.RECIPE, recipe.getId(), currPhoto);
+			}
 			recipe.setPhotoName(file.getOriginalFilename());
-			logger.info("File update result: " + rslt);
-        } else {
-        	logger.info("Empty file");
         }
 		
+		String photoName = recipe.getPhotoName();
+		if (photoName.startsWith("xxxREMOVExxx")) {
+			String name = photoName.substring(12);
+			//errors are not fatal and will be logged by FileAction
+			fileAction.deleteFile(FileTypes.RECIPE, recipe.getId(), name);
+			recipe.setPhotoName("");
+		}
+
 		boolean newRecipe = recipe.getId() > 0 ? true : false;
-		
 		recipeService.saveRecipe(recipe);
 		
+		//errors are not fatal and will be logged by SolrUtil
 		if (!newRecipe)
 			solrUtil.deleteRecipe(recipe.getId());
-		
 		solrUtil.addRecipe(recipe);
-		
-		logger.info("Recipe ID = " + recipe.getId());
 		
 		return "redirect:/recipe/viewRecipe/" + recipe.getId();
 	}
@@ -151,7 +162,7 @@ public class RecipeController {
 	/*****************************/
 	@RequestMapping(value="recipe/deleteRecipe")
 	@ResponseBody
-	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) throws SolrServerException, IOException {
+	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) {
 		logger.info("recipe/deleteRecipe");
 		logger.info("recipeId=" + recipeId);
 		
@@ -161,8 +172,14 @@ public class RecipeController {
 		
 		recipeService.deleteRecipe(recipeId);
 		
-		solrUtil.deleteRecipe(recipeId);
+		String fileName = fileAction.fileExists(FileTypes.RECIPE, recipeId);
+		if (fileName.length() > 0)
+			//errors are not fatal and will be logged by FileAction
+			fileAction.deleteFile(FileTypes.RECIPE, recipeId, fileName);
 		
+		//errors are not fatal and will be logged by SolrUtil
+		solrUtil.deleteRecipe(recipeId);
+
 		return msg;
 	}	
 
@@ -247,7 +264,6 @@ public class RecipeController {
 		return tags;
 	}
 
-	//TODO: EXCEPTION: consider using an exception handler instead?
 	//AJAX/JSON request for checking name duplication
 	@RequestMapping(value="recipe/lookupRecipeName", produces="text/javascript")
 	@ResponseBody 

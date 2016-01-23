@@ -122,7 +122,7 @@
 					<c:when test="${not empty recipe.photoName}">												
 						<div class="col-sm-3">
 							<!-- NOTE: disabled inputs are not submitted to the controller, hence the need for a hidden field -->
-							<form:hidden id="hiddenphoto" path="photoName"/>
+							<form:hidden id="hiddenphoto" path="photoName" value="${recipe.photoName}"/>
 							<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
 						</div>
 						<div class="col-sm-2">

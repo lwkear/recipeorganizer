@@ -15,14 +15,16 @@
 	<spring:bind path="userProfile.city"><c:set var="cityError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="userProfile.state"><c:set var="stateError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="userProfile.interests"><c:set var="interestsError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="userProfile.avatar"><c:set var="avatarError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="profile.title"></spring:message></h3>
-			</div>			
+			</div>
 			<div class="row">
-				<form:form name="profileForm" role="form" method="post" modelAttribute="userProfile" enctype="multipart/form-data">
+				<form:form name="profileForm" id="profileForm" role="form" method="post" onsubmit="return checkAvatarOptions()" modelAttribute="userProfile" enctype="multipart/form-data">
+					<input type="text" id="avatarErr" value="${avatarError}" style="display:none"></input>
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
 							<label class="control-label" for="city"><spring:message code="profile.city"></spring:message></label>
@@ -88,8 +90,8 @@
 							<c:when test="${not empty userProfile.avatar}">												
 								<div class="col-sm-3 col-sm-offset-2">
 									<!-- NOTE: disabled inputs are not submitted to the controller, hence the need for a hidden field -->
-									<form:hidden id="avatar" path="avatar"/>
-									<input class="form-control" type="text" id="photoName" value="${userProfile.avatar}" disabled/>
+									<form:hidden id="avatar" path="avatar" value="${userProfile.avatar}"/>
+									<input class="form-control" type="text" value="${userProfile.avatar}" disabled/>
 								</div>
 								<div class="col-sm-2">
 									<div class="radio">
@@ -130,7 +132,7 @@
 						</c:choose>
 					</div>	        		
 			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
-						<button class="btn btn-primary btn-block" onclick="checkAvatarOptions()" type="submit" id="submit" name="submit">
+						<button class="btn btn-primary btn-block" type="submit" id="btnSubmit" name="btnSubmit">
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<form:hidden path="id" />
@@ -148,3 +150,16 @@
 <script src="<c:url value="/resources/custom/userprofile.js" />"></script>
 
 </html>
+
+
+<%-- 
+	<spring:hasBindErrors name="userProfile">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors>
+ --%>

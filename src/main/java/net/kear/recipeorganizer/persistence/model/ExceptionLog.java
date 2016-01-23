@@ -28,8 +28,7 @@ public class ExceptionLog implements Serializable {
 	@Column(name = "EVENT_ID", nullable = false)
 	private long eventId;
 
-	@Temporal(TemporalType.DATE)
-	//@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "EVENT_TIMESTAMP")
 	private Date eventTimestamp;
 

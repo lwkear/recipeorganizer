@@ -217,15 +217,7 @@ function addFavorite(viewerId, recipeId) {
 }
 
 function postFailed(error) {
-	$("#messageTitle").text(messageMap.get('errordlg.title'));
-	$("#messageMsg").text(error);
-	$(".msgDlgBtn").hide();
-	$("#okBtn").show();
-	$("#messageDlg").modal();
-}
-
-function rptLoaded() {
-	alert("report loaded");
+	displayOKMsg(messageMap.get('errordlg.title'), error);
 }
 
 $(function() {
@@ -249,12 +241,7 @@ $(function() {
 			var len = $("#iframerpt").contents().find("body > table").length;
 			if (len > 0)
 				document.getElementById("iframerpt").contentWindow.print();
-			else {
-				$("#messageTitle").text(messageMap.get('errordlg.title'));
-				$("#messageMsg").text("Unable to print at this time.");
-				$(".msgDlgBtn").hide();
-				$("#okBtn").show();
-				$("#messageDlg").modal();
-			}
+			else
+				postFailed(messageMap.get('exception.JRException'));
 		})
 })

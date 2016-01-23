@@ -30,6 +30,8 @@ import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.FileTypes;
 
 @Controller
 public class AdminController {
@@ -44,6 +46,8 @@ public class AdminController {
 	private RoleService roleService;
 	@Autowired
 	private SessionRegistry sessionRegistry;
+	@Autowired
+	private FileActions fileAction;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -110,6 +114,11 @@ public class AdminController {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}
+		
+		String fileName = fileAction.fileExists(FileTypes.AVATAR, userId);
+		if (fileName.length() > 0)
+			//errors are not fatal and will be logged by FileAction
+			fileAction.deleteFile(FileTypes.AVATAR, userId, fileName);
 		
 		return msg;
 	}

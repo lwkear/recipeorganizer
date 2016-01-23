@@ -41,7 +41,7 @@ public class SearchController {
 	
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
 	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir) throws SolrServerException, IOException {
-		logger.info("postTestSearch");
+		logger.info("submitSearch");
 		logger.info("searchTerm: " + searchTerm);
 		
 		ArrayList<SearchResultsDto> resultsList = solrUtil.searchRecipes(searchTerm);
@@ -55,8 +55,8 @@ public class SearchController {
 	}	
 
 	@RequestMapping(value = "/searchResults", method = RequestMethod.GET)
-	public String getResultspage(Model model) throws SolrServerException, IOException {
-		logger.info("getResultspage");
+	public String getSearchResults(Model model) throws SolrServerException, IOException {
+		logger.info("getSearchResults");
 		
 		HashMap<String, Object> modelMap = (HashMap<String, Object>) model.asMap();
 		int num = modelMap.size();

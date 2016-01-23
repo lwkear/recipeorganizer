@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "USERS")
@@ -57,8 +57,8 @@ public class User implements Serializable {
 	@Column(name = "LOCKED")
 	private int locked;
 	
-	@Column(name = "EXPIRED")
-	private int expired;
+	@Column(name = "ACCOUNT_EXPIRED")
+	private int accountExpired;
 
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
@@ -70,6 +70,9 @@ public class User implements Serializable {
 	@Column(name = "LAST_LOGIN")
 	private Date lastLogin;
 
+	@Column(name = "PASSWORD_EXPIRED")
+	private int passwordExpired;
+	
 	@Transient
 	private boolean loggedIn = false;
 	
@@ -86,6 +89,27 @@ public class User implements Serializable {
 	
 	public User() {}
 	
+	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, Date dateAdded, 
+				Date lastLogin, int passwordExpired, boolean loggedIn, long numRecipes, Role role, UserProfile userProfile) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.enabled = enabled;
+		this.tokenExpired = tokenExpired;
+		this.locked = locked;
+		this.accountExpired = accountExpired;
+		this.dateAdded = dateAdded;
+		this.lastLogin = lastLogin;
+		this.passwordExpired = passwordExpired;
+		this.loggedIn = loggedIn;
+		this.numRecipes = numRecipes;
+		this.role = role;
+		this.userProfile = userProfile;
+	}
+	
 	public User(User user) {
 		this.id = user.id;
 		this.firstName = user.firstName;
@@ -94,19 +118,15 @@ public class User implements Serializable {
 		this.password = user.password;
 		this.enabled = user.enabled;
 		this.tokenExpired = user.tokenExpired;
+		this.locked = user.locked;
+		this.accountExpired = user.accountExpired;
+		this.dateAdded = user.dateAdded;
+		this.lastLogin = user.lastLogin;
+		this.passwordExpired = user.passwordExpired;
+		this.loggedIn = user.loggedIn;
+		this.numRecipes = user.numRecipes;
 		this.role = user.role;
-	}
-	
-	public User(String firstName, String lastName, String email,
-			String password, int enabled, int tokenExpired, Role role) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.password = password;
-		this.enabled = enabled;
-		this.tokenExpired = tokenExpired;
-		this.role = role;
+		this.userProfile = user.userProfile;
 	}
 
 	public long getId() {
@@ -157,6 +177,8 @@ public class User implements Serializable {
 		this.enabled = enabled;
 	}
 
+	//TODO: HIBERNATE: check into why I set this annotation (don't remember...)
+	//@JsonIgnore
 	public boolean isEnabled() {
 		return (enabled == 1 ? true : false);
 	}
@@ -169,6 +191,7 @@ public class User implements Serializable {
 		this.tokenExpired = tokenExpired;
 	}
 	
+	//@JsonIgnore
 	public boolean isTokenExpired() {
 		return (tokenExpired == 1 ? true : false);
 	}
@@ -181,30 +204,22 @@ public class User implements Serializable {
 		this.locked = locked;
 	}
 	
+	//@JsonIgnore
 	public boolean isLocked() {
 		return (locked == 1 ? true : false);
 	}
-	
-	@JsonIgnore
-	public boolean isAccountNonLocked() {
-		return (locked == 1 ? false : true);
+
+	public int getAccountExpired() {
+		return accountExpired;
 	}
 
-	public int getExpired() {
-		return expired;
-	}
-
-	public void setExpired(int expired) {
-		this.expired = expired;
+	public void setAccountExpired(int accountExpired) {
+		this.accountExpired = accountExpired;
 	}
 	
-	public boolean isExpired() {
-		return (expired == 1 ? true : false);
-	}
-	
-	@JsonIgnore
-	public boolean isAccountNonExpired() {
-		return (expired == 1 ? false : true);
+	//@JsonIgnore
+	public boolean isAccountExpired() {
+		return (accountExpired == 1 ? true : false);
 	}
 
 	public Date getDateAdded() {
@@ -213,6 +228,19 @@ public class User implements Serializable {
 
 	public void setDateAdded(Date dateAdded) {
 		this.dateAdded = dateAdded;
+	}
+
+	public int getPasswordExpired() {
+		return passwordExpired;
+	}
+
+	public void setPasswordExpired(int passwordExpired) {
+		this.passwordExpired = passwordExpired;
+	}
+	
+	//@JsonIgnore
+	public boolean isPasswordExpired() {
+		return (passwordExpired == 1 ? true : false);
 	}
 
 	public Date getLastLogin() {
@@ -284,10 +312,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", enabled=" + enabled + ", tokenExpired=" + tokenExpired
-				+ ", locked=" + locked + ", expired=" + expired + ", dateAdded=" + dateAdded + ", lastLogin=" + lastLogin + ", loggedIn=" + loggedIn + ", numRecipes=" + numRecipes 
-				+ ", role=" + role
-				+ ", userProfile=" + userProfile 
-				+ "]";
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", enabled=" + enabled 
+				+ ", tokenExpired=" + tokenExpired + ", locked=" + locked + ", accountExpired=" + accountExpired + ", dateAdded=" + dateAdded + ", lastLogin=" + lastLogin 
+				+ ", passwordExpired=" + passwordExpired + ", loggedIn=" + loggedIn + ", numRecipes=" + numRecipes + ", role=" + role + ", userProfile=" + userProfile + "]";
 	}	
 }

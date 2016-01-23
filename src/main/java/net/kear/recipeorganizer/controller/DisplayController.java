@@ -43,9 +43,11 @@ import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CommentService;
+import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.FileTypes;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.ViewReferer;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -84,6 +86,8 @@ public class DisplayController {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private ViewReferer viewReferer;
+	@Autowired
+	private ExceptionLogService logService;
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -124,7 +128,7 @@ public class DisplayController {
 	/***************************/
 	@RequestMapping("recipe/viewRecipe/{recipeId}")
 	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
-			HttpServletResponse response, HttpServletRequest request) throws JsonProcessingException {
+			HttpServletResponse response, HttpServletRequest request) {
 		logger.info("recipe/viewRecipe GET");
 
 		User user = (User)userInfo.getUserDetails();
@@ -170,7 +174,7 @@ public class DisplayController {
 			try {
 				jsonNote = mapper.writeValueAsString(recipeNote);
 			} catch (JsonProcessingException ex) {
-				throw ex;
+				logService.addException(ex);
 			}
 		}
 		
@@ -192,17 +196,12 @@ public class DisplayController {
 	}
 	
 	@RequestMapping(value = "recipe/photo", method = RequestMethod.GET)
-	public void getPhoto(@RequestParam("filename") final String fileName, HttpServletResponse response) {
+	public void getPhoto(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("photo GET");
 
-		if (!fileName.isEmpty()) {
-			try {
-				fileAction.downloadFile(fileName, response);
-			}
-			catch (IOException ex) {
-				//do nothing - the absence of the photo should not be fatal
-			}
-		}
+		if (fileName != null && !fileName.isEmpty())
+			//errors are not fatal and will be logged by FileAction
+			fileAction.downloadFile(FileTypes.RECIPE, id, fileName, response);
 	}
 	
 	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)
@@ -240,7 +239,8 @@ public class DisplayController {
             exporter.exportReport();
 
     	} catch (JRException ex) {
-			//do nothing - the client will report the lack of a report
+			//log the error and do nothing - the client will notify the user of the lack of a report
+			logService.addException(ex);
     		return;
 		}
     	
@@ -252,7 +252,8 @@ public class DisplayController {
         	outStream = response.getOutputStream();
         	baos.writeTo(outStream);
         } catch (IOException ex) {
-        	//do nothing - the client will report the lack of a report
+			//log the error and do nothing - the client will notify the user of the lack of a report
+			logService.addException(ex);
 		}
 	}
 
@@ -291,7 +292,9 @@ public class DisplayController {
         	exporter.setConfiguration(configuration);
         	exporter.exportReport();
         } catch (JRException ex) {
-        	//do nothing - the client will report the lack of a report
+			//log the error and do nothing - the client will notify the user of the lack of a report
+			logService.addException(ex);
+			return;
 		}
 
         response.setContentType("text/html");
@@ -302,7 +305,8 @@ public class DisplayController {
         	outStream = response.getOutputStream();
         	baos.writeTo(outStream);
         } catch (IOException ex) {
-        	//do nothing - the client will report the lack of a report
+			//log the error and do nothing - the client will notify the user of the lack of a report
+			logService.addException(ex);
 		}
 	}
 	
@@ -323,6 +327,7 @@ public class DisplayController {
 		try {
 			recipeService.addFavorite(favorite);
 		} catch (DataAccessException ex) {
+			logService.addException(ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}
@@ -344,6 +349,7 @@ public class DisplayController {
 		try {
 			recipeService.removeFavorite(favorite);
 		} catch (DataAccessException ex) {
+			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}
@@ -368,6 +374,7 @@ public class DisplayController {
 		try {
 			recipeService.updateRecipeMade(recipeMade);
 		} catch (DataAccessException ex) {
+			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}
@@ -392,6 +399,7 @@ public class DisplayController {
 		try {
 			recipeService.updateRecipeNote(recipeNote);
 		} catch (DataAccessException ex) {
+			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}
@@ -416,6 +424,7 @@ public class DisplayController {
 		try {
 			commentService.addComment(recipeComment);
 		} catch (DataAccessException ex) {
+			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			msg = ExceptionUtils.getRootCauseMessage(ex);			
 		}

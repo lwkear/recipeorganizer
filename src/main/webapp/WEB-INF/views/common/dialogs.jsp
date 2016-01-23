@@ -33,7 +33,7 @@
 				<button type="button" class="btn btn-primary msgDlgBtn" data-dismiss="modal" id="yesBtn" style="display:none"><spring:message code="common.yes"></spring:message></button>
 				<button type="button" class="btn btn-default msgDlgBtn" data-dismiss="modal" id="noBtn" style="display:none"><spring:message code="common.no"></spring:message></button>
 				<button type="button" class="btn btn-primary msgDlgBtn" data-dismiss="modal" id="okBtn" style="display:none"><spring:message code="common.ok"></spring:message></button>
-				<button type="button" class="btn btn-default msgDlgBtn" data-dismiss="modal" id="cancelBtn" style="display:none"><spring:message code="common.cancel"></spring:message></button>
+				<button type="button" class="btn btn-default msgDlgBtn" data-dismiss="modal" id="cnclBtn" style="display:none"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>
 	</div>

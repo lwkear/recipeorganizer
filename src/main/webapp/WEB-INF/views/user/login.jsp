@@ -45,6 +45,11 @@
 							</div>
 						</div>
 					</div>
+					<c:if test="${error != null}">
+						<div class="col-sm-12 text-center">
+							<h5 class="control-label text-danger"><c:out value="${error}"/></h5>
+						</div>
+					</c:if>
 			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
@@ -58,11 +63,7 @@
 							</a>
 						</div>
 	        		</div>
-	        		
-					<div class="col-sm-12 text-center">
-						<h4 class="control-label text-danger"><c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/></h4>
-					</div>
-					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+	        		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	      		</form>
 			</div>
 		</div>

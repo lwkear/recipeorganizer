@@ -47,6 +47,9 @@ public class UserServiceImpl implements UserService {
     	user.setLastName(userDto.getLastName());
     	user.setEnabled(0);
     	user.setTokenExpired(0);
+    	user.setLocked(0);
+    	user.setAccountExpired(0);
+    	user.setPasswordExpired(0);
     	user.setRole(roleRepository.getDefaultRole());
     	userRepository.addUser(user);
     	

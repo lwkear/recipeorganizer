@@ -1,10 +1,8 @@
 package net.kear.recipeorganizer.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,11 +18,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-//import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,8 +38,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
@@ -59,6 +55,7 @@ import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
 import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.util.FileTypes;
 import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
@@ -93,38 +90,30 @@ public class UserController {
     /*** Login handler ***/
     /*********************/
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
-	public String getLogin(Model model, HttpSession session) {
+	public String getLogin(Model model) {
 		logger.info("login GET");
-
-		Date createTime = new Date(session.getCreationTime());
-		Date lastAccess = new Date(session.getLastAccessedTime());
-		int maxInactive = session.getMaxInactiveInterval();
-		String sessID = session.getId();
-
-		logger.info("Session created on: " + createTime);
-		logger.info("Session last accessed on: " + lastAccess);
-		logger.info("Session expires after: " + maxInactive + " seconds");
-		logger.info("Session ID: " + sessID);
-
-		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
-		
-		for (Object obj : allPrinc) {
-			final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
-
-			for (SessionInformation sess : sessions) {
-				Object princ = sess.getPrincipal();
-				String sessId = sess.getSessionId();
-				Date sessDate = sess.getLastRequest();
-				
-				logger.info("sessionRegistry.princ: " + princ);
-				logger.info("sessionRegistry.sessId: " + sessId);
-				logger.info("sessionRegistry.sessDate: " + sessDate.toString());
-			}
-		}
 		
 		return "user/login";
 	}
-		
+
+	@RequestMapping(value = "user/loginError", method = RequestMethod.GET)
+	public String handleLoginError(Model model, HttpServletRequest request, Locale locale) {
+		logger.info("handleLoginError");
+	
+		String authExClass = "";
+		String msg = "";
+		AuthenticationException authEx = (AuthenticationException) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+
+		if (authEx != null) {
+			authExClass = authEx.getClass().getSimpleName();
+			msg = messages.getMessage("exception." + authExClass, null, "Invalid login", locale);
+	    }
+	    
+		model.addAttribute("error", msg);
+				
+		return "user/login";
+	}
+	
 	/****************************/
 	/*** Registration handler ***/
 	/****************************/
@@ -154,7 +143,7 @@ public class UserController {
 		boolean exists = userService.doesUserEmailExist(userDto.getEmail());
 		if (exists) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.duplicateEmail", null, locale);
+			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
 			FieldError err = new FieldError("userDto","email", msg);
 			result.addError(err);
 			return mv;
@@ -166,8 +155,8 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, locale));
+        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Success", locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
 	}
@@ -206,7 +195,7 @@ public class UserController {
 	
         final VerificationToken verificationToken = userService.getVerificationToken(token);
         if (verificationToken == null) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.invalidToken", null, locale)); //LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.register.invalidToken", null, "Invalid token", locale));
         	redir.addFlashAttribute("register", true);
         	mv.setViewName("redirect:/errors/invalidToken");
         	return mv;     	
@@ -215,7 +204,7 @@ public class UserController {
         final User user = verificationToken.getUser();
         final Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, locale)); //LocaleContextHolder.getLocale()));
+        	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, "Expired token", locale));
         	redir.addFlashAttribute("register", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
@@ -249,8 +238,8 @@ public class UserController {
      	emailSender.setMessageCode("user.email.signupSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, locale)); //LocaleContextHolder.getLocale()));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, locale)); //LocaleContextHolder.getLocale()));
+        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Successful registration", locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -262,7 +251,6 @@ public class UserController {
 	public String getProfile(Model model) {
 		logger.info("profile GET");
 		
-		//User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		User currentUser = (User)userInfo.getUserDetails();
 		User user = userService.getUserWithProfile(currentUser.getId());
 		UserProfile userProfile = user.getUserProfile(); 
@@ -278,7 +266,7 @@ public class UserController {
 
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
 	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
-			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) throws IOException {
+			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) {
 		logger.info("profile POST");
 
 		if (result.hasErrors()) {
@@ -286,18 +274,36 @@ public class UserController {
 			return "user/profile";
 		}
 
-		if (!file.isEmpty()) {
-			String rslt = fileAction.uploadFile(file);
+		User user = userService.getUser(userProfile.getUser().getId());
+		
+		if (file != null && !file.isEmpty()) {
+			boolean rslt = fileAction.uploadFile(FileTypes.AVATAR, user.getId(), file);
+			if (!rslt) {
+				String msg = messages.getMessage("exception.file.IOException", null, "File error", locale);
+				FieldError fieldError = new FieldError("userProfile", "avatar", msg);
+				result.addError(fieldError);
+				return "user/profile";
+			}
+			String currAvatar = userProfile.getAvatar();
+			if (currAvatar != null && !currAvatar.isEmpty()) {
+				String newAvatar = file.getOriginalFilename();
+				if (!currAvatar.equalsIgnoreCase(newAvatar))
+					fileAction.deleteFile(FileTypes.AVATAR, user.getId(), currAvatar);
+			}
 			userProfile.setAvatar(file.getOriginalFilename());
-			logger.info("File update result: " + rslt);
-        } else {
-        	logger.info("Empty file");
         }
+		
+		String avatarName = userProfile.getAvatar();
+		//TODO: move xxxREMOVExxx to a constant
+		if (avatarName.startsWith("xxxREMOVExxx")) {
+			String name = avatarName.substring(12);
+			//errors are not fatal and will be logged by FileAction
+			fileAction.deleteFile(FileTypes.AVATAR, user.getId(), name);
+			userProfile.setAvatar("");
+		}
 		
 		//.jsp page saves off user.id and userprofile.id
 		userService.saveUserProfile(userProfile);
-		
-		User user = userService.getUser(userProfile.getUser().getId());
 		
         emailSender.setUser(user);
      	emailSender.setLocale(locale);
@@ -343,12 +349,10 @@ public class UserController {
 	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("avatar GET");
 		
-		try {
-			fileAction.downloadFile(fileName, response);
-		}
-		catch (IOException ex) {
-			//do nothing - the absence of the photo should not be fatal
-		}
+		User user = (User)userInfo.getUserDetails();
+		
+		//errors are not fatal and will be logged by FileAction
+		fileAction.downloadFile(FileTypes.AVATAR, user.getId(), fileName, response);
 	}
 	
 	/*******************************/
@@ -377,7 +381,7 @@ public class UserController {
 		User user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (!userService.isPasswordValid(passwordDto.getCurrentPassword(), user)) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.invalidPassword", null, locale);
+			String msg = messages.getMessage("user.invalidPassword", null, "Invalid password", locale);
 			FieldError err = new FieldError("passwordDto","currentPassword", msg);
 			result.addError(err);
 			return "user/changePassword";
@@ -441,7 +445,7 @@ public class UserController {
 
 		if (user == null) {
 			logger.info("Validation errors");
-			String msg = messages.getMessage("user.userNotFound", null, locale);
+			String msg = messages.getMessage("user.userNotFound", null, "User not found", locale);
 			FieldError err = new FieldError("userEmail","email", msg);
 			result.addError(err);
 			return mv;
@@ -451,8 +455,8 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, locale));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -472,7 +476,7 @@ public class UserController {
         }
         
     	if (passwordResetToken == null || user == null || user.getId() != id) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, locale));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, "Invalid token", locale));
         	redir.addFlashAttribute("password", true);
         	mv.setViewName("redirect:/errors/invalidToken");
         	return mv;     	
@@ -480,7 +484,7 @@ public class UserController {
 		
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, locale));
+        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, "Expired token", locale));
         	redir.addFlashAttribute("password", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
@@ -519,8 +523,8 @@ public class UserController {
      	emailSender.setMessageCode("user.email.resetSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, locale));
+        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
+        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/messages/userMessage");
         return mv;
     }
@@ -671,3 +675,31 @@ public class UserController {
 		return "messages/userMessage";
 	}	
 }
+
+/*
+Date createTime = new Date(session.getCreationTime());
+Date lastAccess = new Date(session.getLastAccessedTime());
+int maxInactive = session.getMaxInactiveInterval();
+String sessID = session.getId();
+
+logger.info("Session created on: " + createTime);
+logger.info("Session last accessed on: " + lastAccess);
+logger.info("Session expires after: " + maxInactive + " seconds");
+logger.info("Session ID: " + sessID);
+
+List<Object> allPrinc = sessionRegistry.getAllPrincipals();
+
+for (Object obj : allPrinc) {
+	final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
+
+	for (SessionInformation sess : sessions) {
+		Object princ = sess.getPrincipal();
+		String sessId = sess.getSessionId();
+		Date sessDate = sess.getLastRequest();
+		
+		logger.info("sessionRegistry.princ: " + princ);
+		logger.info("sessionRegistry.sessId: " + sessId);
+		logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+	}
+}
+*/

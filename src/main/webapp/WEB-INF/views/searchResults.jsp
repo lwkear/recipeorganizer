@@ -23,6 +23,7 @@
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h1><spring:message code="title.searchresults"></spring:message> for "${searchTerm}"</h1>
+				<input name="${_csrf.parameterName}" value="${_csrf.token}"/>
 			</div>
 			<table class="table" id="recipeList">
 				<thead>

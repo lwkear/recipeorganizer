@@ -13,6 +13,7 @@
 <%@include file="../common/nav.jsp" %>
 
     <spring:bind path="recipe.tags"><c:set var="tagsError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.photoName"><c:set var="photoError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.cookbookPage"><c:set var="cookbookPageError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.cookbook"><c:set var="cookbookError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.magazine"><c:set var="magazineError">${status.errorMessage}</c:set></spring:bind>
@@ -32,6 +33,7 @@
 		</div>
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" name="optionalForm" modelAttribute="recipe" enctype="multipart/form-data">
+				<input type="text" id="photoErr" value="${photoError}" style="display:none"></input>
 
 				<%@include file="optionalFields.jsp" %>
 

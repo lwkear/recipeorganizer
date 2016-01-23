@@ -1,4 +1,28 @@
+function checkForFileError() {
+	var photoErr = $("#photoErr").val();
+	var name = $("#recipeName").val();
+	if (photoErr.length) {
+		$("#messageTitle").text(name);
+		$("#messageMsg").text(photoErr);
+		$(".msgDlgBtn").hide();
+		$("#okBtn").show();
+		$("#cnclBtn").show();
+		$("#okBtn").one('click', saveRecipe);
+		$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+		$("#messageDlg").modal('show');
+	}
+}
+
+function saveRecipe(e) {
+	$("#messageDlg").modal('hide');
+	//remove the file object
+	$("#file").val(null);
+	document.forms["editForm"].submit();
+}
+
 $(function() {
+	
+	checkForFileError();
 	
 	$(document)
 	.on('click', '#save', function(e)
@@ -76,13 +100,15 @@ $(function() {
 		if (option == 'change') {
 			var filename = $('#photoname').val();
 			if (filename == null || filename == "") {
-				alert("New photo not selected");
+				displayOKMsg(messageMap.get('recipe.optional.photo'), messageMap.get('recipe.optional.photo.noneselected'));
 				return false;
 			}
 		}
 		else {
-		if (option == 'remove')
-			$('#hiddenphoto').val("");					
+			if (option == 'remove') {
+				var photo = $('#hiddenphoto').val();
+				$('#hiddenphoto').val('xxxREMOVExxx' + photo);
+			}
 		}
 	})
 

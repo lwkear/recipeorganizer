@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import net.kear.recipeorganizer.util.FileActionsImpl;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
@@ -40,14 +43,13 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"net.kear.recipeorganizer"})
 @Configuration
-@PropertySource("classpath:email.properties")
+@PropertySources(value={@PropertySource("classpath:email.properties"),@PropertySource("classpath:file.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
     private Environment env;	
-
 	@Autowired
 	private WebFlowConfig webFlowConfig;
 	
@@ -83,12 +85,21 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return messageConverter;
 	}	
 	
-	/*** file upload configuration ***/
+	/*** file upload/download configuration ***/
 	@Bean
 	public StandardServletMultipartResolver filterMultipartResolver() {
 		logger.debug("StandardServletMultipartResolver");
 		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
 		return resolver;
+	}
+
+	@Bean
+	public FileActionsImpl fileActionsImpl() {
+		logger.debug("FileActionsImpl");
+		final FileActionsImpl actions = new FileActionsImpl();
+		actions.setAvatarDir(env.getProperty("file.directory.avatar"));
+		actions.setRecipeDir(env.getProperty("file.directory.recipe"));
+		return actions;
 	}
 	
 	/*** view configuration ***/
@@ -206,7 +217,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         return mailSenderImpl;
     }
-	
+		
 	/*@Override
 	protected void configureMessageConverters(
 	        List<HttpMessageConverter<?>> converters) {

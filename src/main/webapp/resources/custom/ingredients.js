@@ -182,9 +182,8 @@ $(function() {
 			//nothing to do
 			if ((desc == null) || (desc == ''))
 				return;
-			//TODO: GUI: make this a nicer looking modal popup
 			if (desc.length < 3) {
-				alert("An ingredient must be more than 2 characters long.")
+				displayOKMsg(messageMap.get('recipe.ingredients.title'), messageMap.get('recipe.ingredients.length'));
 				return;
 			}
 		

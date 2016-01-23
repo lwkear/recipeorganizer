@@ -4,13 +4,13 @@
 
 //notify the user in popup modal
 function deleteRecipe(id, name) {
-	$("#messageTitle").text(messageMap.get('recipe.delete.title'));
-	$("#messageMsg").text(messageMap.get('recipe.delete.areyousure') + ' ' + name + '?');
+	$("#messageTitle").text(name);
+	$("#messageMsg").text(messageMap.get('recipe.delete.areyousure'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {recipeId : id}, postDeleteRecipe);
-	$('#messageDlg').modal({backdrop: 'static', keyboard: false})  
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});  
 	$("#messageDlg").modal('show');
 } 
 
@@ -52,14 +52,13 @@ function recipeDeleted(recipeId) {
 
 //notify the admin in popup modal
 function removeFavorite(userId, recipeId, name) {
-	$("#messageTitle").text(messageMap.get('recipe.remove.favorite.title'));
-	var msg = messageMap.get('recipe.remove.favorite.areyousure1') + " " + name + " " + messageMap.get('recipe.remove.favorite.areyousure2');
-	$("#messageMsg").text(msg);
+	$("#messageTitle").text(name);
+	$("#messageMsg").text(messageMap.get('recipe.remove.favorite.areyousure'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {userId : userId, recipeId : recipeId}, postRemoveFavorite);
-	$('#messageDlg').modal({backdrop: 'static', keyboard: false})
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false})
 	$("#messageDlg").modal('show');
 } 
 
@@ -104,11 +103,7 @@ function favoriteRemoved(recipeId) {
 }
 
 function postFailed(error) {
-	$("#messageTitle").text(messageMap.get('errordlg.title'));
-	$("#messageMsg").text(error);
-	$(".msgDlgBtn").hide();
-	$("#okBtn").show();
-	$("#messageDlg").modal();
+	displayOKMsg(messageMap.get('errordlg.title'), error);
 }
 
 $(document).ready(function() {

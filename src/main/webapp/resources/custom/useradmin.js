@@ -1,5 +1,3 @@
-//var userObj = null;
-
 /*****************************/
 /*** delete user functions ***/
 /*****************************/
@@ -33,13 +31,13 @@ function getRecipeCount(userId, userFirst, userLast, callback) {
 
 //notify the admin in popup modal
 function displayCount(count, userId, userFirst, userLast) {
-	$("#messageTitle").text(messageMap.get('useradmin.delete.title'));
+	$("#messageTitle").text(userFirst + " " + userLast);
 	var msg;
 	if (count == 0)
-		msg = messageMap.get('useradmin.delete.areyousure1') + " " + userFirst + " " + userLast + "?";
+		msg = messageMap.get('useradmin.delete.areyousure');
 	else
 		msg = userFirst + " " + userLast + " " + messageMap.get('useradmin.delete.hasrecipe1') + " " + count + " " +
-				messageMap.get('useradmin.delete.hasrecipe2') +  " " + messageMap.get('useradmin.delete.areyousure2');
+				messageMap.get('useradmin.delete.hasrecipe2') +  " " + messageMap.get('useradmin.delete.areyousure');
 	$("#messageMsg").text(msg);
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
@@ -59,7 +57,6 @@ function deleteUser(e) {
 		type: 'POST',
 		url: '/recipeorganizer/admin/deleteUser',
 		dataType: 'json',
-		//data: {"userId":uId}
 		data: {"userId":userId}
 	})
 	.done(function(data) {
@@ -117,6 +114,8 @@ function displayUser(user) {
 	$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
 	$("input[name='enabled'][value='" + user.enabled + "']").prop('checked',true);
 	$("input[name='locked'][value='" + user.locked + "']").prop('checked',true);
+	$("input[name='pswdExpired'][value='" + user.passwordExpired + "']").prop('checked',true);
+	$("input[name='acctExpired'][value='" + user.accountExpired + "']").prop('checked',true);
 	$(".userName").text(user.firstName + " " + user.lastName);
 	$("#submit").one('click', {user : user}, postUser);
 	$("#updateUser").modal('show');
@@ -125,12 +124,13 @@ function displayUser(user) {
 //request server to update the user
 function postUser(e) {
 	$("#updateUser").modal('hide');
-	userObj = e.data.user;
-	userObj.role.id = $("#inputRole").find(':selected').data('id');
-	userObj.role.name = $("#inputRole").find(':selected').val(); 
-	userObj.enabled = parseInt($("input[name='enabled']:checked").val()); 
-	userObj.locked = parseInt($("input[name='locked']:checked").val());
-	var user = userObj;
+	var user = e.data.user;
+	user.role.id = $("#inputRole").find(':selected').data('id');
+	user.role.name = $("#inputRole").find(':selected').val(); 
+	user.enabled = parseInt($("input[name='enabled']:checked").val()); 
+	user.locked = parseInt($("input[name='locked']:checked").val());
+	user.passwordExpired = parseInt($("input[name='pswdExpired']:checked").val()); 
+	user.accountExpired = parseInt($("input[name='acctExpired']:checked").val());
 
 	$.ajax({
 	    type: 'POST',
@@ -142,7 +142,7 @@ function postUser(e) {
 	.done(function(data) {
 		console.log('getUser() done');
 		console.log('data:' + data);
-		userUpdate(userObj);
+		userUpdate(user);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -156,15 +156,13 @@ function userUpdate(user) {
 	var ndx = table.row('#' + user.id).index();
 	table.cell(ndx,5).data(user.enabled ? messageMap.get('common.yes') : messageMap.get('common.no'));
 	table.cell(ndx,6).data(user.locked ? messageMap.get('common.yes') : messageMap.get('common.no'));
-	table.cell(ndx,7).data(user.role.name).draw();
+	table.cell(ndx,7).data(user.passwordExpired ? messageMap.get('common.yes') : messageMap.get('common.no'));
+	table.cell(ndx,8).data(user.accountExpired ? messageMap.get('common.yes') : messageMap.get('common.no'));
+	table.cell(ndx,9).data(user.role.name).draw();
 };
 
 function postFailed(error) {
-	$("#messageTitle").text(messageMap.get('errordlg.title'));
-	$("#messageMsg").text(error);
-	$(".msgDlgBtn").hide();
-	$("#okBtn").show();
-	$("#messageDlg").modal();
+	displayOKMsg(messageMap.get('errordlg.title'), error);
 }
 
 $(document).ready(function() {

@@ -140,7 +140,7 @@ $(function() {
 			if (option == 'change') {
 				var filename = $('#photoname').val();
 				if (filename == null || filename == "") {
-					alert("New photo not selected");
+					displayOKMsg(messageMap.get('recipe.optional.photo'), messageMap.get('recipe.optional.photo.noneselected'));
 					return false;
 				}
 			}

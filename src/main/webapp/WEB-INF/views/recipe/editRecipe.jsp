@@ -31,6 +31,7 @@
 	<spring:bind path="recipe.numIngredSections"><c:set var="ingredSectError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.numInstructSections"><c:set var="instructSectError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.tags"><c:set var="tagsError">${status.errorMessage}</c:set></spring:bind>
+    <spring:bind path="recipe.photoName"><c:set var="photoError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.cookbookPage"><c:set var="cookbookPageError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.cookbook"><c:set var="cookbookError">${status.errorMessage}</c:set></spring:bind>
     <spring:bind path="recipe.source.magazine"><c:set var="magazineError">${status.errorMessage}</c:set></spring:bind>
@@ -52,7 +53,7 @@
 			</div>
 		</div>
 
-		<form:form class="form-horizontal" role="form" method="post" modelAttribute="recipe"  enctype="multipart/form-data" autocomplete="off">
+		<form:form class="form-horizontal" id="editForm" role="form" method="post" modelAttribute="recipe"  enctype="multipart/form-data" autocomplete="off">
 		
 			<form:hidden id="userID" path="user.id"/>
 			<form:input type="text" style="display:none" path="views"/>
@@ -60,6 +61,8 @@
 			<form:hidden id="currIngredSect" path="currIngredSection"/>
 			<form:hidden id="instructSections" path="numInstructSections"/>
 			<form:hidden id="currInstructSect" path="currInstructSection"/>
+			<input type="text" id="photoErr" value="${photoError}" style="display:none"></input>
+			<input type="text" id="recipeName" value="${recipe.name}" style="display:none"></input>
 
 			<div class="row">
 				<div class="col-sm-12">
@@ -155,7 +158,7 @@
 			<div class="form-group col-sm-12 spacer-vert-md">
 				<div class="col-sm-offset-5 col-sm-2 text-center">
 					<button type="submit" class="btn btn-primary pull-left" id="save"><spring:message code="common.save"></spring:message></button>
-					<a class="btn btn-default pull-right" href="${returnUrl}"><spring:message code="common.cancel"></spring:message></a>
+					<a class="btn btn-default pull-right" id="cancelBtn" href="${returnUrl}"><spring:message code="common.cancel"></spring:message></a>
 				</div>
 			</div>
 		</form:form>
@@ -172,7 +175,7 @@
 <script src="<c:url value="/resources/custom/ingredients.js" />"></script>
 <script src="<c:url value="/resources/custom/instructions.js" />"></script>
 <script src="<c:url value="/resources/custom/optional.js" />"></script>
-<script src="<c:url value="/resources/custom/recipeedit.js" />"></script>
+<script src="<c:url value="/resources/custom/editrecipe.js" />"></script>
 
 </html>
 
