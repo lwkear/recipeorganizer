@@ -1,19 +1,17 @@
 package net.kear.recipeorganizer.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
+import net.kear.recipeorganizer.util.CommonView;
 import net.sf.jasperreports.engine.JRException;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.ObjectNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +26,8 @@ public class ExceptionController {
 	private MessageSource messages;
 	@Autowired
 	private ExceptionLogService logService;
+	@Autowired
+	private CommonView commonView;
 
 	/*	see ResponseEntityExceptionHandler
 	BindException.class,
@@ -45,32 +45,51 @@ public class ExceptionController {
 	ServletRequestBindingException.class,
 	TypeMismatchException.class,
 
-
-1) manually entered a recipe ID into viewRecipe URL
-ObjectNotFoundException: No row with the given identifier exists: [net.kear.recipeorganizer.persistence.model.Recipe#112]
-NumberFormatException: For parameter string: "abc"
-2) used a recipe view bookmark (referer is null)
-NullPointerException
-3) solr not running
-NullPointerException
-
-	*
-	*/	
+	1) manually entered a recipe ID into viewRecipe URL
+	ObjectNotFoundException: No row with the given identifier exists: [net.kear.recipeorganizer.persistence.model.Recipe#112]
+	NumberFormatException: For parameter string: "abc"
+	2) used a recipe view bookmark (referer is null)
+	NullPointerException
+	3) solr not running
+	NullPointerException
+*/	
 	
 	@ExceptionHandler(value={
 			JRException.class,
 			SolrServerException.class,
 			ObjectNotFoundException.class
 		})
-	public ModelAndView handleException(Exception ex) {
-		logger.info("Exception: " + ex.getClass().toString());
-		return getErrorPage(ex);
+	public ModelAndView handleSpecificExceptions(Exception ex) {
+		logger.info("handleSpecificExceptions exception class: " + ex.getClass().toString());
+		String msg = ExceptionUtils.getMessage(ex);
+		logger.debug("handleSpecificExceptions msg: " + msg);
+		Throwable excptn = ExceptionUtils.getRootCause(ex);
+		if (excptn != null) {
+			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+			logger.debug("handleSpecificExceptions root class: " + msg);
+			msg = ExceptionUtils.getRootCauseMessage(ex);
+			logger.debug("handleSpecificExceptions root msg: " + msg);
+		}
+
+		return commonView.getStandardErrorPage(ex);
 	}
 
-	@ExceptionHandler(CannotCreateTransactionException.class)
+	@ExceptionHandler(value= {
+			CannotCreateTransactionException.class,
+			InternalAuthenticationServiceException.class
+		})
 	public String handleDBException(Exception ex) {
-		logger.info("Exception: " + ex.getClass().toString());
-
+		logger.info("handleDBExceptions exception class: " + ex.getClass().toString());
+		String msg = ExceptionUtils.getMessage(ex);
+		logger.debug("handleDBExceptions msg: " + msg);
+		Throwable excptn = ExceptionUtils.getRootCause(ex);
+		if (excptn != null) {
+			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+			logger.debug("handleDBExceptions root class: " + msg);
+			msg = ExceptionUtils.getRootCauseMessage(ex);
+			logger.debug("handleDBExceptions root msg: " + msg);
+		}
+		
 		//TODO: examine the error to make sure it's actually a database down error; otherwise pass it on to getErrorPage
 		
 		//log the error in the log file
@@ -79,28 +98,20 @@ NullPointerException
 		return "redirect:/systemError";
 	}
 	
-	private ModelAndView getErrorPage(Exception ex) {
-		//log the error in the log file
-		logger.error(ex.getClass().toString(), ex);		
-		//log the error in the database
-		logService.addException(ex);
+	@ExceptionHandler(Exception.class)
+	public ModelAndView handleGeneralException(Exception ex) {
+		logger.info("handleGeneralExceptions exception class: " + ex.getClass().toString());
+		String msg = ExceptionUtils.getMessage(ex);
+		logger.debug("handleGeneralExceptions msg: " + msg);
+		Throwable excptn = ExceptionUtils.getRootCause(ex);
+		if (excptn != null) {
+			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+			logger.debug("handleGeneralExceptions root class: " + msg);
+			msg = ExceptionUtils.getRootCauseMessage(ex);
+			logger.debug("handleGeneralExceptions root msg: " + msg);
+		}
 		
-		Locale locale = LocaleContextHolder.getLocale();
-		
-		String msgCode = "exception.Exception";
-		String classStr[] = ex.getClass().toString().split("[.]");
-		if (classStr.length > 0)
-			msgCode = "exception." + classStr[classStr.length-1];
-		
-		String title = messages.getMessage("exception.error.title", null, "Error", locale);
-		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage(msgCode, null, ex.getClass().getName(), locale));
-		
-		ModelAndView view = new ModelAndView("/errors/errorMessage");
-		view.addObject("errorTitle", title);
-		view.addObject("errorMsgs", errorMsgs);
-		
-		return view;
+		return commonView.getStandardErrorPage(ex);
 	}
 }
 

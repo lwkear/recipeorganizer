@@ -9,7 +9,6 @@ import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.SolrUtil;
-import net.kear.recipeorganizer.util.UserInfo;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
@@ -32,8 +31,6 @@ public class SearchController {
 	
 	@Autowired
 	private RecipeService recipeService;
-	@Autowired
-	private UserInfo userInfo;
 	@Autowired
 	private CookieUtil cookieUtil;
 	@Autowired

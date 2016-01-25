@@ -35,7 +35,7 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<c:if test="${isAuthor}">
+				<c:if test="${isGuest}">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.recipe"></spring:message><span class="caret"></span></a>

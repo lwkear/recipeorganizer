@@ -1,8 +1,10 @@
 package net.kear.recipeorganizer.util;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,5 +69,18 @@ public class UserInfo implements Serializable {
 		}
 		
 		return null;	
+	}
+	
+	public String getRole() {
+		String role = "";
+		Authentication auth = getAuthentication();
+		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
+		if (!authorities.isEmpty()) {
+			for (GrantedAuthority authority : authorities) {
+				role = authority.getAuthority();
+			}
+		}
+		
+		return role;
 	}
 }

@@ -24,6 +24,7 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.session.SessionManagementFilter;
 
+import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
 import net.kear.recipeorganizer.security.LoginSuccessHandler;
@@ -78,6 +79,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
+	public AccessDeniedErrorHandler accessDeniedHandler() {
+		return new AccessDeniedErrorHandler(); 
+	}
+	
+	@Bean
 	public LoginSuccessHandler loginSuccessHandler() {
 		LoginSuccessHandler handler = new LoginSuccessHandler();
 		handler.setDefaultTargetUrl("/user/dashboard");
@@ -94,7 +100,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CustomLogoutSuccessHandler logoutSuccessHandler() {
 		CustomLogoutSuccessHandler handler = new CustomLogoutSuccessHandler();
-		//handler.setTargetUrlParameter("/thankyou");
 		return handler;
 	}
 	
@@ -103,6 +108,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new SessionRegistryImpl();
 	}
 
+	//sets the hierarchy of roles
+	private SecurityExpressionHandler<FilterInvocation> secExpressionHandler() {
+        DefaultWebSecurityExpressionHandler defaultHandler = new DefaultWebSecurityExpressionHandler();
+        defaultHandler.setRoleHierarchy(roleHierarchy());
+        return defaultHandler;
+    }
+	
 	@Override
 	public void configure(WebSecurity web) throws Exception
 	{
@@ -127,22 +139,94 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
-			//.antMatchers("/", "/home", "/about", "/faq", "/contact", "/submitsearch", "/searchresults").permitAll()
-			.antMatchers("/", "/home", "/about", "/contact", "/submitsearch", "/searchresults", "/system*").permitAll()
-    		.antMatchers("/thankyou", "/user/login**", "/user/signup**", "/user/resetPassword").permitAll()
-			.antMatchers("/messages/**", "/errors/**", "/getSessionTimeout", "/lookupUser").permitAll()
-			.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**").permitAll()
+			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
+    		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/lookupUser").permitAll()
+    		.antMatchers("/recipe/photo**").permitAll()
+    		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
+    		.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
+    		.antMatchers("/admin/**").hasAuthority("ADMIN")
+    		.anyRequest().authenticated()
+			
+    		/*
+    		.antMatchers("/user/resetPassword", "/user/fatalError").permitAll()
+    		.antMatchers("/getSessionTimeout", "/setSessionTimeout", "/lookupUser", "/errorPage").permitAll()
+			.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**", "/invalidSession").permitAll()
 			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
 			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
 			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
-			.antMatchers("/recipe/listRecipes", "/setSessionTimeout").hasAuthority("GUEST")
-			.antMatchers("/user/profile", "/user/dashboard", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
-			.regexMatchers("user/avatar/.*", "/recipe/viewRecipe/.*").hasAuthority("GUEST")
-			.regexMatchers("/recipe/getRecipeCount/.*","/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
-			.antMatchers("/recipe/addRecipe").hasAuthority("AUTHOR")
-			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*", "/admin/updateUser").hasAuthority("ADMIN")
-			.antMatchers("/faq" ).hasAuthority("ADMIN")	//TODO: test accessed denied; remove this for production
-			.anyRequest().authenticated()
+			
+			.antMatchers("/user/profile", "/user/dashboard", "user/account", "user/changeAccount", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
+			.regexMatchers("user/avatar/.*", "/recipe/viewRecipe/.*", "recipe/favorites").hasAuthority("GUEST")
+			
+			.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
+			.regexMatchers("/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
+			
+			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*").hasAuthority("ADMIN")	
+			.regexMatchers("/recipe/getRecipeCount/.*").hasAuthority("ADMIN")
+			*/
+/*			
+			ANON
+			ant
+			x "/"
+			x "/home"
+			x "/about"
+			x "/contact"
+			x "/faq"
+			"/thankyou"
+			"/systemError"
+			"/system"
+			x "user/login"
+			"user/loginError"
+			"user/fatalError"
+			x "user/signup"
+			x "/lookupUser" - AJAX
+			x "/submitsearch"	- need to allow for search and search results, but not allow to view the recipes
+			"/searchresults" - ditto
+			"/getSessionTimeout" - AJAX
+			"/setSessionTimeout" - AJAX
+			regex
+			"/confirmRegistration.*"
+			"/confirmPassword.*"
+
+			GUEST
+			ant
+			"/recipe/favorites"
+			"/recipe/addFavorite" - AJAX
+			"/recipe/removeFavorite" - AJAX
+			"/recipe/recipeMade" - AJAX
+			"/recipe/recipeNote" - AJAX
+			"/recipe/recipeComment" - AJAX
+			regex
+			"/recipe/viewRecipe/.*"
+			"/report/getHtmlRpt/.*"
+			"/report/getPdfRpt/.*"
+			
+			AUTHOR
+			ant
+			"/recipe/listRecipes"
+			"recipe/getCategories" - AJAX doesn't requrie an antmatch?
+			"recipe/addIngredient" - AJAX
+			"recipe/getIngredients" - AJAX
+			"recipe/getQualifiers" - AJAX
+			"recipe/getSources" - AJAX
+			"recipe/getTags" - AJAX
+			"recipe/lookupRecipeName" - AJAX
+			"recipe/getRecipeCount" - AJAX; why is this in ADMIN above?
+			regex
+			"/recipe/editRecipe/.*"
+			"recipe/deleteRecipe/.*" or "recipe/deleteRecipe" - AJAX
+			
+			ADMIN
+			ant
+			"/admin/**"
+			"admin/updateUser"
+			"/admin/category"
+			regex
+			"/admin/deleteUser/.*" - AJAX
+			"/admin/getUser/.*" - AJAX
+			
+*/			
+			
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
@@ -158,7 +242,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.logoutSuccessHandler(logoutSuccessHandler())
 			.and()
 		.exceptionHandling()
-			.accessDeniedPage("/accessDenied")	//403
+			.accessDeniedHandler(accessDeniedHandler())
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
@@ -167,11 +251,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()
-    		.sessionAuthenticationErrorUrl("/authenticationError")	//402
     		.maximumSessions(1)
     		.sessionRegistry(sessionRegistry())
     		.maxSessionsPreventsLogin(true)
-    		.expiredUrl("/errors/expiredSession")
     	;
     }
 	
@@ -184,7 +266,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
 	        if (bean instanceof SessionManagementFilter) {
 	            SessionManagementFilter filter = (SessionManagementFilter) bean;
-	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/errors/invalidSession"));
+	            filter.setInvalidSessionStrategy(new RedirectInvalidSession("/user/login"));
 	        }
 	        return bean;
 	    }
@@ -195,10 +277,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    }
 	}
 	
-	//sets the hierarchy of roles
-	private SecurityExpressionHandler<FilterInvocation> secExpressionHandler() {
-        DefaultWebSecurityExpressionHandler defaultHandler = new DefaultWebSecurityExpressionHandler();
-        defaultHandler.setRoleHierarchy(roleHierarchy());
-        return defaultHandler;
-    }
 }

@@ -14,6 +14,7 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+
 @Component
 public class RedirectInvalidSession implements InvalidSessionStrategy {
 	

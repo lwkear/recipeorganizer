@@ -97,21 +97,32 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "user/loginError", method = RequestMethod.GET)
-	public String handleLoginError(Model model, HttpServletRequest request, Locale locale) {
+	public ModelAndView handleLoginError(RedirectAttributes redir, HttpServletRequest request, Locale locale) {
 		logger.info("handleLoginError");
 	
 		String authExClass = "";
-		String msg = "";
-		AuthenticationException authEx = (AuthenticationException) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		String msg = "Unknown error";
+		AuthenticationException authEx = (AuthenticationException)request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 
 		if (authEx != null) {
 			authExClass = authEx.getClass().getSimpleName();
 			msg = messages.getMessage("exception." + authExClass, null, "Invalid login", locale);
 	    }
 	    
-		model.addAttribute("error", msg);
-				
-		return "user/login";
+		ModelAndView mv = new ModelAndView("user/login");
+        redir.addFlashAttribute("error", msg);
+        mv.setViewName("redirect:/user/login");
+        return mv;
+	}
+	
+	@RequestMapping(value = "user/fatalError", method = RequestMethod.GET)
+	public void handleLoginFatalError(HttpServletRequest request) throws AuthenticationException {
+		logger.info("handleLoginFatalError");
+	
+		//most authentication exceptions are caught in the custom AuthenticationFailureHandler class
+		//those that are not need to be passed on to the @ControllerAdvice ExceptionController for further handling
+		AuthenticationException authEx = (AuthenticationException)request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		throw authEx;
 	}
 	
 	/****************************/
@@ -157,7 +168,7 @@ public class UserController {
         
         redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
-        mv.setViewName("redirect:/messages/userMessage");
+        mv.setViewName("redirect:/message");
         return mv;
 	}
 
@@ -240,13 +251,13 @@ public class UserController {
         
         redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
-        mv.setViewName("redirect:/messages/userMessage");
+        mv.setViewName("redirect:/message");
         return mv;
     }
 	
-	/***********************/
-	/*** Profile handler ***/
-	/***********************/
+	/******************************************/
+	/*** Profile and Account change handler ***/
+	/******************************************/
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
 	public String getProfile(Model model) {
 		logger.info("profile GET");
@@ -287,7 +298,7 @@ public class UserController {
 			String currAvatar = userProfile.getAvatar();
 			if (currAvatar != null && !currAvatar.isEmpty()) {
 				String newAvatar = file.getOriginalFilename();
-				if (!currAvatar.equalsIgnoreCase(newAvatar))
+				if (!currAvatar.equals(newAvatar))
 					fileAction.deleteFile(FileTypes.AVATAR, user.getId(), currAvatar);
 			}
 			userProfile.setAvatar(file.getOriginalFilename());
@@ -313,7 +324,23 @@ public class UserController {
 		
 		return "redirect:/user/dashboard";
 	}
+	
+	@RequestMapping(value = "user/changeAccount", method = RequestMethod.GET)
+	public String getchangeAccount(Model model) {
+		logger.info("getchangeAccount GET");
+		
+		//accessDenied redirects to changeAccount if appropriate, but the URL displayed by the browser is 
+		//still the original URL, e.g., /recipe;  redirecting to user/account displays the correct URL
+		return "redirect:/user/account";
+	}
 
+	@RequestMapping(value = "user/account", method = RequestMethod.GET)
+	public String getAccount(Model model) {
+		logger.info("getAccount GET");
+		
+		return "user/account";
+	}
+	
 	/*************************/
 	/*** Dashboard handler ***/
 	/*************************/
@@ -457,7 +484,7 @@ public class UserController {
         
         redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
-        mv.setViewName("redirect:/messages/userMessage");
+        mv.setViewName("redirect:/message");
         return mv;
     }
 
@@ -525,7 +552,7 @@ public class UserController {
         
         redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
-        mv.setViewName("redirect:/messages/userMessage");
+        mv.setViewName("redirect:/message");
         return mv;
     }
 
@@ -610,47 +637,6 @@ public class UserController {
 		return "redirect:/user/login";
 	}
 
-	/**********************/
-	/*** session errors ***/
-	/**********************/
-	@RequestMapping(value = "/expiredSession", method = RequestMethod.GET)
-	public ModelAndView expiredSession(Model model, Locale locale, HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView view = new ModelAndView("/errors/expiredSession");
-
-		//this page may be called from the client if a user's session times out, so need to reset the cookie
-		//otherwise, the client cookie will continue to hold the user authentication and the timeout popup will be displayed repeatedly
-		authCookie.setCookie(request, response, "anonymousUser");
-		
-		return view;
-	}
-	
-	@RequestMapping(value = "/invalidSession", method = RequestMethod.GET)
-	public ModelAndView invalidSession(Model model, Locale locale) {
-		ModelAndView view = new ModelAndView("/errors/invalidSession");
-
-		return view;
-	}
-
-	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
-	public ModelAndView accessDeniedError(Model model, Locale locale) {
-		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage("exception.AccessDeniedException", null, "Accessed Denied", locale));
-		ModelAndView view = new ModelAndView("/errors/errorMessage");
-		view.addObject("errorMsgs", errorMsgs);
-		
-		return view;
-	}
-
-	@RequestMapping(value = "/authenticationError", method = RequestMethod.GET)
-	public ModelAndView authenticationError(Model model, Locale locale) {
-		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage("exception.AuthenticationError", null, "Authentication Error", locale));
-		ModelAndView view = new ModelAndView("/errors/errorMessage");
-		view.addObject("errorMsgs", errorMsgs);
-
-		return view;
-	}
-	
 	/********************/
 	/*** Shared pages ***/
 	/********************/
@@ -668,11 +654,11 @@ public class UserController {
 		return "errors/invalidToken";
 	}	
 
-	@RequestMapping(value = "messages/userMessage", method = RequestMethod.GET)
+	@RequestMapping(value = "message", method = RequestMethod.GET)
 	public String getUserMessage(Model model) {
 		logger.info("userMessage GET");
 		
-		return "messages/userMessage";
+		return "message";
 	}	
 }
 

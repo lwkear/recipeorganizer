@@ -108,7 +108,7 @@ public class RecipeController {
 			String currPhoto = recipe.getPhotoName();
 			if (currPhoto != null && !currPhoto.isEmpty()) {
 				String newPhoto = file.getOriginalFilename();
-				if (!currPhoto.equalsIgnoreCase(newPhoto))
+				if (!currPhoto.equals(newPhoto))
 					fileAction.deleteFile(FileTypes.RECIPE, recipe.getId(), currPhoto);
 			}
 			recipe.setPhotoName(file.getOriginalFilename());

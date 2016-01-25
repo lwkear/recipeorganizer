@@ -6,11 +6,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	public AuthenticationFailureHandler() {
 		super();
 	}
@@ -23,8 +28,8 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
 			throws IOException, ServletException {
 
-		setDefaultFailureUrl("/user/loginError"); 
-		
+		//pass handled exceptions to loginError, which redisplays the login page with the appropriate message
+		//all others are passed to fatalError, which simply re-throws the error to the @ControllerAdvice ExceptionController
 		String className = ex.getClass().getSimpleName();
 		switch (className) {
 			case "AccountExpiredException":
@@ -34,13 +39,28 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 			case "BadCredentialsException":
 			case "RememberMeAuthenticationException":
 			case "UsernameNotFoundException":
-				super.onAuthenticationFailure(request, response, ex);
-				return;
+			case "SessionAuthenticationException":
+				setDefaultFailureUrl("/user/loginError");
+				break;
+			default:
+				setDefaultFailureUrl("/user/fatalError");
+				break;
 		}
 		
-		throw ex;
+		logger.info("onAuthenticationFailure exception class: " + ex.getClass().toString());
+		String msg = ExceptionUtils.getMessage(ex);
+		logger.debug("onAuthenticationFailure msg: " + msg);
 		
-		//if (exception.getClass().isAssignableFrom(BadCredentialsException.class)) {//
+		//for some exceptions the root cause is the exception itself, in which case getRootCause returns null 
+		Throwable excptn = ExceptionUtils.getRootCause(ex);
+		if (excptn != null) {
+			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+			logger.debug("onAuthenticationFailure root class: " + msg);
+			msg = ExceptionUtils.getRootCauseMessage(ex);
+			logger.debug("onAuthenticationFailure root msg: " + msg);
+		}
+				
+		super.onAuthenticationFailure(request, response, ex);
 		
 		//*** see AuthenticationException javadoc
 		//AccountStatusException - Base class for authentication exceptions which are caused by a particular user account status (locked, disabled etc).

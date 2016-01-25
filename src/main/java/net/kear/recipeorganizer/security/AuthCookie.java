@@ -49,9 +49,9 @@ public class AuthCookie implements Serializable {
 		
 				logger.debug("cookieName = " + cookie.getName() + " cookieValue = " + cookie.getValue());
 				
-				if (cookie.getName().equalsIgnoreCase("authUser")) {
+				if (cookie.getName().equals("authUser")) {
 					this.cookie = cookie;
-					if (cookie.getValue().equalsIgnoreCase("anonymousUser"))
+					if (cookie.getValue().equals("anonymousUser"))
 						anonymous = true;
 					break;
 				}
@@ -86,7 +86,7 @@ public class AuthCookie implements Serializable {
 		if (cookies != null && cookies.length > 0) {
 			for (int i=0;i<cookies.length;i++) {
 				Cookie cookie = cookies[i];
-				if (cookie.getName().equalsIgnoreCase("authUser"))
+				if (cookie.getName().equals("authUser"))
 					return true;
 			}
 		}

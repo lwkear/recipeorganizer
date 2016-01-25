@@ -23,8 +23,13 @@ public class RoleRepositoryImpl implements RoleRepository {
     }
     
     public Role getRole(String name) {
-    	Role role = (Role) getSession().load(Role.class, name);
-    	return role;
+    	Criteria criteria = getSession().createCriteria(Role.class)
+              	.add(Restrictions.eq("name", name));
+       	Object result = criteria.uniqueResult();
+       	if (result != null)
+       		return (Role) result;
+        	
+       	return null;
     }
     
     public Role getDefaultRole()

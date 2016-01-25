@@ -52,6 +52,8 @@ public class UserDto implements Serializable {
 	@Size(min=6,max=20, groups=ValidSize.class)
 	private String confirmPassword;
 	
+	private boolean submitRecipes;
+	
 	public UserDto() {}
 	
 	public UserDto(UserDto user) {
@@ -59,15 +61,16 @@ public class UserDto implements Serializable {
 		this.lastName = user.lastName;
 		this.email = user.email;
 		this.password = user.password;
+		this.submitRecipes = user.submitRecipes;
 	}
 	
-	public UserDto(String firstName, String lastName, String email,
-			String password) {
+	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+		this.submitRecipes = submitRecipes;
 	}
 
 	public String getFirstName() {
@@ -118,6 +121,14 @@ public class UserDto implements Serializable {
 		this.confirmPassword = confirmPassword;
 	}
 
+	public boolean getSubmitRecipes() {
+		return submitRecipes;
+	}
+
+	public void setSubmitRecipes(boolean submitRecipes) {
+		this.submitRecipes = submitRecipes;
+	}
+	
     @Override
     public int hashCode() {
         return email.hashCode();
@@ -143,7 +154,7 @@ public class UserDto implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "UserDto [firstName=" + firstName + ", lastName="
-				+ lastName + ", email=" + email + ", password=" + password + "]";
+		return "UserDto [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + 
+				", password=" + password + ", submitRecipes=" + submitRecipes + "]";
 	}
 }

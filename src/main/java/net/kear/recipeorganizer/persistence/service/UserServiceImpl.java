@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
+import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
@@ -50,7 +51,15 @@ public class UserServiceImpl implements UserService {
     	user.setLocked(0);
     	user.setAccountExpired(0);
     	user.setPasswordExpired(0);
-    	user.setRole(roleRepository.getDefaultRole());
+    	if (userDto.getSubmitRecipes()) {
+    		Role role = roleRepository.getRole("AUTHOR");
+    		if (role != null)
+    			user.setRole(role);
+    		else
+    			user.setRole(roleRepository.getDefaultRole());
+    	}
+    	else
+    		user.setRole(roleRepository.getDefaultRole());
     	userRepository.addUser(user);
     	
     	return user;

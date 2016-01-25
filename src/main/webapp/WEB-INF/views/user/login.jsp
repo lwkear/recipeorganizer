@@ -47,7 +47,7 @@
 					</div>
 					<c:if test="${error != null}">
 						<div class="col-sm-12 text-center">
-							<h5 class="control-label text-danger"><c:out value="${error}"/></h5>
+							<h5 class="control-label text-danger">${error}</h5>
 						</div>
 					</c:if>
 			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">

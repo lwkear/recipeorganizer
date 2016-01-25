@@ -87,7 +87,7 @@ public class RecipeServiceImpl implements RecipeService {
     	//if there is only one section, however, that name must be removed so it does not appear when
     	//when the recipe is displayed or printed
     	for (IngredientSection section : recipe.getIngredSections()) {
-    		if (section.getName().equalsIgnoreCase("XXXX")) {
+    		if (section.getName().equals("XXXX")) {
     			section.setName("");
     		}
     		
@@ -104,7 +104,7 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	for (InstructionSection section : recipe.getInstructSections()) {
-    		if (section.getName().equalsIgnoreCase("XXXX"))
+    		if (section.getName().equals("XXXX"))
     			section.setName("");
     	}
     	

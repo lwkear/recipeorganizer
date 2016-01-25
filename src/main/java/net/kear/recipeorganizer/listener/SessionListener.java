@@ -29,7 +29,6 @@ public class SessionListener implements HttpSessionListener {
 
 		HttpSession session = event.getSession();
 		String sessionId = session.getId();
-		//session.setMaxInactiveInterval(60*3);
 		
 		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
 		SessionRegistry sessionRegistry = (SessionRegistry) ctx.getBean("sessionRegistry");

@@ -23,7 +23,6 @@
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h1><spring:message code="title.searchresults"></spring:message> for "${searchTerm}"</h1>
-				<input name="${_csrf.parameterName}" value="${_csrf.token}"/>
 			</div>
 			<table class="table" id="recipeList">
 				<thead>
@@ -37,7 +36,7 @@
 							<td>
 								<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 								<c:if test="${not empty recipe.photo}">
-									<span class="pull-right"><img src="<c:url value="/recipe/photo?filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
+									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
 								</c:if>	
 								<h4 class="header-blue">${recipe.name}</h4>
 								<p class="list-group-item-text">${recipe.description}</p>

@@ -6,6 +6,8 @@
       	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
       	<!-- use this to examine the xsd: https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
 	
+	<!-- <secured attributes = "ROLE_AUTHOR, ROLE_EDITOR, ROLE_ADMIN" match="any"></secured> -->
+	
 	<on-start>
     	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
 	</on-start>

@@ -17,7 +17,6 @@
 			<div class="page-header">
 				<h3><spring:message code="title.contact"></spring:message></h3>
 			</div>
-			<input name="${_csrf.parameterName}" value="${_csrf.token}"/>
 		</div>
 	</div>
    

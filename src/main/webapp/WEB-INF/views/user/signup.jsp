@@ -79,6 +79,23 @@
 							<span class="text-danger">${lastNameError}</span>
 						</div>
 					</div>
+					<div class="col-sm-12 spacer-vert-xs">
+						<div class="form-group col-sm-8 col-sm-offset-2">
+							<div class="row">
+								<div class="col-sm-8">
+									<label class="control-label" for="submitRecipes"><spring:message code="signup.submitrecipe"></spring:message></label>
+								</div>
+								<div class="col-sm-3">
+									<div class="radio-inline">
+										<form:radiobutton value="true" path="submitRecipes" checked="true"/><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline">
+										<form:radiobutton value="true" path="submitRecipes"/><spring:message code="common.no"></spring:message>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>

@@ -37,7 +37,7 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 		logger.debug("flowRegistry");
 		return getFlowDefinitionRegistryBuilder(flowBuilderServices())
 				.setBasePath("/WEB-INF/views")
-				.addFlowLocationPattern("/**/*-flow.xml")
+				.addFlowLocationPattern("/recipe/*-flow.xml")
 				.build();				
 	}
 	

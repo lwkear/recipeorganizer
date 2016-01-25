@@ -71,7 +71,7 @@ public class EmailSender {
         email.setSubject(subject);
         email.setText(message);
         email.setFrom(env.getProperty("support.email"));
-       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
         
 		//throw new MailSendException("sendSimpleEmailMessage forced error");
 
@@ -96,7 +96,7 @@ public class EmailSender {
         email.setSubject(subject);
         email.setText(message + " \r\n\r\n" + msgLink);
         email.setFrom(env.getProperty("support.email"));
-       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
         
 		//throw new MailSendException("sendTokenEmailMessage forced error");
 

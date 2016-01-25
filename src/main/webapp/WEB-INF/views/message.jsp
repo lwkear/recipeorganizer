@@ -2,7 +2,7 @@
 <html>
 <head>
 
-<%@include file="../common/head.jsp"%>
+<%@include file="common/head.jsp"%>
 
 <title><spring:message code="menu.product"></spring:message></title>
 
@@ -10,7 +10,7 @@
 
 <body role="document">
 
-<%@include file="../common/nav.jsp" %>
+<%@include file="common/nav.jsp" %>
 
 	<div class="container container-white">
 	 	<div class="col-sm-12">
@@ -25,7 +25,7 @@
 		</div>
 	</div>	
 
-<%@include file="../common/footer.jsp" %>
+<%@include file="common/footer.jsp" %>
 
 </body>
 </html>
