@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
@@ -28,6 +28,7 @@ import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
+import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.FileActions;
@@ -48,13 +49,17 @@ public class AdminController {
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private FileActions fileAction;
+	@Autowired
+	private MessageSource messages;
+	@Autowired
+	private ExceptionLogService logService;
 
 	/********************************/
 	/*** User maintenance handler ***/
 	/********************************/
 	@RequestMapping(value = "/admin/userMaint", method = RequestMethod.GET)
-	public String getUserMaint(Model model) {
-		logger.info("admin/userMaint GET");
+	public String userMaint(Model model) {
+		logger.info("admin/userMaint");
 		
 		List<Role> roles = roleService.getRoles();
 		List<User> users = userService.getUsers();
@@ -99,7 +104,7 @@ public class AdminController {
 
 	@RequestMapping(value="admin/deleteUser")
 	@ResponseBody 
-	public String getRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) {
+	public String deleteUser(@RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) {
 		logger.info("admin/deleteUser");
 		logger.info("userId=" + userId);
 		
@@ -107,16 +112,18 @@ public class AdminController {
 		String msg = "{}";
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		//get the count for the user
+		//delete the user
 		try {
 			userService.deleteUser(userId);
-		} catch (DataAccessException ex) {
+		} catch (Exception ex) {
+			logService.addException(ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.deleteUser", null, ex.getClass().getSimpleName(), locale);
+			return msg;
 		}
 		
 		String fileName = fileAction.fileExists(FileTypes.AVATAR, userId);
-		if (fileName.length() > 0)
+		if (fileName != null && fileName.length() > 0)
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileTypes.AVATAR, userId, fileName);
 		
@@ -125,7 +132,7 @@ public class AdminController {
 
 	@RequestMapping(value = "/admin/getUser/{userId}", method = RequestMethod.GET)
 	@ResponseBody
-	public User getUser(@PathVariable Long userId, HttpServletResponse response) {
+	public User getUser(@PathVariable Long userId, HttpServletResponse response, Locale locale) {
 		logger.info("admin/getUser GET");
 		
 		User user = null;
@@ -135,13 +142,14 @@ public class AdminController {
 		try {
 			user = userService.getUser(userId);
 		} catch (Exception ex) {
-			msg = ExceptionUtils.getRootCauseMessage(ex);
+			logService.addException(ex);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = messages.getMessage("exception.getUser", null, ex.getClass().getSimpleName(), locale);
+			response.setContentType("text/plain");
+			response.setCharacterEncoding("UTF-8");
 			try {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}						
+				response.getWriter().write(msg);
+			} catch (IOException e) {}
 		}
 		
 		String userStr = user.toString();
@@ -152,7 +160,7 @@ public class AdminController {
 
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
 	@ResponseBody 
-	public String updateUser(@RequestBody User user, HttpServletResponse response) {
+	public String updateUser(@RequestBody User user, HttpServletResponse response, Locale locale) {
 		logger.info("admin/updateUser");
 		logger.info("user=" + user);
 		
@@ -166,9 +174,10 @@ public class AdminController {
 			if (user.getUserProfile() != null)
 				user.getUserProfile().setUser(user);
 			userService.updateUser(user);
-		} catch (DataAccessException ex) {
+		} catch (Exception ex) {
+			logService.addException(ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.updateUser", null, ex.getClass().getSimpleName(), locale);
 		}
 		
 		return msg;

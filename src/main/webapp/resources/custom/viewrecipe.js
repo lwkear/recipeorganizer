@@ -60,7 +60,6 @@ function toggleComments() {
 /**********************************/
 /*** update made date functions ***/
 /**********************************/
-
 //set the last made date in popup dialog
 function selectMadeDate(viewerId, recipeId) {
 	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);
@@ -180,6 +179,32 @@ function postComment(e) {
 		console.log('fail status: '+ jqXHR.status);
 		console.log('fail error: '+ error);
 		postFailed(error);
+	});
+}
+
+function flagComment(commentId) {
+	var id = commentId;
+	$.ajax({
+		type: 'POST',
+		url: '/recipeorganizer/recipe/flagComment',
+		dataType: 'json',
+		data : {id : commentId}
+	})
+	.done(function(data) {
+		//TODO: AJAX: probably need to check for a success status?
+		console.log('comment flagged');
+		$('#flagComment-'+id).hide();
+		$('#flagged-'+id).show();
+	})
+	.fail(function(jqXHR, status, error) {
+		console.log('fail request: '+ jqXHR);
+		console.log('fail status: '+ status);
+		console.log('fail error: '+ error);
+
+		//server currently returns a simple error message
+		var respText = jqXHR.responseText;
+		console.log('respText: '+ respText);
+		postFailed(respText)
 	});
 }
 

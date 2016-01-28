@@ -140,7 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.and()
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
-    		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/lookupUser").permitAll()
+    		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
     		.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")

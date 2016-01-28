@@ -42,23 +42,19 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
 
     public void updateRecipe(Recipe recipe) {
-        if (recipe != null) {
-        	if (recipe.getViews() == null)
-        		recipe.setViews(0);
-        	if (recipe.getPhotoName() == null)
-        		recipe.setPhotoName("");
-        	Session sess = getSession();
-        	if (sess.contains(recipe))
-        		sess.clear();
-        	sess.merge(recipe);
-        }
+    	if (recipe.getViews() == null)
+    		recipe.setViews(0);
+    	if (recipe.getPhotoName() == null)
+    		recipe.setPhotoName("");
+    	Session sess = getSession();
+    	if (sess.contains(recipe))
+    		sess.clear();
+    	sess.merge(recipe);
     }
     
     public void deleteRecipe(Long id) {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
-        if (recipe != null) {
-        	getSession().delete(recipe);
-        }
+    	getSession().delete(recipe);
     }
 
     public Recipe getRecipe(Long id) {

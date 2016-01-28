@@ -30,16 +30,14 @@ public class CommentRepositoryImpl implements CommentRepository {
 	@Override
 	public void deleteComment(long id) {
 		RecipeComment recipeComment = (RecipeComment) getSession().load(RecipeComment.class, id);
-        if (null != recipeComment) {
-            getSession().delete(recipeComment);
-        }
+		getSession().delete(recipeComment);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<CommentDto> listComments(long recipeId) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
 			"select c.id as id, u.firstname as firstName, u.lastname as lastName, p.avatar as avatar, c.user_comment as userComment,"
-				+ " c.date_added as dateAdded from recipe_comments c, users u, user_profile p"
+				+ " c.date_added as dateAdded, c.flag as flag from recipe_comments c, users u, user_profile p"
 				+ " where c.recipe_id = :id and u.id = c.user_id and p.user_id = u.id order by c.date_added desc")
 			.addScalar("id",StandardBasicTypes.LONG)
 			.addScalar("firstName",StandardBasicTypes.STRING)
@@ -47,6 +45,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 			.addScalar("avatar",StandardBasicTypes.STRING)
 			.addScalar("userComment",StandardBasicTypes.STRING)
 			.addScalar("dateAdded",StandardBasicTypes.TIMESTAMP)
+			.addScalar("flag",StandardBasicTypes.INTEGER)
 			.setLong("id", recipeId)
 			.setResultTransformer(Transformers.aliasToBean(CommentDto.class));
     	
@@ -59,6 +58,15 @@ public class CommentRepositoryImpl implements CommentRepository {
     		.add(Restrictions.eq("recipeId", recipeId))
    			.setProjection(Projections.rowCount());
        	return (Long)criteria.uniqueResult();
+	}
+	
+	public void setCommentFlag(long id, int flag) {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+			"update recipe_comments set flag = :flag where id = :id")
+			.setInteger("flag", flag)
+			.setLong("id", id);
+    	
+    	query.executeUpdate();		
 	}
 
     private Session getSession() {

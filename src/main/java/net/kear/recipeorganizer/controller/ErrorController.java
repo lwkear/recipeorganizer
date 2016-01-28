@@ -54,10 +54,10 @@ public class ErrorController {
 		while (attrNames.hasMoreElements())
 			logger.info("getHome: attrNames " + attrNames.nextElement());
 		
-		String title = messages.getMessage("exception.systemunavailable.title", null, "System not available", locale);
+		String title = messages.getMessage("exception.title.systemUnavailable", null, "System not available", locale);
 		
 		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage("exception.databasedown", null, "", locale));
+		errorMsgs.add(messages.getMessage("exception.databaseDown", null, "", locale));
 		errorMsgs.add(messages.getMessage("exception.apologize", null, "", locale));		
 		
 		//NOTE: must redirect to another page; otherwise security does not log in as anonymous and all hell breaks loose with the _csrf token, etc.
@@ -81,6 +81,6 @@ public class ErrorController {
 	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
 	public ModelAndView accessDeniedError() {
 		
-		return commonView.getStandardErrorPage(new AccessDeniedException(""));
+		return commonView.getStandardErrorPage(new AccessDeniedException(null));
 	}
 }

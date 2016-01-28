@@ -68,7 +68,6 @@ $(function() {
 			}
 		})
 		.done(function(data) {
-			//TODO: AJAX: probably need to check for a success status?
 			console.log('Name ok (not found)');
 			//fix the appearance in case a name was entered in error
 			recipeName.parent('div').removeClass('has-error');

@@ -17,9 +17,9 @@
 			<div class="page-header">
 				<h3>${title}</h3>
 			</div>			
-			<div class="row">
-				<div class="span12 center alert alert-success text-center">
-					<span>${message}</span>
+			<div class="col-sm-12">			
+				<div class="center alert text-center strong">
+					<div><h4>${message}</h4></div>
 				</div>
 			</div>
 		</div>

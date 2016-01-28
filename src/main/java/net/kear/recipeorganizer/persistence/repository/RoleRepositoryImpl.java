@@ -48,17 +48,11 @@ public class RoleRepositoryImpl implements RoleRepository {
     	return getSession().createCriteria(Role.class).list();
     }
     
-	private Session getSession() {
-		
-		Session sess = getSessionFactory().getCurrentSession();
+    private Session getSession() {
+		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {
-			sess = getSessionFactory().openSession();
+			sess = sessionFactory.openSession();
 		}
 		return sess;
 	}
-
-	private SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-    
 }

@@ -17,10 +17,11 @@ public class CommentDto {
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date dateAdded;
+	private int flag;
 	
 	public CommentDto() {}
 
-	public CommentDto(long id, String firstName, String lastName, String avatar, String userComment, Date dateAdded) {
+	public CommentDto(long id, String firstName, String lastName, String avatar, String userComment, Date dateAdded, int flag) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -28,6 +29,7 @@ public class CommentDto {
 		this.avatar = avatar;
 		this.userComment = userComment;
 		this.dateAdded = dateAdded;
+		this.flag = flag;
 	}
 
 	public long getId() {
@@ -76,6 +78,13 @@ public class CommentDto {
 
 	public void setDateAdded(Date dateAdded) {
 		this.dateAdded = dateAdded;
-	};
+	}
 	
+	public int getFlag() {
+		return flag;
+	}
+
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
 }

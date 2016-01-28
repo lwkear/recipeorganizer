@@ -23,16 +23,12 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     public void updateCategory(Category category) {
-        if (null != category) {
-            getSession().merge(category);
-        }
+    	getSession().merge(category);
     }
     
     public void deleteCategory(Long id) {
     	Category category = (Category) getSession().load(Category.class, id);
-        if (null != category) {
-            getSession().delete(category);
-        }
+    	getSession().delete(category);
     }
     
     @SuppressWarnings("unchecked")

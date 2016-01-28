@@ -25,12 +25,7 @@ public class InstructionServiceImpl implements InstructionService {
     	instructionRepository.updateInstruction(instruction);
     }
  
-    public void deleteInstruction(Long recipeID, int seqNo) {
-    	instructionRepository.deleteInstruction(recipeID, seqNo);
-    }
-
     public List<Instruction> listInstruction() {
     	return instructionRepository.listInstruction();
     }
- 
 }

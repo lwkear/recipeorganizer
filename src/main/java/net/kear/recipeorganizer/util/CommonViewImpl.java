@@ -26,19 +26,20 @@ public class CommonViewImpl implements CommonView {
 		//log the error in the log file
 		logger.error(ex.getClass().toString(), ex);
 		logger.debug("getErrorPage exception simpleName: " + ex.getClass().getSimpleName());
-		//log the error in the database
-		logService.addException(ex);
+		//log the error in the database 
+		try {
+			logService.addException(ex);
+		}
+		catch (Exception e) {
+			//do nothing - it is likely that the database is down
+		}
 		
 		Locale locale = LocaleContextHolder.getLocale();
-		
+
 		//default exception
 		String msgCode = "exception." + ex.getClass().getSimpleName();
-		//get the exception name
-		/*String classStr[] = ex.getClass().toString().split("[.]");
-		if (classStr.length > 0)
-			msgCode = "exception." + classStr[classStr.length-1];*/
 		
-		String title = messages.getMessage("exception.error.title", null, "Error", locale);
+		String title = messages.getMessage("exception.title.error", null, "Error", locale);
 		List<String> errorMsgs = new ArrayList<String>();
 		errorMsgs.add(messages.getMessage(msgCode, null, ex.getClass().getSimpleName(), locale));
 		

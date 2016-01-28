@@ -100,7 +100,7 @@ public class RecipeController {
 		if (file != null && !file.isEmpty()) {
 			boolean rslt = fileAction.uploadFile(FileTypes.RECIPE, recipe.getId(), file);
 			if (!rslt) {
-				String msg = messages.getMessage("exception.file.IOException", null, locale);
+				String msg = messages.getMessage("exception.recipePhoto.IOException", null, locale);
 				FieldError fieldError = new FieldError("recipe", "photoName", msg);
 				result.addError(fieldError);
 				return "recipe/editRecipe";

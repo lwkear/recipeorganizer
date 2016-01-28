@@ -11,4 +11,5 @@ public interface CommentRepository {
     public void deleteComment(long id);
     public List<CommentDto> listComments(long recipeId);
     public long getCommentCount(long recipeId);
+    public void setCommentFlag(long id, int flag);
 }

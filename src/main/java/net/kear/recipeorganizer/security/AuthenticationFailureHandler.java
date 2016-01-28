@@ -33,13 +33,13 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 		String className = ex.getClass().getSimpleName();
 		switch (className) {
 			case "AccountExpiredException":
+			case "BadCredentialsException":
 			case "CredentialsExpiredException":
 			case "DisabledException":
 			case "LockedException":
-			case "BadCredentialsException":
 			case "RememberMeAuthenticationException":
-			case "UsernameNotFoundException":
 			case "SessionAuthenticationException":
+			case "UsernameNotFoundException":				
 				setDefaultFailureUrl("/user/loginError");
 				break;
 			default:

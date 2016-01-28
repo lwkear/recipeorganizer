@@ -22,15 +22,11 @@ public class UserProfileRepositoryImpl implements UserProfileRepository {
 		getSession().merge(userProfile);
 	}
 	
-	private Session getSession() {
-		Session sess = getSessionFactory().getCurrentSession();
+    private Session getSession() {
+		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {
-			sess = getSessionFactory().openSession();
+			sess = sessionFactory.openSession();
 		}
 		return sess;
-	}
-
-	private SessionFactory getSessionFactory() {
-		return sessionFactory;
 	}
 }

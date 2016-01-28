@@ -1,5 +1,8 @@
 package net.kear.recipeorganizer.controller;
 
+import java.net.ConnectException;
+
+import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.CommonView;
 import net.sf.jasperreports.engine.JRException;
@@ -7,6 +10,7 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.exception.GenericJDBCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +62,7 @@ public class ExceptionController {
 			JRException.class,
 			SolrServerException.class,
 			ObjectNotFoundException.class
+			//RecipeNotFound.class
 		})
 	public ModelAndView handleSpecificExceptions(Exception ex) {
 		logger.info("handleSpecificExceptions exception class: " + ex.getClass().toString());
@@ -76,12 +81,14 @@ public class ExceptionController {
 
 	@ExceptionHandler(value= {
 			CannotCreateTransactionException.class,
-			InternalAuthenticationServiceException.class
+			InternalAuthenticationServiceException.class,
+			ConnectException.class
 		})
 	public String handleDBException(Exception ex) {
 		logger.info("handleDBExceptions exception class: " + ex.getClass().toString());
 		String msg = ExceptionUtils.getMessage(ex);
 		logger.debug("handleDBExceptions msg: " + msg);
+
 		Throwable excptn = ExceptionUtils.getRootCause(ex);
 		if (excptn != null) {
 			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
@@ -89,9 +96,7 @@ public class ExceptionController {
 			msg = ExceptionUtils.getRootCauseMessage(ex);
 			logger.debug("handleDBExceptions root msg: " + msg);
 		}
-		
-		//TODO: examine the error to make sure it's actually a database down error; otherwise pass it on to getErrorPage
-		
+
 		//log the error in the log file
 		logger.error(ex.getClass().toString(), ex);		
 
@@ -109,36 +114,8 @@ public class ExceptionController {
 			logger.debug("handleGeneralExceptions root class: " + msg);
 			msg = ExceptionUtils.getRootCauseMessage(ex);
 			logger.debug("handleGeneralExceptions root msg: " + msg);
-		}
+		}		
 		
 		return commonView.getStandardErrorPage(ex);
 	}
 }
-
-/*
-List<String> errorMsgs = new ArrayList<String>();
-String msg = "getMessage: " + ExceptionUtils.getMessage(ex);
-errorMsgs.add(msg);
-msg = "getRootCauseMessage: " + ExceptionUtils.getRootCauseMessage(ex);
-errorMsgs.add(msg);
-//msg = "getStackTrace: " + ExceptionUtils.getStackTrace(ex);
-*/
-
-/*
-//returns an array of strings
-//String[] stackTrace = ExceptionUtils.getRootCauseStackTrace(ex);
-//msg = "getRootCauseStackTrace: " + stackTrace[0].getClass();
-//errorMsgs.add(msg);
-
-Throwable rootThrow = ExceptionUtils.getRootCause(ex);
-if (rootThrow != null) {
-	StackTraceElement[] element = rootThrow.getStackTrace();
-	if (element.length > 0) {
-		msg = "className: " + element[0].getClassName();
-		errorMsgs.add(msg);
-		msg = "methodName: " + element[0].getMethodName();
-		errorMsgs.add(msg);
-		msg = "lineNumber: " + element[0].getLineNumber();
-		errorMsgs.add(msg);
-	}
-}*/

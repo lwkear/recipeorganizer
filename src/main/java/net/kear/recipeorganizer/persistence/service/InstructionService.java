@@ -8,6 +8,5 @@ public interface InstructionService {
      
     public void addInstruction(Instruction instruction);
     public void updateInstruction(Instruction instruction);
-    public void deleteInstruction(Long recipeID, int seqNo);
     public List<Instruction> listInstruction();
 }

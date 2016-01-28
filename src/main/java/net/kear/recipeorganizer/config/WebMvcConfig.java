@@ -42,7 +42,10 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"net.kear.recipeorganizer"})
+@ComponentScan(basePackages = { 
+	"net.kear.recipeorganizer.controller",
+	"net.kear.recipeorganizer.util"	
+	})
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),@PropertySource("classpath:file.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {

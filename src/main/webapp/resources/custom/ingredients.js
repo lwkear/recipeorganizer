@@ -217,7 +217,6 @@ $(function() {
 				data: JSON.stringify(data)
 			})
 			.done(function(data) {
-				//TODO: AJAX: probably need to check for a success status?
 				console.log('Setting Ajax ingredient ID: '+ data.id);
 				ingredId.val(data.id);
 				ingredDesc.val(desc);

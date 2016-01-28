@@ -19,7 +19,7 @@
 		<jasper-version>6.2.0</jasper-version>
 	</properties>
 
-	<repositories>
+	<!-- <repositories>
 		<repository>
 			<id>spring</id>
 			<name>Spring Repository</name>
@@ -27,7 +27,7 @@
 			<releases><enabled>true</enabled></releases>
 			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
-	</repositories>
+	</repositories> -->
 
 	<dependencyManagement>
 		<dependencies>
@@ -154,11 +154,11 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate-version}</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>${hibernate-version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
@@ -183,6 +183,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
 			<version>${apache-connection-pooling-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.20.0-GA</version>
 		</dependency>
 
 		<!-- JSR 303 with Hibernate Validator -->	<!-- Duplicate??? see above -->

@@ -20,15 +20,12 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     @Autowired
     private SessionFactory sessionFactory;
  
-    @SuppressWarnings("unchecked")
     public void addIngredient(Ingredient ingredient) {
     	//check to make sure the ingredient is not already in the DB - set the ID if it is.
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
     		.add(Restrictions.ilike("name", ingredient.getName(), MatchMode.EXACT));
-    	//TODO: HIBERNATE: change this to return a single result; also check if the search s/b lowercase
-    	List<Ingredient> result = criteria.list();
-    	if (!result.isEmpty()) {
-    		Ingredient ingred = result.get(0);
+    	Ingredient ingred = (Ingredient)criteria.uniqueResult();
+    	if (ingred != null) {
     		ingredient.setId(ingred.getId());
     		return;
     	}
@@ -38,16 +35,12 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     }
 
     public void updateIngredient(Ingredient ingredient) {
-        if (ingredient != null) {
-        	getSession().merge(ingredient);
-        }
+    	getSession().merge(ingredient);
     }
     
     public void deleteIngredient(Long id) {
     	Ingredient ingredient = (Ingredient) getSession().load(Ingredient.class, id);
-        if (null != ingredient) {
-            sessionFactory.getCurrentSession().delete(ingredient);
-        }
+    	sessionFactory.getCurrentSession().delete(ingredient);
     }
     
     @SuppressWarnings("unchecked")
@@ -67,14 +60,10 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     }
 
     private Session getSession() {
-		
-		Session sess = getSessionFactory().getCurrentSession();
+		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {
-			sess = getSessionFactory().openSession();
+			sess = sessionFactory.openSession();
 		}
 		return sess;
 	}
-
-	private SessionFactory getSessionFactory() {
-		return sessionFactory;
-	}}
+}

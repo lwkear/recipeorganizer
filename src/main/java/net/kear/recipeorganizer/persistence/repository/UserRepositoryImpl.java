@@ -25,16 +25,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     public void updateUser(User user) {
-        if (user != null) {
-        	getSession().merge(user);
-        }
+       	getSession().merge(user);
     }
     
     public void deleteUser(Long id) {
     	User user = (User) getSession().load(User.class, id);
-        if (user != null) {
-        	getSession().delete(user);
-        }
+       	getSession().delete(user);
     }
     
     public User findUserByEmail(String email) {
@@ -92,15 +88,11 @@ public class UserRepositoryImpl implements UserRepository {
     	return user;
     }
     
-	private Session getSession() {
-		Session sess = getSessionFactory().getCurrentSession();
+    private Session getSession() {
+		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {
-			sess = getSessionFactory().openSession();
+			sess = sessionFactory.openSession();
 		}
 		return sess;
-	}
-
-	private SessionFactory getSessionFactory() {
-		return sessionFactory;
 	}
 }

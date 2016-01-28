@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
 
@@ -39,6 +40,9 @@ public class HomeController {
 	@Autowired
 	private MessageSource messages;
 
+	@Autowired
+	private UserService userService;
+	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("getHome");
@@ -116,9 +120,7 @@ public class HomeController {
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
 	public String getContact(Model model) {
 		logger.info("getContact");
-		
-		//throw new CannotCreateTransactionException(null);
-		
+				
 		return "contact";
 	}
 	
@@ -168,3 +170,42 @@ public class HomeController {
 
 		return "start";
 	}*/
+
+/*
+UserDto user = new UserDto();
+//user.setEmail("ilsa@gmail.com");
+user.setEmail(null);
+user.setFirstName("Ilsa");
+user.setLastName("Kear");
+user.setPassword("$2a$10$btkjPF8CVqS1v5W8Hh5qrujLSTyhVAXAA5YHbEm2lP1m3lp46DMnC");
+
+try {
+	userService.addUser(user);
+} catch (Exception ex) {
+	logger.info("exception class: " + ex.getClass().toString());
+	String msg = ExceptionUtils.getMessage(ex);
+	logger.debug("msg: " + msg);
+	Throwable excptn = ExceptionUtils.getRootCause(ex);
+	if (excptn != null) {
+		msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+		logger.debug("root class: " + msg);
+		msg = ExceptionUtils.getRootCauseMessage(ex);
+		logger.debug("root msg: " + msg);
+	}
+}
+
+try {
+	userService.deleteUser(78L);
+} catch (Exception ex) {
+	logger.info("exception class: " + ex.getClass().toString());
+	String msg = ExceptionUtils.getMessage(ex);
+	logger.debug("msg: " + msg);
+	Throwable excptn = ExceptionUtils.getRootCause(ex);
+	if (excptn != null) {
+		msg = ExceptionUtils.getRootCause(ex).getClass().toString();
+		logger.debug("root class: " + msg);
+		msg = ExceptionUtils.getRootCauseMessage(ex);
+		logger.debug("root msg: " + msg);
+	}
+}			
+*/

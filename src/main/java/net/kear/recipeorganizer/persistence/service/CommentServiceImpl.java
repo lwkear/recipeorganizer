@@ -18,6 +18,7 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     
     public void addComment(RecipeComment recipeComment) {
+    	recipeComment.setFlag(0);
     	commentRepository.addComment(recipeComment);
     }
     
@@ -31,5 +32,9 @@ public class CommentServiceImpl implements CommentService {
     
     public long getCommentCount(long recipeId) {
     	return commentRepository.getCommentCount(recipeId);
+    }
+    
+    public void setCommentFlag(long id, int flag) {
+    	commentRepository.setCommentFlag(id, flag);
     }
 }

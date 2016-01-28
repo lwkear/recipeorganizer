@@ -40,6 +40,9 @@ public class RecipeComment implements Serializable {
 	@Column(name = "USER_COMMENT")
 	@Size(max=500)	//2000
 	private String userComment;
+	
+	@Column(name = "FLAG")
+	private int flag;
 
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -48,12 +51,13 @@ public class RecipeComment implements Serializable {
 	
 	public RecipeComment() {}
 
-	public RecipeComment(long id, long userId, long recipeId, String userComment) {
+	public RecipeComment(long id, long userId, long recipeId, String userComment, int flag) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.recipeId = recipeId;
 		this.userComment = userComment;
+		this.flag = flag;
 	}
 
 	public long getId() {
@@ -96,6 +100,14 @@ public class RecipeComment implements Serializable {
 		this.dateAdded = dateAdded;
 	}
 
+	public int getFlag() {
+		return flag;
+	}
+
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -105,6 +117,7 @@ public class RecipeComment implements Serializable {
 		result = prime * result + (int) (recipeId ^ (recipeId >>> 32));
 		result = prime * result + ((userComment == null) ? 0 : userComment.hashCode());
 		result = prime * result + (int) (userId ^ (userId >>> 32));
+		result = prime * result + (int) (flag ^ (flag >>> 32));
 		return result;
 	}
 
@@ -133,11 +146,13 @@ public class RecipeComment implements Serializable {
 			return false;
 		if (userId != other.userId)
 			return false;
+		if (flag != other.flag)
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "RecipeComment [id=" + id + ", userId=" + userId + ", recipeId=" + recipeId + ", userComment=" + userComment + ", dateAdded=" + dateAdded + "]";
+		return "RecipeComment [id=" + id + ", userId=" + userId + ", recipeId=" + recipeId + ", userComment=" + userComment + ", dateAdded=" + dateAdded + ", flag=" + flag + "]";
 	}
 }

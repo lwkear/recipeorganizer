@@ -15,7 +15,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -128,11 +128,19 @@ public class DisplayController {
 	/***************************/
 	@RequestMapping("recipe/viewRecipe/{recipeId}")
 	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
-			HttpServletResponse response, HttpServletRequest request) {
+			HttpServletResponse response, HttpServletRequest request, Locale locale) throws RecipeNotFound {
 		logger.info("recipe/viewRecipe GET");
 
 		User user = (User)userInfo.getUserDetails();
-		Recipe recipe = recipeService.getRecipe(recipeId);
+		Recipe recipe = null;
+		
+		try {
+			recipe = recipeService.getRecipe(recipeId);
+		}
+		catch (Exception ex) {
+			throw new RecipeNotFound(ex);
+		}
+		
 		String idStr = recipeId.toString();
 		String cookieName = "recentRecipes";
 
@@ -158,7 +166,7 @@ public class DisplayController {
 			}
 		}
 		
-		if (!refer.contains("edit")) {
+		if (refer != null && !refer.contains("edit")) {
 			viewReferer.setReferer(refer, request);
 		}
 		
@@ -315,7 +323,7 @@ public class DisplayController {
 	/*************************/
 	@RequestMapping(value = "/recipe/addFavorite", method = RequestMethod.POST)
 	@ResponseBody
-	public String addFavorite(@RequestBody Favorites favorite, HttpServletResponse response) {
+	public String addFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/addFavorite");
 		logger.info("userId=" + favorite.getId().getUserId());
 		logger.info("recipeId=" + favorite.getId().getRecipeId());
@@ -326,10 +334,10 @@ public class DisplayController {
 		
 		try {
 			recipeService.addFavorite(favorite);
-		} catch (DataAccessException ex) {
+		} catch (Exception ex) {
 			logService.addException(ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.addFavorite", null, "Duplicate name", locale);
 		}
 		
 		return msg;
@@ -337,7 +345,7 @@ public class DisplayController {
 	
 	@RequestMapping(value = "/recipe/removeFavorite", method = RequestMethod.POST)
 	@ResponseBody
-	public String removeFavorite(@RequestBody Favorites favorite, HttpServletResponse response) {
+	public String removeFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/removeFavorite");
 		logger.info("userId=" + favorite.getId().getUserId());
 		logger.info("recipeId=" + favorite.getId().getRecipeId());
@@ -351,7 +359,7 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.removeFavorite", null, "Duplicate name", locale);
 		}
 		
 		return msg;
@@ -362,7 +370,7 @@ public class DisplayController {
 	/************************/
 	@RequestMapping(value = "/recipe/recipeMade", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateRecipeMade(@RequestBody RecipeMade recipeMade, HttpServletResponse response) {
+	public String updateRecipeMade(@RequestBody RecipeMade recipeMade, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/updateRecipeMade");
 		logger.info("userId=" + recipeMade.getId().getUserId());
 		logger.info("recipeId=" + recipeMade.getId().getRecipeId());
@@ -376,7 +384,7 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.recipeMade", null, "Duplicate name", locale);
 		}
 		
 		return msg;
@@ -387,7 +395,7 @@ public class DisplayController {
 	/**************************/
 	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateRecipeNote(@RequestBody RecipeNote recipeNote, HttpServletResponse response) {
+	public String updateRecipeNote(@RequestBody RecipeNote recipeNote, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/updateRecipeNote");
 		logger.info("userId=" + recipeNote.getId().getUserId());
 		logger.info("recipeId=" + recipeNote.getId().getRecipeId());
@@ -401,7 +409,7 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.recipeNote", null, "Duplicate name", locale);
 		}
 		
 		return msg;
@@ -412,7 +420,7 @@ public class DisplayController {
 	/*****************************/
 	@RequestMapping(value = "/recipe/recipeComment", method = RequestMethod.POST)
 	@ResponseBody
-	public String addRecipeComment(@RequestBody RecipeComment recipeComment, HttpServletResponse response) {
+	public String addRecipeComment(@RequestBody RecipeComment recipeComment, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/addRecipeComment");
 		logger.info("userId=" + recipeComment.getUserId());
 		logger.info("recipeId=" + recipeComment.getRecipeId());
@@ -426,7 +434,28 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = ExceptionUtils.getRootCauseMessage(ex);			
+			msg = messages.getMessage("exception.recipeComment", null, "Duplicate name", locale);
+		}
+		
+		return msg;
+	}
+
+	@RequestMapping(value = "/recipe/flagComment", method = RequestMethod.POST, produces="text/javascript")
+	@ResponseBody
+	public String flagComment(@RequestParam("id") Long id, HttpServletResponse response, Locale locale) {
+		logger.info("recipe/flagComment");
+		logger.info("id=" + id);
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		try {
+			commentService.setCommentFlag(id, 1);
+		} catch (DataAccessException ex) {
+			logService.addException(ex);			
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = messages.getMessage("exception.flagComment", null, "Duplicate name", locale);
 		}
 		
 		return msg;

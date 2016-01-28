@@ -6,12 +6,13 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -19,12 +20,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:database.oracle.properties")
+@ComponentScan("net.kear.recipeorganizer.persistence")
 public class RepositoryConfig {
 
 	@Autowired
     private Environment env;	
 
-	@Autowired
 	@Bean
 	public DataSource dataSource() {
 	    BasicDataSource dataSource = new BasicDataSource();
@@ -33,28 +34,25 @@ public class RepositoryConfig {
 	    dataSource.setUsername(env.getProperty("jdbc.username"));
 	    dataSource.setPassword(env.getProperty("jdbc.password"));
 	    dataSource.setAccessToUnderlyingConnectionAllowed(true);
-
 	    return dataSource;
 	}
 	
-	@Autowired
 	@Bean
 	public SessionFactory sessionFactory(DataSource dataSource) {
 	    LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
 	    sessionBuilder.scanPackages("net.kear.recipeorganizer.*");
 	    sessionBuilder.addProperties(getHibernateProperties());
-	    
+	    //sessionBuilder.setProperties(getHibernateProperties());
 	    return sessionBuilder.buildSessionFactory();
 	}
 	
-	@Autowired
 	@Bean
+	@Autowired
 	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
 	    HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
 	    return transactionManager;
 	}
-
-	@Autowired
+	
 	@Bean
 	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
 		return new PersistenceExceptionTranslationPostProcessor();
@@ -67,6 +65,7 @@ public class RepositoryConfig {
 	    properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 	    properties.put("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
 	    properties.put("hibernate.use_sql_comments", env.getProperty("hibernate.use_sql_comments"));
+	    properties.put("hibernate.connection.pool_size", "1");
 	    properties.put("hibernate.c3p0.acquire_increment", env.getProperty("hibernate.c3p0.acquire_increment"));
 	    properties.put("hibernate.c3p0.idle_test_period", env.getProperty("hibernate.c3p0.idle_test_period"));
 	    properties.put("hibernate.c3p0.max_size", env.getProperty("hibernate.c3p0.max_size"));
