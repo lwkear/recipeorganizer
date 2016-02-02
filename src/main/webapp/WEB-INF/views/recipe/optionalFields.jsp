@@ -53,44 +53,52 @@
 					</form:select>
 				</div>
 				<div class="col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-5 srcGroup bookGroup srcTA" id="inputBookName" style="display:none" path="source.cookbook"/>
-					<span class="text-danger">${cookbookError}</span>
+					<form:input type="text" class="form-control col-sm-5 srcGroup bookGroup srcTA maxSize" id="cookbook" style="display:none" path="source.cookbook"
+						 data-max="${sizeMap['Source.cookbook.max']}"/>
+					<span class="text-danger" id="cookbookErrMsg">${cookbookError}</span>
 				</div>
 				<div class="col-sm-1 srcGroup bookGroup <c:if test="${not empty cookbookPageError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup" id="inputBookPage" style="display:none" path="source.cookbookPage" value="0" autocomplete="off"/>
-					<span class="text-danger">${cookbookPageError}</span>
+					<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup maxSize" id="cookbookPage" style="display:none" path="source.cookbookPage" value="0" 
+						data-max="${sizeMap['Source.cookbookPage.max']}"/>
+					<span class="text-danger" id="cookbookPageErrMsg">${cookbookPageError}</span>
 				</div>
 				<div class="col-sm-5 srcGroup magGroup <c:if test="${not empty magazineError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-5 srcGroup magGroup srcTA" id="inputMagName" style="display:none" path="source.magazine"/>
-					<span class="text-danger">${magazineError}</span>
+					<form:input type="text" class="form-control col-sm-5 srcGroup magGroup srcTA maxSize" id="magazine" style="display:none" path="source.magazine"
+						data-max="${sizeMap['Source.magazine.max']}"/>
+					<span class="text-danger" id="magazineErrMsg">${magazineError}</span>
 				</div>
 				<div class="col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">has-error</c:if>" style="display:none">
 					<form:input type="text" class="form-control col-sm-2 srcGroup magGroup" id="inputMagDate" style="display:none" path="source.magazinePubdate"/>
 					<span class="text-danger">${magazinePubdateError}</span>
 				</div>
 				<div class="col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-5 srcGroup newsGroup srcTA" id="inputNewsName" style="display:none" path="source.newspaper"/>
-					<span class="text-danger">${newspaperError}</span>
+					<form:input type="text" class="form-control col-sm-5 srcGroup newsGroup srcTA maxSize" id="newspaper" style="display:none" path="source.newspaper"
+						data-max="${sizeMap['Source.newspaper.max']}"/>
+					<span class="text-danger" id="newspaperErrMsg">${newspaperError}</span>
 				</div>
 				<div class="col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">has-error</c:if>" style="display:none">
 					<form:input type="text" class="form-control col-sm-2 srcGroup newsGroup" id="inputNewsDate" style="display:none" path="source.newspaperPubdate"/>
 					<span class="text-danger">${newspaperPubdateError}</span>
 				</div>
 				<div class="col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-4 srcGroup personGroup srcTA" id="inputPersonName" style="display:none" path="source.person"/>
-					<span class="text-danger">${personError}</span>
+					<form:input type="text" class="form-control col-sm-4 srcGroup personGroup srcTA maxSize" id="person" style="display:none" path="source.person"
+						data-max="${sizeMap['Source.person.max']}"/>
+					<span class="text-danger" id="personErrMsg">${personError}</span>
 				</div>
 				<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty websiteUrlError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-5 srcGroup webGroup srcTA" id="inputWebURL" style="display:none" path="source.websiteUrl"/>
-					<span class="text-danger">${websiteUrlError}</span>
+					<form:input type="text" class="form-control col-sm-5 srcGroup webGroup srcTA maxSize" id="websiteUrl" style="display:none" path="source.websiteUrl"
+						data-max="${sizeMap['Source.websiteUrl.max']}"/>
+					<span class="text-danger" id="websiteUrlErrMsg">${websiteUrlError}</span>
 				</div>
 				<div class="col-sm-5 srcGroup webGroup <c:if test="${not empty recipeUrlError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-5 srcGroup webGroup" id="inputRecipeURL" style="display:none" path="source.recipeUrl"/>
-					<span class="text-danger">${recipeUrlError}</span>
+					<form:input type="text" class="form-control col-sm-5 srcGroup webGroup maxSize" id="recipeUrl" style="display:none" path="source.recipeUrl"
+						data-max="${sizeMap['Source.recipeUrl.max']}"/>
+					<span class="text-danger" id="recipeUrlErrMsg">${recipeUrlError}</span>
 				</div>
 				<div class="col-sm-7 srcGroup otherGroup <c:if test="${not empty otherError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-7 srcGroup otherGroup" id="inputOtherDetails" style="display:none" path="source.other" autocomplete="off"/>
-					<span class="text-danger">${otherError}</span>
+					<form:input type="text" class="form-control col-sm-7 srcGroup otherGroup maxSize" id="other" style="display:none" path="source.other" 
+						autocomplete="off" data-max="${sizeMap['Source.other.max']}"/>
+					<span class="text-danger" id="otherErrMsg">${otherError}</span>
 				</div>
 			</div>
 		</div>
@@ -115,7 +123,7 @@
 			</div>
 			<div class="row">						
 				<div class="col-sm-3 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-					<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>
+					<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>						
 					<span class="text-danger">${tagsError}</span>
 				</div>
 				<c:choose>

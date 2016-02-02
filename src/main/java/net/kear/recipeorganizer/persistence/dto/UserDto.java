@@ -45,11 +45,11 @@ public class UserDto implements Serializable {
 	private String confirmEmail;
 
 	@NotBlank
-	@Size(min=6,max=20, groups=ValidSize.class)
+	@Size(min=6,max=20, groups=ValidSize.class)		//6,20
 	private String password;
 	
 	@NotBlank
-	@Size(min=6,max=20, groups=ValidSize.class)
+	@Size(min=6,max=20, groups=ValidSize.class)		//6,20
 	private String confirmPassword;
 	
 	private boolean submitRecipes;

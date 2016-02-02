@@ -191,7 +191,6 @@ function flagComment(commentId) {
 		data : {id : commentId}
 	})
 	.done(function(data) {
-		//TODO: AJAX: probably need to check for a success status?
 		console.log('comment flagged');
 		$('#flagComment-'+id).hide();
 		$('#flagged-'+id).show();
@@ -223,7 +222,6 @@ function addFavorite(viewerId, recipeId) {
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
-		//TODO: AJAX: probably need to check for a success status?
 		console.log('recipe added to favorites');
 		$('#favLeft').show();
 		$('#favRight').hide();
@@ -256,7 +254,7 @@ $(function() {
 		defaultDate: null,
 	});
 	
-	$('[data-toggle="tooltip"]').tooltip();
+	/*$('[data-toggle="tooltip"]').tooltip();*/
 	
 	$('#madeDate').datepicker();
 

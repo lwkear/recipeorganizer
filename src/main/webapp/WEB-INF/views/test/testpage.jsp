@@ -303,4 +303,39 @@
 <script src="<c:url value="/resources/custom/recipe.js" />"></script>
 
 </html>
+
+
+
+		<%-- <div class="col-sm-12">
+			<c:forEach var="element" items="${sizeMap}">
+				<p>Key: ${element.key} Value: ${element.value}</p>
+			</c:forEach>
+		</div>
+		<div class="col-sm-12">
+			<p>FirstName: ${sizeMap['firstName.max']}</p>
+		</div>
+		<div class="col-sm-12">
+			FirstName: <input class="maxSize" type="text" id="firstName" data-max="${sizeMap['firstName.max']}"/>
+			<span class="text-danger" id="firstNameErr" style="display:none"></span>
+		</div> --%>
+
+<!-- <script type="text/javascript">
+
+$(function() {
+	
+	$(document)
+	.on('blur', '.maxSize', function(e)
+	{
+		var max = $(this).attr('data-max');
+		var maxNum = parseInt(max);
+		var chars = $(this).val().length;
+		if (chars > maxNum) {
+			var msg = messageMap.get('recipe.name.Size');
+			var fmt = String.format(msg, "", max);
+			$('#firstNameErr').html(fmt).show();
+		}
+	})
+})
+
+</script> -->
 			

@@ -17,6 +17,9 @@ public class ViewReferer {
 	
 		String returnLabel = null;
 		
+		if (referer == null)
+			return;
+		
 		if (referer.contains("searchResults"))
 			returnLabel = "title.searchresults";
 		else

@@ -127,19 +127,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: the regexMatcher is required because signup uses an AJAX call to check if the email is already registered and
 	//antMatcher does not handle the /?{} parameter to the url
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
-	//TODO: SECURITY: look into putting URLs with their roles into a DB table?
-	//TODO: SECURITY: consider securing every URL in the app to reduce unauth access
-	//@SuppressWarnings("unchecked")
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
     	http
-    	//.csrf()
-    		//.disable()
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
+			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/technical", "/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
     		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()

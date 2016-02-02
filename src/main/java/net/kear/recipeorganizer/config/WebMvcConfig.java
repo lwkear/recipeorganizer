@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import net.kear.recipeorganizer.util.CommonViewImpl;
+import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.FileActionsImpl;
 
 import org.slf4j.Logger;
@@ -98,9 +98,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	public FileActionsImpl fileActionsImpl() {
+	public FileActions fileActions() {
 		logger.debug("FileActionsImpl");
-		final FileActionsImpl actions = new FileActionsImpl();
+		FileActionsImpl actions = new FileActionsImpl();
 		actions.setAvatarDir(env.getProperty("file.directory.avatar"));
 		actions.setRecipeDir(env.getProperty("file.directory.recipe"));
 		return actions;
@@ -117,12 +117,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return resolver;
     }
 	
-	@Bean
-	public CommonViewImpl commonViewImpl() {
+	/*@Bean
+	public CommonView commonView() {
 		logger.debug("CommonViewImpl");
 		final CommonViewImpl commonView = new CommonViewImpl();
 		return commonView;
-	}
+	}*/
 
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages

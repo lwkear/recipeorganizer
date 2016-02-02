@@ -47,6 +47,7 @@ $(function() {
 		//remove the typeahead html added to the form which included the class w/o the name attribute 
 	    $('.ingredQtyType').typeahead('destroy');
 	    $('.ingredQual').typeahead('destroy');
+	    $('.ingredDesc').typeahead('destroy');
 	
 		//remove rows that are completely empty
 	    var fields = ['.ingredQty','.ingredQtyType','.ingredDesc','.ingredQual'];

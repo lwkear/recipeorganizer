@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.webflow.execution.RequestContext;
 
@@ -19,6 +20,7 @@ public interface RecipeService {
     public void saveRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
     public Recipe getRecipe(Long id);
+    public Map<String, Object> getConstraintMap(String constraintName, String property);
     public void addFavorite(Favorites favorite);
     public void removeFavorite(Favorites favorite);
     public boolean isFavorite(Long userId, Long recipeId);
@@ -39,4 +41,5 @@ public interface RecipeService {
     public void checkArraySizes(Recipe recipe);
     public void adjustInstructionList(Recipe recipe, RequestContext context);
     public void adjustRecipeIngredientList(Recipe recipe, RequestContext context);
+    
 }

@@ -69,6 +69,13 @@ function fixIngredArrayIndexes(element, sequence) {
 	console.log("fixIngredArray:" + element);
 	$(element).each(function(index) {
 		console.log("element:" + $(this).val());
+		/*var rslt = $(this).attr('name');
+		if (typeof rslt != 'undefined') { 
+			$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
+			if (sequence)
+				$(this).val(index+1);
+		}*/
+
 		$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
 		if (sequence) {
 			$(this).val(index+1);
@@ -82,7 +89,7 @@ $(function() {
 	initIngredientsTA();
 	initMeasuresTA();
 	initQualifiersTA();
-	
+
 	//these events must reside in $(document) because the dynamically added elements are not
 	//visible to the DOM otherwise
 	$(document)
@@ -121,6 +128,7 @@ $(function() {
 			//remove the typeahead html added to the form which included the class w/o the name attribute 
 		    $('.ingredQtyType').typeahead('destroy');
 		    $('.ingredQual').typeahead('destroy');
+		    $('.ingredDesc').typeahead('destroy');
 		
 			//remove rows that are completely empty
 		    var fields = ['.ingredQty','.ingredQtyType','.ingredDesc','.ingredQual'];

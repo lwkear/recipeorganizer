@@ -17,6 +17,17 @@
 			<div class="page-header-white">
 				<h1><spring:message code="title.thankyou"></spring:message></h1>
 			</div>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+					<br>
+					<h4><spring:message code="thankyou.description1"></spring:message></h4>
+					<br>
+					<h4><spring:message code="thankyou.description2"></spring:message></h4>
+					<br>
+					<h4><spring:message code="thankyou.description3"></spring:message></h4>
+					<br>			
+				</div>
+			</div>
 		</div>
 	</div>
 

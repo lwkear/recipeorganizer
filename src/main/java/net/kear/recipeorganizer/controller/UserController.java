@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -61,10 +62,12 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.FileResult;
+import net.kear.recipeorganizer.util.FileType;
 import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
@@ -96,6 +99,8 @@ public class UserController {
 	private AuthCookie authCookie;
 	@Autowired
 	private ExceptionLogService logService;
+	@Autowired
+	private ConstraintMap constraintMap;
 	
     /*********************/
     /*** Login handler ***/
@@ -144,6 +149,8 @@ public class UserController {
 		logger.info("signup GET");
 		
 		UserDto user = new UserDto();
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userDto", user);		
 		
 		return "user/signup";
@@ -330,6 +337,8 @@ public class UserController {
 			userProfile.setUser(user);
 		}
 		
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserProfile.class); 
+		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userProfile", userProfile);
 		
 		return "user/profile";
@@ -354,9 +363,9 @@ public class UserController {
 		}
 		
 		if (file != null && !file.isEmpty()) {
-			boolean rslt = fileAction.uploadFile(FileTypes.AVATAR, user.getId(), file);
-			if (!rslt) {
-				String msg = messages.getMessage("exception.file.IOException", null, "File error", locale);
+			FileResult rslt = fileAction.uploadFile(FileType.AVATAR, user.getId(), file);
+			if (rslt != FileResult.SUCCESS) {
+				String msg = fileAction.getErrorMessage(rslt, locale);
 				FieldError fieldError = new FieldError("userProfile", "avatar", msg);
 				result.addError(fieldError);
 				return "user/profile";
@@ -365,7 +374,7 @@ public class UserController {
 			if (currAvatar != null && !currAvatar.isEmpty()) {
 				String newAvatar = file.getOriginalFilename();
 				if (!currAvatar.equals(newAvatar))
-					fileAction.deleteFile(FileTypes.AVATAR, user.getId(), currAvatar);
+					fileAction.deleteFile(FileType.AVATAR, user.getId(), currAvatar);
 			}
 			userProfile.setAvatar(file.getOriginalFilename());
         }
@@ -375,7 +384,7 @@ public class UserController {
 		if (avatarName.startsWith("xxxREMOVExxx")) {
 			String name = avatarName.substring(12);
 			//errors are not fatal and will be logged by FileAction
-			fileAction.deleteFile(FileTypes.AVATAR, user.getId(), name);
+			fileAction.deleteFile(FileType.AVATAR, user.getId(), name);
 			userProfile.setAvatar("");
 		}
 		
@@ -413,8 +422,7 @@ public class UserController {
 	
 	/*************************/
 	/*** Dashboard handler ***/
-	/**
-	 * @throws AccessUserException ***********************/
+	/*************************/
 	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
 	public String getDashboard(Model model, HttpServletRequest request) throws AccessUserException {
 		logger.info("getDashboard");
@@ -470,13 +478,14 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "user/avatar", method = RequestMethod.GET)
-	public void getAvatar(@RequestParam("filename") final String fileName, HttpServletResponse response) {
+	public void getAvatar(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("avatar GET");
 		
-		User user = (User)userInfo.getUserDetails();
+		//User user = (User)userInfo.getUserDetails();
 		
 		//errors are not fatal and will be logged by FileAction
-		fileAction.downloadFile(FileTypes.AVATAR, user.getId(), fileName, response);
+		//fileAction.downloadFile(FileType.AVATAR, user.getId(), fileName, response);
+		fileAction.downloadFile(FileType.AVATAR, id, fileName, response);
 	}
 	
 	/*******************************/
@@ -487,6 +496,8 @@ public class UserController {
 		logger.info("password GET");
 
 		PasswordDto passwordDto = new PasswordDto();
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", PasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute(passwordDto);
 		
 		return "user/changePassword";
@@ -650,6 +661,8 @@ public class UserController {
         
         NewPassword newPassword = new NewPassword();
 		newPassword.setUserId(user.getId());
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", NewPassword.class); 
+		redir.addFlashAttribute("sizeMap", sizeMap);
 		redir.addFlashAttribute("newPassword", newPassword);
 		mv.setViewName("redirect:/user/newPassword");
         return mv;

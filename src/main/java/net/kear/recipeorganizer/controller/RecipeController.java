@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.controller;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,8 +40,10 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.FileResult;
+import net.kear.recipeorganizer.util.FileType;
 import net.kear.recipeorganizer.util.SolrUtil;
 import net.kear.recipeorganizer.util.ViewReferer;
 
@@ -69,6 +72,8 @@ public class RecipeController {
 	private ViewReferer viewReferer;
 	@Autowired
 	private SolrUtil solrUtil;
+	@Autowired
+	private ConstraintMap constraintMap;
 	
 	/***************************/
 	/*** Edit recipe handler ***/
@@ -79,9 +84,11 @@ public class RecipeController {
 		logger.info("recipe/editRecipe GET");
 
 		Recipe recipe = recipeService.getRecipe(id);
+		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
+		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("recipe", recipe);
 
-		if (!refer.contains("view"))
+		if (refer != null && !refer.contains("view"))
 			viewReferer.setReferer(refer, request);
 		
 		return "recipe/editRecipe";
@@ -98,9 +105,9 @@ public class RecipeController {
 		}
 
 		if (file != null && !file.isEmpty()) {
-			boolean rslt = fileAction.uploadFile(FileTypes.RECIPE, recipe.getId(), file);
-			if (!rslt) {
-				String msg = messages.getMessage("exception.recipePhoto.IOException", null, locale);
+			FileResult rslt = fileAction.uploadFile(FileType.RECIPE, recipe.getId(), file);
+			if (rslt != FileResult.SUCCESS) {
+				String msg = fileAction.getErrorMessage(rslt, locale);
 				FieldError fieldError = new FieldError("recipe", "photoName", msg);
 				result.addError(fieldError);
 				return "recipe/editRecipe";
@@ -109,7 +116,7 @@ public class RecipeController {
 			if (currPhoto != null && !currPhoto.isEmpty()) {
 				String newPhoto = file.getOriginalFilename();
 				if (!currPhoto.equals(newPhoto))
-					fileAction.deleteFile(FileTypes.RECIPE, recipe.getId(), currPhoto);
+					fileAction.deleteFile(FileType.RECIPE, recipe.getId(), currPhoto);
 			}
 			recipe.setPhotoName(file.getOriginalFilename());
         }
@@ -118,7 +125,7 @@ public class RecipeController {
 		if (photoName.startsWith("xxxREMOVExxx")) {
 			String name = photoName.substring(12);
 			//errors are not fatal and will be logged by FileAction
-			fileAction.deleteFile(FileTypes.RECIPE, recipe.getId(), name);
+			fileAction.deleteFile(FileType.RECIPE, recipe.getId(), name);
 			recipe.setPhotoName("");
 		}
 
@@ -136,9 +143,12 @@ public class RecipeController {
 	/****************************/
 	/*** Navigation from view ***/
 	/****************************/
-	public String getReturnMessage(String referer) {
+	/*public String getReturnMessage(String referer) {
 
 		String returnLabel = null;
+		
+		if (referer == null)
+			return returnLabel;
 		
 		if (referer.contains("searchResults"))
 			returnLabel = "title.searchresults";
@@ -155,7 +165,7 @@ public class RecipeController {
 			returnLabel = "";
 
 		return returnLabel;
-	}
+	}*/
 
 	/*****************************/
 	/*** Delete recipe handler ***/
@@ -172,10 +182,10 @@ public class RecipeController {
 		
 		recipeService.deleteRecipe(recipeId);
 		
-		String fileName = fileAction.fileExists(FileTypes.RECIPE, recipeId);
+		String fileName = fileAction.fileExists(FileType.RECIPE, recipeId);
 		if (fileName.length() > 0)
 			//errors are not fatal and will be logged by FileAction
-			fileAction.deleteFile(FileTypes.RECIPE, recipeId, fileName);
+			fileAction.deleteFile(FileType.RECIPE, recipeId, fileName);
 		
 		//errors are not fatal and will be logged by SolrUtil
 		solrUtil.deleteRecipe(recipeId);

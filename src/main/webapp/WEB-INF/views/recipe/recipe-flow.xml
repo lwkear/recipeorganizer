@@ -10,6 +10,7 @@
 	
 	<on-start>
     	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
+    	<evaluate expression="recipeService.getConstraintMap('Size', 'max')" result="flowScope.sizeMap" />
 	</on-start>
 	
 	<view-state id="basics" view="recipe/basics" model="recipe">
@@ -46,7 +47,7 @@
 	</decision-state>
 
 	<view-state id="ingredients" view="recipe/ingredients" model="recipe">
-		<transition on="back" to="ingredLoopBack" bind="true" validate="true" validation-hints="'recipeIngredGroup'">
+		<transition on="back" to="ingredLoopBack" bind="true" validate="false" validation-hints="'recipeIngredGroup'">
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 		</transition>
@@ -65,7 +66,7 @@
 	</decision-state>
 	
 	<view-state id="instructions" view="recipe/instructions" model="recipe">
-		<transition on="back" to="instructLoopBack" bind="true" validate="true" validation-hints="'recipeInstructGroup'">
+		<transition on="back" to="instructLoopBack" bind="true" validate="false" validation-hints="'recipeInstructGroup'">
 			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>

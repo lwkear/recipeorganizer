@@ -44,7 +44,7 @@ $(function() {
 	 	});
 	
 	$(document)
-	.on('blur', '#inputName', function(e)
+	.on('blur', '#recipeName', function(e)
 	{
 		e.preventDefault();
 	
@@ -86,7 +86,6 @@ $(function() {
 				recipeName.parent('div').addClass('has-error');
 				$('#dupeErr').html(respText);
 				$('#dupeErr').show();
-				//$('#nameLabel').html("Name:&nbsp;&nbsp;" + respText);
 				return;
 			}
 		})
@@ -105,16 +104,18 @@ $(function() {
 		num = $('#ingredSections').val();
 		if (!num || !num.length || num === "0")
 			$('#ingredSections').val(1);
-		num = $('#currIngredSect').val(0);			
+		$('#currIngredSect').val(0);			
 		num = $('#instructSections').val();
 		if (!num || !num.length || num === "0")
 			$('#instructSections').val(1);
-		num = $('#currInstructSect').val(0);
+		$('#currInstructSect').val(0);
 	})
 	.on('click', 'input[name="instructSet"]:checked', function(e)
 	{
-		if ($(this).val() == "true")
-			$('.instructNum').show();
+		if ($(this).val() == "true") {
+			$('#instructSections').val(2);
+			$('.instructNum').show();			
+		}
 		else {
 			$('.instructNum').hide();
 			$('#instructSections').val(1);
@@ -122,8 +123,10 @@ $(function() {
 	})
 	.on('click', 'input[name="ingredSet"]:checked', function(e)
 	{
-		if ($(this).val() == "true")
-			$('.ingredNum').show();
+		if ($(this).val() == "true") {
+			$('#ingredSections').val(2);
+			$('.ingredNum').show();			
+		}
 		else {
 			$('.ingredNum').hide();
 			$('#ingredSections').val(1);

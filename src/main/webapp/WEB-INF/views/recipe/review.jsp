@@ -17,6 +17,11 @@
 			<div class="page-header"> 		
 				<h3><spring:message code="recipe.review.title"></spring:message></h3>
 			</div>
+			<div>
+				<div class="col-sm-10 col-sm-offset-1">
+					<p class="std-maroon"><spring:message code="recipe.review.gobackandfix"></spring:message></p>
+				</div>				
+			</div>
 		</div>
 	 	<div class="col-sm-12">
 			<h3>${recipe.name}</h3>

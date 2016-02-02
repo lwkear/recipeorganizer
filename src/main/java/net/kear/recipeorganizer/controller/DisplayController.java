@@ -47,7 +47,7 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.FileType;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.ViewReferer;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -197,7 +197,7 @@ public class DisplayController {
 		
 		if (user.getId() != recipe.getUser().getId())
 			recipeService.addView(recipe);
-		if (!refer.contains("edit"))
+		if (refer != null && !refer.contains("edit"))
 			viewReferer.setReferer(refer, request);
 
 		return "recipe/viewRecipe";
@@ -209,7 +209,7 @@ public class DisplayController {
 
 		if (fileName != null && !fileName.isEmpty())
 			//errors are not fatal and will be logged by FileAction
-			fileAction.downloadFile(FileTypes.RECIPE, id, fileName, response);
+			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
 	
 	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)

@@ -37,7 +37,7 @@ public class Category implements Serializable {
 
 	@Column(name = "NAME", nullable = false)
 	@NotBlank(groups=NotBlankGroup.class)
-	@Size(max=250, groups=SizeGroup.class)
+	@Size(max=30, groups=SizeGroup.class)
 	private String name;
 
 	public Category() {}

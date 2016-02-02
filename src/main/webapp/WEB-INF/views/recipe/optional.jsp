@@ -39,7 +39,7 @@
 
 				<div class="row spacer-vert-lg">
 					<div class="col-sm-2">
-						<button class="btn btn-default" id="back" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
+						<button class="btn btn-default" type="submit" id="back" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>

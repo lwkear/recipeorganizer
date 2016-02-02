@@ -108,6 +108,3 @@
 	<div class="container verticalFiller">
 	</div>
 </c:if>
-
-<!-- load messages needed by the popup modal dialogs -->
-<%@include file="../common/messages.jsp" %>

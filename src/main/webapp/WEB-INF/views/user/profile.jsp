@@ -28,13 +28,13 @@
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
 							<label class="control-label" for="city"><spring:message code="profile.city"></spring:message></label>
-							<form:input class="form-control" type="text" id="city" name="city" path="city" autocomplete="off"/>
-							<span class="text-danger">${cityError}</span>
+							<form:input class="form-control maxSize" type="text" id="city" name="city" path="city" autocomplete="off" data-max="${sizeMap['city.max']}"/>
+							<span class="text-danger" id="cityErrMsg">${cityError}</span>
 						</div>
 			        	<div class="form-group col-sm-2 <c:if test="${not empty stateError}">has-error</c:if>">
 							<label class="control-label" for="state"><spring:message code="profile.state"></spring:message></label>
-							<form:input class="form-control" type="text" id="state" path="state"/>
-							<span class="text-danger">${stateError}</span>
+							<form:input class="form-control maxSize" type="text" id="state" path="state" data-max="${sizeMap['state.max']}"/>
+							<span class="text-danger" id="stateErrMsg">${stateError}</span>
 						</div>
 					</div>
 					<div class="col-sm-12">
@@ -65,8 +65,8 @@
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-8 col-sm-offset-2 <c:if test="${not empty interestsError}">has-error</c:if>">
 							<label class="control-label" for="interests"><spring:message code="profile.interests"></spring:message></label>
-							<form:textarea class="form-control" rows="4" id="interests" path="interests"></form:textarea>
-							<span class="text-danger">${interestsError}</span>
+							<form:textarea class="form-control maxSize" rows="4" id="interests" path="interests" data-max="${sizeMap['interests.max']}"></form:textarea>
+							<span class="text-danger" id="interestsErrMsg">${interestsError}</span>
 						</div>
 					</div>
 					<div class="col-sm-12">

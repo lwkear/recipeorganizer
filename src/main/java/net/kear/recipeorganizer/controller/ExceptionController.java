@@ -2,7 +2,6 @@ package net.kear.recipeorganizer.controller;
 
 import java.net.ConnectException;
 
-import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.CommonView;
 import net.sf.jasperreports.engine.JRException;
@@ -10,7 +9,6 @@ import net.sf.jasperreports.engine.JRException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.ObjectNotFoundException;
-import org.hibernate.exception.GenericJDBCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

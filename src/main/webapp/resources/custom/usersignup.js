@@ -9,6 +9,10 @@ $(function() {
 		//nothing to do
 		if (!emailStr)
 			return;
+		
+		//the error is visible, so it must be because of a maxSize error being displayed
+		if ($('#emailErrMsg').is(':visible'))
+			return;
 
 		//save off the variable for the .done and .fail methods
 		var username = $(this);
@@ -23,7 +27,6 @@ $(function() {
 			}
 		})
 		.done(function(jqXHR, status, msg) {
-			//TODO: GUI: probably need to check for a success status?
 			console.log('done xhr.status: '+ jqXHR.status);
 			console.log('done status: '+ status);
 			console.log('done msg: '+ msg);

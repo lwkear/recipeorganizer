@@ -36,10 +36,11 @@ public class CommentRepositoryImpl implements CommentRepository {
 	@SuppressWarnings("unchecked")
 	public List<CommentDto> listComments(long recipeId) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"select c.id as id, u.firstname as firstName, u.lastname as lastName, p.avatar as avatar, c.user_comment as userComment,"
+			"select c.id as id, u.id as userId, u.firstname as firstName, u.lastname as lastName, p.avatar as avatar, c.user_comment as userComment,"
 				+ " c.date_added as dateAdded, c.flag as flag from recipe_comments c, users u, user_profile p"
 				+ " where c.recipe_id = :id and u.id = c.user_id and p.user_id = u.id order by c.date_added desc")
 			.addScalar("id",StandardBasicTypes.LONG)
+			.addScalar("userId",StandardBasicTypes.LONG)
 			.addScalar("firstName",StandardBasicTypes.STRING)
 			.addScalar("lastName",StandardBasicTypes.STRING)
 			.addScalar("avatar",StandardBasicTypes.STRING)

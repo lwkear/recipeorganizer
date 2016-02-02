@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -21,8 +22,9 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.FileType;
 import net.kear.recipeorganizer.util.SolrUtil;
 
 import org.apache.commons.lang.math.Fraction;
@@ -49,6 +51,8 @@ public class RecipeServiceImpl implements RecipeService {
 	private FileActions fileAction;
 	@Autowired
 	private SolrUtil solrUtil;
+	@Autowired
+	private ConstraintMap constraintMap;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -118,7 +122,7 @@ public class RecipeServiceImpl implements RecipeService {
     		if (photoName!= null && !photoName.isEmpty()) {
     			String newName = recipe.getId() + "." + photoName;
     			//errors are not fatal and will be logged by FileAction
-    			fileAction.renameFile(FileTypes.RECIPE, recipe.getPhotoName(), newName);
+    			fileAction.renameFile(FileType.RECIPE, recipe.getPhotoName(), newName);
     		}
 
     		//errors are not fatal and will be logged by SolrUtil
@@ -132,6 +136,13 @@ public class RecipeServiceImpl implements RecipeService {
 
     public Recipe getRecipe(Long id) {
     	return recipeRepository.getRecipe(id);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Map<String, Object> getConstraintMap(String constraintName, String property) {
+		Class[] classes = {Recipe.class, RecipeIngredient.class, Ingredient.class, Source.class, InstructionSection.class, IngredientSection.class};
+		Map<String, Object> constraints = constraintMap.getModelConstraints(constraintName, property, classes);
+		return constraints;    	
     }
     
     public void addFavorite(Favorites favorite) {
@@ -254,6 +265,7 @@ public class RecipeServiceImpl implements RecipeService {
     	int sectNdx = 0;
     	boolean forward = false;
     	boolean back = false;
+    	boolean hasStep = false;
     	
     	//get the parameters
     	ParameterMap requestParameters = context.getRequestParameters();
@@ -274,7 +286,8 @@ public class RecipeServiceImpl implements RecipeService {
     				inst = new Instruction();
 	    			inst.setDescription(value);
 	    			inst.setSequenceNo(seq++);
-	    			requestInstruct.add(inst);	    			
+	    			requestInstruct.add(inst);
+	    			hasStep = true;
     			}    			
     		}
     		if (key.contains("_proceed"))
@@ -285,13 +298,19 @@ public class RecipeServiceImpl implements RecipeService {
 
     	//replace the current list with the parsed list
     	if (requestInstruct.size() > 0) {
-    		recipe.getInstructionSection(sectNdx).getInstructions().clear();
-    		recipe.getInstructionSection(sectNdx).setInstructions(requestInstruct);
+    		if (hasStep) {
+    			recipe.getInstructionSection(sectNdx).getInstructions().clear();
+    			recipe.getInstructionSection(sectNdx).setInstructions(requestInstruct);
+    		}
+    		else
+    			//if the user didn't fill in any steps need to remove the section;
+    			//otherwise, a validation error is thrown when then come back to this section 
+    			recipe.getInstructSections().remove(sectNdx);
 	    	if (forward) {
 		    	recipe.getInstructionSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrInstructSection(sectNdx+1);
 	    	}
-			if (back)
+	    	if (back)
 				recipe.setCurrInstructSection(sectNdx-1);	
     	}
     	else {
@@ -315,6 +334,8 @@ public class RecipeServiceImpl implements RecipeService {
     	int sectNdx = 0;
     	boolean forward = false;
     	boolean back = false;
+    	boolean hasQty = false;
+    	boolean hasName = false;
 		
 		//get the parameters
 		ParameterMap requestParameters = context.getRequestParameters();
@@ -342,16 +363,20 @@ public class RecipeServiceImpl implements RecipeService {
 					int id = Integer.parseInt(value);					
 					ingred.setId(id);					
 				}
-				if (key.contains("ingredient.name"))
+				if (key.contains("ingredient.name")) {
 					ingred.setName(value);
+					if (!value.isEmpty())
+						hasName = true;
+				}
 				if (key.contains("quantity")) {
 					recipeIngred.setQuantity(value);
 					if (!value.isEmpty()) {
 						Fraction fract = Fraction.getFraction(recipeIngred.getQuantity());
 						float qty = fract.floatValue();
 						recipeIngred.setQtyAmt(qty);
+						hasQty = true;
 					}
-					else
+					else						
 						recipeIngred.setQtyAmt(0);
 				}
 				if (key.contains("qtyType"))
@@ -366,16 +391,22 @@ public class RecipeServiceImpl implements RecipeService {
     			back = true;
 		}
 
-    	//replace the current list with the parsed list
+    	//replace the current list with the parsed list, if present
     	if (ingredList.size() > 0) {
-    		recipe.getIngredientSection(sectNdx).getRecipeIngredients().clear();
-			recipe.getIngredientSection(sectNdx).setRecipeIngredients(ingredList);
+    		if (hasQty && hasName) {
+    			recipe.getIngredientSection(sectNdx).getRecipeIngredients().clear(); 
+    			recipe.getIngredientSection(sectNdx).setRecipeIngredients(ingredList);
+    		}
+    		else
+    			//if the user didn't fill in any ingredients need to remove the section;
+    			//otherwise, a validation error is thrown when then come back to this section 
+    			recipe.getIngredSections().remove(sectNdx);
     		
     		if (forward) {
 		    	recipe.getIngredientSection(sectNdx).setSequenceNo(sectNdx+1);
 				recipe.setCurrIngredSection(sectNdx+1);
 			}
-			if (back)
+    		if (back)
 				recipe.setCurrIngredSection(sectNdx-1);	
     	}
     	else {

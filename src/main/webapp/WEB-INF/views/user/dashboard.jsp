@@ -19,7 +19,7 @@
 			<div class="page-header">
 				<h3>
 					<c:if test="${not empty user.userProfile.avatar}">
-						<span><img src="<c:url value="/user/avatar?filename=${user.userProfile.avatar}"/>" alt="" style="width:50px;height:50px;"/></span>
+						<span><img src="<c:url value="/user/avatar?id=${user.id}&filename=${user.userProfile.avatar}"/>" alt="" style="width:50px;height:50px;"/></span>
 					</c:if>
 					<spring:message code="dashboard.title"></spring:message>,&nbsp;${user.firstName}
 				</h3>

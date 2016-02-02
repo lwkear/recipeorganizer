@@ -12,6 +12,8 @@
 
 <%@include file="../common/nav.jsp" %>
 
+	<spring:bind path="category.name"><c:set var="nameError">${status.errorMessage}</c:set></spring:bind>
+
 	<div class="container container-white">
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
@@ -19,21 +21,20 @@
 			</div>
 			<div class="row">			
 		    <form:form class="form-horizontal" role="form" action="category" method="post" modelAttribute="category">
-		    	<form:hidden id="selID" path="id" value="0"/>
+		    	<form:hidden id="catId" path="id"/>
 				<div class="form-group">
-		            <label class="control-label col-sm-4" for="inputCategory"><spring:message code="category.list"></spring:message>:</label>
+		        	<label class="control-label col-sm-4" for="inputCategory"><spring:message code="category.list"></spring:message>:</label>
 		            <div class="col-sm-3">
-		                <select class="form-control" id="inputCategory" onChange="catSelect()">
-		                	<c:forEach items="${categoryList}" var="category" varStatus="loopCounter">
-		                		<option data-id="${category.id}"><c:out value="${category.name}" /></option>
-		                	</c:forEach>
-		                </select>
-		           </div>
+		                <select class="form-control select-placeholder" id="inputCategory">
+		                	<option value="" style="display:none"><spring:message code="recipe.basics.selectcat"></spring:message></option>
+						</select>
+					</div>
 		        </div>           
 		    	<div class="form-group">
-		            <label class="control-label col-sm-4" for="inputName"><spring:message code="category.description"></spring:message>:</label>
+		            <label class="control-label col-sm-4" for="name"><spring:message code="category.description"></spring:message>:</label>
 		            <div class="col-sm-3">
-		                <form:input type="text" class="form-control" id="inputName" path="name" />
+		                <form:input class="form-control maxSize" type="text" id="name" path="name" autocomplete="off" data-max="${sizeMap['name.max']}"/>
+		                <span class="text-danger" id="nameErrMsg">${nameError}</span>
 		            </div>
 		        </div>
 		        <br>
@@ -51,19 +52,9 @@
 
 <%@include file="../common/footer.jsp" %>
 
-<script type="text/javascript">
-function catSelect() {
-	var catSel = document.getElementById("inputCategory");
-	var selected = catSel.options[catSel.selectedIndex];
-	var catID = selected.getAttribute("data-id")
-		
-	var id = document.getElementById("selID");
-	id.value = catID;
-
-	var desc = document.getElementById("inputName");
-	desc.value = selected.value;
-}
-</script>
-
 </body>
+
+<!-- include category-specific routines -->
+<script src="<c:url value="/resources/custom/category.js" />"></script>
+
 </html>

@@ -10,7 +10,7 @@ import org.springframework.webflow.mvc.servlet.AbstractFlowHandler;
 
 public class RecipeFlowHandler extends AbstractFlowHandler {
 
-	private static final String DEFAULT_URL = "/recipe/end";
+	private static final String DEFAULT_URL = "/recipe/cancel";
 	
     @Override
     public String handleExecutionOutcome(FlowExecutionOutcome outcome, HttpServletRequest request,

@@ -87,7 +87,7 @@
 					<div class="list-group-item">
 						<h5 class="list-group-item-heading">
 							<c:if test="${not empty comment.avatar}">
-								<span><img src="<c:url value="/user/avatar?filename=${comment.avatar}"/>" style="width:25px;height:25px;"/></span>
+								<span><img src="<c:url value="/user/avatar?id=${comment.userId}&filename=${comment.avatar}"/>" style="width:25px;height:25px;"/></span>
 							</c:if>
 							<span><fmt:formatDate type="both" timeStyle="short" value="${comment.dateAdded}" /></span>
 							&nbsp;&nbsp;&nbsp;${comment.firstName}&nbsp;${comment.lastName}

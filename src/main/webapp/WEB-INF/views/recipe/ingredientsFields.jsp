@@ -2,14 +2,16 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+
+
 <div class="row">
 	<c:choose>
 		<c:when test="${recipe.numIngredSections > 1}">
 			<div class="col-sm-12">
 				<div class="form-group col-sm-3 <c:if test="${not empty nameError}">has-error</c:if>">
-					<label class="control-label" id="nameLabel" for="inputName">*<spring:message code="recipe.ingredients.sectionname"></spring:message>${currNdx+1}</label>
-					<form:input type="text" class="form-control" id="name" path="ingredSections[${currNdx}].name"/>
-					<span class="text-danger">${nameError}</span>
+					<label class="control-label" id="nameLabel" for="ingredSectionName">*<spring:message code="recipe.ingredients.sectionname"></spring:message>${currNdx+1}</label>
+					<form:input type="text" class="form-control maxSize" id="ingredSectionName" path="ingredSections[${currNdx}].name" data-max="${sizeMap['IngredientSection.name.max']}"/>
+					<span class="text-danger" id="ingredSectionNameErrMsg">${nameError}</span>
 				</div>
 			</div>
 		</c:when>
@@ -31,7 +33,7 @@
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity"><c:set var="qtyError">${status.errorMessage}</c:set></spring:bind>
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].qtyType"><c:set var="qtyTypeError">${status.errorMessage}</c:set></spring:bind>
 				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].qualifier"><c:set var="qualError">${status.errorMessage}</c:set></spring:bind>
-				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
+				<spring:bind path="recipe.ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.name"><c:set var="ingredError">${status.errorMessage}</c:set></spring:bind>
 				<div class="ingredGrp">
 					<!-- display ajax validation errors -->						
 					<div class="form-group ingredErrGrp" style="margin-bottom:0; display:none">
@@ -45,20 +47,25 @@
 						<form:hidden class="ingredID" id="ingredientID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.id"/>
 						<form:hidden class="ingredSeq" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].sequenceNo"/>
 						<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
-							<form:input type="text" class="form-control ingredQty" id="inputQty" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity" autocomplete="off"/>
-							<span class="text-danger ingredErrGrp">${qtyError}</span>
+							<form:input type="text" class="form-control ingredQty maxSize" id="quantity" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity" 
+								autocomplete="off" data-max="${sizeMap['RecipeIngredient.quantity.max']}"/>
+							<span class="text-danger ingredErrGrp" id="quantityErrMsg">${qtyError}</span>
 						</div>
 						<div class="col-sm-2 <c:if test="${not empty qtyTypeError}">has-error</c:if>">
-							<form:input type="text" class="form-control ingredQtyType" id="inputQtyType" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].qtyType" />
-							<span class="text-danger ingredErrGrp">${qtyTypeError}</span>
+							<form:input type="text" class="form-control ingredQtyType maxSize" id="qtyType" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].qtyType" 
+								 data-max="${sizeMap['RecipeIngredient.qtyType.max']}"/>
+							<span class="text-danger ingredErrGrp" id="qtyTypeErrMsg">${qtyTypeError}</span>
 						</div>
 						<div class="col-sm-5 <c:if test="${not empty ingredError}">has-error</c:if>">
-							<form:input type="text" class="form-control ingredDesc" id="ingredient" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.name"/>
-							<span class="text-danger ingredErrGrp">${ingredError}</span>
+							<form:input type="text" class="form-control ingredDesc maxSize" id="ingredientName" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.name"
+								 data-max="${sizeMap['Ingredient.name.max']}"/>
+							<span class="text-danger ingredErrGrp" id="ingredientNameErrMsg">${ingredError}</span>
 						</div>
 						<div class="col-sm-4 <c:if test="${not empty qualError}">has-error</c:if>">
 							<div class="entry input-group">
-								<form:input type="text" class="form-control ingredQual" id="inputQual" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].qualifier" autocomplete="off"/>
+								<form:input type="text" class="form-control ingredQual maxSize" id="qualifier" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].qualifier" 
+									placeholder="${qualplaceholder}"/>
+								<%-- <span class="text-danger ingredErrGrp" id="qualifierErrMsg">${qualError}</span> --%>
 								<span class="input-group-btn">
 									<button class="btn btn-danger removeIngredient" type="button" style="<c:if test="${loop.last}">display:none</c:if>">
 										<span class="glyphicon glyphicon-minus"></span>
@@ -68,11 +75,11 @@
 									</button>
 								</span>
 							</div>
-							<span class="text-danger ingredErrGrp">${qualError}</span>
+							<span class="text-danger ingredErrGrp" id="qualifierErrMsg">${qualError}</span>
 						</div>
 					</div>
 				</div>
 			</c:forEach>
 		</div>
-             </div>
+	</div>
 </div>

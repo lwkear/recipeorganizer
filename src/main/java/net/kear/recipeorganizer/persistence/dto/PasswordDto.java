@@ -14,15 +14,15 @@ public class PasswordDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotBlank
-	@Size(min=6)
+	@Size(min=6, max=20)
 	private String currentPassword;
 
 	@NotBlank
-	@Size(min=6)
+	@Size(min=6, max=20)
 	private String password;
 	
 	@NotBlank
-	@Size(min=6)
+	@Size(min=6, max=20)
 	private String confirmPassword;
 	
 	public PasswordDto() {}

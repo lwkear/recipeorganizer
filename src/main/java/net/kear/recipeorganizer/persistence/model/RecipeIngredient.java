@@ -13,9 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.GroupSequence;
+import javax.validation.Valid;
 import javax.validation.constraints.*;
 
 import net.kear.recipeorganizer.persistence.model.Ingredient;
+import net.kear.recipeorganizer.validation.Quantity;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -28,8 +30,9 @@ public class RecipeIngredient implements Serializable {
 	//Hibernate validation groups
 	public interface NotBlankGroup {}
 	public interface SizeGroup {}
+	public interface QtyGroup {}
 	
-	@GroupSequence({NotBlankGroup.class,SizeGroup.class,Ingredient.IngredientGroup.class})
+	@GroupSequence({NotBlankGroup.class,SizeGroup.class,QtyGroup.class,Ingredient.IngredientGroup.class})
 	public interface RecipeIngredientGroup {}
 	
 	@Id
@@ -39,6 +42,7 @@ public class RecipeIngredient implements Serializable {
 	private long id;
 
 	@Column(name = "QUANTITY")
+	@Quantity(groups=QtyGroup.class)
 	@NotBlank(groups=NotBlankGroup.class)
 	@Size(max=20, groups=SizeGroup.class)
 	private String quantity;
@@ -59,6 +63,7 @@ public class RecipeIngredient implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "INGREDIENT_ID", referencedColumnName = "ID", nullable = false)
+	@Valid
 	private Ingredient ingredient = new Ingredient();
 	
 	public RecipeIngredient() {}

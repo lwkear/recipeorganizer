@@ -3,12 +3,16 @@ var displayModalTimer;
 var closeModalTimer;
 var maxInactiveInterval;
 var remainTime = 30;
+var messageMap;
 
-var messageMap = new Map();
-$('.spring-messages > p').each(function(index) {
-	messageMap.set($(this).attr('id'), $(this).text());
-});
-console.log('messageMap updated');
+function setMessageMap() {
+	map = new Map();
+	$('.spring-messages > p').each(function(index) {
+		map.set($(this).attr('id'), $(this).text());
+	});
+	console.log('messageMap updated');
+	return map;
+}
 
 function closeTimeout() {
 	$("#sessionTimeout").modal('hide');
@@ -101,9 +105,26 @@ function displayOKMsg(title, msg) {
 	$('#messageDlg').modal({backdrop: 'static', keyboard: false});
 }
 
-$(document).ready(function() {
+//$(document).ready(function() {
+$(function() {
+	
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
 
+	if (!String.format) {
+		String.format = function(format) {
+			var args = Array.prototype.slice.call(arguments, 1);
+			return format.replace(/{(\d+)}/g, function(match, number) { 
+				return typeof args[number] != 'undefined'
+					? args[number] 
+					: match
+					;
+			});
+		};
+	}
+
+	if (messageMap == null)
+		messageMap = setMessageMap();
+	
 	setInputFocus();
 
 	var token = $("meta[name='_csrf']").attr("content");
@@ -113,4 +134,23 @@ $(document).ready(function() {
     });
     
     getSessionTimeout();
+   
+    $('[data-toggle="tooltip"]').tooltip();
+    
+	$(document)
+	.on('blur', '.maxSize', function(e)
+	{
+		var id = $(this).attr('id');
+		var err = '#' + id + 'ErrMsg';
+		var max = $(this).attr('data-max');
+		var maxNum = parseInt(max);
+		var chars = $(this).val().length;
+		if (chars > maxNum) {
+			var msg = messageMap.get('common.size.max');
+			var fmt = String.format(msg, max);
+			$(err).html(fmt).show();
+		}
+		else
+			$(err).html(fmt).hide();
+	})
 });

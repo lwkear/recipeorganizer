@@ -52,7 +52,7 @@
 				<h3>${recipe.name}</h3>
 			</div>
 		</div>
-
+		<div class="col-sm-12">
 		<form:form class="form-horizontal" id="editForm" role="form" method="post" modelAttribute="recipe"  enctype="multipart/form-data" autocomplete="off">
 		
 			<form:hidden id="userID" path="user.id"/>
@@ -162,6 +162,7 @@
 				</div>
 			</div>
 		</form:form>
+		</div>
 	</div>
 
 <%@include file="../common/footer.jsp" %>

@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class CommentDto {
 
 	private long id;
+	private long userId;
 	private String firstName;
 	private String lastName;
 	private String avatar;
@@ -21,9 +22,10 @@ public class CommentDto {
 	
 	public CommentDto() {}
 
-	public CommentDto(long id, String firstName, String lastName, String avatar, String userComment, Date dateAdded, int flag) {
+	public CommentDto(long id, long userId, String firstName, String lastName, String avatar, String userComment, Date dateAdded, int flag) {
 		super();
 		this.id = id;
+		this.userId = userId;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.avatar = avatar;
@@ -38,6 +40,14 @@ public class CommentDto {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String getFirstName() {

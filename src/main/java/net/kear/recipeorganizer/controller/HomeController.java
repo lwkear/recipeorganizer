@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
@@ -42,6 +43,8 @@ public class HomeController {
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ConstraintMap constraintMap;
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
@@ -97,6 +100,13 @@ public class HomeController {
 	public String getAbout(Model model, HttpSession session) {
 		logger.info("getAbout");
 		
+		//Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
+		//model.addAttribute("sizeMap", sizeMap);
+
+		/*Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				new Class[] {Recipe.class, RecipeIngredient.class, Ingredient.class, Source.class, InstructionSection.class, 
+							IngredientSection.class});*/ 
+
 		return "about";
 	}
 
@@ -115,6 +125,13 @@ public class HomeController {
 		logger.info("getFaq");
 		
 		return "faq";
+	}
+	
+	@RequestMapping(value = "/technical", method = RequestMethod.GET)
+	public String getTechnical(Model model) {
+		logger.info("getTechnical");
+		
+		return "technical";
 	}
 
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
@@ -209,3 +226,61 @@ try {
 	}
 }			
 */
+
+/*
+
+		logger.info("1 valid: " + isValid("1"));
+		logger.info("1/ valid: " + isValid("1/"));
+		logger.info("1/2 valid: " + isValid("1/2"));
+		logger.info("1. valid: " + isValid("1."));
+		logger.info("1.1 valid: " + isValid("1.1"));
+		logger.info("1, valid: " + isValid("1,"));
+		logger.info("a valid: " + isValid("a"));
+		logger.info("1a valid: " + isValid("1a"));
+		logger.info("1 1/2 valid: " + isValid("1 1/2"));
+		logger.info("a1 valid: " + isValid("a1"));
+		logger.info("/ valid: " + isValid("/"));
+		logger.info(". valid: " + isValid("."));
+		logger.info(", valid: " + isValid(","));
+		
+public boolean isValid(String qty) {
+	String str = qty;
+	str = str.trim();
+	
+	if (str == null) {
+        return false;
+    }
+    int length = str.length();
+    if (length == 0) {
+        return false;
+    }
+    if ((str.charAt(0) == '/') || (str.charAt(0) == ',') || (str.charAt(0) == '.')) {
+        if (length == 1) {
+            return false;
+        }
+    }
+    for (int i=0; i < length; i++) {
+        char c = str.charAt(i);
+        if ((c < '0' || c > '9') && (c != '/' && c != '.' && c != ',' && c != ' ')) {
+        	return false;
+        }
+    }
+    for (int i=0; i < length; i++) {
+        char c = str.charAt(i);
+        if ((c == '/') && (i+1 >= length))
+        	return false;
+    }
+    
+    Fraction fract;
+    str = str.replace(',', '.');
+    try {
+    	fract = Fraction.getFraction(str);
+    } catch (NumberFormatException ex) {
+    	logger.info("Exception: " + qty);
+    	return false;
+    }
+    
+	float value = fract.floatValue();
+    
+    return true;
+}*/

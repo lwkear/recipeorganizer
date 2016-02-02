@@ -5,17 +5,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +36,9 @@ import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileTypes;
+import net.kear.recipeorganizer.util.FileType;
 
 @Controller
 public class AdminController {
@@ -53,6 +59,8 @@ public class AdminController {
 	private MessageSource messages;
 	@Autowired
 	private ExceptionLogService logService;
+	@Autowired
+	private ConstraintMap constraintMap;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -122,10 +130,10 @@ public class AdminController {
 			return msg;
 		}
 		
-		String fileName = fileAction.fileExists(FileTypes.AVATAR, userId);
+		String fileName = fileAction.fileExists(FileType.AVATAR, userId);
 		if (fileName != null && fileName.length() > 0)
 			//errors are not fatal and will be logged by FileAction
-			fileAction.deleteFile(FileTypes.AVATAR, userId, fileName);
+			fileAction.deleteFile(FileType.AVATAR, userId, fileName);
 		
 		return msg;
 	}
@@ -192,41 +200,75 @@ public class AdminController {
 		
 		Category category = new Category();
 		model.addAttribute("category", category);
-		model.addAttribute("categoryList", categoryService.listCategory());
-		
+		//model.addAttribute("categoryList", categoryService.listCategory());
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Category.class); 
+		model.addAttribute("sizeMap", sizeMap);
+	
 		return "admin/category";
 	}
 	
 	@RequestMapping(value = "/admin/category", method = RequestMethod.POST, params = {"save"})	
-	public String saveCategory(@ModelAttribute Category category) {
+	public String saveCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
 		logger.info("admin/category POST save");
-		
-		if (category.getId() == 0) {
-			logger.info("ID = 0");
-			logger.info("Name = " + category.getName());
-			
-			categoryService.addCategory(category);
+
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			return "admin/category";
 		}
-		else {
-			logger.info("ID = " + category.getId());
-			logger.info("Name = " + category.getName());
-			
-			categoryService.updateCategory(category);
+		
+		try {
+			if (category.getId() == 0) {
+				logger.info("ID = 0");
+				logger.info("Name = " + category.getName());
+				categoryService.addCategory(category);
+			}
+			else {
+				logger.info("ID = " + category.getId());
+				logger.info("Name = " + category.getName());
+				categoryService.updateCategory(category);
+			}
+		} catch (DataIntegrityViolationException ex) {
+			logService.addException(ex);
+			String msg = messages.getMessage("exception.saveCategory", null, ex.getClass().getSimpleName(), locale);
+			FieldError fieldError = new FieldError("category", "name", msg);
+			result.addError(fieldError);
+			return "admin/category";
+		} catch (Exception ex) {
+			logService.addException(ex);
+			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
+			FieldError fieldError = new FieldError("category", "name", msg);
+			result.addError(fieldError);
+			return "admin/category";
 		}
 		
 		return "redirect:category";
 	}
 
 	@RequestMapping(value = "/admin/category", method = RequestMethod.POST, params = {"delete"})	
-	public String deleteCategory(@ModelAttribute Category category) {
+	public String deleteCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
 		logger.info("admin/category POST delete");
 		logger.info("ID = " + category.getId());
 		logger.info("Name = " + category.getName());
+
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			return "admin/category";
+		}
 		
-		/* Must check both fields - the ID is hidden and doesn't get cleared when the Reset button is clicked
-		 * This is the default behavior of Reset and not worth the effort to override */
-		if ((category.getId() != 0) && (category.getName() != "")) {
+		try {
 			categoryService.deleteCategory(category.getId());
+		} catch (DataIntegrityViolationException ex) {
+			logService.addException(ex);
+			String msg = messages.getMessage("exception.deleteCategory", null, ex.getClass().getSimpleName(), locale);
+			FieldError fieldError = new FieldError("category", "name", msg);
+			result.addError(fieldError);
+			return "admin/category";
+		} catch (Exception ex) {
+			logService.addException(ex);
+			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
+			FieldError fieldError = new FieldError("category", "name", msg);
+			result.addError(fieldError);
+			return "admin/category";
 		}
 
 		return "redirect:category";

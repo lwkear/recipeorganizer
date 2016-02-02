@@ -82,7 +82,6 @@ function postRemoveFavorite(e) {
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
-		//TODO: AJAX: probably need to check for a success status?
 		console.log('recipe remove from favorites');
 		favoriteRemoved(recipeId);
 	})
