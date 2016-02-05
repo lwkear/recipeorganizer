@@ -6,25 +6,30 @@ public class RecipeListDto {
 
 	private long id;
 	private String name;
-	private String desc;
+	private String description;
 	private Date submitted;
 	private String firstName;
 	private String lastName;
 	private String category;
 	private String sourcetype;
+	private boolean allowShare;
+	private boolean approved;
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, String name, String desc, Date submitted, String firstName, String lastName, String category, String sourcetype) {
+	public RecipeListDto(long id, String name, String description, Date submitted, String firstName, String lastName, String category, String sourcetype,
+			boolean allowShare, boolean approved) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.desc = desc;
+		this.description = description;
 		this.submitted = submitted;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.category = category;
 		this.sourcetype = sourcetype;
+		this.allowShare = allowShare;
+		this.approved = approved;
 	}
 
 	public long getId() {
@@ -51,12 +56,12 @@ public class RecipeListDto {
 		this.category = category;
 	}
 
-	public String getDesc() {
-		return desc;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getSourcetype() {
@@ -89,5 +94,21 @@ public class RecipeListDto {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}	
+	}
+	
+	public boolean getAllowShare() {
+		return allowShare;
+	}
+
+	public void setAllowShare(boolean allowShare) {
+		this.allowShare = allowShare;
+	}
+	
+	public boolean getApproved() {
+		return approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
 }

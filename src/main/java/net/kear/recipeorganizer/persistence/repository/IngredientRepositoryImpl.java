@@ -10,6 +10,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.AutoPopulatingList;
 
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.repository.IngredientRepository;
@@ -54,9 +55,41 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     public List<Ingredient> getIngredients(String searchStr) {
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
     		.add(Restrictions.ilike("name", searchStr, MatchMode.ANYWHERE))
-    		.add(Restrictions.gt("rank", 1))
-    		.addOrder(Order.asc("name"));    	
-    	return criteria.list();
+    		.addOrder(Order.asc("rank"))
+    		.addOrder(Order.asc("name"));
+    	List<Ingredient> ingredList = criteria.list();
+    	List<Ingredient> ingredResults = new AutoPopulatingList<Ingredient>(Ingredient.class);
+    	
+		//loop through the results looking for ingredients that start with the searchStr;
+    	//since the list is sorted by rank/name, these will appear first in the typeahead dropdown
+    	for (Ingredient ingred : ingredList) {
+			String lowerName = ingred.getName().toLowerCase();
+			if (lowerName.startsWith(searchStr))
+				ingredResults.add(ingred);
+			if (ingredResults.size() >= 20)
+				break;
+		}
+			
+		//loop again looking for other words in the ingredient that start with the searchStr and add them to the list
+    	if (ingredResults.size() < 20) {
+			for (Ingredient ingred : ingredList) {
+				String lowerName = ingred.getName().toLowerCase();
+				//split the ingredient into separate words, if any
+				String[] splitStr = lowerName.split("\\s+");
+				if (splitStr.length > 1) {
+					for (int i=1;i<splitStr.length;i++) {
+						if (splitStr[i].startsWith(searchStr)) {
+							ingredResults.add(ingred);
+							break;
+						}
+					}
+				}
+				if (ingredResults.size() >= 20)
+					break;
+			}
+		}
+    	
+    	return ingredResults;
     }
 
     private Session getSession() {

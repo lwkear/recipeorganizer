@@ -100,6 +100,9 @@ public class Recipe implements Serializable {
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
 
+	@Column(name = "APPROVED")
+	private boolean approved;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
 	@Valid
@@ -165,7 +168,7 @@ public class Recipe implements Serializable {
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, String notes, boolean allowShare, String photoName, List<String> tags, 
+				Integer prepMinutes, String notes, boolean allowShare, boolean approved, String photoName, List<String> tags, 
 				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
 		super();
 		this.user = user;
@@ -178,6 +181,7 @@ public class Recipe implements Serializable {
 		this.prepMinutes = prepMinutes;
 		this.notes = notes;
 		this.allowShare = allowShare;
+		this.approved = approved;
 		this.photoName = photoName;
 		this.tags = tags;
 		this.instructSections = instructSections;
@@ -274,16 +278,28 @@ public class Recipe implements Serializable {
 		this.allowShare = allowShare;
 	}
 
+	public void setAllowShare(boolean allowShare) {
+		this.allowShare = allowShare;
+	}
+	
+	public Boolean getApproved() {
+		return approved;
+	}
+
+	public void setApproved(Boolean approved) {
+		this.approved = approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
+
 	public String getPhotoName() {
 		return photoName;
 	}
 
 	public void setPhotoName(String photoName) {
 		this.photoName = photoName;
-	}
-	
-	public void setAllowShare(boolean allowShare) {
-		this.allowShare = allowShare;
 	}
 	
 	public List<String> getTags() {
@@ -395,6 +411,7 @@ public class Recipe implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (allowShare ? 1231 : 1237);
+		result = prime * result + (approved ? 1231 : 1237);
 		result = prime * result + ((background == null) ? 0 : background.hashCode());
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
@@ -419,6 +436,8 @@ public class Recipe implements Serializable {
 			return false;
 		Recipe other = (Recipe) obj;
 		if (allowShare != other.allowShare)
+			return false;
+		if (approved != other.approved)
 			return false;
 		if (background == null) {
 			if (other.background != null)
@@ -499,7 +518,7 @@ public class Recipe implements Serializable {
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", photoName=" + photoName + ", tags=" + tags + ", category=" + category + ", instructSections=" + instructSections + ", ingredSections=" +  
-				ingredSections + ", source=" + source + ", views=" + views + "]";
+				", approved=" + approved +", photoName=" + photoName + ", tags=" + tags + ", category=" + category +  
+				", instructSections=" + instructSections + ", ingredSections=" + ingredSections + ", source=" + source + ", views=" + views + "]";
 	}
 }

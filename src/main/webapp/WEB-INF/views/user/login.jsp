@@ -50,18 +50,16 @@
 							<h5 class="control-label text-danger">${error}</h5>
 						</div>
 					</c:if>
-			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
-						<button class="btn btn-primary btn-block" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
+			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
+						<button class="btn btn-primary" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 			        <div class="col-sm-12 spacer-vert-lg text-center">
 			        	<div><spring:message code="login.notamemebr"></spring:message></div>
 			        </div>
 			        <div class="col-sm-12 spacer-vert-xs text-center">
-			        	<div>
-							<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">
+						<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">
 								<spring:message code="menu.signup"></spring:message>
-							</a>
-						</div>
+						</a>
 	        		</div>
 	        		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 	      		</form>

@@ -25,7 +25,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -91,12 +91,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	
 	/*** file upload/download configuration ***/
 	@Bean
-	public StandardServletMultipartResolver filterMultipartResolver() {
+	public CommonsMultipartResolver filterMultipartResolver() {
 		logger.debug("StandardServletMultipartResolver");
-		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+		resolver.setDefaultEncoding("UTF-8");
 		return resolver;
 	}
-
+	
 	@Bean
 	public FileActions fileActions() {
 		logger.debug("FileActionsImpl");
@@ -117,13 +118,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return resolver;
     }
 	
-	/*@Bean
-	public CommonView commonView() {
-		logger.debug("CommonViewImpl");
-		final CommonViewImpl commonView = new CommonViewImpl();
-		return commonView;
-	}*/
-
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages
 	/*@Override
@@ -155,12 +149,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		handlerAdapter.setSaveOutputToFlashScopeOnRedirect(true);
 		return handlerAdapter;
 	}
-	
-	/*@Bean(name="recipe")
-	public RecipeFlowHandler recipeFlowHandler() {
-		logger.debug("RecipeFlowHandler");
-		return new RecipeFlowHandler();
-	}*/
 	
 	/*** validation and i18n message configuration ***/
 	@Bean
@@ -237,4 +225,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	    // and probably needs a string converter too for text/plain content-type strings to be properly handled
 	    converters.add(new StringHttpMessageConverter());
 	}*/
+	
+	//TODO: GUI: create favicon
+	/*@Controller
+    static class FaviconController {
+        @RequestMapping("favicon.ico")
+        String favicon() {
+            return "forward:/resources/images/favicon.ico";
+        }
+    }*/
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
+import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.model.RecipeComment;
 import net.kear.recipeorganizer.persistence.repository.CommentRepository;
  
@@ -36,5 +37,9 @@ public class CommentServiceImpl implements CommentService {
     
     public void setCommentFlag(long id, int flag) {
     	commentRepository.setCommentFlag(id, flag);
+    }
+    
+    public List<FlaggedCommentDto> getFlaggedComments() {
+    	return commentRepository.getFlaggedComments();
     }
 }

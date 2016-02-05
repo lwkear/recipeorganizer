@@ -60,6 +60,7 @@ public class RecipeServiceImpl implements RecipeService {
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
+		recipe.setApproved(false);
 		recipe.setViews(0);
 		recipe.setPhotoName("");
 		recipe.setCategory(new Category());
@@ -86,6 +87,9 @@ public class RecipeServiceImpl implements RecipeService {
 		}
     	else
     		recipe.getSource().setRecipe(recipe);
+    	
+    	if (!recipe.getAllowShare())
+    		recipe.setApproved(true);
     	
     	//the NAME field in both section headers is a required field so the default value is set to "XXXX"
     	//if there is only one section, however, that name must be removed so it does not appear when
@@ -132,6 +136,10 @@ public class RecipeServiceImpl implements RecipeService {
     
     public void deleteRecipe(Long id) {
     	recipeRepository.deleteRecipe(id);
+    }
+    
+    public void approveRecipe(Long id) {
+    	recipeRepository.approveRecipe(id);
     }
 
     public Recipe getRecipe(Long id) {
@@ -185,7 +193,11 @@ public class RecipeServiceImpl implements RecipeService {
     
     public Long getUserViewCount(Long userId) {
     	return recipeRepository.getUserViewCount(userId);
-    }    
+    }
+    
+    public List<RecipeListDto> approveRecipesList() {
+    	return recipeRepository.approveRecipesList();
+    }
 
     public List<RecipeListDto> listRecipes(Long userId) {
     	return recipeRepository.listRecipes(userId);

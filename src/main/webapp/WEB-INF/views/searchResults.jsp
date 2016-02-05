@@ -22,7 +22,7 @@
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h1><spring:message code="title.searchresults"></spring:message> for "${searchTerm}"</h1>
+				<h3><spring:message code="title.searchresults"></spring:message> for "${searchTerm}"</h3>
 			</div>
 			<table class="table" id="recipeList">
 				<thead>
@@ -54,27 +54,7 @@
 
 </body>
 
-<script type="text/javascript">
-
-$('#recipeList').DataTable({
-	language : {
-    	emptyTable:     messageMap.get('recipe.table.emptyTable'),
-	    info:           messageMap.get('recipe.table.info'),
-	    infoEmpty:      messageMap.get('recipe.table.infoEmpty'),
-	    infoFiltered:	messageMap.get('recipe.table.infoFiltered'),
-	    lengthMenu:		messageMap.get('recipe.table.lengthMenu'),
-	    zeroRecords:	messageMap.get('recipe.table.zeroRecords'),
-	    search:			messageMap.get('common.table.search'),
-	    paginate: {
-	    	first:      messageMap.get('common.table.paginate.first'),
-	    	last:       messageMap.get('common.table.paginate.last'),
-	    	next:       messageMap.get('common.table.paginate.next'),
-	    	previous:   messageMap.get('common.table.paginate.previous')
-	    }
-	},	
-	stateSave : true
-});
-
-</script>
+<!-- include list-specific routines -->
+<script src="<c:url value="/resources/custom/recipelist.js" />"></script>
 
 </html>

@@ -105,6 +105,20 @@ function displayOKMsg(title, msg) {
 	$('#messageDlg').modal({backdrop: 'static', keyboard: false});
 }
 
+$('.faq_question').click(function() {
+	 
+    if ($(this).parent().is('.open')){
+        $(this).closest('.faq').find('.faq_answer_container').animate({'height':'0'},100); /*500*/
+        $(this).closest('.faq').removeClass('open');
+
+        }else{
+            var newHeight =$(this).closest('.faq').find('.faq_answer').height() +'px';
+            $(this).closest('.faq').find('.faq_answer_container').animate({'height':newHeight},100); /*500*/
+            $(this).closest('.faq').addClass('open');
+        }
+
+});
+
 //$(document).ready(function() {
 $(function() {
 	

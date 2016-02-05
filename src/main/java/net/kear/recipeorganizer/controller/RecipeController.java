@@ -78,7 +78,7 @@ public class RecipeController {
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
-	@RequestMapping("recipe/editRecipe/{id}")
+	@RequestMapping(value = "recipe/editRecipe/{id}", method = RequestMethod.GET)
 	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long id,
 			HttpServletRequest request) {
 		logger.info("recipe/editRecipe GET");
@@ -140,33 +140,6 @@ public class RecipeController {
 		return "redirect:/recipe/viewRecipe/" + recipe.getId();
 	}
 	
-	/****************************/
-	/*** Navigation from view ***/
-	/****************************/
-	/*public String getReturnMessage(String referer) {
-
-		String returnLabel = null;
-		
-		if (referer == null)
-			return returnLabel;
-		
-		if (referer.contains("searchResults"))
-			returnLabel = "title.searchresults";
-		else
-		if (referer.contains("listRecipes"))
-			returnLabel = "menu.submittedrecipes";
-		else
-		if (referer.contains("favorites"))
-			returnLabel = "menu.favorites";
-		else
-		if (referer.contains("dashboard"))
-			returnLabel = "dashboard.head";
-		else
-			returnLabel = "";
-
-		return returnLabel;
-	}*/
-
 	/*****************************/
 	/*** Delete recipe handler ***/
 	/*****************************/

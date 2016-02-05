@@ -33,7 +33,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-sm-2 col-sm-offset-5">
+				<div class="col-sm-2 col-sm-offset-5 text-center">
 					<a class="btn btn-default" href="<c:url value="/user/signup"></c:url>" role="button">
 						<spring:message code="menu.signup"></spring:message>
 					</a>

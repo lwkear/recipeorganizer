@@ -32,6 +32,9 @@ public class ViewReferer {
 		if (referer.contains("dashboard"))
 			returnLabel = "dashboard.head";
 		else
+		if (referer.contains("approval"))
+			returnLabel = "menu.approval";
+		else
 			returnLabel = "";
 
 		logger.info("referLabel: " + returnLabel);

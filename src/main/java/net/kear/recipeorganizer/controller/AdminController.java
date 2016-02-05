@@ -29,11 +29,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
+import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.ConstraintMap;
@@ -52,6 +56,10 @@ public class AdminController {
 	@Autowired
 	private RoleService roleService;
 	@Autowired
+	private CommentService commentService;
+	@Autowired
+	private RecipeService recipeService;
+	@Autowired
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private FileActions fileAction;
@@ -65,9 +73,9 @@ public class AdminController {
 	/********************************/
 	/*** User maintenance handler ***/
 	/********************************/
-	@RequestMapping(value = "/admin/userMaint", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public String userMaint(Model model) {
-		logger.info("admin/userMaint");
+		logger.info("admin/users");
 		
 		List<Role> roles = roleService.getRoles();
 		List<User> users = userService.getUsers();
@@ -107,7 +115,7 @@ public class AdminController {
 		model.addAttribute("roles", roles);
 		model.addAttribute("users", users);
 		
-		return "admin/userMaint";
+		return "admin/users";
 	}
 
 	@RequestMapping(value="admin/deleteUser")
@@ -200,7 +208,6 @@ public class AdminController {
 		
 		Category category = new Category();
 		model.addAttribute("category", category);
-		//model.addAttribute("categoryList", categoryService.listCategory());
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Category.class); 
 		model.addAttribute("sizeMap", sizeMap);
 	
@@ -273,5 +280,99 @@ public class AdminController {
 
 		return "redirect:category";
 	}
-}
 
+	/*******************************/
+	/*** Comments review handler ***/
+	/*******************************/
+	@RequestMapping(value = "/admin/comments", method = RequestMethod.GET)
+	public String getComments(Model model) {
+		logger.info("admin/comments GET");
+
+		List<FlaggedCommentDto> comments = commentService.getFlaggedComments(); 
+		
+		model.addAttribute("comments", comments);
+		return "admin/comments";
+	}
+
+	@RequestMapping(value="admin/deleteComment")
+	@ResponseBody 
+	public String deleteComment(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
+		logger.info("admin/deleteComment");
+		logger.info("commentId=" + commentId);
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		//delete the user
+		try {
+			commentService.deleteComment(commentId);
+		} catch (Exception ex) {
+			logService.addException(ex);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = messages.getMessage("exception.deleteComment", null, ex.getClass().getSimpleName(), locale);
+			return msg;
+		}
+		
+		return msg;
+	}
+
+	@RequestMapping(value="admin/removeCommentFlag")
+	@ResponseBody 
+	public String removeCommentFlag(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
+		logger.info("admin/removeCommentFlag");
+		logger.info("commentId=" + commentId);
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		//delete the user
+		try {
+			commentService.setCommentFlag(commentId, 0);
+		} catch (Exception ex) {
+			logService.addException(ex);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = messages.getMessage("exception.unflagComment", null, ex.getClass().getSimpleName(), locale);
+			return msg;
+		}
+		
+		return msg;
+	}
+
+	/*******************************/
+	/*** Recipe approval handler ***/
+	/*******************************/
+	@RequestMapping(value = "/admin/approval", method = RequestMethod.GET)
+	public String getApprovalRecipes(Model model) {
+		logger.info("admin/approval GET");
+
+		List<RecipeListDto> recipes = recipeService.approveRecipesList();
+		
+		model.addAttribute("recipes", recipes);
+		return "admin/approveRecipes";
+	}
+
+	@RequestMapping(value="admin/approveRecipe")
+	@ResponseBody 
+	public String approveRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response, Locale locale) {
+		logger.info("admin/approveRecipe");
+		logger.info("recipeId=" + recipeId);
+		
+		//set default response
+		String msg = "{}";
+		response.setStatus(HttpServletResponse.SC_OK);
+		
+		//delete the user
+		try {
+			recipeService.approveRecipe(recipeId);
+		} catch (Exception ex) {
+			logService.addException(ex);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			msg = messages.getMessage("exception.approveRecipe", null, ex.getClass().getSimpleName(), locale);
+			return msg;
+		}
+		
+		return msg;
+	}
+}

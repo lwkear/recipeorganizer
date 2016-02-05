@@ -83,7 +83,7 @@ function postRemoveFavorite(e) {
 	})
 	.done(function(data) {
 		console.log('recipe remove from favorites');
-		favoriteRemoved(recipeId);
+		removeRow(recipeId);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail request: '+ jqXHR);
@@ -94,11 +94,37 @@ function postRemoveFavorite(e) {
 }
 
 //update the datatable
-function favoriteRemoved(recipeId) {
+function removeRow(recipeId) {
 	var table = $('#recipeList').DataTable();
 	var row = table.row('#' + recipeId);
 	row.remove();
 	table.draw();
+}
+
+/*******************************/
+/*** approve recipe function ***/
+/*******************************/
+function approveRecipe(recipeId) {
+	$.ajax({
+		type: 'POST',
+		url: '/recipeorganizer/admin/approveRecipe',
+		dataType: 'json',
+		data : {recipeId:recipeId}
+	})
+	.done(function(data) {
+		console.log('recipe approved');
+		removeRow(recipeId);
+	})
+	.fail(function(jqXHR, status, error) {
+		console.log('fail request: '+ jqXHR);
+		console.log('fail status: '+ status);
+		console.log('fail error: '+ error);
+
+		//server currently returns a simple error message
+		var respText = jqXHR.responseText;
+		console.log('respText: '+ respText);
+		postFailed(respText)
+	});
 }
 
 function postFailed(error) {

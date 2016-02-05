@@ -3,12 +3,15 @@ package net.kear.recipeorganizer.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.SolrUtil;
+import net.kear.recipeorganizer.util.UserInfo;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
@@ -35,6 +38,8 @@ public class SearchController {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private SolrUtil solrUtil;
+	@Autowired
+	private UserInfo userInfo;
 	
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
 	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir) throws SolrServerException, IOException {
@@ -42,6 +47,18 @@ public class SearchController {
 		logger.info("searchTerm: " + searchTerm);
 		
 		ArrayList<SearchResultsDto> resultsList = solrUtil.searchRecipes(searchTerm);
+
+		User user = (User)userInfo.getUserDetails();
+		long userId = user.getId();
+		Iterator<SearchResultsDto> iter = resultsList.iterator();
+		while (iter.hasNext()) {
+			SearchResultsDto result = iter.next(); 
+			if (result.getUserId() != userId) {
+				if (result.getAllowShare() == false || result.getApproved() == false) {
+					iter.remove();
+				}
+			}					
+		}
 	    
 	    ModelAndView mv = new ModelAndView();
 	    redir.addFlashAttribute("searchTerm", searchTerm);

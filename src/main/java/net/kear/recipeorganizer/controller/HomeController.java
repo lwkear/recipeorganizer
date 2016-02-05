@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -100,13 +103,6 @@ public class HomeController {
 	public String getAbout(Model model, HttpSession session) {
 		logger.info("getAbout");
 		
-		//Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
-		//model.addAttribute("sizeMap", sizeMap);
-
-		/*Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
-				new Class[] {Recipe.class, RecipeIngredient.class, Ingredient.class, Source.class, InstructionSection.class, 
-							IngredientSection.class});*/ 
-
 		return "about";
 	}
 
@@ -141,6 +137,13 @@ public class HomeController {
 		return "contact";
 	}
 	
+	@RequestMapping(value = "/policies", method = RequestMethod.GET)
+	public String getPolicies(Model model) {
+		logger.info("getPolicies");
+				
+		return "policies";
+	}
+	
 	//AJAX/JSON request for getting the timeout interval for the current user
 	@RequestMapping(value="/getSessionTimeout")
 	@ResponseBody 
@@ -167,20 +170,55 @@ public class HomeController {
 		
 		return "{}";
 	}
-}
-
-
-	/*@RequestMapping(value = "/testpage", method = RequestMethod.GET)
+	
+	
+	/*****************/
+	/*** test page ***/
+	/*****************/
+	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model) {
 		logger.info("getTestpage");
 
-		Recipe recipe = new Recipe();
-		recipe.setAllowShare(true);
-		model.addAttribute("recipe", recipe);
+		String text = "celery, and ½ teaspoon salt";
+		model.addAttribute("text", text);
 		
-		return "testpage";
+		WebGreeting wg = new WebGreeting();
+		model.addAttribute("webGreeting", wg);
+		return "test/testpage";
 	}
 
+	@RequestMapping(value = "/test/testpage", method = RequestMethod.POST)
+	public String postTestpage(@ModelAttribute @Valid WebGreeting wb, BindingResult result) {
+		if (result.hasErrors()) {
+			logger.info("Validation errors");
+			return "test/testpage";
+		}
+		
+		logger.info("getTestpage");
+		logger.info("wb.greeting:" + wb.getGreeting());
+		
+		return "test/testpage";
+	}
+	
+	public static class WebGreeting {
+		
+		//@Size(max=20)
+		private String greeting;
+
+		public WebGreeting() {}
+
+		public String getGreeting() {
+			return greeting;
+		}
+
+		public void setGreeting(String greeting) {
+			this.greeting = greeting;
+		}
+	}
+}
+
+
+/*
 	@RequestMapping(value = "/start", method = RequestMethod.GET)
 	public String getStartpage(Model model) {
 		logger.info("getStartpage");
@@ -283,4 +321,14 @@ public boolean isValid(String qty) {
 	float value = fract.floatValue();
     
     return true;
-}*/
+}
+
+		//Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
+		//model.addAttribute("sizeMap", sizeMap);
+
+		/*Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				new Class[] {Recipe.class, RecipeIngredient.class, Ingredient.class, Source.class, InstructionSection.class, 
+							IngredientSection.class});
+							
+*/ 
+

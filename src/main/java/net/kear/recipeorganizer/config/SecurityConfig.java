@@ -22,7 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
@@ -129,99 +131,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        characterEncodingFilter.setForceEncoding(true);
+		
     	http
+    	//.csrf().disable()
+    	.addFilterBefore(characterEncodingFilter, CsrfFilter.class)
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/technical", "/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
+			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/technical", "/policies", "/test/testpage").permitAll()
+			.antMatchers("/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
     		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
     		.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
     		.antMatchers("/admin/**").hasAuthority("ADMIN")
     		.anyRequest().authenticated()
-			
-    		/*
-    		.antMatchers("/user/resetPassword", "/user/fatalError").permitAll()
-    		.antMatchers("/getSessionTimeout", "/setSessionTimeout", "/lookupUser", "/errorPage").permitAll()
-			.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**", "/invalidSession").permitAll()
-			.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
-			.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
-			.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
-			
-			.antMatchers("/user/profile", "/user/dashboard", "user/account", "user/changeAccount", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
-			.regexMatchers("user/avatar/.*", "/recipe/viewRecipe/.*", "recipe/favorites").hasAuthority("GUEST")
-			
-			.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
-			.regexMatchers("/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
-			
-			.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*").hasAuthority("ADMIN")	
-			.regexMatchers("/recipe/getRecipeCount/.*").hasAuthority("ADMIN")
-			*/
-/*			
-			ANON
-			ant
-			x "/"
-			x "/home"
-			x "/about"
-			x "/contact"
-			x "/faq"
-			"/thankyou"
-			"/systemError"
-			"/system"
-			x "user/login"
-			"user/loginError"
-			"user/fatalError"
-			x "user/signup"
-			x "/lookupUser" - AJAX
-			x "/submitsearch"	- need to allow for search and search results, but not allow to view the recipes
-			"/searchresults" - ditto
-			"/getSessionTimeout" - AJAX
-			"/setSessionTimeout" - AJAX
-			regex
-			"/confirmRegistration.*"
-			"/confirmPassword.*"
-
-			GUEST
-			ant
-			"/recipe/favorites"
-			"/recipe/addFavorite" - AJAX
-			"/recipe/removeFavorite" - AJAX
-			"/recipe/recipeMade" - AJAX
-			"/recipe/recipeNote" - AJAX
-			"/recipe/recipeComment" - AJAX
-			regex
-			"/recipe/viewRecipe/.*"
-			"/report/getHtmlRpt/.*"
-			"/report/getPdfRpt/.*"
-			
-			AUTHOR
-			ant
-			"/recipe/listRecipes"
-			"recipe/getCategories" - AJAX doesn't requrie an antmatch?
-			"recipe/addIngredient" - AJAX
-			"recipe/getIngredients" - AJAX
-			"recipe/getQualifiers" - AJAX
-			"recipe/getSources" - AJAX
-			"recipe/getTags" - AJAX
-			"recipe/lookupRecipeName" - AJAX
-			"recipe/getRecipeCount" - AJAX; why is this in ADMIN above?
-			regex
-			"/recipe/editRecipe/.*"
-			"recipe/deleteRecipe/.*" or "recipe/deleteRecipe" - AJAX
-			
-			ADMIN
-			ant
-			"/admin/**"
-			"admin/updateUser"
-			"/admin/category"
-			regex
-			"/admin/deleteUser/.*" - AJAX
-			"/admin/getUser/.*" - AJAX
-			
-*/			
-			
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
@@ -271,5 +199,85 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        return bean;
 	    }
 	}
-	
 }
+
+
+/*
+.antMatchers("/user/resetPassword", "/user/fatalError").permitAll()
+.antMatchers("/getSessionTimeout", "/setSessionTimeout", "/lookupUser", "/errorPage").permitAll()
+.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**", "/invalidSession").permitAll()
+.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
+.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
+.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
+
+.antMatchers("/user/profile", "/user/dashboard", "user/account", "user/changeAccount", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
+.regexMatchers("user/avatar/.*", "/recipe/viewRecipe/.*", "recipe/favorites").hasAuthority("GUEST")
+
+.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
+.regexMatchers("/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
+
+.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*").hasAuthority("ADMIN")	
+.regexMatchers("/recipe/getRecipeCount/.*").hasAuthority("ADMIN")
+*/
+/*			
+ANON
+ant
+x "/"
+x "/home"
+x "/about"
+x "/contact"
+x "/faq"
+"/thankyou"
+"/systemError"
+"/system"
+x "user/login"
+"user/loginError"
+"user/fatalError"
+x "user/signup"
+x "/lookupUser" - AJAX
+x "/submitsearch"	- need to allow for search and search results, but not allow to view the recipes
+"/searchresults" - ditto
+"/getSessionTimeout" - AJAX
+"/setSessionTimeout" - AJAX
+regex
+"/confirmRegistration.*"
+"/confirmPassword.*"
+
+GUEST
+ant
+"/recipe/favorites"
+"/recipe/addFavorite" - AJAX
+"/recipe/removeFavorite" - AJAX
+"/recipe/recipeMade" - AJAX
+"/recipe/recipeNote" - AJAX
+"/recipe/recipeComment" - AJAX
+regex
+"/recipe/viewRecipe/.*"
+"/report/getHtmlRpt/.*"
+"/report/getPdfRpt/.*"
+
+AUTHOR
+ant
+"/recipe/listRecipes"
+"recipe/getCategories" - AJAX doesn't requrie an antmatch?
+"recipe/addIngredient" - AJAX
+"recipe/getIngredients" - AJAX
+"recipe/getQualifiers" - AJAX
+"recipe/getSources" - AJAX
+"recipe/getTags" - AJAX
+"recipe/lookupRecipeName" - AJAX
+"recipe/getRecipeCount" - AJAX; why is this in ADMIN above?
+regex
+"/recipe/editRecipe/.*"
+"recipe/deleteRecipe/.*" or "recipe/deleteRecipe" - AJAX
+
+ADMIN
+ant
+"/admin/**"
+"admin/updateUser"
+"/admin/category"
+regex
+"/admin/deleteUser/.*" - AJAX
+"/admin/getUser/.*" - AJAX
+
+*/			

@@ -57,7 +57,14 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	getSession().delete(recipe);
     }
 
-    public Recipe getRecipe(Long id) {
+	public void approveRecipe(Long id) {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+			"update recipe set approved = 1 where id = :id")
+			.setLong("id", id);
+    	query.executeUpdate();		
+	}
+
+	public Recipe getRecipe(Long id) {
     	Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
     	
     	//all of the collections are LAZY-loaded, so it's necessary to initialize each one
@@ -176,6 +183,31 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings("unchecked")
+    public List<RecipeListDto> approveRecipesList() {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("category", "c")
+    		.createAlias("user", "u")    		
+    		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
+    		.add(Restrictions.eq("approved", false))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("u.firstName").as("firstName"))
+    			.add(Projections.property("u.lastName").as("lastName"))
+    			.add(Projections.property("c.name").as("category"))
+    			.add(Projections.property("s.type").as("sourcetype")))
+    		.addOrder(Order.asc("name"))
+    		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
+
+    	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
+    	return recipes;
+    }
+
+    @SuppressWarnings("unchecked")
     public List<RecipeListDto> listRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("category", "c")
@@ -185,8 +217,10 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
     			.add(Projections.property("r.name").as("name"))
-    			.add(Projections.property("r.description").as("desc"))
+    			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.approved").as("approved"))
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
@@ -201,11 +235,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     @SuppressWarnings("unchecked")
     public List<SearchResultsDto> listRecipes(List<Long> ids) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("user", "u")
     		.add(Restrictions.in("id", ids))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.approved").as("approved"))
     			.add(Projections.property("r.photoName").as("photo")))
     		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
 
@@ -226,11 +264,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     @SuppressWarnings("unchecked")
     public List<SearchResultsDto> recentRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
-    		.add(Restrictions.eq("user.id", userId))
+    		.createAlias("user", "u")
+    		.add(Restrictions.eq("u.id", userId))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.approved").as("approved"))
     			.add(Projections.property("r.photoName").as("photo")))
     		.addOrder(Order.desc("r.dateAdded"))
     		.setMaxResults(5)
@@ -252,6 +294,8 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("desc"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.approved").as("approved"))
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))

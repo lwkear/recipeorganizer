@@ -165,19 +165,20 @@ function postFailed(error) {
 	displayOKMsg(messageMap.get('errordlg.title'), error);
 }
 
-$(document).ready(function() {
+$(function() {
+	
 	$('#userList').DataTable({
     	columnDefs: [{
     		targets: [-1,-2],
     		orderable: false
     	}],
 		language : {
-	    	emptyTable:     messageMap.get('user.table.emptyTable'),
-		    info:           messageMap.get('user.table.info'),
-		    infoEmpty:      messageMap.get('user.table.infoEmpty'),
-		    infoFiltered:	messageMap.get('user.table.infoFiltered'),
-		    lengthMenu:		messageMap.get('user.table.lengthMenu'),
-		    zeroRecords:	messageMap.get('user.table.zeroRecords'),
+	    	emptyTable:     messageMap.get('useradmin.table.emptyTable'),
+		    info:           messageMap.get('useradmin.table.info'),
+		    infoEmpty:      messageMap.get('useradmin.table.infoEmpty'),
+		    infoFiltered:	messageMap.get('useradmin.table.infoFiltered'),
+		    lengthMenu:		messageMap.get('useradmin.table.lengthMenu'),
+		    zeroRecords:	messageMap.get('useradmin.table.zeroRecords'),
 		    search:			messageMap.get('common.table.search'),
 		    paginate: {
 		    	first:      messageMap.get('common.table.paginate.first'),

@@ -14,6 +14,7 @@ public interface RecipeRepository {
     public void addRecipe(Recipe recipe);
     public void updateRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
+    public void approveRecipe(Long id);
     public Recipe getRecipe(Long id);
     public void addFavorite(Favorites favorite);
     public void removeFavorite(Favorites favorite);
@@ -26,6 +27,7 @@ public interface RecipeRepository {
     public Long getRecipeViewCount(Long recipeId);
     public Long getUserViewCount(Long userId);
     public List<Favorites> getFavorites(Long userId);
+    public List<RecipeListDto> approveRecipesList();
     public List<RecipeListDto> listRecipes(Long userId);
     public List<SearchResultsDto> listRecipes(List<Long> ids);
     public List<SearchResultsDto> recentRecipes(Long userId);

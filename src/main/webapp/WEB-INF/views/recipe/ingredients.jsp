@@ -32,13 +32,13 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
-				<div class="row spacer-vert-lg">
-					<div class="col-sm-2">
+				<div class="row spacer-vert-md">
+					<div class="col-sm-2 text-left">
 						<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-center">
 						<c:choose>
 							<c:when test="${recipe.numIngredSections > 1 && (recipe.currIngredSection < (recipe.numIngredSections - 1))}">
 								<c:set var="buttonName" value="Next Set"/>
@@ -51,7 +51,7 @@
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-right">
 						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 					</div>
 				</div>

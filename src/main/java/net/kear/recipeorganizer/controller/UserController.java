@@ -174,6 +174,7 @@ public class UserController {
 			exists = userService.doesUserEmailExist(userDto.getEmail());
 		} catch (Exception ex) {
 			//do nothing - if there is a problem with the database the user will be notifed when they submit the form
+			logService.addException(ex);
 		}
 
 		if (exists) {
@@ -218,6 +219,7 @@ public class UserController {
 			result = userService.doesUserEmailExist(lookupEmail);
 		} catch (Exception ex) {
 			//do nothing - if there is a problem with the database the user will be notifed when they submit the form
+			logService.addException(ex);
 		}
 		
 		logger.info("lookupEmail result=" + result);
@@ -381,7 +383,7 @@ public class UserController {
 		
 		String avatarName = userProfile.getAvatar();
 		//TODO: move xxxREMOVExxx to a constant
-		if (avatarName.startsWith("xxxREMOVExxx")) {
+		if (avatarName!= null && avatarName.startsWith("xxxREMOVExxx")) {
 			String name = avatarName.substring(12);
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.AVATAR, user.getId(), name);
@@ -443,6 +445,7 @@ public class UserController {
 		} 
 		catch (Exception ex) {
 			//do nothing - this is not a fatal error
+			logService.addException(ex);
 		}
 		
 		List<SearchResultsDto> viewedRecipes = null;		
@@ -455,6 +458,7 @@ public class UserController {
 			} 
 			catch (Exception ex) {
 				//do nothing - this is not a fatal error
+				logService.addException(ex);
 			}
 		}
 		
@@ -466,6 +470,7 @@ public class UserController {
 		} 
 		catch (Exception ex) {
 			//do nothing - these are not a fatal errors
+			logService.addException(ex);
 		}
 
 		model.addAttribute("user", user);

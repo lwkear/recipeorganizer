@@ -33,7 +33,7 @@
 			<h5 class="text-center"><spring:message code="recipe.save.message3"></spring:message></h5>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
-			<div class="form-group col-sm-2 col-sm-offset-5">
+			<div class="form-group col-sm-2 text-center col-sm-offset-5">
 				<a class="btn btn-default" href="../recipeorganizer/recipe" role="button"><spring:message code="recipe.end.newrecipe"></spring:message></a>
 			</div>
 		</div>

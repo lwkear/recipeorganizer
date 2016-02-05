@@ -20,35 +20,33 @@ function ingredRemoteFilter(data) {
     });
 };
 
-var prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/ingredients.json', ingredPrefetchFilter);
+//no longer using the .json file of ingredients
+//var prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/ingredients.json', ingredPrefetchFilter);
 var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
-var bhOpts = setBHOptions(50, ingredDatumToken, null, prefetchOpts, remoteOpts);
+var bhOpts = setBHOptions(20, ingredDatumToken, null, null, remoteOpts);
 var ingredBH = new Bloodhound(bhOpts);
 
 prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/measures.json', null);
-bhOpts = setBHOptions(50, null, null, prefetchOpts, null);
+bhOpts = setBHOptions(20, null, null, prefetchOpts, null);
 var measureBH = new Bloodhound(bhOpts);
 
 remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getQualifiers?searchStr=%QUERY', null);
-bhOpts = setBHOptions(50, null, null, null, remoteOpts);
+bhOpts = setBHOptions(20, null, null, null, remoteOpts);
 var qualifierBH = new Bloodhound(bhOpts);
 
 function initIngredientsTA() {
-
-	var options = initTypeaheadOptions(true,true,1);
-	var dataset = initTypeaheadDataset('ingredients', 'name', 50, ingredBH);
+	var options = initTypeaheadOptions(true,true,2);
+	var dataset = initTypeaheadDataset('ingredients', 'name', 20, ingredBH);
 	$('.ingredDesc').typeahead(options,dataset);
 };
 
 function initMeasuresTA() {
-
 	var options = initTypeaheadOptions(true,true,1);
 	var dataset = initTypeaheadDataset('measures', null, 50, measureBH);
 	$('.ingredQtyType').typeahead(options,dataset);
 };
 
 function initQualifiersTA() {
-
 	var options = initTypeaheadOptions(true,true,1);
 	var dataset = initTypeaheadDataset('qualifiers', null, 50, qualifierBH);
 	$('.ingredQual').typeahead(options,dataset);
@@ -69,13 +67,6 @@ function fixIngredArrayIndexes(element, sequence) {
 	console.log("fixIngredArray:" + element);
 	$(element).each(function(index) {
 		console.log("element:" + $(this).val());
-		/*var rslt = $(this).attr('name');
-		if (typeof rslt != 'undefined') { 
-			$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
-			if (sequence)
-				$(this).val(index+1);
-		}*/
-
 		$(this).attr('name',$(this).attr('name').replace(/recipeIngredients\[[0-9]+\]/,'recipeIngredients['+index+']'));
 		if (sequence) {
 			$(this).val(index+1);

@@ -24,6 +24,7 @@
 			</div>
 			<div class="row">
 				<form:form name="profileForm" id="profileForm" role="form" method="post" onsubmit="return checkAvatarOptions()" modelAttribute="userProfile" enctype="multipart/form-data">
+				<%-- <form:form name="profileForm" id="profileForm" role="form" method="post" modelAttribute="userProfile"> --%>
 					<input type="text" id="avatarErr" value="${avatarError}" style="display:none"></input>
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">
@@ -131,8 +132,8 @@
 							</c:otherwise>
 						</c:choose>
 					</div>	        		
-			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
-						<button class="btn btn-primary btn-block" type="submit" id="btnSubmit" name="btnSubmit">
+			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
+						<button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit">
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<form:hidden path="id" />

@@ -53,6 +53,12 @@
 								<p class="clearfix"></p>										
 							</a>
 						</c:forEach>
+						<c:if test="${empty viewedRecipes}">
+							<a href="#" class="list-group-item">
+								<h4 class="text-center"><em><small><spring:message code="dashboard.noviewed"></spring:message></small></em></h4>
+								<p class="clearfix"></p>										
+							</a>
+						</c:if>
 					</div>
 				</div>					
 				<div class="col-sm-6">
@@ -68,6 +74,12 @@
 								<p class="clearfix"></p>										
 							</a>
 						</c:forEach>
+						<c:if test="${empty recentRecipes}">
+							<a href="#" class="list-group-item">
+								<h4 class="text-center"><em><small><spring:message code="dashboard.nosubmitted"></spring:message></small></em></h4>
+								<p class="clearfix"></p>										
+							</a>
+						</c:if>
 					</div>
 				</div>
 			</div>

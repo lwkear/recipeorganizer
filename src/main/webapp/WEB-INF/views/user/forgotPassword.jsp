@@ -31,8 +31,8 @@
 							<span class="text-danger" id="emailErrMsg">${emailError}</span>
 						</div>
 					</div>
-			        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
-						<button class="btn btn-primary btn-block" type="submit" name="submit">
+			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
+						<button class="btn btn-primary" type="submit" name="submit">
 							<spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	      		</form:form>

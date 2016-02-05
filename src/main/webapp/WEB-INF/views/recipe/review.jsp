@@ -29,18 +29,18 @@
 			<%@include file="recipeContent.jsp" %>
 
 			<form:form role="form" modelAttribute="recipe">
-				<div class="row spacer-vert-lg">
-					<div class="col-sm-2">
+				<div class="row spacer-vert-md">
+					<div class="col-sm-2 text-left">
 						<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-center">
 						<button class="btn btn-primary" type="submit" id="save" name="_eventId_save"><spring:message code="common.save"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-right">
 						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 					</div>
 				</div>

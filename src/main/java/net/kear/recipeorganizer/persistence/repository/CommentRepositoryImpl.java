@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
+import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.model.RecipeComment;
 
 @Repository
@@ -49,7 +50,7 @@ public class CommentRepositoryImpl implements CommentRepository {
 			.addScalar("flag",StandardBasicTypes.INTEGER)
 			.setLong("id", recipeId)
 			.setResultTransformer(Transformers.aliasToBean(CommentDto.class));
-    	
+
     	List<CommentDto> comments = (List<CommentDto>) query.list();
        	return comments;
 	}
@@ -69,7 +70,44 @@ public class CommentRepositoryImpl implements CommentRepository {
     	
     	query.executeUpdate();		
 	}
+	
+    @SuppressWarnings("unchecked")
+    public List<FlaggedCommentDto> getFlaggedComments() {
+    	/*Criteria criteria = getSession().createCriteria(RecipeComment.class, "c")
+    		.createAlias("c.recipeId", "r", JoinType.LEFT_OUTER_JOIN)
+    		.createAlias("c.userId", "u", JoinType.LEFT_OUTER_JOIN)    		
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("c.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
+    			.add(Projections.property("r.id").as("recipeId"))
+    			.add(Projections.property("r.name").as("recipeName"))
+    			.add(Projections.property("c.userComment").as("userComment"))
+    			.add(Projections.property("c.dateAdded").as("dateAdded"))
+    			.add(Projections.property("u.firstName").as("firstName"))
+    			.add(Projections.property("u.lastName").as("lastName")))
+    		.addOrder(Order.asc("c.dateAdded"))
+    		.setResultTransformer(Transformers.aliasToBean(FlaggedCommentDto.class));*/
 
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    			"select c.id as id, u.id as userId, r.id as recipeId, r.name as recipeName, c.user_comment as userComment,"
+    				+ " c.date_added as dateAdded, u.firstname as firstName, u.lastname as lastName"
+    				+ " from recipe_comments c, users u, recipe r"
+    				+ " where r.id = c.recipe_id and u.id = c.user_id and c.flag = 1"
+    				+ " order by c.date_added asc")
+    			.addScalar("id",StandardBasicTypes.LONG)
+    			.addScalar("userId",StandardBasicTypes.LONG)
+    			.addScalar("recipeId",StandardBasicTypes.LONG)
+    			.addScalar("recipeName",StandardBasicTypes.STRING)
+    			.addScalar("userComment",StandardBasicTypes.STRING)
+    			.addScalar("dateAdded",StandardBasicTypes.TIMESTAMP)
+    			.addScalar("firstName",StandardBasicTypes.STRING)
+    			.addScalar("lastName",StandardBasicTypes.STRING)    			
+    			.setResultTransformer(Transformers.aliasToBean(FlaggedCommentDto.class));    	
+    	
+    	List<FlaggedCommentDto> comments = (List<FlaggedCommentDto>) query.list();
+    	return comments;
+    }
+	
     private Session getSession() {
 		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {

@@ -126,6 +126,11 @@ body {
 	color:#990000;
 }
 
+.text-placeholder {
+  color: #999;
+  opacity: 1;
+}
+
 /* override of page-header bottom border */
 .page-header {
 	border-bottom: 1px solid #000;
@@ -158,4 +163,12 @@ body {
     display: block;
 }
 
-<!-- #990000 nice dark maroon color -->
+
+/*** FAQS ***/
+.faqnav { width:100%; height:auto; list-style: none; text-align:left; font-size:1.2rem; font-weight: bold; margin:0; padding:0; }
+.faqnav li {margin: 5%; padding-left:5%}
+.faqnav li a { display:block; text-decoration:none; padding-bottom:10px; }
+.faqnav li a:hover, nav ul li a:hover {color: #990033}
+.faq_question {margin: 0% 0% 0% 2%; padding: 0px 0px 5px 0px; display: inline-block; cursor: pointer; font-weight:bold}
+.faq_answer_container {margin: 0% 2% 0% 2%; height: 0px; overflow: hidden; padding: 0px;}
+.faq_answer p {margin: 1% 2% 1% 4%;}

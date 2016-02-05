@@ -37,18 +37,18 @@
 
 				<%@include file="optionalFields.jsp" %>
 
-				<div class="row spacer-vert-lg">
-					<div class="col-sm-2">
+				<div class="row spacer-vert-md">
+					<div class="col-sm-2 text-left">
 						<button class="btn btn-default" type="submit" id="back" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-center">
 						<button class="btn btn-primary" type="submit" id="review" name="_eventId_proceed"><spring:message code="common.review"></spring:message></button>
 					</div>
 					<div class="col-sm-3">
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-2 text-right">
 						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
 					</div>
 				</div>

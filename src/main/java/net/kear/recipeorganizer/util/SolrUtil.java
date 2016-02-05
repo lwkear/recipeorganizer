@@ -33,7 +33,8 @@ public class SolrUtil {
 	@Autowired
 	private ExceptionLogService logService;
 	
-    private static final String url = "http://localhost:8983/solr/recipe/";
+    //TODO: store SOLR url in a properties file
+	private static final String url = "http://localhost:8983/solr/recipe/";
     private static final HttpSolrClient solrCore = new HttpSolrClient(url);
 	
 	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) throws SolrServerException, IOException {
@@ -44,7 +45,7 @@ public class SolrUtil {
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "name or catname or ingredname or description or source or notes");
-		query.setParam("fl", "id, name, description, photo");
+		query.setParam("fl", "id, userid, name, description, photo, allowshare, approved");
 		query.setParam("start", "0");
 		query.setParam("rows", "50");
 		query.setHighlight(true);
@@ -52,6 +53,7 @@ public class SolrUtil {
 		query.setHighlightSimplePre("<strong>");
 		query.setHighlightSimplePost("</strong>");
 		query.addSort("name", SolrQuery.ORDER.asc);
+		query.addFilterQuery("allowshare:true");
 	    
 	    String qstr = ClientUtils.toQueryString(query, false);
 	    logger.info("qstr: " + qstr);
@@ -67,9 +69,14 @@ public class SolrUtil {
 	    	
 	    	String idStr = (String)doc.getFieldValue("id");
 	    	Long id = Long.valueOf(idStr);
+	    	//idStr = (String)doc.getFieldValue("userid");
+	    	//Long userId = Long.valueOf(idStr);
+	    	Long userId = (Long)doc.getFieldValue("userid");
 	    	String name = (String)doc.getFieldValue("name");
 	    	String desc = (String)doc.getFieldValue("description");
 	    	String photo = (String)doc.getFieldValue("photo");
+	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
+	    	boolean approved = (boolean)doc.getFieldValue("approved");
 
 	    	if (rsp.getHighlighting().get(id) != null) {
 	        	List<String> highList = rsp.getHighlighting().get(id).get("name");
@@ -88,7 +95,7 @@ public class SolrUtil {
 	        	}
 	        }
 	    	
-	    	SearchResultsDto rslts = new SearchResultsDto(id, name, desc, photo);
+	    	SearchResultsDto rslts = new SearchResultsDto(id, userId, name, desc, photo, allowShare, approved);
 	    	resultsList.add(rslts);
 	    }
 	    
@@ -99,9 +106,12 @@ public class SolrUtil {
 
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", recipe.getId());
+		document.addField("userid", recipe.getUser().getId());
 		document.addField("name", recipe.getName());
 		document.addField("catname", recipe.getCategory().getName());
 		document.addField("description", recipe.getDescription());
+		document.addField("allowshare", recipe.getAllowShare());
+		document.addField("approved", recipe.getApproved());
 		if (!recipe.getServings().isEmpty())
 			document.addField("servings", recipe.getServings());
 		if (!recipe.getNotes().isEmpty())
@@ -155,7 +165,7 @@ public class SolrUtil {
 	    } catch (IOException ex) {
 	    	logService.addException(ex);
 	    }		
-}
+	}
 	
 	public void deleteRecipe(Long recipeId) {
 		
