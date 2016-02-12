@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="blurInputFocus()">
 
 <%@include file="../common/nav.jsp" %>
 
@@ -30,18 +30,15 @@
 
 			<form:form role="form" modelAttribute="recipe">
 				<div class="row spacer-vert-md">
-					<div class="col-sm-2 text-left">
-						<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
-					</div>
-					<div class="col-sm-3">
-					</div>
-					<div class="col-sm-2 text-center">
+					<div class="col-sm-2 col-sm-push-5 text-center">
 						<button class="btn btn-primary" type="submit" id="save" name="_eventId_save"><spring:message code="common.save"></spring:message></button>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2 col-sm-pull-2 text-left">
+						<button class="btn btn-default" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
-					<div class="col-sm-2 text-right">
-						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
+					<div class="col-sm-2 col-sm-push-6 text-right">
+						<button class="btn btn-default" id="fakeSubmitCancel"><spring:message code="common.cancel"></spring:message></button>
+						<button id="cancelSubmitBtn" type="submit" name="_eventId_cancel" style="display:none"></button>
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
@@ -54,6 +51,6 @@
 </body>
 
 <!-- include recipe-specific routines -->
-<script src="<c:url value="/resources/custom/recipe.js" />"></script>
+<script src="<c:url value="/resources/custom/review.js" />"></script>
 
 </html>

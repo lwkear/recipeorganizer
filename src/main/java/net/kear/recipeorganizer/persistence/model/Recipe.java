@@ -103,6 +103,9 @@ public class Recipe implements Serializable {
 	@Column(name = "APPROVED")
 	private boolean approved;
 	
+	@Column(name = "COPYRIGHTED")
+	private boolean copyrighted;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
 	@Valid
@@ -150,7 +153,7 @@ public class Recipe implements Serializable {
 
 	@Column(name = "TAGS")
 	@Type(type = "tagList") 
-	@Size(max=10, groups=SizeGroup.class)
+	@Size(max=5, groups=SizeGroup.class)
 	private List<String> tags;
 	
 	@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
@@ -168,7 +171,7 @@ public class Recipe implements Serializable {
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, String notes, boolean allowShare, boolean approved, String photoName, List<String> tags, 
+				Integer prepMinutes, String notes, boolean allowShare, boolean approved, boolean copyrighted, String photoName, List<String> tags, 
 				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
 		super();
 		this.user = user;
@@ -182,6 +185,7 @@ public class Recipe implements Serializable {
 		this.notes = notes;
 		this.allowShare = allowShare;
 		this.approved = approved;
+		this.copyrighted = copyrighted;
 		this.photoName = photoName;
 		this.tags = tags;
 		this.instructSections = instructSections;
@@ -289,6 +293,15 @@ public class Recipe implements Serializable {
 	public void setApproved(Boolean approved) {
 		this.approved = approved;
 	}
+	
+	public Boolean getCopyrighted() {
+		return copyrighted;
+	}
+
+	public void setCopyrighted(Boolean copyrighted) {
+		this.copyrighted = copyrighted;
+	}
+	
 
 	public void setApproved(boolean approved) {
 		this.approved = approved;
@@ -412,6 +425,7 @@ public class Recipe implements Serializable {
 		int result = 1;
 		result = prime * result + (allowShare ? 1231 : 1237);
 		result = prime * result + (approved ? 1231 : 1237);
+		result = prime * result + (copyrighted ? 1231 : 1237);
 		result = prime * result + ((background == null) ? 0 : background.hashCode());
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
@@ -438,6 +452,8 @@ public class Recipe implements Serializable {
 		if (allowShare != other.allowShare)
 			return false;
 		if (approved != other.approved)
+			return false;
+		if (copyrighted != other.copyrighted)
 			return false;
 		if (background == null) {
 			if (other.background != null)
@@ -518,7 +534,7 @@ public class Recipe implements Serializable {
 	public String toString() {
 		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
 				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", approved=" + approved +", photoName=" + photoName + ", tags=" + tags + ", category=" + category +  
+				", approved=" + approved + ", copyrighted=" + copyrighted + ", photoName=" + photoName + ", tags=" + tags + ", category=" + category +  
 				", instructSections=" + instructSections + ", ingredSections=" + ingredSections + ", source=" + source + ", views=" + views + "]";
 	}
 }

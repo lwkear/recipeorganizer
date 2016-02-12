@@ -20,6 +20,21 @@ function saveRecipe(e) {
 	document.forms["editForm"].submit();
 }
 
+function cancelEditRecipe() {
+	$("#messageTitle").text(messageMap.get('common.cancel'));
+	$("#messageMsg").text(messageMap.get('recipe.edit.cancel'));
+	$(".msgDlgBtn").hide();
+	$("#yesBtn").show();
+	$("#noBtn").show();
+	$("#yesBtn").one('click', continueEditCancel);
+	$("#messageDlg").modal('show');
+} 
+
+function continueEditCancel(e) {
+	$("#messageDlg").modal('hide');
+	$("#cancelEditBtn")[0].click();
+}
+
 $(function() {
 	
 	checkForFileError();
@@ -111,6 +126,14 @@ $(function() {
 				$('#hiddenphoto').val('xxxREMOVExxx' + photo);
 			}
 		}
-	})
 
+		var text = $('#inputTags option:selected').map(function () {
+			return $(this).text();}).get();
+		$('#hiddentags').val(text);
+	})
+	.on('click', '#fakeEditCancel', function(e)
+	{
+		e.preventDefault();
+		cancelEditRecipe();
+	})
 })

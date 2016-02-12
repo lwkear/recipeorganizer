@@ -29,6 +29,13 @@ public class Source implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String TYPE_COOKBOOK = "Cookbook";
+	public static final String TYPE_MAGAZINE = "Magazine";
+	public static final String TYPE_NEWSPAPER = "Newspaper";
+	public static final String TYPE_PERSON = "Person";
+	public static final String TYPE_WEBSITE = "Website";
+	public static final String TYPE_OTHER = "Other";
+	
 	//Hibernate validation groups
 	public interface SizeGroup {}
 	public interface OtherGroup {}

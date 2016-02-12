@@ -5,6 +5,42 @@ var maxInactiveInterval;
 var remainTime = 30;
 var messageMap;
 
+function toFraction(amt) {
+	if (amt <= .2) return '&frac18;';
+	if (amt <= .3) return '&frac14;';
+	if (amt <= .35) return '&frac13;';
+	if (amt <= .4) return '&frac38;';
+	if (amt <= .5) return '&frac12;';
+	if (amt <= .65) return '&frac58;';
+	if (amt <= .7) return '&frac23;';
+	if (amt <= .8) return '&frac34;';
+	if (amt <= .9) return '&frac78;';
+}
+
+function convertFractions(element) {
+	$(element).each(function(index) {
+		var qty = $(this).html();
+		var num = Math.floor(qty);
+		var dec = (qty - num);
+		var code = '';
+		if (dec > 0)
+			code = toFraction(dec);
+
+		console.log("qty: " + qty);
+		console.log("num: " + num);
+		console.log("dec: " + dec);
+		console.log("code: " + code);
+
+		var frac;
+		if (num > 0)
+			frac = num + code;
+		else
+			frac = code;
+		
+		$(this).html(frac);
+	});
+}
+
 function setMessageMap() {
 	map = new Map();
 	$('.spring-messages > p').each(function(index) {
@@ -94,7 +130,39 @@ function blurInputFocus()
 {
 	//for a few pages that should not have focus on any control
 	//add this to the body onload
-	$(':input:visible:enabled:focus').blur(); 
+	//$(':input:visible:enabled:focus').blur(); 
+	$(':input:focus').blur();
+}
+
+function findFirstError() {
+	$('.has-error:first > .form-control:first').focus();
+}
+
+function scrollPage(section) {
+	//first check if the page is in add recipe mode
+	var btn = document.getElementById('proceedBtn');
+	if (btn != null) {
+		document.getElementById('proceedBtn').scrollIntoView();
+		return;
+	}
+	
+	//opted not to do anything for now if the page is edit recipe mode
+	//there are too many potential issues and variables, e.g., multiple panels open, multiple sections for ingreds and/or instructs, etc.
+	/*if (section === 'ingred') {
+		var div = document.getElementsByClassName('ingredBottom');
+		if (div != null) {
+			document.getElementsByClassName('ingredBottom')[0].scrollIntoView(false);
+			return;
+		}
+	}
+	
+	if (section === 'instruct') {
+		var div = document.getElementsByClassName('instructBottom');
+		if (div != null) {
+			document.getElementsByClassName('instructBottom')[0].scrollIntoView(false);
+			return;
+		}
+	}*/
 }
 
 function displayOKMsg(title, msg) {
@@ -119,7 +187,31 @@ $('.faq_question').click(function() {
 
 });
 
-//$(document).ready(function() {
+function cancelSubmitRecipe() {
+	$("#messageTitle").text(messageMap.get('common.cancel'));
+	$("#messageMsg").text(messageMap.get('recipe.submit.cancel'));
+	$(".msgDlgBtn").hide();
+	$("#yesBtn").show();
+	$("#noBtn").show();
+	$("#yesBtn").one('click', continueSubmitCancel);
+	$("#messageDlg").modal('show');
+} 
+
+function continueSubmitCancel(e) {
+	$("#messageDlg").modal('hide');
+	$("#cancelSubmitBtn").click();
+}
+
+function fixTags() {
+	var tags = $("#tags").html();
+	console.log(tags);
+	if (tags) {
+		var newtags = tags.substr(1,tags.length-2);
+		$("#tags").html(newtags);
+		console.log(newtags);
+	}
+}
+
 $(function() {
 	
 	$.fn.bootstrapBtn = $.fn.button.noConflict();
@@ -140,6 +232,7 @@ $(function() {
 		messageMap = setMessageMap();
 	
 	setInputFocus();
+	findFirstError();
 
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
@@ -166,5 +259,10 @@ $(function() {
 		}
 		else
 			$(err).html(fmt).hide();
+	})
+	.on('click', '#fakeSubmitCancel', function(e)
+	{
+		e.preventDefault();
+		cancelSubmitRecipe();
 	})
 });

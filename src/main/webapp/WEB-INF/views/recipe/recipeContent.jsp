@@ -1,5 +1,6 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="net.kear.recipeorganizer.persistence.model.Source"%>
 
 <spring:message var="yesLabel" code="common.yes"></spring:message>
 <spring:message var="noLabel" code="common.no"></spring:message>
@@ -32,10 +33,6 @@
 							<span><strong><spring:message code="recipe.basics.servings"></spring:message></strong>&nbsp;&nbsp;${recipe.servings}</span>
 						</div>
 					</c:if>	
-					<%-- <c:if test="${not empty recipe.prepHours || 
-								  not empty recipe.prepMinutes ||
-								  recipe.prepMinutes != 0 ||
-								  recipe.prepMinutes != 0}"> --%>
 					<c:if test="${recipe.prepMinutes != 0 ||
 								  recipe.prepMinutes != 0}">
 						<div class="col-sm-3 spacer-vert-xs">
@@ -57,30 +54,30 @@
 						<div class="col-sm-9 spacer-vert-xs">
 						<span><strong><spring:message code="recipe.optional.source"></spring:message></strong>&nbsp;&nbsp;</span>
 						<c:choose>
-							<c:when test="${recipe.source.type == 'Cookbook'}">
+							<c:when test="${recipe.source.type == Source.TYPE_COOKBOOK}">
 								<span>${recipe.source.cookbook}<c:if test="${not empty recipe.source.cookbookPage}">&nbsp;&nbsp;&nbsp;&nbsp;
 									<strong><spring:message code="recipe.optional.source.cookbookpage"></spring:message></strong>&nbsp;${recipe.source.cookbookPage}</c:if>
 								</span>
 							</c:when>
-							<c:when test="${recipe.source.type == 'Magazine'}">
+							<c:when test="${recipe.source.type == Source.TYPE_MAGAZINE}">
 								<span>${recipe.source.magazine}<c:if test="${not empty recipe.source.magazinePubdate}">&nbsp;&nbsp;&nbsp;&nbsp;
-									<strong><spring:message code="recipe.optional.source.published"></spring:message>:</strong>&nbsp;${recipe.source.magazinePubdate}</c:if>
+									<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.magazinePubdate}</c:if>
 								</span>
 							</c:when>
-							<c:when test="${recipe.source.type == 'Newspaper'}">
+							<c:when test="${recipe.source.type == Source.TYPE_NEWSPAPER}">
 								<span>${recipe.source.newspaper}<c:if test="${not empty recipe.source.newspaperPubdate}">&nbsp;&nbsp;&nbsp;&nbsp;
-									<strong><spring:message code="recipe.optional.source.published"></spring:message>:</strong>&nbsp;${recipe.source.newspaperPubdate}</c:if>
+									<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.newspaperPubdate}</c:if>
 								</span>
 							</c:when>
-							<c:when test="${recipe.source.type == 'Person'}">
+							<c:when test="${recipe.source.type == Source.TYPE_PERSON}">
 								<span>${recipe.source.person}</span>
 							</c:when>
-							<c:when test="${recipe.source.type == 'Website'}">
+							<c:when test="${recipe.source.type == Source.TYPE_WEBSITE}">
 								<span>${recipe.source.websiteUrl}
 									<c:if test="${recipe.source.recipeUrl != 'http://'}">&nbsp;&nbsp;&nbsp;&nbsp;${recipe.source.recipeUrl}</c:if>
 								</span>
 							</c:when>
-							<c:when test="${recipe.source.type == 'Other'}">
+							<c:when test="${recipe.source.type == Source.TYPE_OTHER}">
 								<span>${recipe.source.other}</span>
 							</c:when>
 						</c:choose>
@@ -91,9 +88,10 @@
 			<div class="row">
 				<div class="col-sm-12">			
 					<c:if test="${not empty recipe.tags}">
-						<div class="col-sm-3 spacer-vert-xs">
+						<div class="col-sm-6 spacer-vert-xs">
+							<%-- <c:set var="tags">${recipe.tags}</c:set> --%> 
 							<span>
-								<strong><spring:message code="recipe.optional.tags"></spring:message></strong>&nbsp;&nbsp;${recipe.tags}
+								<strong><spring:message code="recipe.optional.tags"></spring:message></strong>&nbsp;&nbsp;<span id="tags">${recipe.tags}</span>
 							</span>
 						</div>
 					</c:if>
@@ -145,4 +143,3 @@
 		</c:forEach>
 	</div>
 </div>
-

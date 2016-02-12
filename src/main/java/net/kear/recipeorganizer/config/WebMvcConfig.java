@@ -25,6 +25,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -90,13 +91,20 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}	
 	
 	/*** file upload/download configuration ***/
-	@Bean
+	@Bean(name="filterMultipartResolver")
 	public CommonsMultipartResolver filterMultipartResolver() {
-		logger.debug("StandardServletMultipartResolver");
+		logger.debug("CommonsServletMultipartResolver");
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 		resolver.setDefaultEncoding("UTF-8");
 		return resolver;
 	}
+
+	/*@Bean	//causes issues with UTF-8 on forms with a file upload
+	public StandardServletMultipartResolver filterMultipartResolver() {
+		logger.debug("StandardServletMultipartResolver");
+		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+		return resolver;
+	}*/
 	
 	@Bean
 	public FileActions fileActions() {
@@ -165,6 +173,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         source.setCacheSeconds(0);	//TODO: VALIDATION: be sure to change this value in production
         return source;
     }
+
+	@Bean 
+	public CharacterEncodingFilter encodingFilter() {
+		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+	    characterEncodingFilter.setEncoding("UTF-8");
+	    characterEncodingFilter.setForceEncoding(true);
+	    return characterEncodingFilter;
+	}
 	
     @Override
     public Validator getValidator() {

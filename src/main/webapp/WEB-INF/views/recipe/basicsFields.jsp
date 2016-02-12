@@ -40,13 +40,13 @@
 		</div>
 		<div class="col-sm-3">
 			<div class="row">
-				<label class="control-label col-sm-1" for="inputPrepHour">
+				<label class="control-label col-sm-1 <c:if test="${not empty prepHourError}">text-danger</c:if>" for="inputPrepHour">
 					<spring:message code="recipe.basics.hour"></spring:message></label>
 				<div class="col-sm-4 <c:if test="${not empty prepHourError}">has-error</c:if>">
 					<form:input type="text" class="form-control" id="inputPrepHour" path="prepHours" autocomplete="off"/>
 					<span class="text-danger">${prepHourError}</span>
 				</div>
-				<label class="control-label col-sm-2" for="inputPrepMinute">
+				<label class="control-label col-sm-2 <c:if test="${not empty prepMinuteError}">text-danger</c:if>" for="inputPrepMinute">
 					<spring:message code="recipe.basics.minute"></spring:message></label>
 				<div class="col-sm-4 <c:if test="${not empty prepMinuteError}">has-error</c:if>">
 					<form:input type="text" class="form-control" id="inputPrepMinute" path="prepMinutes" autocomplete="off"/>

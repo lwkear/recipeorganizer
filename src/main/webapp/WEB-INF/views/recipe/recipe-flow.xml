@@ -36,7 +36,13 @@
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 			<evaluate expression="recipeService.checkArraySizes(recipe)"></evaluate>
 		</transition>
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+		<!-- <transition on="proceed" to="optional" validation-hints="'recipeBasicGroup'">
+			<set name="flowScope.instructCount" value="recipe.numInstructSections"/>
+			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
+			<set name="flowScope.ingredCount" value="recipe.numIngredSections"/>
+			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
+		</transition> -->
+		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
 	<decision-state id="ingredLoopForward">
@@ -55,7 +61,7 @@
 			<evaluate expression="recipeService.adjustRecipeIngredientList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 		</transition>
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
 	<decision-state id="instructLoopForward">
@@ -75,7 +81,7 @@
 			<evaluate expression="recipeService.adjustInstructionList(recipe, flowRequestContext)"></evaluate>
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
 	<view-state id="optional" view="recipe/optional" model="recipe">
@@ -104,23 +110,33 @@
 			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
 		</transition>
 		<transition on="proceed" to="uploadFile" bind="true" validate="true" validation-hints="'recipeOptionalGroup'"></transition>		
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
 	<action-state id="uploadFile">
 		<evaluate expression="fileActions.uploadFile(recipe, flowRequestContext)"/>
 		<transition to="review"/>
 	</action-state>
-		
+
 	<view-state id="review" view="recipe/review" model="recipe">
 		<transition on="back" to="optional" bind="false" validate="false"></transition>
-		<transition on="save" to="end" bind="true">
+		<transition on="save" to="renameFile" bind="true">
 			<evaluate expression="recipeService.saveRecipe(recipe)"></evaluate>
 		</transition>
-		<transition on="cancel" to="cancel" bind="false" validate="false"></transition>
+		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
-	<end-state id="end" view="recipe/endpage"></end-state>
+	<action-state id="deleteFile">
+		<evaluate expression="fileActions.deleteFile(recipe)"/>
+		<transition to="cancel"/>
+	</action-state>
+
+	<action-state id="renameFile">
+		<evaluate expression="fileActions.renameFile(recipe)"/>
+		<transition to="end"/>
+	</action-state>
+
+	<end-state id="end" view="recipe/done"></end-state>
 	<end-state id="cancel" view="recipe/cancel"/>
 
 </flow>

@@ -91,7 +91,6 @@
 						
 							<div class="panel panel-default" id="${panelsection}">
 					            <div class="panel-heading">
-					                <!-- <h4 class="panel-title"><a data-toggle="collapse" href="#panel2"> -->
 					                <h4 class="panel-title">
 					                	<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.ingredients.title"></spring:message>: ${ingred.name}</a>
 					                </h4>
@@ -108,7 +107,8 @@
 										
 					                </div>
 					            </div>
-							</div>
+					            <div class="ingredBottom"></div>
+							</div>							
 						</c:forEach>
 						<c:forEach items="${recipe.instructSections}" var="instruct" varStatus="instructLoop">
 							<c:set var="currNdx" value="${instructLoop.index}"/>
@@ -134,6 +134,7 @@
 								
 									</div>
 								</div>
+								<div class="instructBottom"></div>
 							</div>
 						</c:forEach>
 				        <div class="panel panel-default">
@@ -155,10 +156,16 @@
 					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<small><spring:message code="common.requiredfield"></spring:message></small>
+				</div>
+			</div>
 			<div class="form-group col-sm-12 spacer-vert-md">
 				<div class="col-sm-offset-5 col-sm-2 text-center">
 					<button type="submit" class="btn btn-primary pull-left" id="save"><spring:message code="common.save"></spring:message></button>
-					<a class="btn btn-default pull-right" id="cancelBtn" href="${returnUrl}"><spring:message code="common.cancel"></spring:message></a>
+					<button class="btn btn-default pull-right" id="fakeEditCancel"><spring:message code="common.cancel"></spring:message></button>
+					<a id="cancelEditBtn" style="display:none" href="${returnUrl}"></a>
 				</div>
 			</div>
 		</form:form>

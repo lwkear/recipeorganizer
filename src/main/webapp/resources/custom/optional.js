@@ -1,4 +1,11 @@
 //TODO: GUI: test for special characters
+var typeCookbook = $('#typeCookbook').val();
+var typeMagazine = $('#typeMagazine').val();
+var typeNewspaper = $('#typeNewspaper').val();
+var typePerson = $('#typePerson').val();
+var typeWebsite = $('#typeWebsite').val();
+var typeOther = $('#typeOther').val();		
+
 function setSourceUrl(url, query) {
 	var source = $('#inputSource').val();
 	var newurl = url + '?searchStr=' + query + '&type=' + source;
@@ -10,23 +17,10 @@ remoteOpts['replace'] = function(url, query) {return setSourceUrl(url, query);};
 bhOpts = setBHOptions(50, null, null, null, remoteOpts);
 var sourceBH = new Bloodhound(bhOpts);
 
-remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getTags', null);
-remoteOpts['replace'] = function(url, query) {return setTagsUrl(url, query);};
-bhOpts = setBHOptions(50, null, null, null, remoteOpts);
-var tagsBH = new Bloodhound(bhOpts);
-
 function initSourceTA() {
-
 	var options = initTypeaheadOptions(true,true,1);
 	var dataset = initTypeaheadDataset('source', null, 20, sourceBH);
 	$('.srcTA').typeahead(options,dataset);
-};
-
-function initTagsTA() {
-
-	var options = initTypeaheadOptions(true,true,1);
-	var dataset = initTypeaheadDataset('tags', null, 20, tagsBH);
-	$('#inputTags').typeahead(options,dataset);
 };
 
 function initSource() {
@@ -48,30 +42,29 @@ function setSource() {
 	//the first option is the placeholder
 	if (ndx > 0) {
 		var today = new Date();
-
 		var option = $('#inputSource').val();
 		if (option.length > 0) {
 			$('.srcGroup').hide(); 
-			if (option === 'Cookbook') {
+			if (option === typeCookbook) {
 				$('.bookGroup').show();			
 			}		
-			if (option === 'Magazine') {
+			if (option === typeMagazine) {
 				$('.magGroup').show();
 				$('.magGroup').css('z-index','999999 !important');			
 				$('.ui-datepicker').css('z-index','999999 !important');
 			}		
-			if (option === 'Newspaper') {
+			if (option === typeNewspaper) {
 				$('.newsGroup').show();
 				$('.newsGroup').css('z-index','999999 !important');
 				$('.ui-datepicker').css('z-index','999999 !important');	
 			}		
-			if (option === 'Person') {
+			if (option === typePerson) {
 				$('.personGroup').show();			
 			}		
-			if (option === 'Website') {
+			if (option === typeWebsite) {
 				$('.webGroup').show();			
 			}		
-			if (option === 'Other') {
+			if (option === typeOther) {
 				$('.otherGroup').show();			
 			}
 			$('#inputSource').removeClass('select-placeholder');
@@ -97,31 +90,44 @@ $(function() {
 	$('#inputNewsDate').datepicker();
 	$('#inputMagDate').datepicker();
 	
-	//TODO: GUI: typeahead for tagsinput doesn't always work the first time - an initialization issue?
-	$('#inputTags').tagsinput({
-		tagClass: function(item) {
-	    	return 'label label-primary';
-	    },
-	    maxtags: 10,
-	    maxchars: 25,
-	    trimvalue: true,
-	    typeaheadjs: [ 
-			{
-				hint: true,
-				highlight: true,
-				minLength: 1
-			},
-			{
-				name: 'tags',
-				limit: 20,
-				source: tagsBH 
-			}
-		]
+	var $select = $('#inputTags').selectize({
+		delimiter: ',',
+		maxItems: 5,
+	    persist: true,
+	    diacritics: true,
+	    labelField: "item",
+	    valueField: "item",
+	    preload: true,
+	    create: true,
+	    createOnBlur: true,
+	    onLoad : function(data) {
+	    	console.log("onLoad:"+data);
+	    	var obj = $(this);
+	    	var selTags = $("#hiddentags").val();
+	    	if (selTags.length > 0) {
+	    		var newtags = selTags.replace(",","],[");
+	    		var arr = JSON.parse("[" + newtags + "]");
+	    		obj[0].setValue(arr);
+	    	}
+	    }
 	});
 	
+	var selectize = $("#inputTags")[0].selectize;
+	selectize.load(function(callback) {
+		var userId = $('#userID').val();
+		var url = '/recipeorganizer/recipe/getTags' + '?userId=' + userId;
+		var tags = null;
+		$.getJSON(url)
+			.done(function (data) {
+				console.log("json:"+data);
+				tags = data.map(function(x) { return { item: x }; });
+				console.log("mapped json:"+tags);
+				callback(tags);
+		 	});
+	});
+
 	setSource();
 	initSourceTA();
-	initTagsTA();
 	
 	//these events must reside in $(document) because the dynamically added elements are not
 	//visible to the DOM otherwise
@@ -148,6 +154,11 @@ $(function() {
 			if (option == 'remove')
 				$('#hiddenphoto').val("");					
 			}
+
+			var text = $('#inputTags option:selected').map(function () {
+				return $(this).text();}).get();
+			$('#hiddentags').val(text);
+
 		})
 		.on('click', '#back', function(e) {
 			//set index for the last set of instructions, which will be total sections minus one
@@ -181,7 +192,7 @@ $(function() {
 		if (input.length)
 			input.val(label);
     });		
-	
+
 	$('.webGroup').on('blur', function() {
 		console.log("webGroup .on blur in document");
 		var ndx = $('#inputSource option:selected').index();
@@ -207,28 +218,34 @@ $(function() {
 		var dateStr = mon + '/' + day + '/' + d.getFullYear();
 	
 		initSource();
-		
+
 		var option = $(this).val();
 		$('.srcGroup').hide(); 
-		if (option === 'Cookbook') {
-			$('.bookGroup').show();			
+		if (option === typeCookbook) {
+			$('.bookGroup').show();
+			$("#cookbook").focus();
 		}		
-		if (option === 'Magazine') {
+		if (option === typeMagazine) {
 			$('.magGroup').show();
-			$( '#inputMagDate' ).val(dateStr);			
+			$( '#inputMagDate' ).val(dateStr);
+			$("#magazine").focus();
 		}		
-		if (option === 'Newspaper') {
+		if (option === typeNewspaper) {
 			$('.newsGroup').show();
-			$( '#inputNewsDate' ).val(dateStr);			
+			$( '#inputNewsDate' ).val(dateStr);
+			$("#newspaper").focus();
 		}		
-		if (option === 'Person') {
-			$('.personGroup').show();			
+		if (option === typePerson) {
+			$('.personGroup').show();
+			$("#person").focus();
 		}		
-		if (option === 'Website') {
-			$('.webGroup').show();			
+		if (option === typeWebsite) {
+			$('.webGroup').show();
+			$("#websiteUrl").focus();
 		}		
-		if (option === 'Other') {
-			$('.otherGroup').show();			
+		if (option === typeOther) {
+			$('.otherGroup').show();
+			$("#other").focus();
 		}
 		$(this).removeClass('select-placeholder');				
 		});

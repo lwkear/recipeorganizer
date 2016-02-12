@@ -88,6 +88,12 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	
         return recipe;
     }
+	
+	public Recipe loadRecipe(Long id) {
+		Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
+		Hibernate.initialize(recipe.getSource());
+		return recipe;
+	}
 
     public void addFavorite(Favorites favorite) {
     	getSession().save(favorite);
@@ -292,7 +298,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
     			.add(Projections.property("r.name").as("name"))
-    			.add(Projections.property("r.description").as("desc"))
+    			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.approved").as("approved"))
@@ -316,12 +322,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<String> getTags(String searchStr, Long userId) {
+    public List<String> getTags(Long userId) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"select distinct t.column_value as tag from recipe r, table(r.tags) t where r.user_id = :id and lower(t.column_value) like :str")
+			"select distinct t.column_value as tag from recipe r, table(r.tags) t where r.user_id = :id")
 			.addScalar("tag", StringType.INSTANCE)
-			.setLong("id", userId)
-			.setString("str", "%" + searchStr + "%");
+			.setLong("id", userId);
     	
     	List<String> result = query.list();
     	return result;

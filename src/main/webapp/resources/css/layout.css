@@ -163,6 +163,14 @@ body {
     display: block;
 }
 
+.transparent {
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  -ms-filter: blur(3px);
+  filter: blur(3px);
+  opacity: 0.9;
+}
 
 /*** FAQS ***/
 .faqnav { width:100%; height:auto; list-style: none; text-align:left; font-size:1.2rem; font-weight: bold; margin:0; padding:0; }
@@ -172,3 +180,4 @@ body {
 .faq_question {margin: 0% 0% 0% 2%; padding: 0px 0px 5px 0px; display: inline-block; cursor: pointer; font-weight:bold}
 .faq_answer_container {margin: 0% 2% 0% 2%; height: 0px; overflow: hidden; padding: 0px;}
 .faq_answer p {margin: 1% 2% 1% 4%;}
+

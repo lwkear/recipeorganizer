@@ -101,6 +101,8 @@ $(function() {
 		  	newEntry.find('.ingredErrGrp').hide();
 		  	//show the "minus" button for the current entry
 		  	currentEntry.find('.removeIngredient').show();
+		  	//scroll the screen using the proceed button as an anchor
+		  	scrollPage("ingred");
 		
 			//restore the typeaheads
 		  	initIngredientsTA();

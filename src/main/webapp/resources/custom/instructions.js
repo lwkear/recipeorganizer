@@ -23,7 +23,10 @@ $(function() {
 			newEntry.find('textarea').val('');
 			newEntry.removeClass('has-error');
 			newEntry.find('.instructErr').hide();
-			currentEntry.find('.removeInstruction').show();		
+			//show the "minus" button for the current entry
+			currentEntry.find('.removeInstruction').show();
+			//scroll the screen using the proceed button as an anchor
+			scrollPage("instruct");
 		})    
 		.on('click', '.removeInstruction', function(e)
 		{

@@ -61,6 +61,7 @@ public class RecipeServiceImpl implements RecipeService {
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
 		recipe.setApproved(false);
+		recipe.setCopyrighted(false);
 		recipe.setViews(0);
 		recipe.setPhotoName("");
 		recipe.setCategory(new Category());
@@ -85,11 +86,19 @@ public class RecipeServiceImpl implements RecipeService {
     	if (type == null || type.isEmpty()) {
 			recipe.setSource(null);
 		}
-    	else
+    	else {
     		recipe.getSource().setRecipe(recipe);
+    		if (type.equals(Source.TYPE_COOKBOOK) || 
+    			type.equals(Source.TYPE_MAGAZINE) ||
+    			type.equals(Source.TYPE_NEWSPAPER) ||
+    			type.equals(Source.TYPE_WEBSITE))
+    			recipe.setCopyrighted(true);
+    	}
     	
     	if (!recipe.getAllowShare())
     		recipe.setApproved(true);
+    	else
+    		recipe.setApproved(false);
     	
     	//the NAME field in both section headers is a required field so the default value is set to "XXXX"
     	//if there is only one section, however, that name must be removed so it does not appear when
@@ -122,12 +131,13 @@ public class RecipeServiceImpl implements RecipeService {
     	else {
     		recipeRepository.addRecipe(recipe);
     		
-    		String photoName = recipe.getPhotoName(); 
+    		/*String photoName = recipe.getPhotoName(); 
     		if (photoName!= null && !photoName.isEmpty()) {
+    			String oldName = "0." + photoName;
     			String newName = recipe.getId() + "." + photoName;
     			//errors are not fatal and will be logged by FileAction
-    			fileAction.renameFile(FileType.RECIPE, recipe.getPhotoName(), newName);
-    		}
+    			fileAction.renameFile(FileType.RECIPE, oldName, newName);
+    		}*/
 
     		//errors are not fatal and will be logged by SolrUtil
     		solrUtil.addRecipe(recipe);
@@ -144,6 +154,10 @@ public class RecipeServiceImpl implements RecipeService {
 
     public Recipe getRecipe(Long id) {
     	return recipeRepository.getRecipe(id);
+    }
+    
+    public Recipe loadRecipe(Long id) {
+    	return recipeRepository.loadRecipe(id);
     }
 
     @SuppressWarnings("rawtypes")
@@ -235,8 +249,8 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.getRecipeCount(userId);
     }
     
-    public List<String> getTags(String searchStr, Long userId) {
-    	return recipeRepository.getTags(searchStr, userId);
+    public List<String> getTags(Long userId) {
+    	return recipeRepository.getTags(userId);
     }
     
     public boolean lookupName(String lookupName, Long userId) {

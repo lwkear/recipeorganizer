@@ -1,15 +1,26 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="net.kear.recipeorganizer.persistence.model.Source"%>
 
 <div class="row">
 	<div class="col-sm-12">
 		<c:set var="backgroundplaceholder"><spring:message code="recipe.optional.background.placeholder"></spring:message></c:set>
 		<c:set var="tagsplaceholder"><spring:message code="recipe.optional.tags.placeholder"></spring:message></c:set>
 		<c:set var="notesplaceholder"><spring:message code="recipe.optional.notes.placeholder"></spring:message></c:set>
+		<input type="text" id="typeCookbook" value="${Source.TYPE_COOKBOOK}" style="display:none">
+		<input type="text" id="typeMagazine" value="${Source.TYPE_MAGAZINE}" style="display:none">
+		<input type="text" id="typeNewspaper" value="${Source.TYPE_NEWSPAPER}" style="display:none">
+		<input type="text" id="typePerson" value="${Source.TYPE_PERSON}" style="display:none">
+		<input type="text" id="typeWebsite" value="${Source.TYPE_WEBSITE}" style="display:none">
+		<input type="text" id="typeOther" value="${Source.TYPE_OTHER}" style="display:none">		
 		<div class="form-group col-sm-12">
 			<label class="control-label" for="inputBack"><spring:message code="recipe.optional.background"></spring:message></label>
 			<form:textarea class="form-control" rows="3" id="inputBack" placeholder="${backgroundplaceholder}" path="background"></form:textarea>
+		</div>
+		<div class="form-group col-sm-12">
+			<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
+			<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="${notesplaceholder}" path="notes"></form:textarea>
 		</div>
 		<c:if test="${errors.hasFieldErrors('source')}">
 			<spring:bind path="recipe.source"></spring:bind>
@@ -43,12 +54,12 @@
 				<div class="col-sm-2">
 					<form:select class="form-control col-sm-2 select-placeholder" id="inputSource" path="source.type" >
             			<form:option style="display:none" value=""><spring:message code="recipe.optional.source.select.placeholder"></spring:message></form:option>
-            			<form:option value="Cookbook"><spring:message code="recipe.optional.source.select.cookbook"></spring:message></form:option>
-            			<form:option value="Magazine"><spring:message code="recipe.optional.source.select.magazine"></spring:message></form:option>
-            			<form:option value="Newspaper"><spring:message code="recipe.optional.source.select.newspaper"></spring:message></form:option>
-            			<form:option value="Person"><spring:message code="recipe.optional.source.select.person"></spring:message></form:option>
-            			<form:option value="Website"><spring:message code="recipe.optional.source.select.website"></spring:message></form:option>
-            			<form:option value="Other"><spring:message code="recipe.optional.source.select.other"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_COOKBOOK}"><spring:message code="recipe.optional.source.select.cookbook"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_MAGAZINE}"><spring:message code="recipe.optional.source.select.magazine"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_NEWSPAPER}"><spring:message code="recipe.optional.source.select.newspaper"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_PERSON}"><spring:message code="recipe.optional.source.select.person"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_WEBSITE}"><spring:message code="recipe.optional.source.select.website"></spring:message></form:option>
+            			<form:option value="${Source.TYPE_OTHER}"><spring:message code="recipe.optional.source.select.other"></spring:message></form:option>
             			<form:option value="None"><spring:message code="recipe.optional.source.select.none"></spring:message></form:option>
 					</form:select>
 				</div>
@@ -103,32 +114,41 @@
 			</div>
 		</div>
 		<div class="form-group col-sm-12">
+			<form:hidden id="hiddentags" path="tags" value="${recipe.tags}"/>
 			<div class="row">
-				<label class="control-label col-sm-3 <c:if test="${not empty tagsError}">text-danger</c:if>" style="text-align: left;" 
+				<label class="control-label col-sm-5 <c:if test="${not empty tagsError}">text-danger</c:if>" style="text-align: left;" 
 					id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
+			</div>
+			<div class="row">
+				<div class="col-sm-5 <c:if test="${not empty tagsError}">has-error</c:if>">
+					<select class="form-control col-sm-5" id="inputTags" multiple>
+						<option value="">Enter a tag</option>
+					</select>
+					<span class="text-danger">${tagsError}</span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			<div class="row">
 				<c:choose>
 					<c:when test="${not empty recipe.photoName}">
-						<label class="control-label col-sm-3" style="text-align: left;" 
+						<label class="control-label col-sm-5" style="text-align: left;" 
 							id="photoLabel" for="selectedFile"><spring:message code="recipe.optional.photo"></spring:message></label>
 						<label class="control-label col-sm-2" style="text-align: left;" 
 							id="photoOptionsLabel" for="file"><spring:message code="common.photo.options"></spring:message></label>
-						<label class="control-label col-sm-3 newphoto" style="text-align: left; display:none" 
+						<label class="control-label col-sm-5 newphoto" style="text-align: left; display:none" 
 							id="newPhotoLabel" for="file"><spring:message code="common.photo.new"></spring:message></label>
 					</c:when>
 					<c:otherwise>
-						<label class="control-label col-sm-3" style="text-align: left;" 
+						<label class="control-label col-sm-5" style="text-align: left;" 
 							id="fileLabel" for="file"><spring:message code="recipe.optional.photo"></spring:message></label>
 					</c:otherwise>
 				</c:choose>
 			</div>
 			<div class="row">						
-				<div class="col-sm-3 <c:if test="${not empty tagsError}">has-error</c:if>" style="margin-bottom:0">
-					<form:input class="form-control" type="text" id="inputTags" autocomplete="off" placeholder="${tagsplaceholder}" path="tags"/>						
-					<span class="text-danger">${tagsError}</span>
-				</div>
 				<c:choose>
 					<c:when test="${not empty recipe.photoName}">												
-						<div class="col-sm-3">
+						<div class="col-sm-5">
 							<!-- NOTE: disabled inputs are not submitted to the controller, hence the need for a hidden field -->
 							<form:hidden id="hiddenphoto" path="photoName" value="${recipe.photoName}"/>
 							<input class="form-control" type="text" value="${recipe.photoName}" disabled/>
@@ -144,7 +164,7 @@
 								<label><input type="radio" name="photoOpts" value="change"><spring:message code="common.photo.change"></spring:message></label>
 							</div>
 						</div>
-						<div class="col-sm-4 newphoto" style="display:none">
+						<div class="col-sm-5 newphoto" style="display:none">
 							<div class="input-group">
 								<span class="input-group-btn">
 									<span class="btn btn-default btn-file">
@@ -157,7 +177,7 @@
 						</div>
 					</c:when>
 					<c:otherwise>									
-						<div class="col-sm-4">
+						<div class="col-sm-5">
 							<div class="input-group">
 								<span class="input-group-btn">
 									<span class="btn btn-default btn-file">
@@ -172,9 +192,5 @@
 				</c:choose>
 			</div>
 		</div>							
-		<div class="form-group col-sm-12">
-			<label class="control-label" for="inputNotes"><spring:message code="recipe.optional.notes"></spring:message></label>
-			<form:textarea class="form-control" rows="3" id="inputNotes" placeholder="${notesplaceholder}" path="notes"></form:textarea>
-		</div>
 	</div>
 </div>

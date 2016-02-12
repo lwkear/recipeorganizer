@@ -4,6 +4,8 @@
 
 <c:set var="now" value="<%=new java.util.Date()%>" />
 
+<div class="clearfix spacer-vert-sm">
+</div>
 <footer class="footer">
 	<nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0; margin-top: 0; border-top:0; border-bottom:0">
 	    <p class="navbar-center" style="color:#ffffff">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;

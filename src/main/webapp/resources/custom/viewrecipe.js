@@ -1,39 +1,3 @@
-function toFraction(amt) {
-	if (amt <= .2) return '&frac18;';
-	if (amt <= .3) return '&frac14;';
-	if (amt <= .35) return '&frac13;';
-	if (amt <= .4) return '&frac38;';
-	if (amt <= .5) return '&frac12;';
-	if (amt <= .65) return '&frac58;';
-	if (amt <= .7) return '&frac23;';
-	if (amt <= .8) return '&frac34;';
-	if (amt <= .9) return '&frac78;';
-}
-
-function convertFractions(element) {
-	$(element).each(function(index) {
-		var qty = $(this).html();
-		var num = Math.floor(qty);
-		var dec = (qty - num);
-		var code = '';
-		if (dec > 0)
-			code = toFraction(dec);
-
-		console.log("qty: " + qty);
-		console.log("num: " + num);
-		console.log("dec: " + dec);
-		console.log("code: " + code);
-
-		var frac;
-		if (num > 0)
-			frac = num + code;
-		else
-			frac = code;
-		
-		$(this).html(frac);
-	});
-}
-
 function setIcons() {
 	var fav = $('#isFav').val();
 	var madeCount = $('#displayCount').text();
@@ -62,7 +26,8 @@ function toggleComments() {
 /**********************************/
 //set the last made date in popup dialog
 function selectMadeDate(viewerId, recipeId) {
-	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);
+	$('#madeRight').tooltip("hide");
+	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);	
 	$("#madeDateDlg").modal('show');
 } 
 
@@ -95,7 +60,6 @@ function postMadeDate(e) {
 		console.log('postMadeDate done');
 		$('#madeLeft').show();
 		$('#madeRight').hide();
-		$("#madeLeft").prop("disabled", true);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -109,6 +73,7 @@ function postMadeDate(e) {
 /************************************/
 //enter a note in popup dialog
 function addNote(recipeNote) {
+	$('#noteRight').tooltip("hide");
 	$("#submitNote").one('click', {recipeNote: recipeNote}, postNote);
 	$("#noteDlg").modal('show');
 } 
@@ -149,6 +114,7 @@ function postNote(e) {
 /*******************************/
 //enter a comment in popup dialog
 function addComment(viewerId, recipeId) {
+	$('#submitComment').tooltip("hide");
 	$("#submitComment").one('click', {viewerId : viewerId, recipeId : recipeId}, postComment);
 	$("#commentDlg").modal('show');
 } 
@@ -169,11 +135,13 @@ function postComment(e) {
 	    type: 'POST',
 		contentType: 'application/json',
 	    url: '/recipeorganizer/recipe/recipeComment',
-		dataType: 'json',
+		dataType: 'html',
+		contentType: 'application/json',
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
 		console.log('postComment done');
+		$('#commentSection').html(data);
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail status: '+ jqXHR.status);
@@ -223,9 +191,41 @@ function addFavorite(viewerId, recipeId) {
 	})
 	.done(function(data) {
 		console.log('recipe added to favorites');
-		$('#favLeft').show();
+		$('#favRight').tooltip("hide");
 		$('#favRight').hide();
-		$("#favLeft").prop("disabled", true);		
+		$('#favLeft').show();
+	})
+	.fail(function(jqXHR, status, error) {
+		console.log('fail request: '+ jqXHR);
+		console.log('fail status: '+ status);
+		console.log('fail error: '+ error);
+
+		//server currently returns a simple error message
+		var respText = jqXHR.responseText;
+		console.log('respText: '+ respText);
+		postFailed(respText)
+	});
+}
+
+/********************************/
+/*** remove favorite function ***/
+/********************************/
+function removeFavorite(viewerId, recipeId) {
+	//new entry - format the json for adding it to the database
+	var data = {"id":{"userId":viewerId,"recipeId":recipeId},"dateAdded":null};
+
+	$.ajax({
+		type: 'POST',
+		contentType: 'application/json',
+		url: '/recipeorganizer/recipe/removeFavorite',
+		dataType: 'json',
+		data: JSON.stringify(data)
+	})
+	.done(function(data) {
+		console.log('recipe removed from favorites');
+		$('#favLeft').tooltip("hide");
+		$('#favLeft').hide();
+		$('#favRight').show();
 	})
 	.fail(function(jqXHR, status, error) {
 		console.log('fail request: '+ jqXHR);
@@ -246,16 +246,13 @@ function postFailed(error) {
 $(function() {
 
 	convertFractions('.ingredqty');	
-
 	setIcons();
+	fixTags();
 	
 	$.datepicker.setDefaults({
 		dateFormat: "mm/dd/yy",
 		defaultDate: null,
 	});
-	
-	/*$('[data-toggle="tooltip"]').tooltip();*/
-	
 	$('#madeDate').datepicker();
 
 	$(document)

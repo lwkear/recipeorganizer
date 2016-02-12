@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -31,9 +32,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -74,6 +77,8 @@ public class RecipeController {
 	private SolrUtil solrUtil;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private ExceptionLogService logService;
 	
 	/***************************/
 	/*** Edit recipe handler ***/
@@ -86,6 +91,16 @@ public class RecipeController {
 		Recipe recipe = recipeService.getRecipe(id);
 		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
 		model.addAttribute("sizeMap", sizeMap);
+
+		List<String> tags = recipe.getTags();
+		List<String> strTags = new ArrayList<String>();
+		if (tags.size() > 0) {
+			for (String tag : tags) {
+				String str = '"' + tag + '"';
+				strTags.add(str);
+			}
+		}
+		recipe.setTags(strTags);		
 		model.addAttribute("recipe", recipe);
 
 		if (refer != null && !refer.contains("view"))
@@ -122,7 +137,7 @@ public class RecipeController {
         }
 		
 		String photoName = recipe.getPhotoName();
-		if (photoName.startsWith("xxxREMOVExxx")) {
+		if (photoName != null && photoName.startsWith("xxxREMOVExxx")) {
 			String name = photoName.substring(12);
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.RECIPE, recipe.getId(), name);
@@ -137,13 +152,30 @@ public class RecipeController {
 			solrUtil.deleteRecipe(recipe.getId());
 		solrUtil.addRecipe(recipe);
 		
-		return "redirect:/recipe/viewRecipe/" + recipe.getId();
+		return "redirect:/recipe/done/" + recipe.getId();
+	}
+
+	@RequestMapping(value = "recipe/done/{recipeId}", method = RequestMethod.GET)
+	public String getDone(Model model, @PathVariable Long recipeId) throws RecipeNotFound {
+		logger.info("getDone");
+	
+		Recipe recipe;
+		try {
+			recipe = recipeService.getRecipe(recipeId);
+		}
+		catch (Exception ex) {
+			throw new RecipeNotFound(ex);
+		}
+		
+		model.addAttribute("update", true);
+		model.addAttribute("recipe", recipe);
+		return "recipe/done";
 	}
 	
 	/*****************************/
 	/*** Delete recipe handler ***/
 	/*****************************/
-	@RequestMapping(value="recipe/deleteRecipe")
+	@RequestMapping(value="recipe/deleteRecipe/{recipeId}")
 	@ResponseBody
 	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) {
 		logger.info("recipe/deleteRecipe");
@@ -175,7 +207,11 @@ public class RecipeController {
 	public List<Category> getCategories() {
 		logger.info("recipe/categories GET");
 		
-		return categoryService.listCategory();
+		List<Category> cats = categoryService.listCategory();
+		logger.info(cats.toString());
+		return cats;
+
+		//return categoryService.listCategory();
 	}
 
 	//AJAX post a new ingredient
@@ -238,12 +274,12 @@ public class RecipeController {
 	//AJAX/JSON request for a typeahead list of tags
 	@RequestMapping("recipe/getTags")
 	@ResponseBody
-	public List<String> getTags(@RequestParam("searchStr") String searchStr, @RequestParam("userId") Long userId) {
+	public List<String> getTags(@RequestParam("userId") Long userId) {
+	//public String getTags(@RequestParam("userId") Long userId) {
 		logger.info("recipe/gettags GET");
-		logger.info("searchStr=" + searchStr + "; userId=" + userId); 
+		logger.info("userId=" + userId); 
 		
-		List<String> tags = recipeService.getTags(searchStr, userId);
-		
+		List<String> tags = recipeService.getTags(userId);
 		return tags;
 	}
 

@@ -3,6 +3,7 @@
 <div class="spring-messages" style="display:none">
 	<p id="common.yes"/><spring:message code="common.yes"></spring:message>
 	<p id="common.no"/><spring:message code="common.no"></spring:message>
+	<p id="common.cancel"/><spring:message code="common.cancel"></spring:message>
 	<p id="common.table.search"/><spring:message code="common.table.search"></spring:message>
 	<p id="common.table.paginate.first"/><spring:message code="common.table.paginate.first"></spring:message>
 	<p id="common.table.paginate.last"/><spring:message code="common.table.paginate.last"></spring:message>
@@ -35,4 +36,12 @@
 	<p id="exception.JRException"/><spring:message code="exception.JRException"></spring:message>	
 	<p id="profile.photo"/><spring:message code="profile.photo"></spring:message>
 	<p id="common.size.max"/><spring:message code="common.size.max"></spring:message>
+	<p id="recipe.edit.cancel"/><spring:message code="recipe.edit.cancel"></spring:message>
+	<p id="recipe.submit.cancel"/><spring:message code="recipe.submit.cancel"></spring:message>
+	<p id="commentadmin.table.emptyTable"/><spring:message code="commentadmin.table.emptyTable"></spring:message>
+	<p id="commentadmin.table.info"/><spring:message code="commentadmin.table.info"></spring:message>
+	<p id="commentadmin.table.infoEmpty"/><spring:message code="commentadmin.table.infoEmpty"></spring:message>
+	<p id="commentadmin.table.infoFiltered"/><spring:message code="commentadmin.table.infoFiltered"></spring:message>
+	<p id="commentadmin.table.lengthMenu"/><spring:message code="commentadmin.table.lengthMenu"></spring:message>
+	<p id="commentadmin.table.zeroRecords"/><spring:message code="commentadmin.table.zeroRecords"></spring:message>
 </div>

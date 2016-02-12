@@ -38,20 +38,18 @@
 				<%@include file="optionalFields.jsp" %>
 
 				<div class="row spacer-vert-md">
-					<div class="col-sm-2 text-left">
-						<button class="btn btn-default" type="submit" id="back" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
-					</div>
-					<div class="col-sm-3">
-					</div>
-					<div class="col-sm-2 text-center">
+					<div class="col-sm-2 col-sm-push-5 text-center">
 						<button class="btn btn-primary" type="submit" id="review" name="_eventId_proceed"><spring:message code="common.review"></spring:message></button>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2 col-sm-pull-2 text-left">
+						<button class="btn btn-default" type="submit" id="back" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
-					<div class="col-sm-2 text-right">
-						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
+					<div class="col-sm-2 col-sm-push-6 text-right">
+						<button class="btn btn-default" id="fakeSubmitCancel"><spring:message code="common.cancel"></spring:message></button>
+						<button id="cancelSubmitBtn" type="submit" name="_eventId_cancel" style="display:none"></button>
 					</div>
 				</div>
+				<form:hidden id="userID" path="user.id"/>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>
 				<form:hidden id="instructSections" path="numInstructSections"/>
 				<form:hidden id="currInstructSect" path="currInstructSection"/>

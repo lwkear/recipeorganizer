@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.security.web.firewall.FirewalledRequest;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
 import org.springframework.webflow.context.servlet.ServletExternalContext;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -65,30 +67,38 @@ public class FileActionsImpl implements FileActions {
 		return this.recipeDir;
 	}
 	
+	public FileResult uploadFile(Recipe recipe, MultipartFile file) {
+		logger.debug("uploadFile with Multipart param");
+		if (file != null && !file.isEmpty()) {
+			logger.debug("success???");
+		}
+				
+		return FileResult.NO_FILE;
+	}
+	
 	public FileResult uploadFile(Recipe recipe, RequestContext requestContext) {
-	    
+		logger.debug("uploadFile");
+
 		ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
-	    MultipartHttpServletRequest multipartRequest = new StandardMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());
-	    MultipartFile file = multipartRequest.getFile("file");
-	    
+		SecurityContextHolderAwareRequestWrapper wrapper1 = (SecurityContextHolderAwareRequestWrapper)context.getNativeRequest();
+		HttpServletRequestWrapper wrapper2 = (HttpServletRequestWrapper)wrapper1.getRequest();
+		FirewalledRequest firewall = (FirewalledRequest)wrapper2.getRequest();
+		MultipartHttpServletRequest multipartRequest = (DefaultMultipartHttpServletRequest)firewall.getRequest();
+		MultipartFile file = multipartRequest.getFile("file");
+
 	    if (file == null)
 	    	return FileResult.NO_FILE;
 	    
-		if (file != null && !file.isEmpty()) {
-            try {
-            	/*String filePath = recipeDir + file.getOriginalFilename();
-            	logger.info("originalname = " + file.getOriginalFilename());
-            	logger.info("name = " + file.getName());
-            	logger.info("filePath = " + filePath);
-            	File dest = new File(filePath);
-            	file.transferTo(dest);
-                recipe.setPhotoName(file.getOriginalFilename());
-                logger.info("Successful upload");*/                
+		if (!file.isEmpty()) {
+	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
+	    	logger.info("originalname = " + file.getOriginalFilename());
+	    	logger.info("filePath = " + filePath);
 
-    	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
-    	    	logger.info("originalname = " + file.getOriginalFilename());
-    	    	logger.info("filePath = " + filePath);
-    	        	    	
+	    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
+	    	if (exists)
+	    		return FileResult.SUCCESS;
+			
+            try {
     	    	//if the file is not an image, ImageIO returns null
     	    	BufferedImage img = ImageIO.read(file.getInputStream());
     	    	if (img == null)
@@ -118,23 +128,92 @@ public class FileActionsImpl implements FileActions {
         }
 		
 		return FileResult.SUCCESS;
-	}
-
-	public FileResult uploadFile(FileType fileType, long id, MultipartFile file) {
 		
-	    /*try {
-	    	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + file.getOriginalFilename();
+		/*
+		//original code with Standard filter - it works except for UTF-8 issues
+		ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
+	    MultipartHttpServletRequest multipartRequest = new StandardMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());
+	    MultipartFile file = multipartRequest.getFile("file");
+
+	    if (file == null)
+	    	return FileResult.NO_FILE;
+	    
+		if (!file.isEmpty()) {
+	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
 	    	logger.info("originalname = " + file.getOriginalFilename());
 	    	logger.info("filePath = " + filePath);
-	        BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-	        stream.write(file.getBytes());
-	        stream.close();
-	        logger.info("Successful upload");
-	    } catch (IOException ex) {
-	    	logService.addException(ex);
-	    	return false;
-	    }*/
 
+	    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
+	    	if (exists)
+	    		return FileResult.SUCCESS;
+			
+            try {
+    	    	//if the file is not an image, ImageIO returns null
+    	    	BufferedImage img = ImageIO.read(file.getInputStream());
+    	    	if (img == null)
+    	    		return FileResult.NOT_IMAGE;
+    	    	
+    	    	String originalName = file.getOriginalFilename();
+    	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
+    	    	int size = nameParts.size();
+    	    	if (size <= 1)
+    	    		return FileResult.NO_EXTENSION;
+    	    	
+    	    	String ext = nameParts.get(size-1);
+    	    	logger.info("extension = " + ext);
+    	    	ext = ext.toLowerCase();
+    	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
+    	    		return FileResult.INVALID_TYPE;
+
+    	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+    	    	ImageIO.write(img, ext, stream);
+    	    	recipe.setPhotoName(file.getOriginalFilename());
+    	        logger.info("Successful upload");
+            
+            } catch (IOException ex) {
+            	logService.addException(ex);
+            	return FileResult.EXCEPTION_ERROR;
+            }
+        }
+		
+		return FileResult.SUCCESS;*/
+	}
+
+	public FileResult deleteFile(Recipe recipe) {
+		
+		String fileName = recipe.getPhotoName();
+		if (fileName == null || fileName.isEmpty())
+			return FileResult.SUCCESS;
+		
+    	boolean exists = fileExists(FileType.RECIPE, 0L, fileName);
+    	if (!exists)
+    		return FileResult.SUCCESS;
+		
+    	boolean result = deleteFile(FileType.RECIPE, 0L, fileName);
+		
+    	return (result ? FileResult.SUCCESS : FileResult.EXCEPTION_ERROR);
+	}
+
+	public FileResult renameFile(Recipe recipe) {
+			
+		String fileName = recipe.getPhotoName(); 
+		if (fileName == null || fileName.isEmpty())
+			return FileResult.SUCCESS;
+
+    	boolean exists = fileExists(FileType.RECIPE, 0L, fileName);
+    	if (!exists)
+    		return FileResult.SUCCESS;
+
+    	String oldName = "0." + fileName;
+		String newName = recipe.getId() + "." + fileName;
+		//errors are not fatal and will be logged by FileAction
+		boolean result = renameFile(FileType.RECIPE, oldName, newName);
+		
+		return (result ? FileResult.SUCCESS : FileResult.EXCEPTION_ERROR);
+	}
+	
+	public FileResult uploadFile(FileType fileType, long id, MultipartFile file) {
+		
 	    if (file == null)
 	    	return FileResult.NO_FILE;
 		
@@ -194,9 +273,10 @@ public class FileActionsImpl implements FileActions {
 
 		try {
 			String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + oldName;
+			String newFile = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + newName;
 			File srcFile = new File(file);
 			Path srcPath = srcFile.toPath();
-			Files.move(srcPath, srcPath.resolveSibling(newName));
+			Files.move(srcPath, srcPath.resolveSibling(newFile));
         } catch (IOException ex) {
         	logService.addException(ex);
         	return false;
@@ -226,7 +306,18 @@ public class FileActionsImpl implements FileActions {
 		File testfile = new File(file);
 		FileFilter filter = new WildcardFileFilter(file);
 		File files[] = testfile.listFiles(filter);
+		if (files == null || files.length == 0)
+			return null;
 		return (files.length > 0 ? files[0].getName() : "");
+	}
+
+	public boolean fileExists(FileType fileType, long id, String fileName) {
+
+		String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;
+		File testfile = new File(file);
+		if (!testfile.exists())
+			return false;
+		return true;
 	}
 	
 	public String getErrorMessage(FileResult fileResult, Locale locale) {

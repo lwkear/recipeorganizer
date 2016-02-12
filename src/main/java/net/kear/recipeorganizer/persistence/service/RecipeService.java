@@ -21,6 +21,7 @@ public interface RecipeService {
     public void deleteRecipe(Long id);
     public void approveRecipe(Long id);
     public Recipe getRecipe(Long id);
+    public Recipe loadRecipe(Long id);
     public Map<String, Object> getConstraintMap(String constraintName, String property);
     public void addFavorite(Favorites favorite);
     public void removeFavorite(Favorites favorite);
@@ -38,7 +39,7 @@ public interface RecipeService {
     public List<SearchResultsDto> recentRecipes(Long userId);
     public List<RecipeListDto> favoriteRecipes(Long userId);
     public Long getRecipeCount(Long userId);
-    public List<String> getTags(String searchStr, Long userId);
+    public List<String> getTags(Long userId);
     public boolean lookupName(String lookupName, Long userId);
     public void checkArraySizes(Recipe recipe);
     public void adjustInstructionList(Recipe recipe, RequestContext context);

@@ -32,7 +32,9 @@ $(function() {
 	//get categories and set the options
 	$.getJSON("/recipeorganizer/recipe/getCategories")
 		.done(function (data) {
+			console.log(data);
 			$.each(data, function (index, item) {
+				console.log(item);
 		    	$('#inputCategory').append(
 		        	$('<option>')
 		        		.val(item.name)
@@ -42,6 +44,8 @@ $(function() {
 			});
 			setCategory();
 	 	});
+	
+	//findFirstError();
 	
 	$(document)
 	.on('blur', '#recipeName', function(e)

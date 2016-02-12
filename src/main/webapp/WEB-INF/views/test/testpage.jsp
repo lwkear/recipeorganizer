@@ -10,15 +10,6 @@
 
 <body role="document">
 
-<script type="text/javascript">
-
-function viewtext() {
-	var text = $('#greeting').val();
-	alert(text);	
-}
-
-</script>
-
 <%@include file="../common/nav.jsp" %>
 	
 	<spring:bind path="webGreeting.greeting"><c:set var="greetingError">${status.errorMessage}</c:set></spring:bind>
@@ -44,9 +35,48 @@ function viewtext() {
         		</div>
 			</form:form>
 		</div>
+        <div class="col-sm-12">
+			<div class="row">
+				<div class="col-sm-5 <c:if test="${not empty tagsError}">has-error</c:if>">
+					<select class="form-control col-sm-5" id="inputTags" multiple>
+						<option value="">Enter a tag</option>
+						<option value="Ch">Christmas</option>
+						<option value="Th">Thanksgiving</option>
+						<option value="It">Italian</option>
+						<option value="Cn">Chinese</option>
+					</select>
+					<span class="text-danger">${tagsError}</span>
+				</div>
+			</div>
+		</div>		
 	</div>
 
 <%@include file="../common/footer.jsp" %>
 
 </body>
+
+<script type="text/javascript">
+
+function viewtext() {
+	var text = $('#inputTags option:selected').map(function () {
+				return $(this).text();}).get();
+	alert(text);	
+}
+
+$(function() {
+	$('#inputTags').selectize({
+		maxItems: 5,
+	    persist: false,
+	    diacritics: true,
+	    create: function(input) {
+	        return {
+	            value: input,
+	            text: input
+	        }
+	    }
+	});
+})
+
+</script>
+
 </html>

@@ -10,7 +10,7 @@ function deleteRecipe(id, name) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {recipeId : id}, postDeleteRecipe);
-	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});  
+	$('#messageDlg').modal({backdrop: 'static', keyboard: true, show: false});  
 	$("#messageDlg").modal('show');
 } 
 
@@ -50,7 +50,7 @@ function recipeDeleted(recipeId) {
 /*** remove favorite functions ***/
 /*********************************/
 
-//notify the admin in popup modal
+//notify the user in popup modal
 function removeFavorite(userId, recipeId, name) {
 	$("#messageTitle").text(name);
 	$("#messageMsg").text(messageMap.get('recipe.remove.favorite.areyousure'));
@@ -58,7 +58,7 @@ function removeFavorite(userId, recipeId, name) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {userId : userId, recipeId : recipeId}, postRemoveFavorite);
-	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false})
+	$('#messageDlg').modal({backdrop: 'static', keyboard: true, show: false});
 	$("#messageDlg").modal('show');
 } 
 

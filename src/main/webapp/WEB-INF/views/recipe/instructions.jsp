@@ -32,13 +32,8 @@
 						<small><spring:message code="common.requiredfield"></spring:message></small>
 					</div>
 				</div>
-				<div class="row spacer-vert-md">
-					<div class="col-sm-2 text-left">
-						<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
-					</div>
-					<div class="col-sm-3">
-					</div>
-					<div class="col-sm-2 text-center">
+				<div class="row spacer-vert-md" id="buttonDiv">
+					<div class="col-sm-2 col-sm-push-5 text-center">
 						<c:choose>
 							<c:when test="${recipe.numInstructSections > 1 && (recipe.currInstructSection < (recipe.numInstructSections - 1))}">
 								<c:set var="buttonName" value="Next Set"/>
@@ -47,12 +42,14 @@
 								<c:set var="buttonName"><spring:message code="recipe.optional.button"></spring:message></c:set>
 							</c:otherwise>
 						</c:choose>
-						<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed">${buttonName}</button>
+						<button class="btn btn-primary row-adjust" type="submit" id="proceedBtn" name="_eventId_proceed">${buttonName}</button>
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2 col-sm-pull-2 text-left">
+						<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
 					</div>
-					<div class="col-sm-2 text-right">
-						<button class="btn btn-default" type="submit" name="_eventId_cancel"><spring:message code="common.cancel"></spring:message></button>
+					<div class="col-sm-2 col-sm-push-6 text-right">
+						<button class="btn btn-default" id="fakeSubmitCancel"><spring:message code="common.cancel"></spring:message></button>
+						<button id="cancelSubmitBtn" type="submit" name="_eventId_cancel" style="display:none"></button>
 					</div>
 				</div>
 				<input type="hidden" name="_flowExecutionKey" value="${flowExecutionKey}"/>

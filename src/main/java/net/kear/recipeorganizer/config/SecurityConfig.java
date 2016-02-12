@@ -25,6 +25,7 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
@@ -42,6 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	DataSource dataSource;
+	@Autowired 
+	CharacterEncodingFilter encodingFilter;
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth, UserDetailsService userDetailsService) throws Exception {
@@ -131,13 +134,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        characterEncodingFilter.setForceEncoding(true);
+		//CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        //characterEncodingFilter.setEncoding("UTF-8");
+        //characterEncodingFilter.setForceEncoding(true);
 		
     	http
     	//.csrf().disable()
-    	.addFilterBefore(characterEncodingFilter, CsrfFilter.class)
+    	.addFilterBefore(encodingFilter, CsrfFilter.class)
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
@@ -147,7 +150,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
-    		.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
+    		.antMatchers("/recipe", "/recipe/**", "/recipe/listRecipes").hasAuthority("AUTHOR")
     		.antMatchers("/admin/**").hasAuthority("ADMIN")
     		.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem

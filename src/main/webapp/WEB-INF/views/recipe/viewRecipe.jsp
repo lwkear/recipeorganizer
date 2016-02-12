@@ -23,7 +23,7 @@
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
 				</c:if>
 				<h3>${recipe.name}
-					<button type="button" class="btn btn-link btn-sm" id="favLeft" style="margin-left:5px;font-size:20px;display:none"
+					<button type="button" class="btn btn-link btn-sm" id="favLeft" onclick="removeFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
 						<span class="glyphicon glyphicon-star"></span>
 					</button>
@@ -35,14 +35,15 @@
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
+					<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px;visibility:hidden"><span class="glyphicon glyphicon-paperclip"></span></button>
 					<span class="pull-right">
 						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px" 
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="email" style="margin-left:5px;font-size:20px"
-							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
-							<span class="glyphicon glyphicon-envelope"></span>
+						<button type="button" class="btn btn-link btn-sm" id="share" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.share"></spring:message>">
+							<span class="glyphicon glyphicon-share"></span>
 						</button>
 						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
@@ -68,10 +69,18 @@
 					<spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}
 				</h5>
 			</div>
+			<div class="<c:if test="${userId != recipe.user.id && recipe.copyrighted}">transparent</c:if>">		
 			
-			<%@include file="recipeContent.jsp" %>
+				<%@include file="recipeContent.jsp" %>
 			
-			<div class="page-header" style="margin-top:0;padding-bottom:0">
+			</div>
+			<div id="commentSection">
+			
+				<%@include file="comments.jsp" %>
+			
+			</div>
+			
+			<%-- <div class="page-header" style="margin-top:0;padding-bottom:0">
 				<h5>
 					<button type="button" class="btn btn-link btn-sm" onclick="toggleComments()"><spring:message code="recipe.comments"></spring:message>
 						<span class="badge" style="background-color:#337ab7">${commentCount}</span>
@@ -107,7 +116,7 @@
 						<p class="list-group-item-text">${comment.userComment}</p>
 					</div>
 				</c:forEach>
-			</div>
+			</div> --%>
 		</div>
 	</div>		
 	<div class="col-sm-12" style="display:none">
@@ -123,7 +132,7 @@
 <%@include file="../common/footer.jsp" %>
 
 <!-- enter made date dialog -->
-<div class="modal fade" id="madeDateDlg" role="dialog">
+<div class="modal" id="madeDateDlg" role="dialog">
 	<div class="modal-dialog modal-sm">
 	    <div class="modal-content">
 			<div class="modal-header">
@@ -179,7 +188,7 @@
 </div>
 
 <!-- add comment dialog -->
-<div class="modal fade" id="commentDlg" role="dialog">
+<div class="modal" id="commentDlg" role="dialog">
 	<div class="modal-dialog modal-sm">
 	    <div class="modal-content">
 			<div class="modal-header">

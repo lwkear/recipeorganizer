@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -337,7 +338,7 @@ public class DisplayController {
 		} catch (Exception ex) {
 			logService.addException(ex);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.addFavorite", null, "Duplicate name", locale);
+			msg = messages.getMessage("exception.addFavorite", null, "Add favorite error", locale);
 		}
 		
 		return msg;
@@ -359,7 +360,7 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.removeFavorite", null, "Duplicate name", locale);
+			msg = messages.getMessage("exception.removeFavorite", null, "Remove favorite error", locale);
 		}
 		
 		return msg;
@@ -419,8 +420,8 @@ public class DisplayController {
 	/*** RecipeComment handler ***/
 	/*****************************/
 	@RequestMapping(value = "/recipe/recipeComment", method = RequestMethod.POST)
-	@ResponseBody
-	public String addRecipeComment(@RequestBody RecipeComment recipeComment, HttpServletResponse response, Locale locale) {
+	//@ResponseBody
+	public String addRecipeComment(Model model, @RequestBody RecipeComment recipeComment, HttpServletResponse response, Locale locale) {
 		logger.info("recipe/addRecipeComment");
 		logger.info("userId=" + recipeComment.getUserId());
 		logger.info("recipeId=" + recipeComment.getRecipeId());
@@ -434,10 +435,28 @@ public class DisplayController {
 		} catch (DataAccessException ex) {
 			logService.addException(ex);			
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.recipeComment", null, "Duplicate name", locale);
+			msg = messages.getMessage("exception.recipeComment", null, "Comment error", locale);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("utf-8");
+			return msg;
 		}
+
+		long userId = recipeComment.getUserId();
+		long recipeId = recipeComment.getRecipeId();
+		long commentCount = commentService.getCommentCount(recipeId);
+		List<CommentDto> commentList = commentService.listComments(recipeId);
+	
+		Recipe recipe = new Recipe();
+		recipe.setId(recipeId);
 		
-		return msg;
+		response.setContentType("text/html");
+		response.setCharacterEncoding("utf-8");
+		model.addAttribute("commentCount", commentCount);
+		model.addAttribute("commentList", commentList);
+		model.addAttribute("viewerId", userId);
+		model.addAttribute("recipe", recipe);
+		
+		return "recipe/comments";
 	}
 
 	@RequestMapping(value = "/recipe/flagComment", method = RequestMethod.POST, produces="text/javascript")

@@ -28,19 +28,19 @@ public class SourceRepositoryImpl implements SourceRepository {
     @SuppressWarnings("unchecked")
     public List<String> getSources(String searchStr, String type) {
     	String field = "";
-    	if (type.equals("Cookbook"))
+    	if (type.equals(Source.TYPE_COOKBOOK))
     		field = "cookbook";
     	else
-    	if (type.equals("Magazine"))
+    	if (type.equals(Source.TYPE_MAGAZINE))
     		field = "magazine";
     	else
-    	if (type.equals("Newspaper"))
+    	if (type.equals(Source.TYPE_NEWSPAPER))
     		field = "newspaper";
     	else
-    	if (type.equals("Person"))
+    	if (type.equals(Source.TYPE_PERSON))
     		field = "person";
     	else
-    	if (type.equals("Website"))
+    	if (type.equals(Source.TYPE_WEBSITE))
     		field = "websiteUrl";
     	else
     		return null;

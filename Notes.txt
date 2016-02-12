@@ -1084,3 +1084,104 @@ NullPointerException
 			logger.debug("found: " + str);
 		}
 	
+	
+*********************************
+*** multipart file stuff ********
+	
+	
+			//ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
+		//MultipartHttpServletRequest multipartRequest = new StandardMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());		//multipartFiles appears to be initialized
+		//MultipartHttpServletRequest multipartRequest = new DefaultMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());
+		//MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)((HttpServletRequest)context.getNativeRequest());	//cannot cast
+		//MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)context.getNativeRequest();	//cannot cast
+		//Map file = multipartRequest.getFileMap();
+		//HttpServletRequest request = (HttpServletRequest)context.getNativeRequest();
+		
+		/*SecurityContextHolderAwareRequestWrapper wrapper1 = (SecurityContextHolderAwareRequestWrapper)context.getNativeRequest();
+		HttpServletRequestWrapper wrapper2 = (HttpServletRequestWrapper)wrapper1.getRequest();
+		FirewalledRequest firewall = (FirewalledRequest)wrapper2.getRequest();
+		MultipartHttpServletRequest multipartRequest = (DefaultMultipartHttpServletRequest)firewall.getRequest();
+		MultipartFile file = multipartRequest.getFile("photofile");	//null
+		Map<String, List<MultipartFile>> fileMap = multipartRequest.getMultiFileMap();
+		Enumeration<String> names = multipartRequest.getAttributeNames();
+		String type = multipartRequest.getContentType();
+		int len = multipartRequest.getContentLength();
+		ServletInputStream stream = null;
+		try {
+			stream = multipartRequest.getInputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Map<String,String[]> map = multipartRequest.getParameterMap();
+		Collection<Part> parts = null;
+		try {
+			parts = multipartRequest.getParts();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		
+		//MultipartHttpServletRequest multi = firewall.get
+		
+		//MultipartHttpServletRequest multipartRequest = resolver.resolveMultipart(request);		
+		
+		//String encode = request.getCharacterEncoding();			//utf-8
+		//Enumeration<String> names = request.getHeaderNames();	//request hdr stuff; does include the multipart/form-data and length
+		//Map<String,String[]> map = request.getParameterMap();	//map of the form fields, except for the file
+		
+		//DefaultMultipartHttpServletRequest defaultRequest = new DefaultMultipartHttpServletRequest(request);
+		//map = defaultRequest.getParameterMap();		//boom: Multipart request not initialized
+		//names = defaultRequest.getAttributeNames();
+		
+		//HttpServletRequestWrapper wrapper = new HttpServletRequestWrapper(request);
+		//names = wrapper.getAttributeNames();
+		//map = wrapper.getParameterMap();
+		
+		//DefaultMultipartHttpServletRequest defaultRequest = new DefaultMultipartHttpServletRequest(wrapper); //multipartFiles is null
+				
+		//return FileResult.NO_FILE;
+
+		//MultipartFile file = requestContext.getRequestParameters().getRequiredMultipartFile("file"); //attribute not present
+		//HttpServletRequest request = (HttpServletRequest)context.getNativeRequest();
+		//AbstractMultipartHttpServletRequest abstractRequest = (AbstractMultipartHttpServletRequest)(context.getNativeRequest());
+		//DefaultMultipartHttpServletRequest defaultRequest = (DefaultMultipartHttpServletRequest)(context.getNativeRequest());	//can't cast
+		//MultipartHttpServletRequest multipartRequest = new DefaultMultipartHttpServletRequest((HttpServletRequest)context.getNativeRequest());
+		
+		//Default multipartRequest
+		//SecurityContextHolderAwareRequestWrapper[ org.springframework.security.web.context.HttpSessionSecurityContextRepository$Servlet3SaveToSessionRequestWrapper@1704e4ea]
+		//org.springframework.security.web.context.HttpSessionSecurityContextRepository $Servlet3SaveToSessionRequestWrapper@1704e4ea
+		//FirewalledRequest[ org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest@2c00a2de]
+		//org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest@2c00a2de
+		
+		//Standard multipartRequest
+		//org.springframework.web.multipart.support.StandardMultipartHttpServletRequest@4a848958
+		//SecurityContextHolderAwareRequestWrapper[ org.springframework.security.web.context.HttpSessionSecurityContextRepository$Servlet3SaveToSessionRequestWrapper@3e6b3cdc]
+		//org.springframework.security.web.context.HttpSessionSecurityContextRepository$Servlet3SaveToSessionRequestWrapper@3e6b3cdc
+		//FirewalledRequest[ org.springframework.web.multipart.support.StandardMultipartHttpServletRequest@12536297]
+		//org.springframework.web.multipart.support.StandardMultipartHttpServletRequest@12536297
+		
+		/*Collection<Part> parts = null;	//is not null, but is empty
+		try {
+			parts = request.getParts();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (parts != null) {
+			for (Part p : parts) {
+				String type = p.getContentType();
+				String name = p.getName();
+				Class<?> clazz = p.getClass();
+			}
+				
+		}*/
+	
