@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <Configuration monitorInterval="30"> -->
+<!-- <Configuration status="debug"> -->
+<Configuration>
+	<Properties>
+		<Property name="stdfilename">${bundle:filedir:file.directory.logs}standard.log</Property>
+		<Property name="errfilename">${bundle:filedir:file.directory.logs}error.log</Property>
+	</Properties>
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5p: %c - %m%n"/>			
+		</Console>
+		<RollingFile name="stdLog" fileName="${stdfilename}" ignoreExceptions="false" filePattern="${stdfilename}.%i.log">
+			<PatternLayout pattern="%d{DEFAULT} %-5p: %c - %m%n"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10000KB"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="errLog" fileName="${errfilename}" ignoreExceptions="false" filePattern="${errfilename}.%i.log">
+			<PatternLayout pattern="%d{DEFAULT} %-5p: %c - %m%n"/>
+			<ThresholdFilter level="error" onMatch="accept" onMismatch="deny"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10000KB"/>
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="warn">
+			<AppenderRef ref="console"/>
+			<AppenderRef ref="stdLog"/>
+			<AppenderRef ref="errLog"/>
+		</Root>
+		<Logger name="net.kear.recipeorganizer" level="info"/>
+		<Logger name="org.springframework" level="warn"/>
+		<logger name="org.springframework.web" level="warn"/>
+		<Logger name="org.springframework.webflow" level="warn"/>
+		<logger name="org.springframework.security" level="warn"/>
+		<logger name="org.hibernate" level="warn"/>
+		<logger name="org.hibernate.type" level="warn"/>
+		<logger name="net.sf.jasperreports.engine" level="warn"/>
+		<logger name="org.apache.logging" level="warn"/>		
+		<logger name="java.util" level="warn"/>
+	</Loggers>
+</Configuration>
+
+<!--	use within loggers for separate appender levels 
+<AppenderRef ref="stdLog" level="debug"/>
+<AppenderRef ref="console" level="debug"/>
+-->
+
+<!-- 
+logger levels
+=============
+all
+trace
+debug
+info
+warn
+error
+fatal
+off
+ -->

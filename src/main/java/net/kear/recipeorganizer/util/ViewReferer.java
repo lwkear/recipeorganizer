@@ -37,8 +37,8 @@ public class ViewReferer {
 		else
 			returnLabel = "";
 
-		logger.info("referLabel: " + returnLabel);
-		logger.info("referUrl: " + referer);
+		logger.debug("referLabel: " + returnLabel);
+		logger.debug("referUrl: " + referer);
 
 		request.getSession().setAttribute("returnLabel", returnLabel);
 		request.getSession().setAttribute("returnUrl", referer);

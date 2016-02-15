@@ -22,7 +22,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,12 +82,12 @@ public class RecipeController {
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
-	@RequestMapping(value = "recipe/editRecipe/{id}", method = RequestMethod.GET)
-	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long id,
+	@RequestMapping(value = "recipe/editRecipe", method = RequestMethod.GET)
+	public String editRecipe(Model model, @RequestHeader("referer") String refer, @RequestParam("recipeId") Long recipeId,
 			HttpServletRequest request) {
-		logger.info("recipe/editRecipe GET");
+		logger.info("recipe/editRecipe GET: recipeId=" + recipeId);
 
-		Recipe recipe = recipeService.getRecipe(id);
+		Recipe recipe = recipeService.getRecipe(recipeId);
 		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
 		model.addAttribute("sizeMap", sizeMap);
 
@@ -112,10 +111,10 @@ public class RecipeController {
 	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
 	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource, Locale locale,
 			@RequestParam(value = "file", required = false) MultipartFile file) {		
-		logger.info("recipe/editRecipe POST save");
+		logger.info("recipe/editRecipe POST: recipeId=" + recipe.getId());
 	
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "recipe/editRecipe";
 		}
 
@@ -155,9 +154,9 @@ public class RecipeController {
 		return "redirect:/recipe/done/" + recipe.getId();
 	}
 
-	@RequestMapping(value = "recipe/done/{recipeId}", method = RequestMethod.GET)
-	public String getDone(Model model, @PathVariable Long recipeId) throws RecipeNotFound {
-		logger.info("getDone");
+	@RequestMapping(value = "recipe/done", method = RequestMethod.GET)
+	public String getDone(Model model, @RequestParam("recipeId") Long recipeId) throws RecipeNotFound {
+		logger.info("recipe/done GET: recipeId=" + recipeId);
 	
 		Recipe recipe;
 		try {
@@ -175,11 +174,10 @@ public class RecipeController {
 	/*****************************/
 	/*** Delete recipe handler ***/
 	/*****************************/
-	@RequestMapping(value="recipe/deleteRecipe/{recipeId}")
+	@RequestMapping(value = "recipe/deleteRecipe/{recipeId}", method = RequestMethod.POST)
 	@ResponseBody
 	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) {
-		logger.info("recipe/deleteRecipe");
-		logger.info("recipeId=" + recipeId);
+		logger.info("recipe/deleteRecipe GET: recipeId=" + recipeId);
 		
 		//set default response
 		String msg = "{}";
@@ -202,26 +200,23 @@ public class RecipeController {
 	/*** Support functions  ***/
 	/**************************/
 	//JSON request for a list of categories
-	@RequestMapping("recipe/getCategories")
+	@RequestMapping(value = "recipe/getCategories", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Category> getCategories() {
 		logger.info("recipe/categories GET");
 		
 		List<Category> cats = categoryService.listCategory();
-		logger.info(cats.toString());
+		logger.debug(cats.toString());
 		return cats;
 
 		//return categoryService.listCategory();
 	}
 
 	//AJAX post a new ingredient
-	@RequestMapping(value="recipe/addIngredient", method = RequestMethod.POST)
+	@RequestMapping(value = "recipe/addIngredient", method = RequestMethod.POST)
 	@ResponseBody
 	public Ingredient addIngredient(@RequestBody @Valid Ingredient ingredient) {
-		logger.info("recipe/addingredient POST");
-		
-		logger.info("Id = " + ingredient.getId());
-		logger.info("Description = " + ingredient.getName());
+		logger.info("recipe/addingredient POST: name=" + ingredient.getName());
 		
 		if (ingredient.getName() == null)
 			return ingredient;
@@ -229,18 +224,18 @@ public class RecipeController {
 		//add the ingredient to the DB
 		ingredientService.addIngredient(ingredient);
 		
-		logger.info("Id = " + ingredient.getId());
-		logger.info("Description = " + ingredient.getName());
+		logger.debug("Id = " + ingredient.getId());
+		logger.debug("Description = " + ingredient.getName());
 		
 		return ingredient;
 	}
 	
 	//AJAX/JSON request for a typeahead list of ingredients
-	@RequestMapping("recipe/getIngredients")
+	@RequestMapping(value = "recipe/getIngredients", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Ingredient> getIngredients(@RequestParam("searchStr") String searchStr) {
 		logger.info("recipe/getingredients GET");
-		logger.info("searchStr = " + searchStr); 
+		logger.debug("searchStr = " + searchStr); 
 		
 		List<Ingredient> ingreds = ingredientService.getIngredients(searchStr);
 		
@@ -248,11 +243,11 @@ public class RecipeController {
 	}
 
 	//AJAX/JSON request for a typeahead list of ingredient qualifiers
-	@RequestMapping("recipe/getQualifiers")
+	@RequestMapping(value = "recipe/getQualifiers", method = RequestMethod.GET)
 	@ResponseBody
 	public List<String> getQualifiers(@RequestParam("searchStr") String searchStr) {
 		logger.info("recipe/getqualifiers GET");
-		logger.info("searchStr = " + searchStr); 
+		logger.debug("searchStr = " + searchStr); 
 		
 		List<String> quals = recipeIngredientService.getQualifiers(searchStr);
 		
@@ -260,11 +255,11 @@ public class RecipeController {
 	}
 
 	//AJAX/JSON request for a typeahead list of sources
-	@RequestMapping("recipe/getSources")
+	@RequestMapping(value = "recipe/getSources", method = RequestMethod.GET)
 	@ResponseBody
 	public List<String> getSources(@RequestParam("searchStr") String searchStr, @RequestParam("type") String type) {
 		logger.info("recipe/getsources GET");
-		logger.info("searchStr=" + searchStr + "; type=" + type); 
+		logger.debug("searchStr=" + searchStr + "; type=" + type); 
 		
 		List<String> sources = sourceService.getSources(searchStr, type);
 		
@@ -272,24 +267,22 @@ public class RecipeController {
 	}
 	
 	//AJAX/JSON request for a typeahead list of tags
-	@RequestMapping("recipe/getTags")
+	@RequestMapping(value = "recipe/getTags", method = RequestMethod.GET)
 	@ResponseBody
 	public List<String> getTags(@RequestParam("userId") Long userId) {
-	//public String getTags(@RequestParam("userId") Long userId) {
 		logger.info("recipe/gettags GET");
-		logger.info("userId=" + userId); 
+		logger.debug("userId=" + userId); 
 		
 		List<String> tags = recipeService.getTags(userId);
 		return tags;
 	}
 
 	//AJAX/JSON request for checking name duplication
-	@RequestMapping(value="recipe/lookupRecipeName", produces="text/javascript")
+	@RequestMapping(value = "recipe/lookupRecipeName", method = RequestMethod.GET, produces="text/javascript")
 	@ResponseBody 
 	public String lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response) {
-		
-		logger.info("recipe/lookupRecipeName");
-		logger.info("recipeName=" + lookupName + "; userId=" + userId);
+		logger.info("recipe/lookupRecipeName GET: name=" + lookupName);
+		logger.debug("recipeName=" + lookupName + "; userId=" + userId);
 		
 		//set default response, incl. empty JSON msg
 		String msg = "{}";
@@ -298,7 +291,7 @@ public class RecipeController {
 		//add the ingredient to the DB
 		boolean result = recipeService.lookupName(lookupName, userId);
 		
-		logger.info("lookupName result=" + result);
+		logger.debug("lookupName result=" + result);
 		
 		//name was found
 		if (result) {
@@ -310,12 +303,11 @@ public class RecipeController {
 		return msg;
 	}
 
-	@RequestMapping(value="recipe/getRecipeCount")
+	@RequestMapping(value = "recipe/getRecipeCount", method = RequestMethod.GET)
 	@ResponseBody 
 	public Long getRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) {
-		
-		logger.info("recipe/getRecipeCount");
-		logger.info("userId=" + userId);
+		logger.info("recipe/getRecipeCount GET: user=" + userId);
+		logger.debug("userId=" + userId);
 		
 		//set default response
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -323,7 +315,7 @@ public class RecipeController {
 		//get the count for the user
 		Long count = recipeService.getRecipeCount(userId);
 		
-		logger.info("count result=" + count);
+		logger.debug("count result=" + count);
 		
 		return count;
 	}
@@ -332,7 +324,7 @@ public class RecipeController {
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public String handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException ex) {
-		logger.info("MethodArgumentNotValidException exception!");
+		logger.debug("MethodArgumentNotValidException exception");
 
 		BindingResult result = ex.getBindingResult();
 		List<FieldError> fieldErrors = result.getFieldErrors();
@@ -349,8 +341,8 @@ public class RecipeController {
 			errorMsg = messages.getMessage(errorCode, null, defaultMsg, locale);
 		}
 
-		logger.info("errorCode: " + errorCode);
-		logger.info("errorMsg: " + errorMsg);
+		logger.debug("errorCode: " + errorCode);
+		logger.debug("errorMsg: " + errorMsg);
 		
 		return errorMsg;
 	}

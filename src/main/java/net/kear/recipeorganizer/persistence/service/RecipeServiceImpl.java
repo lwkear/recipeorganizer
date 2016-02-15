@@ -24,7 +24,6 @@ import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileType;
 import net.kear.recipeorganizer.util.SolrUtil;
 
 import org.apache.commons.lang.math.Fraction;
@@ -260,21 +259,21 @@ public class RecipeServiceImpl implements RecipeService {
     public void checkArraySizes(Recipe recipe) {
     	int sections = recipe.getNumInstructSections();
     	int size = recipe.getInstructSections().size();
-    	logger.info("numInstructSections=" + sections);
-    	logger.info("instructArraySize=" + size); 
+    	logger.debug("numInstructSections=" + sections);
+    	logger.debug("instructArraySize=" + size); 
     	if (size > sections) {
     		for (int ndx=size;ndx>sections;ndx--) {
-    			logger.info("remove section " + (ndx-1));
+    			logger.debug("remove section " + (ndx-1));
     			recipe.getInstructSections().remove(ndx-1);
 			}
     	}
     	
     	sections = recipe.getNumIngredSections();
     	size = recipe.getIngredSections().size();
-    	logger.info("numIngredientSections=" + sections);
-    	logger.info("ingredArraySize=" + size);
+    	logger.debug("numIngredientSections=" + sections);
+    	logger.debug("ingredArraySize=" + size);
     	if (size > sections) {
-    		logger.info("need to adjust size");
+    		logger.debug("need to adjust size");
     		for (int ndx=size;ndx>sections;ndx--) {
     			recipe.getIngredSections().remove(ndx-1);
 			}    		
@@ -282,7 +281,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
     
     public void adjustInstructionList(Recipe recipe, RequestContext context) {
-    	logger.info("adjustInstructionList");
+    	logger.debug("adjustInstructionList");
   	
     	String key = null;
     	String value = null;
@@ -303,7 +302,7 @@ public class RecipeServiceImpl implements RecipeService {
     	for (Entry<String, Object> entry : entries) {
     		key = entry.getKey();
     		value = requestParameters.get(key);
-    		logger.info("key/value= " + key + "/" + value);
+    		logger.debug("key/value= " + key + "/" + value);
     		
     		if (key.contains("currInstructSection"))
 				sectNdx = Integer.parseInt(value);
@@ -350,7 +349,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
 	public void adjustRecipeIngredientList(Recipe recipe, RequestContext context) {
-		logger.info("adjustRecipeIngredientList");
+		logger.debug("adjustRecipeIngredientList");
 
     	String key = null;
     	String value = null;
@@ -373,7 +372,7 @@ public class RecipeServiceImpl implements RecipeService {
 		for (Entry<String, Object> entry : entries) {
 			key = entry.getKey();
 			value = requestParameters.get(key);
-			logger.info("key/value= " + key + "/" + value);
+			logger.debug("key/value= " + key + "/" + value);
 
     		if (key.contains("currIngredSection"))
 				sectNdx = Integer.parseInt(value);

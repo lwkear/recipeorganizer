@@ -52,7 +52,7 @@ public class ConstraintMap {
 
 		Set<Entry<String, Object>> entries = constraintMap.entrySet();
 		for (Entry<String, Object> entry : entries)
-			logger.info("key/value= " + entry.getKey() + "/" + entry.getValue());
+			logger.debug("key/value= " + entry.getKey() + "/" + entry.getValue());
 		
 		return constraintMap;
 	}
@@ -91,7 +91,7 @@ public class ConstraintMap {
 		
 		Set<Entry<String, Object>> entries = constraintMap.entrySet();
 		for (Entry<String, Object> entry : entries)
-			logger.info("key/value= " + entry.getKey() + "/" + entry.getValue());
+			logger.debug("key/value= " + entry.getKey() + "/" + entry.getValue());
 		
 		return constraintMap;
 	}

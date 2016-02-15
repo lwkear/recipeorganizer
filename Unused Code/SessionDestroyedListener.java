@@ -39,11 +39,11 @@ public class SessionDestroyedListener implements ApplicationListener<HttpSession
 		String sID = "Session ID: " + sessID;
 		String sPrincipal = "Session principal: " + principal;
 		
-		logger.info("sessionDestroyedListener: " + sCreate);
-		logger.info("sessionDestroyedListener: " + sLast);
-		logger.info("sessionDestroyedListener: " + sInactive); 
-		logger.info("sessionDestroyedListener: " + sID);
-		logger.info("sessionDestroyedListener: " + sPrincipal);
+		logger.debug("sessionDestroyedListener: " + sCreate);
+		logger.debug("sessionDestroyedListener: " + sLast);
+		logger.debug("sessionDestroyedListener: " + sInactive); 
+		logger.debug("sessionDestroyedListener: " + sID);
+		logger.debug("sessionDestroyedListener: " + sPrincipal);
 
 		logger.debug("Checking SecurityContext...");
 		SecurityContext context = SecurityContextHolder.getContext();

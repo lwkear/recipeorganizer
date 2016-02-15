@@ -2,8 +2,6 @@ package net.kear.recipeorganizer.config;
 
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,14 +17,11 @@ import org.springframework.webflow.security.SecurityFlowExecutionListener;
 @Configuration
 public class WebFlowConfig extends AbstractFlowConfiguration {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
 	@Autowired
 	private WebMvcConfig webMvcConfig;
 	
 	@Bean
 	public FlowExecutor flowExecutor() {
-		logger.debug("flowExecutor");
 		return getFlowExecutorBuilder(flowRegistry())
 				.addFlowExecutionListener(new SecurityFlowExecutionListener(), "*")
 				.build();
@@ -34,7 +29,6 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 
 	@Bean
 	public FlowDefinitionRegistry flowRegistry() {
-		logger.debug("flowRegistry");
 		return getFlowDefinitionRegistryBuilder(flowBuilderServices())
 				.setBasePath("/WEB-INF/views")
 				.addFlowLocationPattern("/recipe/*-flow.xml")
@@ -43,7 +37,6 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 	
 	@Bean
 	public FlowBuilderServices flowBuilderServices() {
-		logger.debug("flowBuilderServices");
 		return getFlowBuilderServicesBuilder()
 				.setViewFactoryCreator(mvcViewFactoryCreator())
 				.setValidator(validator())
@@ -53,7 +46,6 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 
 	@Bean
 	public MvcViewFactoryCreator mvcViewFactoryCreator() {
-		logger.debug("mvcViewFactoryCreator");
 		MvcViewFactoryCreator factoryCreator = new MvcViewFactoryCreator();
 		factoryCreator.setViewResolvers(Arrays.<ViewResolver>asList(webMvcConfig.viewResolver()));
 		factoryCreator.setUseSpringBeanBinding(true);
@@ -62,7 +54,6 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 
 	@Bean
 	public LocalValidatorFactoryBean validator() {
-		logger.debug("validator");
 		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 		validator.setValidationMessageSource(webMvcConfig.messageSource());
 		return validator;

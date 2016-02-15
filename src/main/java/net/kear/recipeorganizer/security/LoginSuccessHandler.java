@@ -31,6 +31,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+		logger.info("onAuthenticationSuccess: name=" + authentication.getName());
 		
 		authCookie.setCookie(request, response, authentication.getName());
 
@@ -39,7 +40,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		userService.updateUser(user);
 		
 		String uri = request.getRequestURI();
-		logger.info("AuthenticationSuccess uri: " + uri);
+		logger.debug("AuthenticationSuccess uri: " + uri);
 		
 		super.onAuthenticationSuccess(request, response, authentication);
 	}

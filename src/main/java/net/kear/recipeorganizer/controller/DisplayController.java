@@ -23,7 +23,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -93,9 +92,9 @@ public class DisplayController {
 	/****************************/
 	/*** List recipes handler ***/
 	/****************************/
-	@RequestMapping("recipe/listRecipes")
+	@RequestMapping(value = "recipe/listRecipes", method = RequestMethod.GET)
 	public String listRecipes(ModelMap model, Locale locale) {
-		logger.info("recipe/listRecipes");
+		logger.info("recipe/listRecipes GET");
 	
 		String title = messages.getMessage("menu.submittedrecipes", null, "Submitted Recipes", locale);
 		
@@ -108,9 +107,9 @@ public class DisplayController {
 		return "recipe/listRecipes";
 	}
 
-	@RequestMapping("recipe/favorites")
+	@RequestMapping(value = "recipe/favorites", method = RequestMethod.GET)
 	public String favoriteRecipeS(ModelMap model, Locale locale) {
-		logger.info("recipe/favoriteRecipes");
+		logger.info("recipe/favoriteRecipes GET");
 		
 		String title = messages.getMessage("menu.favorites", null, "Favorites", locale);
 
@@ -127,10 +126,10 @@ public class DisplayController {
 	/***************************/
 	/*** View recipe handler ***/
 	/***************************/
-	@RequestMapping("recipe/viewRecipe/{recipeId}")
-	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
+	@RequestMapping(value = "recipe/viewRecipe", method = RequestMethod.GET)
+	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @RequestParam("recipeId") Long recipeId, 
 			HttpServletResponse response, HttpServletRequest request, Locale locale) throws RecipeNotFound {
-		logger.info("recipe/viewRecipe GET");
+		logger.info("recipe/viewRecipe GET: recipeId=" + recipeId);
 
 		User user = (User)userInfo.getUserDetails();
 		Recipe recipe = null;
@@ -206,16 +205,16 @@ public class DisplayController {
 	
 	@RequestMapping(value = "recipe/photo", method = RequestMethod.GET)
 	public void getPhoto(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
-		logger.info("photo GET");
+		logger.info("recipe/photo GET: fileName=" + fileName);
 
 		if (fileName != null && !fileName.isEmpty())
 			//errors are not fatal and will be logged by FileAction
 			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
 	
-	@RequestMapping(value = "/report/getHtmlRpt/{id}", method = RequestMethod.GET)
-	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
-		logger.info("report/getHtmlRpt");
+	@RequestMapping(value = "/report/getHtmlRpt", method = RequestMethod.GET)
+	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @RequestParam("recipeId") Long recipeId) {
+		logger.info("recipe/getHtmlRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -226,7 +225,7 @@ public class DisplayController {
     	File reportsDir = new File(dirPath);
 
 		List<Recipe> list = new ArrayList<Recipe>();
-		Recipe recipe = recipeService.getRecipe(id);
+		Recipe recipe = recipeService.getRecipe(recipeId);
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);
     	
@@ -267,8 +266,8 @@ public class DisplayController {
 	}
 
 	@RequestMapping(value = "/report/getPdfRpt/{id}", method = RequestMethod.GET)
-	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) {
-		logger.info("report/getHtmlRpt");
+	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @RequestParam("recipeId") Long recipeId) {
+		logger.info("recipe/getPdfRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -279,7 +278,7 @@ public class DisplayController {
     	File reportsDir = new File(dirPath);
 
 		List<Recipe> list = new ArrayList<Recipe>();
-		Recipe recipe = recipeService.getRecipe(id);
+		Recipe recipe = recipeService.getRecipe(recipeId);
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);
     	
@@ -325,9 +324,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/addFavorite", method = RequestMethod.POST)
 	@ResponseBody
 	public String addFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/addFavorite");
-		logger.info("userId=" + favorite.getId().getUserId());
-		logger.info("recipeId=" + favorite.getId().getRecipeId());
+		logger.info("recipe/addFavorite POST: user/recipe=" + favorite.getId().getUserId() + "/" + favorite.getId().getRecipeId());
 		
 		//set default response
 		String msg = "{}";
@@ -347,9 +344,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/removeFavorite", method = RequestMethod.POST)
 	@ResponseBody
 	public String removeFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/removeFavorite");
-		logger.info("userId=" + favorite.getId().getUserId());
-		logger.info("recipeId=" + favorite.getId().getRecipeId());
+		logger.info("recipe/removeFavorite POST: user/recipe=" + favorite.getId().getUserId() + "/" + favorite.getId().getRecipeId());
 		
 		//set default response
 		String msg = "{}";
@@ -372,9 +367,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/recipeMade", method = RequestMethod.POST)
 	@ResponseBody
 	public String updateRecipeMade(@RequestBody RecipeMade recipeMade, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/updateRecipeMade");
-		logger.info("userId=" + recipeMade.getId().getUserId());
-		logger.info("recipeId=" + recipeMade.getId().getRecipeId());
+		logger.info("recipe/recipeMade POST: user/recipe=" + recipeMade.getId().getUserId() + "/" + recipeMade.getId().getRecipeId());
 		
 		//set default response
 		String msg = "{}";
@@ -397,9 +390,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
 	@ResponseBody
 	public String updateRecipeNote(@RequestBody RecipeNote recipeNote, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/updateRecipeNote");
-		logger.info("userId=" + recipeNote.getId().getUserId());
-		logger.info("recipeId=" + recipeNote.getId().getRecipeId());
+		logger.info("recipe/recipeNote POST: user/recipe=" + recipeNote.getId().getUserId() + "/" + recipeNote.getId().getRecipeId());
 		
 		//set default response
 		String msg = "{}";
@@ -422,9 +413,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/recipeComment", method = RequestMethod.POST)
 	//@ResponseBody
 	public String addRecipeComment(Model model, @RequestBody RecipeComment recipeComment, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/addRecipeComment");
-		logger.info("userId=" + recipeComment.getUserId());
-		logger.info("recipeId=" + recipeComment.getRecipeId());
+		logger.info("recipe/recipeComment POST: user/recipe=" + recipeComment.getUserId() + "/" + recipeComment.getRecipeId());
 		
 		//set default response
 		String msg = "{}";
@@ -462,8 +451,7 @@ public class DisplayController {
 	@RequestMapping(value = "/recipe/flagComment", method = RequestMethod.POST, produces="text/javascript")
 	@ResponseBody
 	public String flagComment(@RequestParam("id") Long id, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/flagComment");
-		logger.info("id=" + id);
+		logger.info("recipe/flagComment POST: id=" + id);
 		
 		//set default response
 		String msg = "{}";

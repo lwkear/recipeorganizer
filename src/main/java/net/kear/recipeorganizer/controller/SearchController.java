@@ -43,8 +43,7 @@ public class SearchController {
 	
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
 	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir) throws SolrServerException, IOException {
-		logger.info("submitSearch");
-		logger.info("searchTerm: " + searchTerm);
+		logger.info("submitSearch POST: searchTerm=" + searchTerm);
 		
 		ArrayList<SearchResultsDto> resultsList = solrUtil.searchRecipes(searchTerm);
 
@@ -70,21 +69,21 @@ public class SearchController {
 
 	@RequestMapping(value = "/searchResults", method = RequestMethod.GET)
 	public String getSearchResults(Model model) throws SolrServerException, IOException {
-		logger.info("getSearchResults");
+		logger.info("searchResults GET");
 		
 		HashMap<String, Object> modelMap = (HashMap<String, Object>) model.asMap();
 		int num = modelMap.size();
-		logger.info("modelMap size: " + num);
+		logger.debug("modelMap size: " + num);
 		boolean term = modelMap.containsKey("searchTerm");
 		boolean list = modelMap.containsKey("resultList");
 		boolean found = modelMap.containsKey("numFound");
-		logger.info("modelMap contains serchTerm: " + term);
-		logger.info("modelMap contains resultList: " + list);
-		logger.info("modelMap contains found: " + found);
+		logger.debug("modelMap contains serchTerm: " + term);
+		logger.debug("modelMap contains resultList: " + list);
+		logger.debug("modelMap contains found: " + found);
 
 		Object val = modelMap.get("searchTerm");
 		String searchTerm = (String)val;
-		logger.info("modelMap searchTerm: " + searchTerm);
+		logger.debug("modelMap searchTerm: " + searchTerm);
 		
 		List<SearchResultsDto> resultsList = null;
 		

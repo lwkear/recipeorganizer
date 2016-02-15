@@ -77,7 +77,7 @@ public class FileActionsImpl implements FileActions {
 	}
 	
 	public FileResult uploadFile(Recipe recipe, RequestContext requestContext) {
-		logger.debug("uploadFile");
+		logger.info("uploadFile: recipeId=" + recipe.getId());
 
 		ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
 		SecurityContextHolderAwareRequestWrapper wrapper1 = (SecurityContextHolderAwareRequestWrapper)context.getNativeRequest();
@@ -91,8 +91,8 @@ public class FileActionsImpl implements FileActions {
 	    
 		if (!file.isEmpty()) {
 	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
-	    	logger.info("originalname = " + file.getOriginalFilename());
-	    	logger.info("filePath = " + filePath);
+	    	logger.debug("originalname = " + file.getOriginalFilename());
+	    	logger.debug("filePath = " + filePath);
 
 	    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
 	    	if (exists)
@@ -111,7 +111,7 @@ public class FileActionsImpl implements FileActions {
     	    		return FileResult.NO_EXTENSION;
     	    	
     	    	String ext = nameParts.get(size-1);
-    	    	logger.info("extension = " + ext);
+    	    	logger.debug("extension = " + ext);
     	    	ext = ext.toLowerCase();
     	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
     	    		return FileResult.INVALID_TYPE;
@@ -119,7 +119,7 @@ public class FileActionsImpl implements FileActions {
     	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
     	    	ImageIO.write(img, ext, stream);
     	    	recipe.setPhotoName(file.getOriginalFilename());
-    	        logger.info("Successful upload");
+    	        logger.debug("Successful upload");
             
             } catch (IOException ex) {
             	logService.addException(ex);
@@ -140,8 +140,8 @@ public class FileActionsImpl implements FileActions {
 	    
 		if (!file.isEmpty()) {
 	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
-	    	logger.info("originalname = " + file.getOriginalFilename());
-	    	logger.info("filePath = " + filePath);
+	    	logger.debug("originalname = " + file.getOriginalFilename());
+	    	logger.debug("filePath = " + filePath);
 
 	    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
 	    	if (exists)
@@ -160,7 +160,7 @@ public class FileActionsImpl implements FileActions {
     	    		return FileResult.NO_EXTENSION;
     	    	
     	    	String ext = nameParts.get(size-1);
-    	    	logger.info("extension = " + ext);
+    	    	logger.debug("extension = " + ext);
     	    	ext = ext.toLowerCase();
     	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
     	    		return FileResult.INVALID_TYPE;
@@ -168,7 +168,7 @@ public class FileActionsImpl implements FileActions {
     	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
     	    	ImageIO.write(img, ext, stream);
     	    	recipe.setPhotoName(file.getOriginalFilename());
-    	        logger.info("Successful upload");
+    	        logger.debug("Successful upload");
             
             } catch (IOException ex) {
             	logService.addException(ex);
@@ -180,6 +180,7 @@ public class FileActionsImpl implements FileActions {
 	}
 
 	public FileResult deleteFile(Recipe recipe) {
+		logger.info("deleteFile: recipeId=" + recipe.getId());
 		
 		String fileName = recipe.getPhotoName();
 		if (fileName == null || fileName.isEmpty())
@@ -195,6 +196,7 @@ public class FileActionsImpl implements FileActions {
 	}
 
 	public FileResult renameFile(Recipe recipe) {
+		logger.info("renameFile: recipeId=" + recipe.getId());
 			
 		String fileName = recipe.getPhotoName(); 
 		if (fileName == null || fileName.isEmpty())
@@ -213,14 +215,15 @@ public class FileActionsImpl implements FileActions {
 	}
 	
 	public FileResult uploadFile(FileType fileType, long id, MultipartFile file) {
+		logger.info("uploadFile: type/id=" + fileType + "/" + id);
 		
 	    if (file == null)
 	    	return FileResult.NO_FILE;
 		
 	    try {
 	    	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + file.getOriginalFilename();
-	    	logger.info("originalname = " + file.getOriginalFilename());
-	    	logger.info("filePath = " + filePath);
+	    	logger.debug("originalname = " + file.getOriginalFilename());
+	    	logger.debug("filePath = " + filePath);
 	        	    	
 	    	//if the file is not an image, ImageIO returns null
 	    	BufferedImage img = ImageIO.read(file.getInputStream());
@@ -234,14 +237,14 @@ public class FileActionsImpl implements FileActions {
 	    		return FileResult.NO_EXTENSION;
 	    	
 	    	String ext = nameParts.get(size-1);
-	    	logger.info("extension = " + ext);
+	    	logger.debug("extension = " + ext);
 	    	ext = ext.toLowerCase();
 	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
 	    		return FileResult.INVALID_TYPE;
 
 	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 	    	ImageIO.write(img, ext, stream);
-	        logger.info("Successful upload");
+	        logger.debug("Successful upload");
 
 	    } catch (IOException ex) {
 	    	logService.addException(ex);
@@ -252,6 +255,7 @@ public class FileActionsImpl implements FileActions {
 	}	
 	
 	public boolean downloadFile(FileType fileType, long id, String fileName, HttpServletResponse response) {
+		logger.info("downloadFile: type/id=" + fileType + "/" + id);
 
         try {
         	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;
@@ -260,7 +264,7 @@ public class FileActionsImpl implements FileActions {
         	ServletOutputStream stream = response.getOutputStream();
         	Files.copy(path, stream);
         	stream.flush();
-        	logger.info("Successful download");                
+        	logger.debug("Successful download");                
         } catch (IOException ex) {
         	logService.addException(ex);
         	return false;
@@ -270,6 +274,7 @@ public class FileActionsImpl implements FileActions {
 	}
 	
 	public boolean renameFile(FileType fileType, String oldName, String newName) {
+		logger.info("renameFile: type/name=" + fileType + "/" + oldName);
 
 		try {
 			String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + oldName;
@@ -286,6 +291,7 @@ public class FileActionsImpl implements FileActions {
 	}
 	
 	public boolean deleteFile(FileType fileType, long id, String fileName) {
+		logger.info("deleteFile: type/id=" + fileType + "/" + id);
 
 		try {
 			String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;

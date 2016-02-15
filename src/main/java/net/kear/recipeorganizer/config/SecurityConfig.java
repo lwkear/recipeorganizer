@@ -25,7 +25,6 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;

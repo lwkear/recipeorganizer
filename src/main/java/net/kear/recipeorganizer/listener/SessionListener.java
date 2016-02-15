@@ -82,11 +82,11 @@ public class SessionListener implements HttpSessionListener {
 		String sID = "Session ID: " + sessID;
 		String sPrincipal = "Session principal: " + principal;
 		
-		logger.info("sessionDestroyed: " + sCreate);
-		logger.info("sessionDestroyed: " + sLast);
-		logger.info("sessionDestroyed: " + sInactive); 
-		logger.info("sessionDestroyed: " + sID);
-		logger.info("sessionDestroyed: " + sPrincipal);
+		logger.debug("sessionDestroyed: " + sCreate);
+		logger.debug("sessionDestroyed: " + sLast);
+		logger.debug("sessionDestroyed: " + sInactive); 
+		logger.debug("sessionDestroyed: " + sID);
+		logger.debug("sessionDestroyed: " + sPrincipal);
 
 		logger.debug("Checking SecurityContext...");
 		SecurityContext context = SecurityContextHolder.getContext();
@@ -135,25 +135,25 @@ String sessID = session.getId();
 
 Enumeration<String> attrNames = session.getAttributeNames();
 while (attrNames.hasMoreElements())
-	logger.info("sessionCreated: attrNames " + attrNames.nextElement());
+	logger.debug("sessionCreated: attrNames " + attrNames.nextElement());
 
 String sCreate = "Session created on: " + createTime;
 String sLast = "Session last accessed on: " + lastAccess;
 String sInactive = "Session expires after: " + maxInactive + " seconds";
 String sID = "Session ID: " + sessID;
 
-logger.info("sessionCreated: " + sCreate);
-logger.info("sessionCreated: " + sLast);
-logger.info("sessionCreated: " + sInactive); 
-logger.info("sessionCreated: " + sID);
+logger.debug("sessionCreated: " + sCreate);
+logger.debug("sessionCreated: " + sLast);
+logger.debug("sessionCreated: " + sInactive); 
+logger.debug("sessionCreated: " + sID);
 
 List<Object> allPrinc = null;
 if (sessionRegistry != null) {
 	allPrinc = sessionRegistry.getAllPrincipals();
-	logger.info("sessionRegistry: " + allPrinc.toString());
+	logger.debug("sessionRegistry: " + allPrinc.toString());
 }
 else
-	logger.info("sessionRegistry is null");
+	logger.debug("sessionRegistry is null");
 
 logger.debug("Checking SecurityContext...");
 SecurityContext context = SecurityContextHolder.getContext();
@@ -169,12 +169,12 @@ if (context != null) {
 
 		if (principal != null && allPrinc != null && allPrinc.size() > 0) {
 			if (allPrinc.contains(principal))
-				logger.info("getAllPrincipals() contains prinicpal");
+				logger.debug("getAllPrincipals() contains prinicpal");
 			
 			List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, true);
 			for (SessionInformation sess : sessions) {
 				String sessionId = sess.getSessionId();
-				logger.info("sessionRegistry.sessId: " + sessionId);
+				logger.debug("sessionRegistry.sessId: " + sessionId);
 			}
 		}
 		

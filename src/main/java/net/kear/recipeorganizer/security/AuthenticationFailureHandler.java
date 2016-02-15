@@ -27,6 +27,7 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException ex)
 			throws IOException, ServletException {
+		logger.info("onAuthenticationFailure");
 
 		//pass handled exceptions to loginError, which redisplays the login page with the appropriate message
 		//all others are passed to fatalError, which simply re-throws the error to the @ControllerAdvice ExceptionController
@@ -47,7 +48,7 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 				break;
 		}
 		
-		logger.info("onAuthenticationFailure exception class: " + ex.getClass().toString());
+		logger.debug("onAuthenticationFailure exception class: " + ex.getClass().toString());
 		String msg = ExceptionUtils.getMessage(ex);
 		logger.debug("onAuthenticationFailure msg: " + msg);
 		

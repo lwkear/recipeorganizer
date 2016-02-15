@@ -48,7 +48,7 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 	"net.kear.recipeorganizer.util"	
 	})
 @Configuration
-@PropertySources(value={@PropertySource("classpath:email.properties"),@PropertySource("classpath:file.properties")})
+@PropertySources(value={@PropertySource("classpath:email.properties"),@PropertySource("classpath:filedir.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

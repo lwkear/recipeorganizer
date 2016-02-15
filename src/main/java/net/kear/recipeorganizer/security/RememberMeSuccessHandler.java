@@ -30,7 +30,7 @@ public class RememberMeSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		logger.info("onAuthenticationSuccess");
+		logger.info("onAuthenticationSuccess: name=" + authentication.getName());
 		
 		authCookie.setCookie(request, response, authentication.getName());
 		
@@ -43,21 +43,21 @@ public class RememberMeSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 }
 
 /*Object principal = authentication.getPrincipal();
-logger.info("Session principal: " + principal.toString());
+logger.debug("Session principal: " + principal.toString());
 
 HttpSession session = request.getSession(false);
 if (session != null) {
 	String sessID = session.getId();
-	logger.info("Session ID: " + sessID);
+	logger.debug("Session ID: " + sessID);
 }
 else
-	logger.info("Session is null");
+	logger.debug("Session is null");
 
 List<Object> allPrinc = sessionRegistry.getAllPrincipals();
 
 if (principal != null && allPrinc.size() > 0) {
 	if (allPrinc.contains(principal))
-		logger.info("getAllPrincipals() contains prinicpal");
+		logger.debug("getAllPrincipals() contains prinicpal");
 }
 
 for (Object obj : allPrinc) {
@@ -68,11 +68,11 @@ for (Object obj : allPrinc) {
 		String sessId = sess.getSessionId();
 		Date sessDate = sess.getLastRequest();
 		
-		logger.info("sessionRegistry.princ: " + princ);
-		logger.info("sessionRegistry.sessId: " + sessId);
-		logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+		logger.debug("sessionRegistry.princ: " + princ);
+		logger.debug("sessionRegistry.sessId: " + sessId);
+		logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
 		
 		if (principal.equals(princ))
-			logger.info("found prinicpal match");
+			logger.debug("found prinicpal match");
 	}
 }*/

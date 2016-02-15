@@ -107,14 +107,14 @@ public class UserController {
     /*********************/
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
 	public String getLogin(Model model) {
-		logger.info("login GET");
+		logger.info("user/login GET");
 		
 		return "user/login";
 	}
 
 	@RequestMapping(value = "user/loginError", method = RequestMethod.GET)
 	public ModelAndView handleLoginError(RedirectAttributes redir, HttpServletRequest request, Locale locale) {
-		logger.info("handleLoginError");
+		logger.info("user/loginError GET");
 	
 		String authExClass = "";
 		String msg = "Unknown error";
@@ -133,7 +133,7 @@ public class UserController {
 	
 	@RequestMapping(value = "user/fatalError", method = RequestMethod.GET)
 	public void handleLoginFatalError(HttpServletRequest request) throws AuthenticationException {
-		logger.info("handleLoginFatalError");
+		logger.info("user/fatalError GET");
 	
 		//most authentication exceptions are caught in the custom AuthenticationFailureHandler class
 		//those that are not need to be passed on to the @ControllerAdvice ExceptionController for further handling
@@ -146,7 +146,7 @@ public class UserController {
 	/****************************/
 	@RequestMapping(value = "user/signup", method = RequestMethod.GET)
 	public String getSignup(Model model) {
-		logger.info("signup GET");
+		logger.info("user/signup GET");
 		
 		UserDto user = new UserDto();
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
@@ -159,12 +159,12 @@ public class UserController {
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
 	public ModelAndView postSignup(@ModelAttribute @Validated(UserDtoSequence.class) UserDto userDto, 
 			BindingResult result, HttpServletRequest request, RedirectAttributes redir, Locale locale) throws AddUserException {
-		logger.info("login POST");
+		logger.info("user/signup POST: email=" + userDto.getEmail());
 
 		ModelAndView mv = new ModelAndView("user/signup");
 		
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return mv;
 		}
 		
@@ -178,7 +178,7 @@ public class UserController {
 		}
 
 		if (exists) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
 			FieldError err = new FieldError("userDto","email", msg);
 			result.addError(err);
@@ -193,7 +193,7 @@ public class UserController {
 			throw new AddUserException(ex);
 		}
 		
-       	logger.info("user added - publishing event");
+       	logger.debug("user added - publishing event");
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         
@@ -207,8 +207,7 @@ public class UserController {
 	@RequestMapping(value="/lookupUser", produces="text/javascript")
 	@ResponseBody 
 	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response, Locale locale) {
-		logger.info("/lookupUser");
-		logger.info("email =" + lookupEmail);
+		logger.info("lookupUser GET: email=" + lookupEmail);
 		
 		String msg = "{}";
 		response.setStatus(HttpServletResponse.SC_OK);
@@ -219,10 +218,11 @@ public class UserController {
 			result = userService.doesUserEmailExist(lookupEmail);
 		} catch (Exception ex) {
 			//do nothing - if there is a problem with the database the user will be notifed when they submit the form
-			logService.addException(ex);
+			logger.error(ex.getClass().toString(), ex);
+			return "";
 		}
 		
-		logger.info("lookupEmail result=" + result);
+		logger.debug("lookupEmail result=" + result);
 		
 		//name was found
 		if (result) {
@@ -272,7 +272,7 @@ public class UserController {
         } catch (Exception ex) {
         	throw new SaveAccountException(ex);
         }
-        logger.info("user updated");
+        logger.debug("user updated");
         
         mv.setViewName("redirect:/user/login");
         return mv;
@@ -281,7 +281,7 @@ public class UserController {
 	//resend a registration email
 	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
     public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir, Locale locale) throws VerificationResendException {
-		logger.info("resendRegistrationToken GET");
+		logger.info("user/resendRegistrationToken GET");
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -314,7 +314,7 @@ public class UserController {
 	/******************************************/
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
 	public String getProfile(Model model) throws AccessUserException, AccessProfileException {
-		logger.info("profile GET");
+		logger.info("user/profile GET");
 		
 		User currentUser = (User)userInfo.getUserDetails();
 
@@ -349,10 +349,10 @@ public class UserController {
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
 	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
 			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) throws AccessUserException, SaveAccountException {
-		logger.info("profile POST");
+		logger.info("user/profile POST: user=" + userProfile.getUser().getId());
 
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "user/profile";
 		}
 
@@ -408,7 +408,7 @@ public class UserController {
 	
 	@RequestMapping(value = "user/changeAccount", method = RequestMethod.GET)
 	public String getchangeAccount(Model model) {
-		logger.info("getchangeAccount GET");
+		logger.info("user/changeAccount GET");
 		
 		//accessDenied redirects to changeAccount if appropriate, but the URL displayed by the browser is 
 		//still the original URL, e.g., /recipe;  redirecting to user/account displays the correct URL
@@ -417,7 +417,7 @@ public class UserController {
 
 	@RequestMapping(value = "user/account", method = RequestMethod.GET)
 	public String getAccount(Model model) {
-		logger.info("getAccount GET");
+		logger.info("user/account GET");
 		
 		return "user/account";
 	}
@@ -427,7 +427,7 @@ public class UserController {
 	/*************************/
 	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
 	public String getDashboard(Model model, HttpServletRequest request) throws AccessUserException {
-		logger.info("getDashboard");
+		logger.info("user/getDashboard GET");
 
 		User currentUser = (User)userInfo.getUserDetails();
 		
@@ -484,7 +484,7 @@ public class UserController {
 	
 	@RequestMapping(value = "user/avatar", method = RequestMethod.GET)
 	public void getAvatar(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
-		logger.info("avatar GET");
+		logger.info("user/avatar GET: id=" + id);
 		
 		//User user = (User)userInfo.getUserDetails();
 		
@@ -498,7 +498,7 @@ public class UserController {
 	/*******************************/
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
 	public String getPassword(Model model) {
-		logger.info("password GET");
+		logger.info("user/changePassword GET");
 
 		PasswordDto passwordDto = new PasswordDto();
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", PasswordDto.class); 
@@ -510,10 +510,10 @@ public class UserController {
 
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
 	public String postPassword(@ModelAttribute @Valid PasswordDto passwordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
-		logger.info("changePassword POST");
+		logger.info("user/changePassword POST");
 
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "user/changePassword";
 		}
 		
@@ -526,7 +526,7 @@ public class UserController {
 		}
 
 		if (!userService.isPasswordValid(passwordDto.getCurrentPassword(), user)) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.invalidPassword", null, "Invalid password", locale);
 			FieldError err = new FieldError("passwordDto","currentPassword", msg);
 			result.addError(err);
@@ -554,7 +554,7 @@ public class UserController {
 	/************************************************/
 	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.GET)
 	public String getForgotPassword(Model model) {
-		logger.info("forgotPassword GET");
+		logger.info("user/forgotPassword GET");
 		
 		UserEmail email = new UserEmail();
 		model.addAttribute("userEmail", email);
@@ -584,12 +584,12 @@ public class UserController {
 	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.POST)
 	public ModelAndView postForgotPassword(@ModelAttribute @Valid UserEmail userEmail, BindingResult result, HttpServletRequest request, RedirectAttributes redir, 
 			Locale locale) throws AccessUserException {
-		logger.info("forgotPassword POST");
+		logger.info("user/forgotPassword POST: email=" + userEmail);
 		
 		ModelAndView mv = new ModelAndView("user/forgotPassword");
 		
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return mv;
 		}
 
@@ -602,14 +602,14 @@ public class UserController {
 		}
 
 		if (user == null) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.userNotFound", null, "User not found", locale);
 			FieldError err = new FieldError("userEmail","email", msg);
 			result.addError(err);
 			return mv;
 		}
 		
-       	logger.info("password reset - publishing event");
+       	logger.debug("password reset - publishing event");
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         
@@ -623,7 +623,7 @@ public class UserController {
 	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
     public ModelAndView confirmPassword(@RequestParam("id") final long id, @RequestParam("token") final String token,
     		RedirectAttributes redir, Locale locale) throws PasswordResetException {
-		logger.info("confirmPassword GET");		
+		logger.info("confirmPassword GET: id=" + id);		
 		
 		ModelAndView mv = new ModelAndView();
 
@@ -676,7 +676,7 @@ public class UserController {
 	//resend a password reset email
 	@RequestMapping(value = "/user/resendPasswordToken", method = RequestMethod.GET)
     public ModelAndView resendPasswordToken(final HttpServletRequest request, @RequestParam("token") final String token, RedirectAttributes redir, Locale locale) throws PasswordResendException {
-		logger.info("resendPasswordToken GET");
+		logger.info("user/resendPasswordToken GET");
 
 		ModelAndView mv = new ModelAndView();
 		
@@ -706,7 +706,7 @@ public class UserController {
 
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.GET)
 	public String getNewPassword(Model model) {
-		logger.info("newPassword GET");
+		logger.info("user/newPassword GET");
 				
 		return "user/newPassword";
 	}
@@ -765,10 +765,10 @@ public class UserController {
 	
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
 	public String postNewPassword(Model model, @ModelAttribute @Valid NewPassword newPassword, BindingResult result, Locale locale) throws PasswordResetException {
-		logger.info("newPassword POST");
+		logger.info("user/newPassword POST");
 
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "user/newPassword";
 		}
 		
@@ -794,21 +794,21 @@ public class UserController {
 	/********************/
 	@RequestMapping(value = "errors/expiredToken", method = RequestMethod.GET)
 	public String getExpiredToken(Model model) {
-		logger.info("expiredToken GET");
+		logger.info("errors/expiredToken GET");
 		
 		return "errors/expiredToken";
 	}
 	
 	@RequestMapping(value = "errors/invalidToken", method = RequestMethod.GET)
 	public String getInvalidToken(Model model) {
-		logger.info("invalidToken GET");
+		logger.info("errors/invalidToken GET");
 		
 		return "errors/invalidToken";
 	}	
 
 	@RequestMapping(value = "message", method = RequestMethod.GET)
 	public String getUserMessage(Model model) {
-		logger.info("userMessage GET");
+		logger.info("message GET");
 		
 		return "message";
 	}	
@@ -820,10 +820,10 @@ Date lastAccess = new Date(session.getLastAccessedTime());
 int maxInactive = session.getMaxInactiveInterval();
 String sessID = session.getId();
 
-logger.info("Session created on: " + createTime);
-logger.info("Session last accessed on: " + lastAccess);
-logger.info("Session expires after: " + maxInactive + " seconds");
-logger.info("Session ID: " + sessID);
+logger.debug("Session created on: " + createTime);
+logger.debug("Session last accessed on: " + lastAccess);
+logger.debug("Session expires after: " + maxInactive + " seconds");
+logger.debug("Session ID: " + sessID);
 
 List<Object> allPrinc = sessionRegistry.getAllPrincipals();
 
@@ -835,9 +835,9 @@ for (Object obj : allPrinc) {
 		String sessId = sess.getSessionId();
 		Date sessDate = sess.getLastRequest();
 		
-		logger.info("sessionRegistry.princ: " + princ);
-		logger.info("sessionRegistry.sessId: " + sessId);
-		logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+		logger.debug("sessionRegistry.princ: " + princ);
+		logger.debug("sessionRegistry.sessId: " + sessId);
+		logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
 	}
 }
 */

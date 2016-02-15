@@ -38,6 +38,7 @@ public class SolrUtil {
     private static final HttpSolrClient solrCore = new HttpSolrClient(url);
 	
 	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) throws SolrServerException, IOException {
+		logger.info("searchRecipes: qstr=" + searchTerm);
 		
 		QueryResponse rsp = null;
 		
@@ -56,7 +57,7 @@ public class SolrUtil {
 		query.addFilterQuery("allowshare:true");
 	    
 	    String qstr = ClientUtils.toQueryString(query, false);
-	    logger.info("qstr: " + qstr);
+	    
 	    
 	    rsp = solrCore.query(query);
 	    
@@ -65,7 +66,7 @@ public class SolrUtil {
 	    SolrDocumentList docs = rsp.getResults();
 	    for (SolrDocument doc : docs) {
 	    	String result = doc.toString();
-	    	logger.info("doc: " + result);
+	    	logger.debug("doc: " + result);
 	    	
 	    	String idStr = (String)doc.getFieldValue("id");
 	    	Long id = Long.valueOf(idStr);
@@ -82,14 +83,14 @@ public class SolrUtil {
 	        	List<String> highList = rsp.getHighlighting().get(id).get("name");
 	        	if (highList != null) {
 		        	for (String highStr : highList) {
-		        		logger.info("highStr: " + highStr);
+		        		logger.debug("highStr: " + highStr);
 		        		name = highStr;
 		        	}
 	        	}
 	        	highList = rsp.getHighlighting().get(id).get("description");
 	        	if (highList != null) {
 		        	for (String highStr : highList) {
-		        		logger.info("highStr: " + highStr);
+		        		logger.debug("highStr: " + highStr);
 		        		desc = highStr;
 		        	}
 	        	}

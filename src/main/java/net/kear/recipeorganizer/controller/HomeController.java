@@ -51,17 +51,17 @@ public class HomeController {
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-		logger.info("getHome");
+		logger.info("home GET");
 
 		Date createTime = new Date(session.getCreationTime());
 		Date lastAccess = new Date(session.getLastAccessedTime());
 		int maxInactive = session.getMaxInactiveInterval();
 		String sessID = session.getId();
 
-		logger.info("Session created on: " + createTime);
-		logger.info("Session last accessed on: " + lastAccess);
-		logger.info("Session expires after: " + maxInactive + " seconds");
-		logger.info("Session ID: " + sessID);
+		logger.debug("Session created on: " + createTime);
+		logger.debug("Session last accessed on: " + lastAccess);
+		logger.debug("Session expires after: " + maxInactive + " seconds");
+		logger.debug("Session ID: " + sessID);
 
 		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
 
@@ -73,22 +73,22 @@ public class HomeController {
 				String sessId = sess.getSessionId();
 				Date sessDate = sess.getLastRequest();
 				
-				logger.info("sessionRegistry.princ: " + princ);
-				logger.info("sessionRegistry.sessId: " + sessId);
-				logger.info("sessionRegistry.sessDate: " + sessDate.toString());
+				logger.debug("sessionRegistry.princ: " + princ);
+				logger.debug("sessionRegistry.sessId: " + sessId);
+				logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
 			}
 		}
 
 		Enumeration<String> attrNames = session.getAttributeNames();
 		while (attrNames.hasMoreElements())
-			logger.info("getHome: attrNames " + attrNames.nextElement());
+			logger.debug("getHome: attrNames " + attrNames.nextElement());
 		
 		Object token = session.getAttribute("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN");
 		if (token != null)
-			logger.info("getHome: csrf token: " + token.toString());
+			logger.debug("getHome: csrf token: " + token.toString());
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.info("security context auth: " + auth.toString());
+		logger.debug("security context auth: " + auth.toString());
 		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
@@ -101,14 +101,14 @@ public class HomeController {
 
 	@RequestMapping(value = "/about", method = RequestMethod.GET)
 	public String getAbout(Model model, HttpSession session) {
-		logger.info("getAbout");
+		logger.info("about GET");
 		
 		return "about";
 	}
 
 	@RequestMapping(value = "/thankyou", method = RequestMethod.GET)
 	public String getThankyou(Model model, HttpSession session) {
-		logger.info("getThankyou");
+		logger.info("thankyou GET");
 	
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
@@ -118,28 +118,28 @@ public class HomeController {
 	
 	@RequestMapping(value = "/faq", method = RequestMethod.GET)
 	public String getFaq(Model model) {
-		logger.info("getFaq");
+		logger.info("FAQ GET");
 		
 		return "faq";
 	}
 	
 	@RequestMapping(value = "/technical", method = RequestMethod.GET)
 	public String getTechnical(Model model) {
-		logger.info("getTechnical");
+		logger.info("technical GET");
 		
 		return "technical";
 	}
 
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
 	public String getContact(Model model) {
-		logger.info("getContact");
+		logger.info("contact GET");
 				
 		return "contact";
 	}
 	
 	@RequestMapping(value = "/policies", method = RequestMethod.GET)
 	public String getPolicies(Model model) {
-		logger.info("getPolicies");
+		logger.info("policies GET");
 				
 		return "policies";
 	}
@@ -151,7 +151,7 @@ public class HomeController {
 		
 		Integer maxInactive = session.getMaxInactiveInterval();
 		
-		logger.info("getSessionTimeout returned " + maxInactive + " seconds");
+		logger.debug("getSessionTimeout returned " + maxInactive + " seconds");
 		
 		return maxInactive;
 	}
@@ -166,7 +166,7 @@ public class HomeController {
 		Integer maxInactive = session.getMaxInactiveInterval();
 		session.setMaxInactiveInterval(maxInactive);
 		
-		logger.info("setSessionTimeout for " + maxInactive + " seconds");
+		logger.debug("setSessionTimeout for " + maxInactive + " seconds");
 		
 		return "{}";
 	}
@@ -177,7 +177,7 @@ public class HomeController {
 	/*****************/
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model) {
-		logger.info("getTestpage");
+		logger.debug("getTestpage");
 
 		String text = "celery, and ½ teaspoon salt";
 		model.addAttribute("text", text);
@@ -190,12 +190,12 @@ public class HomeController {
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.POST)
 	public String postTestpage(@ModelAttribute @Valid WebGreeting wb, BindingResult result) {
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "test/testpage";
 		}
 		
-		logger.info("getTestpage");
-		logger.info("wb.greeting:" + wb.getGreeting());
+		logger.debug("getTestpage");
+		logger.debug("wb.greeting:" + wb.getGreeting());
 		
 		return "test/testpage";
 	}
@@ -221,7 +221,7 @@ public class HomeController {
 /*
 	@RequestMapping(value = "/start", method = RequestMethod.GET)
 	public String getStartpage(Model model) {
-		logger.info("getStartpage");
+		logger.debug("getStartpage");
 
 		return "start";
 	}*/
@@ -237,7 +237,7 @@ user.setPassword("$2a$10$btkjPF8CVqS1v5W8Hh5qrujLSTyhVAXAA5YHbEm2lP1m3lp46DMnC")
 try {
 	userService.addUser(user);
 } catch (Exception ex) {
-	logger.info("exception class: " + ex.getClass().toString());
+	logger.debug("exception class: " + ex.getClass().toString());
 	String msg = ExceptionUtils.getMessage(ex);
 	logger.debug("msg: " + msg);
 	Throwable excptn = ExceptionUtils.getRootCause(ex);
@@ -252,7 +252,7 @@ try {
 try {
 	userService.deleteUser(78L);
 } catch (Exception ex) {
-	logger.info("exception class: " + ex.getClass().toString());
+	logger.debug("exception class: " + ex.getClass().toString());
 	String msg = ExceptionUtils.getMessage(ex);
 	logger.debug("msg: " + msg);
 	Throwable excptn = ExceptionUtils.getRootCause(ex);
@@ -267,19 +267,19 @@ try {
 
 /*
 
-		logger.info("1 valid: " + isValid("1"));
-		logger.info("1/ valid: " + isValid("1/"));
-		logger.info("1/2 valid: " + isValid("1/2"));
-		logger.info("1. valid: " + isValid("1."));
-		logger.info("1.1 valid: " + isValid("1.1"));
-		logger.info("1, valid: " + isValid("1,"));
-		logger.info("a valid: " + isValid("a"));
-		logger.info("1a valid: " + isValid("1a"));
-		logger.info("1 1/2 valid: " + isValid("1 1/2"));
-		logger.info("a1 valid: " + isValid("a1"));
-		logger.info("/ valid: " + isValid("/"));
-		logger.info(". valid: " + isValid("."));
-		logger.info(", valid: " + isValid(","));
+		logger.debug("1 valid: " + isValid("1"));
+		logger.debug("1/ valid: " + isValid("1/"));
+		logger.debug("1/2 valid: " + isValid("1/2"));
+		logger.debug("1. valid: " + isValid("1."));
+		logger.debug("1.1 valid: " + isValid("1.1"));
+		logger.debug("1, valid: " + isValid("1,"));
+		logger.debug("a valid: " + isValid("a"));
+		logger.debug("1a valid: " + isValid("1a"));
+		logger.debug("1 1/2 valid: " + isValid("1 1/2"));
+		logger.debug("a1 valid: " + isValid("a1"));
+		logger.debug("/ valid: " + isValid("/"));
+		logger.debug(". valid: " + isValid("."));
+		logger.debug(", valid: " + isValid(","));
 		
 public boolean isValid(String qty) {
 	String str = qty;
@@ -314,7 +314,7 @@ public boolean isValid(String qty) {
     try {
     	fract = Fraction.getFraction(str);
     } catch (NumberFormatException ex) {
-    	logger.info("Exception: " + qty);
+    	logger.debug("Exception: " + qty);
     	return false;
     }
     

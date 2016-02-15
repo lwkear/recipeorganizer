@@ -22,7 +22,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -75,13 +74,13 @@ public class AdminController {
 	/********************************/
 	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public String userMaint(Model model) {
-		logger.info("admin/users");
+		logger.info("admin/users GET");
 		
 		List<Role> roles = roleService.getRoles();
 		List<User> users = userService.getUsers();
 		List<Long> userIds = new ArrayList<Long>();
 		for (User u : users) {
-			logger.info("userService: " + u);
+			logger.debug("userService: " + u);
 			userIds.add(u.getId());
 		}
 		
@@ -95,13 +94,13 @@ public class AdminController {
 				String sessId = sess.getSessionId();
 				Date sessDate = sess.getLastRequest();
 				
-				logger.info("sessReg user: " + user);
-				logger.info("sessReg userId: " + user.getId());
-				logger.info("sessReg sessId: " + sessId);
-				logger.info("sessReg sessDate: " + sessDate.toString());
+				logger.debug("sessReg user: " + user);
+				logger.debug("sessReg userId: " + user.getId());
+				logger.debug("sessReg sessId: " + sessId);
+				logger.debug("sessReg sessDate: " + sessDate.toString());
 				
 				if (userIds.contains(user.getId())) {
-					logger.info("sessReg found principal in user list");
+					logger.debug("sessReg found principal in user list");
 					
 					int ndx = userIds.indexOf(user.getId());
 					if (ndx >= 0) {
@@ -118,11 +117,10 @@ public class AdminController {
 		return "admin/users";
 	}
 
-	@RequestMapping(value="admin/deleteUser")
+	@RequestMapping(value="admin/deleteUser", method = RequestMethod.POST)
 	@ResponseBody 
 	public String deleteUser(@RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) {
-		logger.info("admin/deleteUser");
-		logger.info("userId=" + userId);
+		logger.info("admin/deleteUser POST: userId=" + userId);
 		
 		//set default response
 		String msg = "{}";
@@ -146,10 +144,10 @@ public class AdminController {
 		return msg;
 	}
 
-	@RequestMapping(value = "/admin/getUser/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/getUser", method = RequestMethod.GET)
 	@ResponseBody
-	public User getUser(@PathVariable Long userId, HttpServletResponse response, Locale locale) {
-		logger.info("admin/getUser GET");
+	public User getUser(@RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) {
+		logger.info("admin/getUser GET: userId=" + userId);
 		
 		User user = null;
 		String msg = "{}";
@@ -169,7 +167,7 @@ public class AdminController {
 		}
 		
 		String userStr = user.toString();
-		logger.info("user.toString: " + userStr);
+		logger.debug("user.toString: " + userStr);
 		
 		return user;
 	}
@@ -177,8 +175,7 @@ public class AdminController {
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
 	@ResponseBody 
 	public String updateUser(@RequestBody User user, HttpServletResponse response, Locale locale) {
-		logger.info("admin/updateUser");
-		logger.info("user=" + user);
+		logger.info("admin/updateUser POST: userId=" + user.getId());
 		
 		//set default response
 		String msg = "{}";
@@ -216,22 +213,22 @@ public class AdminController {
 	
 	@RequestMapping(value = "/admin/category", method = RequestMethod.POST, params = {"save"})	
 	public String saveCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
-		logger.info("admin/category POST save");
+		logger.info("admin/category POST save: cat=" + category.getName());
 
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "admin/category";
 		}
 		
 		try {
 			if (category.getId() == 0) {
-				logger.info("ID = 0");
-				logger.info("Name = " + category.getName());
+				logger.debug("ID = 0");
+				logger.debug("Name = " + category.getName());
 				categoryService.addCategory(category);
 			}
 			else {
-				logger.info("ID = " + category.getId());
-				logger.info("Name = " + category.getName());
+				logger.debug("ID = " + category.getId());
+				logger.debug("Name = " + category.getName());
 				categoryService.updateCategory(category);
 			}
 		} catch (DataIntegrityViolationException ex) {
@@ -253,12 +250,10 @@ public class AdminController {
 
 	@RequestMapping(value = "/admin/category", method = RequestMethod.POST, params = {"delete"})	
 	public String deleteCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
-		logger.info("admin/category POST delete");
-		logger.info("ID = " + category.getId());
-		logger.info("Name = " + category.getName());
+		logger.info("admin/category POST delete: catId/name=" + category.getId() + "/" + category.getName());
 
 		if (result.hasErrors()) {
-			logger.info("Validation errors");
+			logger.debug("Validation errors");
 			return "admin/category";
 		}
 		
@@ -294,11 +289,10 @@ public class AdminController {
 		return "admin/comments";
 	}
 
-	@RequestMapping(value="admin/deleteComment")
+	@RequestMapping(value="admin/deleteComment", method = RequestMethod.POST)
 	@ResponseBody 
 	public String deleteComment(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
-		logger.info("admin/deleteComment");
-		logger.info("commentId=" + commentId);
+		logger.info("admin/deleteComment POST: commentId=" + commentId);
 		
 		//set default response
 		String msg = "{}";
@@ -317,11 +311,10 @@ public class AdminController {
 		return msg;
 	}
 
-	@RequestMapping(value="admin/removeCommentFlag")
+	@RequestMapping(value="admin/removeCommentFlag", method = RequestMethod.POST)
 	@ResponseBody 
 	public String removeCommentFlag(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
-		logger.info("admin/removeCommentFlag");
-		logger.info("commentId=" + commentId);
+		logger.info("admin/removeCommentFlag POST: commentId=" + commentId);
 		
 		//set default response
 		String msg = "{}";
@@ -353,11 +346,10 @@ public class AdminController {
 		return "admin/approveRecipes";
 	}
 
-	@RequestMapping(value="admin/approveRecipe")
+	@RequestMapping(value="admin/approveRecipe", method = RequestMethod.POST)
 	@ResponseBody 
 	public String approveRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response, Locale locale) {
-		logger.info("admin/approveRecipe");
-		logger.info("recipeId=" + recipeId);
+		logger.info("admin/approveRecipe POST: recipeId=" + recipeId);
 		
 		//set default response
 		String msg = "{}";
