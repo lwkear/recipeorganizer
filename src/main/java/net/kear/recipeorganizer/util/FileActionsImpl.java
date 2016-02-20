@@ -17,6 +17,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.FileResult;
@@ -67,15 +68,6 @@ public class FileActionsImpl implements FileActions {
 		return this.recipeDir;
 	}
 	
-	public FileResult uploadFile(Recipe recipe, MultipartFile file) {
-		logger.debug("uploadFile with Multipart param");
-		if (file != null && !file.isEmpty()) {
-			logger.debug("success???");
-		}
-				
-		return FileResult.NO_FILE;
-	}
-	
 	public FileResult uploadFile(Recipe recipe, RequestContext requestContext) {
 		logger.info("uploadFile: recipeId=" + recipe.getId());
 
@@ -88,45 +80,52 @@ public class FileActionsImpl implements FileActions {
 
 	    if (file == null)
 	    	return FileResult.NO_FILE;
-	    
-		if (!file.isEmpty()) {
-	    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
-	    	logger.debug("originalname = " + file.getOriginalFilename());
-	    	logger.debug("filePath = " + filePath);
 
-	    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
-	    	if (exists)
-	    		return FileResult.SUCCESS;
-			
-            try {
-    	    	//if the file is not an image, ImageIO returns null
-    	    	BufferedImage img = ImageIO.read(file.getInputStream());
-    	    	if (img == null)
-    	    		return FileResult.NOT_IMAGE;
-    	    	
-    	    	String originalName = file.getOriginalFilename();
-    	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
-    	    	int size = nameParts.size();
-    	    	if (size <= 1)
-    	    		return FileResult.NO_EXTENSION;
-    	    	
-    	    	String ext = nameParts.get(size-1);
-    	    	logger.debug("extension = " + ext);
-    	    	ext = ext.toLowerCase();
-    	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
-    	    		return FileResult.INVALID_TYPE;
-
-    	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-    	    	ImageIO.write(img, ext, stream);
-    	    	recipe.setPhotoName(file.getOriginalFilename());
-    	        logger.debug("Successful upload");
-            
-            } catch (IOException ex) {
-            	logService.addException(ex);
-            	return FileResult.EXCEPTION_ERROR;
-            }
-        }
+		long fSize = file.getSize();
+		String originalName = file.getOriginalFilename();
 		
+	    if (file.isEmpty() || fSize == 0) {
+	    	if (originalName == null || originalName.isEmpty())
+	    		return FileResult.NO_FILE;
+	    	if (!originalName.isEmpty())
+	    		return FileResult.EMPTY_FILE;
+	    }
+	    
+    	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
+    	logger.debug("originalname = " + file.getOriginalFilename());
+    	logger.debug("filePath = " + filePath);
+
+    	boolean exists = fileExists(FileType.RECIPE, 0L, file.getOriginalFilename());
+    	if (exists)
+    		return FileResult.SUCCESS;
+		
+        try {
+	    	//if the file is not an image, ImageIO returns null
+	    	BufferedImage img = ImageIO.read(file.getInputStream());
+	    	if (img == null)
+	    		return FileResult.NOT_IMAGE;
+	    	
+	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
+	    	int size = nameParts.size();
+	    	if (size <= 1)
+	    		return FileResult.NO_EXTENSION;
+	    	
+	    	String ext = nameParts.get(size-1);
+	    	logger.debug("extension = " + ext);
+	    	ext = ext.toLowerCase();
+	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
+	    		return FileResult.INVALID_TYPE;
+
+	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+	    	ImageIO.write(img, ext, stream);
+	    	recipe.setPhotoName(file.getOriginalFilename());
+	        logger.debug("Successful upload");
+        
+        } catch (IOException ex) {
+        	logService.addException(ex);
+        	return FileResult.EXCEPTION_ERROR;
+        }
+
 		return FileResult.SUCCESS;
 		
 		/*
@@ -217,8 +216,18 @@ public class FileActionsImpl implements FileActions {
 	public FileResult uploadFile(FileType fileType, long id, MultipartFile file) {
 		logger.info("uploadFile: type/id=" + fileType + "/" + id);
 		
-	    if (file == null)
-	    	return FileResult.NO_FILE;
+		if (file == null)
+			return FileResult.NO_FILE;
+		
+		long fSize = file.getSize();
+		String originalName = file.getOriginalFilename();
+		
+	    if (file.isEmpty() || fSize == 0) {
+	    	if (originalName == null || originalName.isEmpty())
+	    		return FileResult.NO_FILE;
+	    	if (!originalName.isEmpty())
+	    		return FileResult.EMPTY_FILE;
+	    }
 		
 	    try {
 	    	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + file.getOriginalFilename();
@@ -230,7 +239,6 @@ public class FileActionsImpl implements FileActions {
 	    	if (img == null)
 	    		return FileResult.NOT_IMAGE;
 	    	
-	    	String originalName = file.getOriginalFilename();
 	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
 	    	int size = nameParts.size();
 	    	if (size <= 1)
@@ -313,7 +321,7 @@ public class FileActionsImpl implements FileActions {
 		FileFilter filter = new WildcardFileFilter(file);
 		File files[] = testfile.listFiles(filter);
 		if (files == null || files.length == 0)
-			return null;
+			return "";
 		return (files.length > 0 ? files[0].getName() : "");
 	}
 
@@ -334,6 +342,8 @@ public class FileActionsImpl implements FileActions {
 			case SUCCESS			:	msg = messages.getMessage("exception.file.success", null, defaultMsg, locale);
 										break;
 			case NO_FILE			:	msg = messages.getMessage("exception.file.nofile", null, defaultMsg, locale);
+										break;
+			case EMPTY_FILE			:	msg = messages.getMessage("exception.file.emptyfile", null, defaultMsg, locale);
 										break;
 			case NOT_IMAGE			:	msg = messages.getMessage("exception.file.notanimage", null, defaultMsg, locale);
 										break;

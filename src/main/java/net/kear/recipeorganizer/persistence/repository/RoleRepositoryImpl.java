@@ -32,17 +32,6 @@ public class RoleRepositoryImpl implements RoleRepository {
        	return null;
     }
     
-    public Role getDefaultRole()
-    {
-    	Criteria criteria = getSession().createCriteria(Role.class)
-          	.add(Restrictions.eq("defaultRole", 1));
-       	Object result = criteria.uniqueResult();
-       	if (result != null)
-       		return (Role) result;
-        	
-       	return null;
-    }
-    
     @SuppressWarnings("unchecked")
     public List<Role> getRoles() {
     	return getSession().createCriteria(Role.class).list();

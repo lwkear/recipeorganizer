@@ -78,17 +78,14 @@ $(function() {
 			$('#dupeErr').hide();
 		})
 		.fail(function(jqXHR, status, error) {
-			console.log('fail status: '+ jqXHR.status);
-			console.log('fail error: '+ error);
+			var data = jqXHR.responseJSON;
+			console.log('fail data: '+ data);
 	
 			//server sets CONFLICT error if name exists
 			if (jqXHR.status == 409) {
-				//server currently returns a simple error message
-				var respText = jqXHR.responseText;
-				console.log('respText: '+ respText);
 				//set the error indicator
 				recipeName.parent('div').addClass('has-error');
-				$('#dupeErr').html(respText);
+				$('#dupeErr').html(data.msg);
 				$('#dupeErr').show();
 				return;
 			}

@@ -17,6 +17,12 @@ public class Role implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	public static final String TYPE_GUEST = "GUEST";
+	public static final String TYPE_AUTHOR = "AUTHOR";
+	public static final String TYPE_EDITOR = "EDITOR";
+	public static final String TYPE_ADMIN = "ADMIN";
+	public static final String TYPE_DEFAULT = "GUEST";
+
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ROLE_SEQ")
@@ -24,11 +30,12 @@ public class Role implements Serializable {
 	private long id;
 
 	@Column(name = "NAME")
-	@Size(max=10)	//10
+	@Size(max=10)
 	private String name;
 
-	@Column(name = "DEFAULT_ROLE")
-	private int defaultRole;
+	@Column(name = "DESCRIPTION")
+	@Size(max=20)
+	private String description;
 	
     /*@OneToMany(mappedBy = "role")
     private Collection<User> user;*/
@@ -62,14 +69,14 @@ public class Role implements Serializable {
 		this.name = name;
 	}
 
-    public int getDefaultRole() {
-		return defaultRole;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setDefaultRole(int defaultRole) {
-		this.defaultRole = defaultRole;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-
+	
 	/*public Collection<User> getUsers() {
         return user;
     }
@@ -106,6 +113,6 @@ public class Role implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", defaultRole=" + defaultRole + "]";
+		return "Role [id=" + id + ", name=" + name + ", description=" + description + "]";
 	}   
 }

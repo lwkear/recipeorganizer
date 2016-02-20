@@ -26,7 +26,7 @@ public class ExceptionLogRepositoryImpl implements ExceptionLogRepository {
     	
     	BigDecimal id = (BigDecimal)query.uniqueResult(); 
     	return id.longValue();
-    }   
+    }
     
     private Session getSession() {
 		Session sess = sessionFactory.getCurrentSession();

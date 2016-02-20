@@ -12,6 +12,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,6 +46,9 @@ public class UserProfile implements Serializable {
 
 	@Column(name = "AVATAR")
 	private String avatar;
+	
+	@Transient
+	private boolean submitRecipes;
 
 	//NOTE: the @JsonIgnore annotation prevents a recursive stack overflow when serializing a User object (see "public User getUser" function in AdminController)
 	//	the serializer parses through the <user> object first; when it gets to the <userProfile> object in User, it tries to serialize not just the UserProfile data
@@ -122,6 +126,14 @@ public class UserProfile implements Serializable {
 		this.avatar = avatar;
 	}
 
+	public boolean getSubmitRecipes() {
+		return submitRecipes;
+	}
+
+	public void setSubmitRecipes(boolean submitRecipes) {
+		this.submitRecipes = submitRecipes;
+	}
+	
     public User getUser() {
         return user;
     }

@@ -33,7 +33,8 @@
 	<p id="recipe.ingredients.length"/><spring:message code="recipe.ingredients.length"></spring:message>
 	<p id="recipe.optional.photo"/><spring:message code="recipe.optional.photo"></spring:message>
 	<p id="recipe.optional.photo.noneselected"/><spring:message code="recipe.optional.photo.noneselected"></spring:message>
-	<p id="exception.JRException"/><spring:message code="exception.JRException"></spring:message>	
+	<p id="exception.JRException"/><spring:message code="exception.JRException"></spring:message>
+	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
 	<p id="profile.photo"/><spring:message code="profile.photo"></spring:message>
 	<p id="common.size.max"/><spring:message code="common.size.max"></spring:message>
 	<p id="recipe.edit.cancel"/><spring:message code="recipe.edit.cancel"></spring:message>

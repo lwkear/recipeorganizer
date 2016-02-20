@@ -22,6 +22,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +32,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
+import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -45,7 +47,7 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.FileResult;
-import net.kear.recipeorganizer.util.FileType;
+import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.SolrUtil;
 import net.kear.recipeorganizer.util.ViewReferer;
 
@@ -76,18 +78,22 @@ public class RecipeController {
 	private SolrUtil solrUtil;
 	@Autowired
 	private ConstraintMap constraintMap;
-	@Autowired
-	private ExceptionLogService logService;
 	
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
-	@RequestMapping(value = "recipe/editRecipe", method = RequestMethod.GET)
-	public String editRecipe(Model model, @RequestHeader("referer") String refer, @RequestParam("recipeId") Long recipeId,
-			HttpServletRequest request) {
+	@RequestMapping(value = "recipe/editRecipe/{recipeId}", method = RequestMethod.GET)
+	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, HttpServletRequest request) throws RecipeNotFound {
 		logger.info("recipe/editRecipe GET: recipeId=" + recipeId);
 
-		Recipe recipe = recipeService.getRecipe(recipeId);
+		Recipe recipe;
+		try {
+			recipe = recipeService.getRecipe(recipeId);
+		}
+		catch (Exception ex) {
+			throw new RecipeNotFound(ex);
+		}
+		
 		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
 		model.addAttribute("sizeMap", sizeMap);
 
@@ -109,7 +115,7 @@ public class RecipeController {
 	}
 
 	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
-	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, BindingResult resultSource, Locale locale,
+	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, Locale locale, HttpServletRequest request,
 			@RequestParam(value = "file", required = false) MultipartFile file) {		
 		logger.info("recipe/editRecipe POST: recipeId=" + recipe.getId());
 	
@@ -118,21 +124,25 @@ public class RecipeController {
 			return "recipe/editRecipe";
 		}
 
-		if (file != null && !file.isEmpty()) {
+		if (file != null) {
 			FileResult rslt = fileAction.uploadFile(FileType.RECIPE, recipe.getId(), file);
-			if (rslt != FileResult.SUCCESS) {
-				String msg = fileAction.getErrorMessage(rslt, locale);
-				FieldError fieldError = new FieldError("recipe", "photoName", msg);
-				result.addError(fieldError);
-				return "recipe/editRecipe";
+			if (rslt == FileResult.SUCCESS) {
+				String currPhoto = recipe.getPhotoName();
+				if (currPhoto != null && !currPhoto.isEmpty()) {
+					String newPhoto = file.getOriginalFilename();
+					if (!currPhoto.equals(newPhoto))
+						fileAction.deleteFile(FileType.RECIPE, recipe.getId(), currPhoto);
+				}
+				recipe.setPhotoName(file.getOriginalFilename());
 			}
-			String currPhoto = recipe.getPhotoName();
-			if (currPhoto != null && !currPhoto.isEmpty()) {
-				String newPhoto = file.getOriginalFilename();
-				if (!currPhoto.equals(newPhoto))
-					fileAction.deleteFile(FileType.RECIPE, recipe.getId(), currPhoto);
+			else {
+				if (rslt != FileResult.NO_FILE) {
+					String msg = fileAction.getErrorMessage(rslt, locale);
+					FieldError fieldError = new FieldError("recipe", "photoName", msg);
+					result.addError(fieldError);
+					return "recipe/editRecipe";
+				}
 			}
-			recipe.setPhotoName(file.getOriginalFilename());
         }
 		
 		String photoName = recipe.getPhotoName();
@@ -151,11 +161,15 @@ public class RecipeController {
 			solrUtil.deleteRecipe(recipe.getId());
 		solrUtil.addRecipe(recipe);
 		
+		String uri = (String) request.getSession().getAttribute("returnUrl");
+		if (uri != null && uri.contains("approval"))
+			return "redirect:/admin/approval";
+		
 		return "redirect:/recipe/done/" + recipe.getId();
 	}
 
-	@RequestMapping(value = "recipe/done", method = RequestMethod.GET)
-	public String getDone(Model model, @RequestParam("recipeId") Long recipeId) throws RecipeNotFound {
+	@RequestMapping(value = "recipe/done/{recipeId}", method = RequestMethod.GET)
+	public String getDone(Model model, @PathVariable Long recipeId) throws RecipeNotFound {
 		logger.info("recipe/done GET: recipeId=" + recipeId);
 	
 		Recipe recipe;
@@ -166,6 +180,10 @@ public class RecipeController {
 			throw new RecipeNotFound(ex);
 		}
 		
+		if (recipe == null) {
+			throw new RecipeNotFound();
+		}
+		
 		model.addAttribute("update", true);
 		model.addAttribute("recipe", recipe);
 		return "recipe/done";
@@ -174,17 +192,19 @@ public class RecipeController {
 	/*****************************/
 	/*** Delete recipe handler ***/
 	/*****************************/
-	@RequestMapping(value = "recipe/deleteRecipe/{recipeId}", method = RequestMethod.POST)
+	@RequestMapping(value = "recipe/deleteRecipe", method = RequestMethod.POST)
 	@ResponseBody
-	public String deleteRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteRecipe(@RequestParam("recipeId") Long recipeId) throws RestException {
 		logger.info("recipe/deleteRecipe GET: recipeId=" + recipeId);
 		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		recipeService.deleteRecipe(recipeId);
-		
+		//delete the recipe
+		try {
+			recipeService.deleteRecipe(recipeId);
+		} catch (Exception ex) {
+			throw new RestException("exception.deleteRecipe", ex);
+		}
+
 		String fileName = fileAction.fileExists(FileType.RECIPE, recipeId);
 		if (fileName.length() > 0)
 			//errors are not fatal and will be logged by FileAction
@@ -193,36 +213,38 @@ public class RecipeController {
 		//errors are not fatal and will be logged by SolrUtil
 		solrUtil.deleteRecipe(recipeId);
 
-		return msg;
+		return new ResponseObject();
 	}	
 
 	/**************************/
 	/*** Support functions  ***/
 	/**************************/
-	//JSON request for a list of categories
+	//get list of categories
 	@RequestMapping(value = "recipe/getCategories", method = RequestMethod.GET)
 	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
 	public List<Category> getCategories() {
 		logger.info("recipe/categories GET");
 		
-		List<Category> cats = categoryService.listCategory();
-		logger.debug(cats.toString());
-		return cats;
-
-		//return categoryService.listCategory();
+		return categoryService.listCategory();
 	}
 
-	//AJAX post a new ingredient
+	//post a new ingredient
 	@RequestMapping(value = "recipe/addIngredient", method = RequestMethod.POST)
 	@ResponseBody
-	public Ingredient addIngredient(@RequestBody @Valid Ingredient ingredient) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public Ingredient addIngredient(@RequestBody @Valid Ingredient ingredient) throws RestException {
 		logger.info("recipe/addingredient POST: name=" + ingredient.getName());
 		
 		if (ingredient.getName() == null)
 			return ingredient;
 		
 		//add the ingredient to the DB
-		ingredientService.addIngredient(ingredient);
+		try {
+			ingredientService.addIngredient(ingredient);
+		} catch (Exception ex) {
+			throw new RestException("exception.addIngredient", ex);
+		}
 		
 		logger.debug("Id = " + ingredient.getId());
 		logger.debug("Description = " + ingredient.getName());
@@ -230,9 +252,10 @@ public class RecipeController {
 		return ingredient;
 	}
 	
-	//AJAX/JSON request for a typeahead list of ingredients
+	//request for a typeahead list of ingredients
 	@RequestMapping(value = "recipe/getIngredients", method = RequestMethod.GET)
 	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
 	public List<Ingredient> getIngredients(@RequestParam("searchStr") String searchStr) {
 		logger.info("recipe/getingredients GET");
 		logger.debug("searchStr = " + searchStr); 
@@ -242,9 +265,10 @@ public class RecipeController {
 		return ingreds;
 	}
 
-	//AJAX/JSON request for a typeahead list of ingredient qualifiers
+	//request for a typeahead list of ingredient qualifiers
 	@RequestMapping(value = "recipe/getQualifiers", method = RequestMethod.GET)
 	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
 	public List<String> getQualifiers(@RequestParam("searchStr") String searchStr) {
 		logger.info("recipe/getqualifiers GET");
 		logger.debug("searchStr = " + searchStr); 
@@ -254,9 +278,10 @@ public class RecipeController {
 		return quals;
 	}
 
-	//AJAX/JSON request for a typeahead list of sources
+	//request for a typeahead list of sources
 	@RequestMapping(value = "recipe/getSources", method = RequestMethod.GET)
 	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
 	public List<String> getSources(@RequestParam("searchStr") String searchStr, @RequestParam("type") String type) {
 		logger.info("recipe/getsources GET");
 		logger.debug("searchStr=" + searchStr + "; type=" + type); 
@@ -266,9 +291,10 @@ public class RecipeController {
 		return sources;
 	}
 	
-	//AJAX/JSON request for a typeahead list of tags
+	//request for a typeahead list of tags
 	@RequestMapping(value = "recipe/getTags", method = RequestMethod.GET)
 	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
 	public List<String> getTags(@RequestParam("userId") Long userId) {
 		logger.info("recipe/gettags GET");
 		logger.debug("userId=" + userId); 
@@ -277,43 +303,44 @@ public class RecipeController {
 		return tags;
 	}
 
-	//AJAX/JSON request for checking name duplication
+	//request for checking name duplication
 	@RequestMapping(value = "recipe/lookupRecipeName", method = RequestMethod.GET, produces="text/javascript")
 	@ResponseBody 
-	public String lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response) {
-		logger.info("recipe/lookupRecipeName GET: name=" + lookupName);
-		logger.debug("recipeName=" + lookupName + "; userId=" + userId);
-		
-		//set default response, incl. empty JSON msg
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response) {
+		logger.info("recipe/lookupRecipeName GET: name/userid=" + lookupName + "/" + userId);
 		
 		//add the ingredient to the DB
 		boolean result = recipeService.lookupName(lookupName, userId);
-		
 		logger.debug("lookupName result=" + result);
+
+		ResponseObject obj = new ResponseObject();
 		
 		//name was found
 		if (result) {
 			Locale locale = LocaleContextHolder.getLocale();
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
-			msg = messages.getMessage("recipe.name.duplicate", null, "Duplicate name", locale);
+			String msg = messages.getMessage("recipe.name.duplicate", null, "Duplicate name", locale);
+			obj.setMsg(msg);
 		}
 
-		return msg;
+		return obj;
 	}
 
-	@RequestMapping(value = "recipe/getRecipeCount", method = RequestMethod.GET)
-	@ResponseBody 
-	public Long getRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) {
+	@RequestMapping(value = "recipe/userRecipeCount", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)	
+	public Long getUserRecipeCount(@RequestParam("userId") Long userId, HttpServletResponse response) throws RestException {
 		logger.info("recipe/getRecipeCount GET: user=" + userId);
-		logger.debug("userId=" + userId);
 		
-		//set default response
-		response.setStatus(HttpServletResponse.SC_OK);
+		Long count = 0L;
 		
 		//get the count for the user
-		Long count = recipeService.getRecipeCount(userId);
+		try {
+			count = recipeService.getRecipeCount(userId);
+		} catch (Exception ex) {
+			throw new RestException("exception.getUser", ex);
+		}
 		
 		logger.debug("count result=" + count);
 		

@@ -57,8 +57,12 @@ public class UserInfo implements Serializable {
 			if (principal instanceof UserDetails)
 				return false;
 		}
-		
 		return true;		
+	}
+
+	public boolean isUserRole(String role) {
+		String currRole = getRole();
+		return (role.equalsIgnoreCase(currRole) ? true : false);		
 	}
 	
 	public UserDetails getUserDetails() {
@@ -67,7 +71,6 @@ public class UserInfo implements Serializable {
 			if (principal instanceof UserDetails)
 				return (UserDetails)principal;
 		}
-		
 		return null;	
 	}
 	
@@ -80,7 +83,6 @@ public class UserInfo implements Serializable {
 				role = authority.getAuthority();
 			}
 		}
-		
 		return role;
 	}
 }

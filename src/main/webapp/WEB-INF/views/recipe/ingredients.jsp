@@ -91,29 +91,3 @@
 	<p><b>flow.ingredIndex:</b>${ingredIndex}</p>
 	<p><b>recipe.ingredSections:</b>${recipe.numIngredSections}</p>
 	<p><b>recipe.currentSection:</b>${recipe.currIngredSection}</p> --%>
-<%-- 	
-					<div class="col-sm-2 text-left">
-						<button class="btn btn-default row-adjust" type="submit" name="_eventId_back"><spring:message code="common.back"></spring:message></button>
-					</div>
-					<div class="col-sm-3">
-					</div>
-					<div class="col-sm-2 text-center">
-						<c:choose>
-							<c:when test="${recipe.numIngredSections > 1 && (recipe.currIngredSection < (recipe.numIngredSections - 1))}">
-								<c:set var="buttonName" value="Next Set"/>
-							</c:when>
-							<c:otherwise>
-								<c:set var="buttonName"><spring:message code="recipe.instructions.button"></spring:message></c:set>
-							</c:otherwise>
-						</c:choose>
-						<button class="btn btn-primary row-adjust" type="submit" name="_eventId_proceed">${buttonName}</button>
-					</div>
-					<div class="col-sm-3">
-					</div>
-					<div class="col-sm-2 text-right">
-						<button class="btn btn-default" id="fakeSubmitCancel"><spring:message code="common.cancel"></spring:message></button>
-						<button id="cancelSubmitBtn" type="submit" name="_eventId_cancel" style="display:none"></button>
-					</div>
-
-
-			 --%>

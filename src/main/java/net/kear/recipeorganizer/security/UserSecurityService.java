@@ -20,7 +20,6 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 @Transactional
 public class UserSecurityService implements UserDetailsService {
 
-	//@Autowired
 	private UserService userService;
 
     @Autowired
@@ -51,7 +50,7 @@ public class UserSecurityService implements UserDetailsService {
 		
 		public final Collection<? extends GrantedAuthority> getAuthorities() {
 			
-			String roleName = "GUEST";
+			String roleName = Role.TYPE_GUEST;
 		
 			Role userRole = getRole();
 			if (userRole != null)

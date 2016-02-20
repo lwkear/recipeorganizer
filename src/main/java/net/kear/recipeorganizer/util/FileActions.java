@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 
 import org.springframework.web.multipart.MultipartFile;

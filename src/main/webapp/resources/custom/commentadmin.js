@@ -10,12 +10,12 @@ function deleteComment(commentId) {
 	})
 	.done(function(data) {
 		console.log('delete comment success');
-		//userDeleted(userId);	--remove from datatable
+		removeRow(commentId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -35,14 +35,9 @@ function removeCommentFlag(commentId) {
 		removeRow(commentId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-
-		//server currently returns a simple error message
-		var respText = jqXHR.responseText;
-		console.log('respText: '+ respText);
-		postFailed(respText)
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 

@@ -47,9 +47,12 @@ public class SearchController {
 		
 		ArrayList<SearchResultsDto> resultsList = solrUtil.searchRecipes(searchTerm);
 
+		long userId = 0;
 		User user = (User)userInfo.getUserDetails();
-		long userId = user.getId();
-		Iterator<SearchResultsDto> iter = resultsList.iterator();
+		if (user != null)
+			userId = user.getId();
+
+		/*Iterator<SearchResultsDto> iter = resultsList.iterator();
 		while (iter.hasNext()) {
 			SearchResultsDto result = iter.next(); 
 			if (result.getUserId() != userId) {
@@ -57,12 +60,14 @@ public class SearchController {
 					iter.remove();
 				}
 			}					
-		}
+		}*/
+		
+		ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
 	    
 	    ModelAndView mv = new ModelAndView();
 	    redir.addFlashAttribute("searchTerm", searchTerm);
-	    redir.addFlashAttribute("resultList", resultsList);
-	    redir.addFlashAttribute("numFound", resultsList.size());	    
+	    redir.addFlashAttribute("resultList", filteredList);
+	    redir.addFlashAttribute("numFound", filteredList.size());	    
         mv.setViewName("redirect:/searchResults");
 	    return mv;
 	}	
@@ -84,16 +89,38 @@ public class SearchController {
 		Object val = modelMap.get("searchTerm");
 		String searchTerm = (String)val;
 		logger.debug("modelMap searchTerm: " + searchTerm);
+
+		long userId = 0;
+		User user = (User)userInfo.getUserDetails();
+		if (user != null)
+			userId = user.getId();
 		
-		List<SearchResultsDto> resultsList = null;
+		ArrayList<SearchResultsDto> resultsList = null;
 		
+		//the user returned to the results page from viewing a recipe - need to re-run the search
 		if (!found && !list) {
 			resultsList = solrUtil.searchRecipes(searchTerm);
+			ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
 			model.addAttribute("searchTerm", searchTerm);
-			model.addAttribute("resultList", resultsList);
-			model.addAttribute("numFound", resultsList.size());
+			model.addAttribute("resultList", filteredList);
+			model.addAttribute("numFound", filteredList.size());
 		}
 		
 		return "searchResults";
+	}
+	
+	private ArrayList<SearchResultsDto> filterResults(ArrayList<SearchResultsDto> results, long userId) {
+
+		Iterator<SearchResultsDto> iter = results.iterator();
+		while (iter.hasNext()) {
+			SearchResultsDto result = iter.next(); 
+			if (result.getUserId() != userId) {
+				if (result.getAllowShare() == false || result.getApproved() == false) {
+					iter.remove();
+				}
+			}					
+		}
+		
+		return results;
 	}
 }

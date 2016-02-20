@@ -26,6 +26,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
@@ -133,9 +134,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		//CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        //characterEncodingFilter.setEncoding("UTF-8");
-        //characterEncodingFilter.setForceEncoding(true);
 		
     	http
     	//.csrf().disable()
@@ -149,8 +147,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
-    		.antMatchers("/recipe", "/recipe/**", "/recipe/listRecipes").hasAuthority("AUTHOR")
-    		.antMatchers("/admin/**").hasAuthority("ADMIN")
+    		.antMatchers("user/account", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
+    		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*").hasAuthority(Role.TYPE_GUEST)
+    		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)
+    		.antMatchers("/admin/**").hasAuthority(Role.TYPE_ADMIN)
     		.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())

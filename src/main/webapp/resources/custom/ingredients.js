@@ -208,10 +208,10 @@ $(function() {
 			var data = {"id":"0","name":desc};
 		
 			$.ajax({
-				headers: { 
+				/*headers: { 
 			        'Accept': 'application/json',
 			        'Content-Type': 'application/json' 
-			    },
+			    },*/
 				type: 'POST',
 				url: '/recipeorganizer/recipe/addIngredient',
 				dataType: 'json',
@@ -223,18 +223,13 @@ $(function() {
 				ingredDesc.val(desc);
 			})
 			.fail(function(jqXHR, status, error) {
-				console.log('fail request: '+ jqXHR);
-				console.log('fail status: '+ status);
-				console.log('fail error: '+ error);
-		
-				//server currently returns a simple error message
-				var respText = jqXHR.responseText;
-				console.log('respText: '+ respText);
+				var data = jqXHR.responseJSON;
+				console.log('fail data: '+ data);
 				//set the error indicator
 				ingredDesc.parents('div:first').addClass('has-error');
 				//get the parent <div> for this edit box, then set the error message and show the error 
 				var currentEntry = ingredDesc.parents('.ingredGrp:first');
-				currentEntry.find('.jsonIgredErr').html(respText);
+				currentEntry.find('.jsonIgredErr').html(data.msg);
 				currentEntry.find('.ingredErrGrp').show();
 			})
 		})

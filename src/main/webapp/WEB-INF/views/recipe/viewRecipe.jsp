@@ -10,6 +10,11 @@
 
 <c:set var="returnLabel" value="${sessionScope.returnLabel}"/>
 <c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
+<c:set var="privateRecipe" value="false"></c:set>
+<c:if test="${userId != recipe.user.id && recipe.copyrighted}">
+	<c:set var="privateRecipe" value="true"></c:set>
+</c:if>
+
 <sec:authentication var="viewerId" property="principal.id" />
 
 <body role="document" onload="blurInputFocus()">
@@ -37,23 +42,23 @@
 					</button>
 					<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px;visibility:hidden"><span class="glyphicon glyphicon-paperclip"></span></button>
 					<span class="pull-right">
-						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:30px;font-size:20px" 
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:30px;font-size:20px" 
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="share" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.share"></spring:message>">
-							<span class="glyphicon glyphicon-share"></span>
+							<span class="glyphicon glyphicon-envelope"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm favorite <c:if test="${privateRecipe}">disabled</c:if>" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
 							<span class="glyphicon glyphicon-star"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
 							<span class="glyphicon glyphicon-cutlery"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
 							<span class="glyphicon glyphicon-paperclip"></span>
 						</button>
@@ -63,60 +68,59 @@
 								<span class="glyphicon glyphicon-pencil"></span>
 							</a>
 						</c:if>
+						<button type="button" class="btn btn-link btn-sm" id="noteRight" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
+							<span class="glyphicon glyphicon-user"></span>
+						</button>
 					</span>
 				</h3>
 				<h5>
-					<spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}
+					<span id="submittedBy" data-toggle="popover"><spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}</span>
 				</h5>
+				<c:if test="${privateRecipe}">
+					<h5 class="spacer-vert-xs">
+						<span>Note: This is a copyrighted recipe.  Click on the member message icon to ask the submitter to email you a copy.</span>
+					</h5>
+				</c:if>
 			</div>
-			<div class="<c:if test="${userId != recipe.user.id && recipe.copyrighted}">transparent</c:if>">		
+
+			<div id="popoverTitle" style="display:none;">
+				<c:if test="${not empty profile.avatar}">
+					<div>
+						<span class="pull-left" style="margin-right:20px;">
+							<img src="<c:url value="/user/avatar?id=${recipe.user.id}&filename=${profile.avatar}"/>" alt="" style="width:32px;height:32px;"/>
+						</span>
+					</div>
+				</c:if>
+				<div style="color:black;"><strong>${recipe.user.firstName}&nbsp;${recipe.user.lastName}</strong></div>
+				<div style="color:black;">
+					<c:if test="${not empty profile.city}">${profile.city}&nbsp;,&nbsp;</c:if>
+					<c:if test="${not empty profile.state}">${profile.state}</c:if>
+				</div>				
+				<div class="clearfix"></div>
+			</div>
+			<div id="popoverContent" style="display:none;color:black;">
+				<div style="color:black;">
+					<div><strong><spring:message code="dashboard.membersince"></spring:message></strong>&nbsp;&nbsp;<fmt:formatDate type="date" value="${submitJoin}"/></div>
+				</div>
+				<c:if test="${not empty profile.interests}">
+					<div style="color:black;">
+						<div><strong><spring:message code="profile.interests"></spring:message></strong></div>
+						<div>${profile.interests}</div>	
+					</div>
+				</c:if>				
+			</div>
+							
+			<div>
 			
 				<%@include file="recipeContent.jsp" %>
 			
 			</div>
-			<div id="commentSection">
+			<div id="commentSection" class="<c:if test="${privateRecipe}">transparent</c:if>">
 			
 				<%@include file="comments.jsp" %>
 			
 			</div>
-			
-			<%-- <div class="page-header" style="margin-top:0;padding-bottom:0">
-				<h5>
-					<button type="button" class="btn btn-link btn-sm" onclick="toggleComments()"><spring:message code="recipe.comments"></spring:message>
-						<span class="badge" style="background-color:#337ab7">${commentCount}</span>
-					</button>
-					<button type="button" class="btn btn-link btn-sm" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px"
-						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.comment"></spring:message>">
-						<span class="glyphicon glyphicon-comment"></span>
-					</button>
-				</h5>
-			</div>
-			<div class="list-group col-sm-12 hidden" id="commentDiv">
-				<c:forEach var="comment" items="${commentList}">
-					<div class="list-group-item">
-						<h5 class="list-group-item-heading">
-							<c:if test="${not empty comment.avatar}">
-								<span><img src="<c:url value="/user/avatar?id=${comment.userId}&filename=${comment.avatar}"/>" style="width:25px;height:25px;"/></span>
-							</c:if>
-							<span><fmt:formatDate type="both" timeStyle="short" value="${comment.dateAdded}" /></span>
-							&nbsp;&nbsp;&nbsp;${comment.firstName}&nbsp;${comment.lastName}
-							<span class="pull-right">
-								<button type="button" class="btn btn-link btn-sm" id="flagged-${comment.id}" 
-									style="margin-left:5px;font-size:20px;color: #d9534f; <c:if test="${comment.flag == 0}">display:none</c:if>"
-									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.flagged"></spring:message>">
-									<span class="glyphicon glyphicon-flag"></span>
-								</button>
-								<button type="button" class="btn btn-link btn-sm" id="flagComment-${comment.id}" onclick="flagComment(${comment.id})" 
-									style="margin-left:5px;font-size:20px; <c:if test="${comment.flag == 1}">display:none</c:if>" 
-									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.flagcomment"></spring:message>">
-									<span class="glyphicon glyphicon-flag"></span>
-								</button>
-							</span>
-						</h5>
-						<p class="list-group-item-text">${comment.userComment}</p>
-					</div>
-				</c:forEach>
-			</div> --%>
 		</div>
 	</div>		
 	<div class="col-sm-12" style="display:none">

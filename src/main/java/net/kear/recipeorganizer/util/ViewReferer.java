@@ -23,7 +23,7 @@ public class ViewReferer {
 		if (referer.contains("searchResults"))
 			returnLabel = "title.searchresults";
 		else
-		if (referer.contains("listRecipes"))
+		if (referer.contains("recipeList"))
 			returnLabel = "menu.submittedrecipes";
 		else
 		if (referer.contains("favorites"))

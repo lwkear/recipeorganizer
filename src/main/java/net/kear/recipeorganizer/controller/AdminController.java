@@ -1,13 +1,11 @@
 package net.kear.recipeorganizer.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -15,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
@@ -27,7 +26,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.exception.AccessUserException;
+import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
@@ -41,7 +44,7 @@ import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileType;
+import net.kear.recipeorganizer.util.ResponseObject;
 
 @Controller
 public class AdminController {
@@ -118,82 +121,73 @@ public class AdminController {
 	}
 
 	@RequestMapping(value="admin/deleteUser", method = RequestMethod.POST)
-	@ResponseBody 
-	public String deleteUser(@RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteUser(@RequestParam("userId") Long userId) throws RestException {
 		logger.info("admin/deleteUser POST: userId=" + userId);
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//delete the user
 		try {
 			userService.deleteUser(userId);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.deleteUser", null, ex.getClass().getSimpleName(), locale);
-			return msg;
+			throw new RestException("exception.deleteUser", ex);
 		}
 		
 		String fileName = fileAction.fileExists(FileType.AVATAR, userId);
-		if (fileName != null && fileName.length() > 0)
+		if (fileName.length() > 0)
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.AVATAR, userId, fileName);
 		
-		return msg;
+		return new ResponseObject();
 	}
 
 	@RequestMapping(value = "/admin/getUser", method = RequestMethod.GET)
 	@ResponseBody
-	public User getUser(@RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public User getUser(@RequestParam("userId") Long userId) throws RestException {
 		logger.info("admin/getUser GET: userId=" + userId);
 		
 		User user = null;
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
-		
 		try {
 			user = userService.getUser(userId);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.getUser", null, ex.getClass().getSimpleName(), locale);
-			response.setContentType("text/plain");
-			response.setCharacterEncoding("UTF-8");
-			try {
-				response.getWriter().write(msg);
-			} catch (IOException e) {}
+			throw new RestException("exception.getUser", ex);
+		}
+
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new RestException("exception.getUser", new AccessUserException());
 		}
 		
-		String userStr = user.toString();
-		logger.debug("user.toString: " + userStr);
+		//a user should never not have a role, but just in case...
+		if (user.getRole() == null) {
+			Role role = new Role();
+			role.setId(0L);
+			user.setRole(role);
+		}
+		
+		logger.debug("user.toString: " + user.toString());
 		
 		return user;
 	}
 
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
-	@ResponseBody 
-	public String updateUser(@RequestBody User user, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject updateUser(@RequestBody User user) throws RestException {
 		logger.info("admin/updateUser POST: userId=" + user.getId());
 		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		//get the count for the user
+		//update the user
 		try {
 			//fixes issue with the user object not containing the profile userId
 			if (user.getUserProfile() != null)
 				user.getUserProfile().setUser(user);
 			userService.updateUser(user);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.updateUser", null, ex.getClass().getSimpleName(), locale);
+			throw new RestException("exception.updateUser", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();		
 	}
 
 	/************************************/
@@ -213,7 +207,7 @@ public class AdminController {
 	
 	@RequestMapping(value = "/admin/category", method = RequestMethod.POST, params = {"save"})	
 	public String saveCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
-		logger.info("admin/category POST save: cat=" + category.getName());
+		logger.info("admin/category POST save: id/name=" + category.getId() + "/" + category.getName());
 
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
@@ -221,29 +215,23 @@ public class AdminController {
 		}
 		
 		try {
-			if (category.getId() == 0) {
-				logger.debug("ID = 0");
-				logger.debug("Name = " + category.getName());
+			if (category.getId() == 0)
 				categoryService.addCategory(category);
-			}
-			else {
-				logger.debug("ID = " + category.getId());
-				logger.debug("Name = " + category.getName());
+			else
 				categoryService.updateCategory(category);
-			}
 		} catch (DataIntegrityViolationException ex) {
 			logService.addException(ex);
 			String msg = messages.getMessage("exception.saveCategory", null, ex.getClass().getSimpleName(), locale);
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		} catch (Exception ex) {
+		}/*	catch (Exception ex) {
 			logService.addException(ex);
 			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		}
+		}*/
 		
 		return "redirect:category";
 	}
@@ -265,13 +253,13 @@ public class AdminController {
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		} catch (Exception ex) {
+		}/* catch (Exception ex) {
 			logService.addException(ex);
 			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		}
+		}*/
 
 		return "redirect:category";
 	}
@@ -290,47 +278,35 @@ public class AdminController {
 	}
 
 	@RequestMapping(value="admin/deleteComment", method = RequestMethod.POST)
-	@ResponseBody 
-	public String deleteComment(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteComment(@RequestParam("commentId") Long commentId) throws RestException {
 		logger.info("admin/deleteComment POST: commentId=" + commentId);
 		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		//delete the user
+		//delete the comment
 		try {
 			commentService.deleteComment(commentId);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.deleteComment", null, ex.getClass().getSimpleName(), locale);
-			return msg;
+			throw new RestException("exception.deleteComment", ex);
 		}
-		
-		return msg;
+
+		return new ResponseObject();
 	}
 
 	@RequestMapping(value="admin/removeCommentFlag", method = RequestMethod.POST)
-	@ResponseBody 
-	public String removeCommentFlag(@RequestParam("commentId") Long commentId, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject removeCommentFlag(@RequestParam("commentId") Long commentId) throws RestException {
 		logger.info("admin/removeCommentFlag POST: commentId=" + commentId);
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//delete the user
 		try {
 			commentService.setCommentFlag(commentId, 0);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.unflagComment", null, ex.getClass().getSimpleName(), locale);
-			return msg;
+			throw new RestException("exception.unflagComment", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 
 	/*******************************/
@@ -347,24 +323,18 @@ public class AdminController {
 	}
 
 	@RequestMapping(value="admin/approveRecipe", method = RequestMethod.POST)
-	@ResponseBody 
-	public String approveRecipe(@RequestParam("recipeId") Long recipeId, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)	
+	public ResponseObject approveRecipe(@RequestParam("recipeId") Long recipeId) throws RestException {
 		logger.info("admin/approveRecipe POST: recipeId=" + recipeId);
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//delete the user
 		try {
 			recipeService.approveRecipe(recipeId);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.approveRecipe", null, ex.getClass().getSimpleName(), locale);
-			return msg;
+			throw new RestException("exception.approveRecipe", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 }

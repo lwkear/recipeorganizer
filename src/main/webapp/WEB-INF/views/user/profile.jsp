@@ -70,6 +70,26 @@
 							<span class="text-danger" id="interestsErrMsg">${interestsError}</span>
 						</div>
 					</div>
+					<c:if test="${not (isAuthor || isEditor || isAdmin)}">
+						<div class="col-sm-12">
+							<div class="form-group col-sm-8 col-sm-offset-2">
+								<div class="row">
+									<div class="col-sm-8">
+										<label class="control-label" for="submitRecipes"><spring:message code="signup.submitrecipe"></spring:message></label>
+									</div>
+									<div class="col-sm-3">
+										<div class="radio-inline">
+											<form:radiobutton value="true" path="submitRecipes" checked="true"/><spring:message code="common.yes"></spring:message>
+										</div>
+										<div class="radio-inline">
+											<form:radiobutton value="false" path="submitRecipes"/><spring:message code="common.no"></spring:message>
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</c:if>
 					<div class="col-sm-12">
 						<c:choose>
 							<c:when test="${not empty userProfile.avatar}">
@@ -131,11 +151,13 @@
 								</div>
 							</c:otherwise>
 						</c:choose>
-					</div>	        		
-			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
-						<button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit">
-							<spring:message code="common.submit"></spring:message></button>
-	        		</div>
+					</div>
+					<div class="form-group col-sm-12 spacer-vert-sm">
+						<div class="col-sm-offset-5 col-sm-2 text-center">
+							<button type="submit" class="btn btn-primary pull-left" id="btnSubmit" name="btnSubmit"><spring:message code="common.save"></spring:message></button>
+							<a class="btn btn-default pull-right" href="<c:url value="/user/dashboard"></c:url>" role="button"><spring:message code="common.cancel"></spring:message></a>
+						</div>
+					</div>
 	        		<form:hidden path="id" />
 	        		<form:hidden path="user.id" />
 	      		</form:form>

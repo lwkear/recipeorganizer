@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.util.UserInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 		
 		if (auth != null && auth.isAuthenticated() && !uri.isEmpty()) {
 			if (!userInfo.isUserAnonymous() && 
-				role.equalsIgnoreCase("GUEST") && 
-				(uri.equals("/recipeorganizer/recipe/listRecipes") || uri.equals("/recipeorganizer/recipe"))) { 
+				role.equalsIgnoreCase(Role.TYPE_GUEST) && 
+				(uri.equals("/recipeorganizer/recipe/recipeList") || uri.equals("/recipeorganizer/recipe"))) { 
 					setErrorPage("/user/changeAccount");
 			}
 		}

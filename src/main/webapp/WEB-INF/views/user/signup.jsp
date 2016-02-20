@@ -90,7 +90,7 @@
 										<form:radiobutton value="true" path="submitRecipes" checked="true"/><spring:message code="common.yes"></spring:message>
 									</div>
 									<div class="radio-inline">
-										<form:radiobutton value="true" path="submitRecipes"/><spring:message code="common.no"></spring:message>
+										<form:radiobutton value="false" path="submitRecipes"/><spring:message code="common.no"></spring:message>
 									</div>
 								</div>
 							</div>

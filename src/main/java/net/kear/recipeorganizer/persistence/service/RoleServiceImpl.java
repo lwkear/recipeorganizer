@@ -24,10 +24,6 @@ public class RoleServiceImpl implements RoleService {
     	return roleRepository.getRole(name);    	
     }
     
-    public Role getDefaultRole() {
-    	return roleRepository.getDefaultRole();    	
-    }
-    
     public List<Role> getRoles() {
     	return roleRepository.getRoles();
     }

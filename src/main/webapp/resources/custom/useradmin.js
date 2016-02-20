@@ -14,7 +14,7 @@ function checkRecipeCount(userId, userFirst, userLast) {
 function getRecipeCount(userId, userFirst, userLast, callback) {
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/recipe/getRecipeCount',
+		url: '/recipeorganizer/recipe/userRecipeCount',
 		dataType: 'json',
 		data: {"userId":userId}
 	})
@@ -24,8 +24,9 @@ function getRecipeCount(userId, userFirst, userLast, callback) {
 		callback(data, userId, userFirst, userLast);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -64,9 +65,9 @@ function deleteUser(e) {
 		userDeleted(userId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -94,8 +95,9 @@ function getUser(userId, callback) {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/admin/getUser/' + userId,
-		dataType: 'json'
+		url: '/recipeorganizer/admin/getUser',
+		dataType: 'json',
+		data: {"userId":userId}
 	})
 	.done(function(data) {
 		console.log('getUser() done');
@@ -103,15 +105,18 @@ function getUser(userId, callback) {
 		callback(data);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
 //modify the user in popup dialog
 function displayUser(user) {
-	$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
+	//if (user.role === null)
+		//$("#inputRole option[data-id=0]").prop('selected',true);
+	//else
+		$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
 	$("input[name='enabled'][value='" + user.enabled + "']").prop('checked',true);
 	$("input[name='locked'][value='" + user.locked + "']").prop('checked',true);
 	$("input[name='pswdExpired'][value='" + user.passwordExpired + "']").prop('checked',true);
@@ -145,8 +150,9 @@ function postUser(e) {
 		userUpdate(user);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 

@@ -27,25 +27,20 @@ $(function() {
 			}
 		})
 		.done(function(jqXHR, status, msg) {
-			console.log('done xhr.status: '+ jqXHR.status);
-			console.log('done status: '+ status);
-			console.log('done msg: '+ msg);
+			console.log('Name ok (not found)');
 			//fix the appearance in case a name was entered in error
 			username.parent('div').removeClass('has-error');
 			$('#emailErrMsg').html("");
 		})
 		.fail(function(jqXHR, status, error) {
-			console.log('fail status: '+ jqXHR.status);
-			console.log('fail error: '+ error);
+			var data = jqXHR.responseJSON;
+			console.log('fail data: '+ data);
 
 			//server sets CONFLICT error if name exists
 			if (jqXHR.status == 409) {
-				//server currently returns a simple error message
-				var respText = jqXHR.responseText;
-				console.log('respText: '+ respText);
 				//set the error indicator
 				username.parent('div').addClass('has-error');
-				$('#emailErrMsg').html(respText);
+				$('#emailErrMsg').html(data.msg);
 				return;
 			}
 		});

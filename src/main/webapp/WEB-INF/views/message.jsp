@@ -17,7 +17,7 @@
 			<div class="page-header">
 				<h3>${title}</h3>
 			</div>			
-			<div class="col-sm-12">			
+			<div class="col-sm-8 col col-sm-offset-2">			
 				<div class="center alert text-center strong">
 					<div><h4>${message}</h4></div>
 				</div>

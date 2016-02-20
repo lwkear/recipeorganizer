@@ -80,6 +80,7 @@
 					<div class="form-group">
 			            <label class="control-label" for="inputRole"><spring:message code="useradmin.common.role"></spring:message>:</label>
 		                <select class="form-control" id="inputRole">
+		                	<option data-id="0"><c:out value="NONE" /></option>
 		                	<c:forEach items="${roles}" var="role">
 		                		<option data-id="${role.id}"><c:out value="${role.name}" /></option>
 		                	</c:forEach>

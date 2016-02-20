@@ -32,9 +32,9 @@ function postDeleteRecipe(e) {
 		recipeDeleted(recipeId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -72,10 +72,10 @@ function postRemoveFavorite(e) {
 	var data = {"id":{"userId":userId,"recipeId":recipeId},"dateAdded":null};
 	
 	$.ajax({
-		headers: { 
+		/*headers: { 
 	        'Accept': 'application/json',
 	        'Content-Type': 'application/json' 
-	    },
+	    },*/
 		type: 'POST',
 		url: '/recipeorganizer/recipe/removeFavorite',
 		dataType: 'json',
@@ -86,10 +86,9 @@ function postRemoveFavorite(e) {
 		removeRow(recipeId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -116,14 +115,9 @@ function approveRecipe(recipeId) {
 		removeRow(recipeId);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-
-		//server currently returns a simple error message
-		var respText = jqXHR.responseText;
-		console.log('respText: '+ respText);
-		postFailed(respText)
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 

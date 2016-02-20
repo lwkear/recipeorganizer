@@ -56,9 +56,6 @@ public class SolrUtil {
 		query.addSort("name", SolrQuery.ORDER.asc);
 		query.addFilterQuery("allowshare:true");
 	    
-	    String qstr = ClientUtils.toQueryString(query, false);
-	    
-	    
 	    rsp = solrCore.query(query);
 	    
 	    ArrayList<SearchResultsDto> resultsList = new ArrayList<SearchResultsDto>();

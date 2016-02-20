@@ -19,9 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -34,12 +38,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.exception.AccessProfileException;
@@ -47,6 +53,7 @@ import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.AddUserException;
 import net.kear.recipeorganizer.exception.PasswordResendException;
 import net.kear.recipeorganizer.exception.PasswordResetException;
+import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.exception.SaveAccountException;
 import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
@@ -55,6 +62,7 @@ import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
+import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
@@ -67,7 +75,7 @@ import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.FileResult;
-import net.kear.recipeorganizer.util.FileType;
+import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 
 @Controller
@@ -101,6 +109,8 @@ public class UserController {
 	private ExceptionLogService logService;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private UserDetailsService detailsService;
 	
     /*********************/
     /*** Login handler ***/
@@ -149,6 +159,8 @@ public class UserController {
 		logger.info("user/signup GET");
 		
 		UserDto user = new UserDto();
+		//default to AUTHOR
+		user.setSubmitRecipes(true);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userDto", user);		
@@ -205,33 +217,31 @@ public class UserController {
 
 	//AJAX/JSON request for checking user (email) duplication
 	@RequestMapping(value="/lookupUser", produces="text/javascript")
-	@ResponseBody 
-	public String lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response, Locale locale) {
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response, Locale locale) throws RestException {
 		logger.info("lookupUser GET: email=" + lookupEmail);
-		
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//query the DB for the user
 		boolean result = false;
 		try {
 			result = userService.doesUserEmailExist(lookupEmail);
 		} catch (Exception ex) {
-			//do nothing - if there is a problem with the database the user will be notifed when they submit the form
-			logger.error(ex.getClass().toString(), ex);
-			return "";
+			throw new RestException("exception.default", ex);
 		}
 		
 		logger.debug("lookupEmail result=" + result);
+	
+		ResponseObject obj = new ResponseObject();
 		
 		//name was found
 		if (result) {
-			//Locale locale = LocaleContextHolder.getLocale();
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
-			msg = messages.getMessage("user.duplicateEmail", null, "This email is not available", locale);
+			obj.setStatus(HttpServletResponse.SC_CONFLICT);
+			obj.setMsg("user.duplicateEmail");
 		}
 
-		return msg;
+		return obj;
 	}
 
 	//respond to user click on email link
@@ -339,6 +349,9 @@ public class UserController {
 			userProfile.setUser(user);
 		}
 		
+		if (userInfo.isUserRole(Role.TYPE_GUEST))
+			userProfile.setSubmitRecipes(false);
+		
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserProfile.class); 
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userProfile", userProfile);
@@ -363,23 +376,27 @@ public class UserController {
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
 		}
-		
-		if (file != null && !file.isEmpty()) {
+
+		if (file != null) {
 			FileResult rslt = fileAction.uploadFile(FileType.AVATAR, user.getId(), file);
-			if (rslt != FileResult.SUCCESS) {
-				String msg = fileAction.getErrorMessage(rslt, locale);
-				FieldError fieldError = new FieldError("userProfile", "avatar", msg);
-				result.addError(fieldError);
-				return "user/profile";
+			if (rslt == FileResult.SUCCESS) {
+				String currAvatar = userProfile.getAvatar();
+				if (currAvatar != null && !currAvatar.isEmpty()) {
+					String newAvatar = file.getOriginalFilename();
+					if (!currAvatar.equals(newAvatar))
+						fileAction.deleteFile(FileType.AVATAR, user.getId(), currAvatar);
+				}
+				userProfile.setAvatar(file.getOriginalFilename());
 			}
-			String currAvatar = userProfile.getAvatar();
-			if (currAvatar != null && !currAvatar.isEmpty()) {
-				String newAvatar = file.getOriginalFilename();
-				if (!currAvatar.equals(newAvatar))
-					fileAction.deleteFile(FileType.AVATAR, user.getId(), currAvatar);
+			else {
+				if (rslt != FileResult.NO_FILE) {
+					String msg = fileAction.getErrorMessage(rslt, locale);
+					FieldError fieldError = new FieldError("userProfile", "avatar", msg);
+					result.addError(fieldError);
+					return "user/profile";
+				}
 			}
-			userProfile.setAvatar(file.getOriginalFilename());
-        }
+		}
 		
 		String avatarName = userProfile.getAvatar();
 		//TODO: move xxxREMOVExxx to a constant
@@ -392,6 +409,15 @@ public class UserController {
 		
 		try {		
 			userService.saveUserProfile(userProfile);
+			if (userInfo.isUserRole(Role.TYPE_GUEST)) {
+				if (userProfile.getSubmitRecipes()) {
+					//reload the user's authentication with the AUTHOR role
+					userService.changeRole(Role.TYPE_AUTHOR, user);					
+					UserDetails details = detailsService.loadUserByUsername(user.getEmail());
+					Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(auth);
+				}
+			}
 		} 
 		catch (Exception ex) {
 			throw new SaveAccountException(ex);
@@ -421,13 +447,28 @@ public class UserController {
 		
 		return "user/account";
 	}
+
+	@RequestMapping(value = "user/account", method = RequestMethod.POST)
+	public String upgradeAccount() {
+		logger.info("user/account POST");
+		
+		//reload the user's authentication with the AUTHOR role
+		User currentUser = (User)userInfo.getUserDetails();
+		User user = userService.getUser(currentUser.getId());
+		userService.changeRole(Role.TYPE_AUTHOR, user);
+		UserDetails details = detailsService.loadUserByUsername(user.getEmail());
+		Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(auth);
+		
+		return "redirect:/user/dashboard";
+	}
 	
 	/*************************/
 	/*** Dashboard handler ***/
 	/*************************/
 	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
 	public String getDashboard(Model model, HttpServletRequest request) throws AccessUserException {
-		logger.info("user/getDashboard GET");
+		logger.info("user/dashboard GET");
 
 		User currentUser = (User)userInfo.getUserDetails();
 		

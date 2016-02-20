@@ -44,7 +44,6 @@ public class RepositoryConfig {
 	    LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
 	    sessionBuilder.scanPackages("net.kear.recipeorganizer.*");
 	    sessionBuilder.addProperties(getHibernateProperties());
-	    //sessionBuilder.setProperties(getHibernateProperties());
 	    return sessionBuilder.buildSessionFactory();
 	}
 	

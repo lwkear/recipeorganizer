@@ -20,20 +20,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
+import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -42,12 +47,13 @@ import net.kear.recipeorganizer.persistence.model.RecipeComment;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileType;
+import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.ViewReferer;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -92,7 +98,7 @@ public class DisplayController {
 	/****************************/
 	/*** List recipes handler ***/
 	/****************************/
-	@RequestMapping(value = "recipe/listRecipes", method = RequestMethod.GET)
+	@RequestMapping(value = "recipe/recipeList", method = RequestMethod.GET)
 	public String listRecipes(ModelMap model, Locale locale) {
 		logger.info("recipe/listRecipes GET");
 	
@@ -104,7 +110,7 @@ public class DisplayController {
 		model.addAttribute("fav", false);
 		model.addAttribute("recipes", recipes);
 
-		return "recipe/listRecipes";
+		return "recipe/recipeList";
 	}
 
 	@RequestMapping(value = "recipe/favorites", method = RequestMethod.GET)
@@ -120,14 +126,14 @@ public class DisplayController {
 		model.addAttribute("fav", true);
 		model.addAttribute("recipes", recipes);
 
-		return "recipe/listRecipes";
+		return "recipe/recipeList";
 	}
 	
 	/***************************/
 	/*** View recipe handler ***/
 	/***************************/
-	@RequestMapping(value = "recipe/viewRecipe", method = RequestMethod.GET)
-	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @RequestParam("recipeId") Long recipeId, 
+	@RequestMapping(value = "recipe/viewRecipe/{recipeId}", method = RequestMethod.GET)
+	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
 			HttpServletResponse response, HttpServletRequest request, Locale locale) throws RecipeNotFound {
 		logger.info("recipe/viewRecipe GET: recipeId=" + recipeId);
 
@@ -140,6 +146,8 @@ public class DisplayController {
 		catch (Exception ex) {
 			throw new RecipeNotFound(ex);
 		}
+
+		UserProfile profile = recipe.getUser().getUserProfile();
 		
 		String idStr = recipeId.toString();
 		String cookieName = "recentRecipes";
@@ -194,6 +202,8 @@ public class DisplayController {
 		model.addAttribute("commentCount", commentCount);
 		model.addAttribute("commentList", commentList);
 		model.addAttribute("recipe", recipe);
+		model.addAttribute("submitJoin", recipe.getUser().getDateAdded());
+		model.addAttribute("profile", profile);
 		
 		if (user.getId() != recipe.getUser().getId())
 			recipeService.addView(recipe);
@@ -212,8 +222,8 @@ public class DisplayController {
 			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
 	
-	@RequestMapping(value = "/report/getHtmlRpt", method = RequestMethod.GET)
-	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @RequestParam("recipeId") Long recipeId) {
+	@RequestMapping(value = "/report/getHtmlRpt/{recipeId}", method = RequestMethod.GET)
+	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long recipeId) {
 		logger.info("recipe/getHtmlRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -265,8 +275,8 @@ public class DisplayController {
 		}
 	}
 
-	@RequestMapping(value = "/report/getPdfRpt/{id}", method = RequestMethod.GET)
-	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @RequestParam("recipeId") Long recipeId) {
+	@RequestMapping(value = "/report/getPdfRpt/{recipeId}", method = RequestMethod.GET)
+	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long recipeId) {
 		logger.info("recipe/getPdfRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -323,42 +333,32 @@ public class DisplayController {
 	/*************************/
 	@RequestMapping(value = "/recipe/addFavorite", method = RequestMethod.POST)
 	@ResponseBody
-	public String addFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject addFavorite(@RequestBody Favorites favorite) throws RestException {
 		logger.info("recipe/addFavorite POST: user/recipe=" + favorite.getId().getUserId() + "/" + favorite.getId().getRecipeId());
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		try {
 			recipeService.addFavorite(favorite);
 		} catch (Exception ex) {
-			logService.addException(ex);
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.addFavorite", null, "Add favorite error", locale);
+			throw new RestException("exception.addFavorite", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 	
 	@RequestMapping(value = "/recipe/removeFavorite", method = RequestMethod.POST)
 	@ResponseBody
-	public String removeFavorite(@RequestBody Favorites favorite, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject removeFavorite(@RequestBody Favorites favorite) throws RestException {
 		logger.info("recipe/removeFavorite POST: user/recipe=" + favorite.getId().getUserId() + "/" + favorite.getId().getRecipeId());
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		try {
 			recipeService.removeFavorite(favorite);
 		} catch (DataAccessException ex) {
-			logService.addException(ex);			
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.removeFavorite", null, "Remove favorite error", locale);
+			throw new RestException("exception.removeFavorite", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 
 	/************************/
@@ -366,22 +366,17 @@ public class DisplayController {
 	/************************/
 	@RequestMapping(value = "/recipe/recipeMade", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateRecipeMade(@RequestBody RecipeMade recipeMade, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject updateRecipeMade(@RequestBody RecipeMade recipeMade) throws RestException {
 		logger.info("recipe/recipeMade POST: user/recipe=" + recipeMade.getId().getUserId() + "/" + recipeMade.getId().getRecipeId());
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		try {
 			recipeService.updateRecipeMade(recipeMade);
 		} catch (DataAccessException ex) {
-			logService.addException(ex);			
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.recipeMade", null, "Duplicate name", locale);
+			throw new RestException("exception.recipeMade", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 
 	/**************************/
@@ -389,45 +384,32 @@ public class DisplayController {
 	/**************************/
 	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateRecipeNote(@RequestBody RecipeNote recipeNote, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject updateRecipeNote(@RequestBody RecipeNote recipeNote) throws RestException {
 		logger.info("recipe/recipeNote POST: user/recipe=" + recipeNote.getId().getUserId() + "/" + recipeNote.getId().getRecipeId());
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		try {
 			recipeService.updateRecipeNote(recipeNote);
 		} catch (DataAccessException ex) {
-			logService.addException(ex);			
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.recipeNote", null, "Duplicate name", locale);
+			throw new RestException("exception.recipeNote", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 
 	/*****************************/
 	/*** RecipeComment handler ***/
 	/*****************************/
+	//NOTE: do NOT add @ResponseBody to this method since that will return a string instead of HTML
 	@RequestMapping(value = "/recipe/recipeComment", method = RequestMethod.POST)
-	//@ResponseBody
-	public String addRecipeComment(Model model, @RequestBody RecipeComment recipeComment, HttpServletResponse response, Locale locale) {
+	@ResponseStatus(value=HttpStatus.OK)
+	public String addRecipeComment(Model model, @RequestBody RecipeComment recipeComment, HttpServletResponse response) throws RestException {
 		logger.info("recipe/recipeComment POST: user/recipe=" + recipeComment.getUserId() + "/" + recipeComment.getRecipeId());
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
 		
 		try {
 			commentService.addComment(recipeComment);
-		} catch (DataAccessException ex) {
-			logService.addException(ex);			
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.recipeComment", null, "Comment error", locale);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("utf-8");
-			return msg;
+		} catch (Exception ex) {
+			throw new RestException("exception.recipeComment", ex);
 		}
 
 		long userId = recipeComment.getUserId();
@@ -448,23 +430,18 @@ public class DisplayController {
 		return "recipe/comments";
 	}
 
-	@RequestMapping(value = "/recipe/flagComment", method = RequestMethod.POST, produces="text/javascript")
+	@RequestMapping(value = "/recipe/flagComment/{recipeId}", method = RequestMethod.POST, produces="text/javascript")
 	@ResponseBody
-	public String flagComment(@RequestParam("id") Long id, HttpServletResponse response, Locale locale) {
-		logger.info("recipe/flagComment POST: id=" + id);
-		
-		//set default response
-		String msg = "{}";
-		response.setStatus(HttpServletResponse.SC_OK);
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject flagComment(@PathVariable Long recipeId) throws RestException {
+		logger.info("recipe/flagComment POST: recipeId=" + recipeId);
 		
 		try {
-			commentService.setCommentFlag(id, 1);
+			commentService.setCommentFlag(recipeId, 1);
 		} catch (DataAccessException ex) {
-			logService.addException(ex);			
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			msg = messages.getMessage("exception.flagComment", null, "Duplicate name", locale);
+			throw new RestException("exception.flagComment", ex);
 		}
 		
-		return msg;
+		return new ResponseObject();
 	}
 }

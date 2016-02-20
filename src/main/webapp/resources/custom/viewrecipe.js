@@ -62,9 +62,9 @@ function postMadeDate(e) {
 		$('#madeRight').hide();
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -103,9 +103,9 @@ function postNote(e) {
 		console.log('postNote done');
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -136,7 +136,6 @@ function postComment(e) {
 		contentType: 'application/json',
 	    url: '/recipeorganizer/recipe/recipeComment',
 		dataType: 'html',
-		contentType: 'application/json',
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
@@ -144,9 +143,9 @@ function postComment(e) {
 		$('#commentSection').html(data);
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail status: '+ jqXHR.status);
-		console.log('fail error: '+ error);
-		postFailed(error);
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -164,14 +163,9 @@ function flagComment(commentId) {
 		$('#flagged-'+id).show();
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-
-		//server currently returns a simple error message
-		var respText = jqXHR.responseText;
-		console.log('respText: '+ respText);
-		postFailed(respText)
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -196,14 +190,9 @@ function addFavorite(viewerId, recipeId) {
 		$('#favLeft').show();
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-
-		//server currently returns a simple error message
-		var respText = jqXHR.responseText;
-		console.log('respText: '+ respText);
-		postFailed(respText)
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -228,14 +217,9 @@ function removeFavorite(viewerId, recipeId) {
 		$('#favRight').show();
 	})
 	.fail(function(jqXHR, status, error) {
-		console.log('fail request: '+ jqXHR);
-		console.log('fail status: '+ status);
-		console.log('fail error: '+ error);
-
-		//server currently returns a simple error message
-		var respText = jqXHR.responseText;
-		console.log('respText: '+ respText);
-		postFailed(respText)
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
 	});
 }
 
@@ -243,11 +227,29 @@ function postFailed(error) {
 	displayOKMsg(messageMap.get('errordlg.title'), error);
 }
 
+function getTitle() {
+	var title = $("#popoverTitle").html();
+	return title;
+}
+
+function getContent() {
+	var content = $("#popoverContent").html();
+	return content;
+}
+
 $(function() {
 
 	convertFractions('.ingredqty');	
 	setIcons();
 	fixTags();
+	
+	$('#submittedBy').popover({
+		trigger: 'hover',
+		placement: 'right',
+		html: true,
+		title: getTitle(),
+		content: getContent()
+	});
 	
 	$.datepicker.setDefaults({
 		dateFormat: "mm/dd/yy",

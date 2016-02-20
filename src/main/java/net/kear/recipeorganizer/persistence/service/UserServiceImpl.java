@@ -52,14 +52,14 @@ public class UserServiceImpl implements UserService {
     	user.setAccountExpired(0);
     	user.setPasswordExpired(0);
     	if (userDto.getSubmitRecipes()) {
-    		Role role = roleRepository.getRole("AUTHOR");
+    		Role role = roleRepository.getRole(Role.TYPE_AUTHOR);
     		if (role != null)
     			user.setRole(role);
     		else
-    			user.setRole(roleRepository.getDefaultRole());
+    			user.setRole(roleRepository.getRole(Role.TYPE_DEFAULT));
     	}
     	else
-    		user.setRole(roleRepository.getDefaultRole());
+    		user.setRole(roleRepository.getRole(Role.TYPE_DEFAULT));
     	userRepository.addUser(user);
     	
     	return user;
@@ -118,6 +118,14 @@ public class UserServiceImpl implements UserService {
     public void changePassword(String password, User user) {
     	user.setPassword(passwordEncoder.encode(password));
     	userRepository.updateUser(user);  	
+    }
+    
+    public void changeRole(String roleName, User user) {
+    	Role role = roleRepository.getRole(roleName);
+    	if (role != null) {
+    		user.setRole(role);
+    		userRepository.updateUser(user);
+    	}    		
     }
 
     public void saveUserProfile(UserProfile userProfile) {

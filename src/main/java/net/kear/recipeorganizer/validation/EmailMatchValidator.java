@@ -15,6 +15,6 @@ public class EmailMatchValidator implements ConstraintValidator<EmailMatch, Obje
     public boolean isValid(Object obj, ConstraintValidatorContext context){   
         UserDto user = (UserDto) obj;
         
-        return user.getEmail().equals(user.getConfirmEmail());    
+        return user.getEmail().equalsIgnoreCase(user.getConfirmEmail());    
     }     
 }

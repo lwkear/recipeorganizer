@@ -28,6 +28,8 @@
 						<th><spring:message code="recipe.table.source"></spring:message></th>
 						<th data-orderable="false"></th>
 						<th data-orderable="false"></th>
+						<th data-orderable="false"></th>
+						<th data-orderable="false"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -41,6 +43,12 @@
 							<td>${recipe.sourcetype}</td>
 							<td><a class="btn btn-info btn-sm" href="../recipe/viewRecipe/${recipe.id}">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
+							</td>
+							<td><a class="btn btn-success btn-sm" href="../recipe/editRecipe/${recipe.id}">
+								<span class="glyphicon glyphicon-pencil"></span></a>
+							</td>
+							<td>
+								<button class="btn btn-danger btn-sm" type="button" onclick="deleteRecipe(${recipe.id}, '${recipe.name}')"><span class="glyphicon glyphicon-remove"></span></button>
 							</td>
 							<td>
 								<button class="btn btn-success btn-sm" type="button" onclick="approveRecipe(${recipe.id})"><span class="glyphicon glyphicon-ok"></span></button>

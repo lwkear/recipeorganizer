@@ -30,7 +30,7 @@
 			<AppenderRef ref="stdLog"/>
 			<AppenderRef ref="errLog"/>
 		</Root>
-		<Logger name="net.kear.recipeorganizer" level="info"/>
+		<Logger name="net.kear.recipeorganizer" level="debug"/>
 		<Logger name="org.springframework" level="warn"/>
 		<logger name="org.springframework.web" level="warn"/>
 		<Logger name="org.springframework.webflow" level="warn"/>
@@ -43,7 +43,8 @@
 	</Loggers>
 </Configuration>
 
-<!--	use within loggers for separate appender levels 
+<!--	
+use within loggers for separate appender levels 
 <AppenderRef ref="stdLog" level="debug"/>
 <AppenderRef ref="console" level="debug"/>
 -->

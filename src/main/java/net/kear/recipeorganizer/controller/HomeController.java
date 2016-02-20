@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.controller;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -176,7 +177,7 @@ public class HomeController {
 	/*** test page ***/
 	/*****************/
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
-	public String getTestpage(Model model) {
+	public String getTestpage(Model model, Locale locale) {
 		logger.debug("getTestpage");
 
 		String text = "celery, and ½ teaspoon salt";
@@ -184,6 +185,9 @@ public class HomeController {
 		
 		WebGreeting wg = new WebGreeting();
 		model.addAttribute("webGreeting", wg);
+
+        model.addAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
+		
 		return "test/testpage";
 	}
 

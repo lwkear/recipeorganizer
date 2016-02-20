@@ -23,7 +23,8 @@
 					<p>${recipe.notes}</p>
 				</div>
 			</c:if>
-			<div class=row>
+			<div class="<c:if test="${privateRecipe}">transparent</c:if>">
+			<div class="row">
 				<div class="col-sm-12">
 					<div class="col-sm-4 spacer-vert-xs">
 						<span><strong><spring:message code="recipe.basics.category"></spring:message></strong>&nbsp;&nbsp;${recipe.category.name}</span>
@@ -118,6 +119,7 @@
 					</table>
 				</c:forEach>
 			</div>
+			</div>
 		</div>
 		<c:if test="${not empty recipe.photoName}">			
 			<div class="col-sm-3">
@@ -125,6 +127,7 @@
 			</div>
 		</c:if>	
 	</div>
+	<div class="<c:if test="${privateRecipe}">transparent</c:if>">
 	<div class="col-sm-12 spacer-vert-xs">
 		<h4><spring:message code="recipe.instructions.title"></spring:message></h4>
 	</div>
@@ -141,5 +144,6 @@
 				</tbody>
 			</table>
 		</c:forEach>
+	</div>
 	</div>
 </div>

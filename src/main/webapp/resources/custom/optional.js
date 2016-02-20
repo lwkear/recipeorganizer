@@ -75,7 +75,6 @@ function setSource() {
 //shorthand for document.ready
 $(function() {
 	
-	//TODO: GUI: replace these JQuery UI controls with Bootstrap controls?
 	//TODO: GUI: try to get the calendar icon to appear
 	$.datepicker.setDefaults({
 		dateFormat: "mm/dd/yy",

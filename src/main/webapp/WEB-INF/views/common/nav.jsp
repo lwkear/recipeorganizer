@@ -3,12 +3,13 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ page import="net.kear.recipeorganizer.persistence.model.Role"%>
 
 <sec:authorize var="isAuth" access="isAuthenticated()"/>
-<sec:authorize var="isAdmin" access="hasAuthority('ADMIN')"/>
-<sec:authorize var="isEditor" access="hasAnyAuthority('EDITOR','ADMIN')"/>
-<sec:authorize var="isAuthor" access="hasAnyAuthority('AUTHOR','EDITOR','ADMIN')"/>
-<sec:authorize var="isGuest" access="hasAnyAuthority('GUEST','AUTHOR','EDITOR','ADMIN')"/>
+<sec:authorize var="isAdmin" access="hasAuthority('${Role.TYPE_ADMIN}')"/>
+<sec:authorize var="isEditor" access="hasAnyAuthority('${Role.TYPE_EDITOR}','${Role.TYPE_ADMIN}')"/>
+<sec:authorize var="isAuthor" access="hasAnyAuthority('${Role.TYPE_AUTHOR}','${Role.TYPE_EDITOR}','${Role.TYPE_ADMIN}')"/>
+<sec:authorize var="isGuest" access="hasAnyAuthority('${Role.TYPE_GUEST}','${Role.TYPE_AUTHOR}','${Role.TYPE_EDITOR}','${Role.TYPE_ADMIN}')"/>
 
 <c:if test="${isAuth}">
 	<sec:authentication var="firstname" property="principal.firstName"/>

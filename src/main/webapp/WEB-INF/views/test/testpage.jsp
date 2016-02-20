@@ -48,7 +48,14 @@
 					<span class="text-danger">${tagsError}</span>
 				</div>
 			</div>
-		</div>		
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-8 col col-sm-offset-2">			
+				<div class="center alert text-center strong">
+					<div><h4>${message}</h4></div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 <%@include file="../common/footer.jsp" %>

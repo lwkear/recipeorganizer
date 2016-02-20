@@ -39,12 +39,13 @@ function checkAvatarOptions() {
 function checkForFileError() {
 	var avatarErr = $("#avatarErr").val();
 	if (avatarErr.length) {
-		$("#messageTitle").text(messageMap.get('errordlg.title'));
+		$("#messageTitle").text(messageMap.get('exception.file.failure'));
 		$("#messageMsg").text(avatarErr);
 		$(".msgDlgBtn").hide();
 		$("#okBtn").show();
 		$("#cnclBtn").show();
 		$("#okBtn").one('click', saveProfile);
+		$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
 		$("#messageDlg").modal('show');
 	}
 }
@@ -52,7 +53,8 @@ function checkForFileError() {
 function saveProfile(e) {
 	$("#messageDlg").modal('hide');
 	//remove the file object
-	$("#file").val(null);
+	$("#file").val("");
+	$("#photoname").val("");
 	document.forms["profileForm"].submit();
 }
 

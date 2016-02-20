@@ -2,7 +2,7 @@ function checkForFileError() {
 	var photoErr = $("#photoErr").val();
 	var name = $("#recipeName").val();
 	if (photoErr.length) {
-		$("#messageTitle").text(name);
+		$("#messageTitle").text(messageMap.get('exception.file.failure'));
 		$("#messageMsg").text(photoErr);
 		$(".msgDlgBtn").hide();
 		$("#okBtn").show();
@@ -16,7 +16,8 @@ function checkForFileError() {
 function saveRecipe(e) {
 	$("#messageDlg").modal('hide');
 	//remove the file object
-	$("#file").val(null);
+	$("#file").val("");
+	$("#photoname").val("");
 	document.forms["editForm"].submit();
 }
 
