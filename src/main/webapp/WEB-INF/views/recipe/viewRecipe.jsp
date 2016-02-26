@@ -8,18 +8,20 @@
 
 </head>
 
-<c:set var="returnLabel" value="${sessionScope.returnLabel}"/>
-<c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
-<c:set var="privateRecipe" value="false"></c:set>
-<c:if test="${userId != recipe.user.id && recipe.copyrighted}">
-	<c:set var="privateRecipe" value="true"></c:set>
-</c:if>
-
 <sec:authentication var="viewerId" property="principal.id" />
 
 <body role="document" onload="blurInputFocus()">
 
+<c:set var="returnLabel" value="${sessionScope.returnLabel}"/>
+<c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
+
+
 <%@include file="../common/nav.jsp" %>
+
+<c:set var="privateRecipe" value="false"></c:set>
+<c:if test="${(userId != recipe.user.id) and (recipe.copyrighted == true)}">
+	<c:set var="privateRecipe" value="true"></c:set>
+</c:if>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
@@ -67,11 +69,11 @@
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span>
 							</a>
-						</c:if>
-						<button type="button" class="btn btn-link btn-sm" id="noteRight" style="margin-left:5px;font-size:20px"
-							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
-							<span class="glyphicon glyphicon-user"></span>
-						</button>
+							<button type="button" class="btn btn-link btn-sm" id="noteRight" style="margin-left:5px;font-size:20px"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.message"></spring:message>">
+								<span class="glyphicon glyphicon-user"></span>
+							</button>
+						</c:if>						
 					</span>
 				</h3>
 				<h5>
@@ -203,7 +205,8 @@
 				<form role="form" class="form">
 					<div class="form-group">
 			            <label class="control-label" for="recipeComment"><spring:message code="recipe.comments.label"></spring:message></label>
-			            <textarea class="form-control" rows="5" id="inputComment"></textarea>
+			            <textarea class="form-control maxSize" rows="5" id="userComment" data-max="${sizeMap['userComment.max']}"></textarea>
+			            <span class="text-danger" id="userCommentErrMsg">${nameError}</span>
 				    </div>           
 				</form>
 			</div>

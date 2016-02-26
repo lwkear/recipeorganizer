@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.FileActionsImpl;
+import net.kear.recipeorganizer.util.SolrUtil;
+import net.kear.recipeorganizer.util.SolrUtilImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,9 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 	"net.kear.recipeorganizer.util"	
 	})
 @Configuration
-@PropertySources(value={@PropertySource("classpath:email.properties"),@PropertySource("classpath:filedir.properties")})
+@PropertySources(value={@PropertySource("classpath:email.properties"),
+						@PropertySource("classpath:filedir.properties"),
+						@PropertySource("classpath:solr.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -125,6 +129,16 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         resolver.setSuffix(".jsp");
         return resolver;
     }
+	
+	/*** solr configuration ***/
+	@Bean
+	public SolrUtil solrUtil() {
+		logger.debug("SolrUtil");
+		SolrUtilImpl solr = new SolrUtilImpl(); 
+		solr.setUrl(env.getProperty("solr.url"));
+		solr.setCore();
+		return solr;
+	}	
 	
     //this is an easy way to avoid creating a .GET method for every single page;
 	//works best if there is little content on the page, e.g., error pages

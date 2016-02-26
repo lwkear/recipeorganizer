@@ -78,6 +78,7 @@ public class RecipeNote implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RecipeNote [id=" + id + ", note=" + note + "]";
+		return "RecipeNote [id=" + id 
+				+ ", note=" + note + "]";
 	}
 }

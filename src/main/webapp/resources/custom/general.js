@@ -42,12 +42,40 @@ function convertFractions(element) {
 }
 
 function setMessageMap() {
-	map = new Map();
-	$('.spring-messages > p').each(function(index) {
-		map.set($(this).attr('id'), $(this).text());
-	});
-	console.log('messageMap updated');
-	return map;
+	if (typeof(Storage) !== "undefined") {
+		var len = sessionStorage.length;  
+		if (len === 0) {
+			$('.spring-messages > p').each(function(index) {
+				sessionStorage.setItem($(this).attr('id'), $(this).text());
+			});
+			console.log('messages stored in sessionStorage');
+		} else
+			console.log('messages available from sessionStorage');
+		return null;
+	} else {
+		if (messageMap === null) {
+			map = new Map();
+			$('.spring-messages > p').each(function(index) {
+				map.set($(this).attr('id'), $(this).text());
+			});
+			console.log('messages stored in messageMap');
+			return map;
+		}
+		else {
+			console.log('messages available from messageMap');
+			return messageMap;
+		}			
+	}
+}
+
+function getMessage(key) {
+	if (typeof(Storage) !== "undefined") {
+		return sessionStorage.getItem(key);
+	}
+	if (messageMap !== null) {
+		return messageMap.get(key);
+	}
+	return null;
 }
 
 function closeTimeout() {
@@ -66,17 +94,9 @@ function displayTimeout() {
 function setSessionTimeout() {
 	clearTimeout(closeModalTimer);
 	
-	//var token = $("meta[name='_csrf']").attr("content");
-	//var header = $("meta[name='_csrf_header']").attr("content");
-
 	$.ajax({
 		type: 'POST',
 		url: '/recipeorganizer/setSessionTimeout',
-		//dataType: 'json',
-		//data: token,
-		//beforeSend: function(xhr) {
-		// 	xhr.setRequestHeader(header, token);
-		//}
 	})
 	.done(function(data) {
 		console.log('setSessionTimeout() done');
@@ -131,7 +151,6 @@ function blurInputFocus()
 {
 	//for a few pages that should not have focus on any control
 	//add this to the body onload
-	//$(':input:visible:enabled:focus').blur(); 
 	$(':input:focus').blur();
 }
 
@@ -189,8 +208,8 @@ $('.faq_question').click(function() {
 });
 
 function cancelSubmitRecipe() {
-	$("#messageTitle").text(messageMap.get('common.cancel'));
-	$("#messageMsg").text(messageMap.get('recipe.submit.cancel'));
+	$("#messageTitle").text(getMessage('common.cancel'));
+	$("#messageMsg").text(getMessage('recipe.submit.cancel'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
@@ -229,8 +248,7 @@ $(function() {
 		};
 	}
 
-	if (messageMap == null)
-		messageMap = setMessageMap();
+	messageMap = setMessageMap();
 	
 	setInputFocus();
 	findFirstError();
@@ -254,9 +272,10 @@ $(function() {
 		var maxNum = parseInt(max);
 		var chars = $(this).val().length;
 		if (chars > maxNum) {
-			var msg = messageMap.get('common.size.max');
+			var msg = getMessage('common.size.max');
 			var fmt = String.format(msg, max);
 			$(err).html(fmt).show();
+			e.preventDefault();
 		}
 		else
 			$(err).html(fmt).hide();

@@ -114,20 +114,34 @@ function postNote(e) {
 /*******************************/
 //enter a comment in popup dialog
 function addComment(viewerId, recipeId) {
+	$('#userComment').val("");
+	$('#userCommentErrMsg').html("");
 	$('#submitComment').tooltip("hide");
 	$("#submitComment").one('click', {viewerId : viewerId, recipeId : recipeId}, postComment);
 	$("#commentDlg").modal('show');
-} 
+}
+
+function keepOpen() {
+	e.preventDefault()
+}
 
 //request server to update the note
 function postComment(e) {
+	var isVisible = $('#userCommentErrMsg').is(':visible');
+	if (isVisible == true) {
+		return false;
+	}
+	
 	$("#commentDlg").modal('hide');
 	console.log('postComment: viewer=' + e.data.viewerId + ' recipe='+ e.data.recipeId);
 
 	var viewerId = e.data.viewerId;
 	var recipeId = e.data.recipeId;
-	var comment = $('#inputComment').val();
-	note = $.trim(comment);
+	var comment = $('#userComment').val();
+	comment = $.trim(comment);
+	
+	if (comment.length === 0)
+		return;
 
 	var data = {"id":0,"userId":viewerId,"recipeId":recipeId,"userComment":comment,"dateAdded":null};
 
@@ -224,7 +238,7 @@ function removeFavorite(viewerId, recipeId) {
 }
 
 function postFailed(error) {
-	displayOKMsg(messageMap.get('errordlg.title'), error);
+	displayOKMsg(getMessage('errordlg.title'), error);
 }
 
 function getTitle() {
@@ -264,6 +278,6 @@ $(function() {
 			if (len > 0)
 				document.getElementById("iframerpt").contentWindow.print();
 			else
-				postFailed(messageMap.get('exception.JRException'));
+				postFailed(getMessage('exception.JRException'));
 		})
 })

@@ -2,8 +2,8 @@ package net.kear.recipeorganizer.persistence.repository;
 
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
@@ -30,8 +30,8 @@ public interface RecipeRepository {
     public List<Favorites> getFavorites(Long userId);
     public List<RecipeListDto> approveRecipesList();
     public List<RecipeListDto> listRecipes(Long userId);
-    public List<SearchResultsDto> listRecipes(List<Long> ids);
-    public List<SearchResultsDto> recentRecipes(Long userId);
+    public List<RecipeDisplayDto> listRecipes(List<Long> ids);
+    public List<RecipeDisplayDto> recentRecipes(Long userId);
     public List<RecipeListDto> favoriteRecipes(List<Long> ids);
     public Long getRecipeCount(Long userId);
     public List<String> getTags(Long userId);

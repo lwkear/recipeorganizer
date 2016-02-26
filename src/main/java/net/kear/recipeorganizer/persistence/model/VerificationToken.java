@@ -22,10 +22,7 @@ import javax.persistence.TemporalType;
 public class VerificationToken implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
-	
-	//TODO: SECURITY: reset expiration to 24 hours
 	private static final int EXPIRATION = 60 * 24;
-    //private static final int EXPIRATION = 30;
 
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
@@ -50,14 +47,12 @@ public class VerificationToken implements Serializable {
 
     public VerificationToken(final String token) {
         super();
-
         this.token = token;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
     public VerificationToken(final String token, final User user) {
         super();
-
         this.token = token;
         this.user = user;
         this.expiryDate = calculateExpiryDate(EXPIRATION);
@@ -99,45 +94,44 @@ public class VerificationToken implements Serializable {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final VerificationToken other = (VerificationToken) obj;
-        if (expiryDate == null) {
-            if (other.expiryDate != null) {
-                return false;
-            }
-        } else if (!expiryDate.equals(other.expiryDate)) {
-            return false;
-        }
-        if (token == null) {
-            if (other.token != null) {
-                return false;
-            }
-        } else if (!token.equals(other.token)) {
-            return false;
-        }
-        if (user == null) {
-            if (other.user != null) {
-                return false;
-            }
-        } else if (!user.equals(other.user)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((expiryDate == null) ? 0 : expiryDate.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((token == null) ? 0 : token.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		VerificationToken other = (VerificationToken) obj;
+		if (expiryDate == null) {
+			if (other.expiryDate != null)
+				return false;
+		} else if (!expiryDate.equals(other.expiryDate))
+			return false;
+		if (id != other.id)
+			return false;
+		if (token == null) {
+			if (other.token != null)
+				return false;
+		} else if (!token.equals(other.token))
+			return false;
+		return true;
+	}
 
 	@Override
 	public String toString() {
-		return "PasswordResetToken [id=" + id + ", token=" + token + ", expiryDate=" + expiryDate + "]";
+		return "PasswordResetToken [id=" + id 
+				+ ", token=" + token 
+				+ ", expiryDate=" + expiryDate + "]";
 	}
-
 }

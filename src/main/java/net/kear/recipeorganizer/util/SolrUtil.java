@@ -1,181 +1,18 @@
 package net.kear.recipeorganizer.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
-import net.kear.recipeorganizer.persistence.model.IngredientSection;
-import net.kear.recipeorganizer.persistence.model.Instruction;
-import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
-import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
-import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.util.ClientUtils;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SolrUtil {
+public interface SolrUtil {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	public abstract void setUrl(String url);
+	public abstract void setCore();
+	public abstract List<List<Object>> searchRecipes(String searchTerm) throws SolrServerException, IOException;
+	public abstract void addRecipe(Recipe recipe);
+	public abstract void deleteRecipe(Long recipeId);
 
-	@Autowired
-	private ExceptionLogService logService;
-	
-    //TODO: store SOLR url in a properties file
-	private static final String url = "http://localhost:8983/solr/recipe/";
-    private static final HttpSolrClient solrCore = new HttpSolrClient(url);
-	
-	public ArrayList<SearchResultsDto> searchRecipes(String searchTerm) throws SolrServerException, IOException {
-		logger.info("searchRecipes: qstr=" + searchTerm);
-		
-		QueryResponse rsp = null;
-		
-		SolrQuery query = new SolrQuery();
-		query.setQuery(searchTerm);
-		query.setParam("defType","edismax");
-		query.setParam("qf", "name or catname or ingredname or description or source or notes");
-		query.setParam("fl", "id, userid, name, description, photo, allowshare, approved");
-		query.setParam("start", "0");
-		query.setParam("rows", "50");
-		query.setHighlight(true);
-		query.addHighlightField("name or description");
-		query.setHighlightSimplePre("<strong>");
-		query.setHighlightSimplePost("</strong>");
-		query.addSort("name", SolrQuery.ORDER.asc);
-		query.addFilterQuery("allowshare:true");
-	    
-	    rsp = solrCore.query(query);
-	    
-	    ArrayList<SearchResultsDto> resultsList = new ArrayList<SearchResultsDto>();
-	    
-	    SolrDocumentList docs = rsp.getResults();
-	    for (SolrDocument doc : docs) {
-	    	String result = doc.toString();
-	    	logger.debug("doc: " + result);
-	    	
-	    	String idStr = (String)doc.getFieldValue("id");
-	    	Long id = Long.valueOf(idStr);
-	    	//idStr = (String)doc.getFieldValue("userid");
-	    	//Long userId = Long.valueOf(idStr);
-	    	Long userId = (Long)doc.getFieldValue("userid");
-	    	String name = (String)doc.getFieldValue("name");
-	    	String desc = (String)doc.getFieldValue("description");
-	    	String photo = (String)doc.getFieldValue("photo");
-	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
-	    	boolean approved = (boolean)doc.getFieldValue("approved");
-
-	    	if (rsp.getHighlighting().get(id) != null) {
-	        	List<String> highList = rsp.getHighlighting().get(id).get("name");
-	        	if (highList != null) {
-		        	for (String highStr : highList) {
-		        		logger.debug("highStr: " + highStr);
-		        		name = highStr;
-		        	}
-	        	}
-	        	highList = rsp.getHighlighting().get(id).get("description");
-	        	if (highList != null) {
-		        	for (String highStr : highList) {
-		        		logger.debug("highStr: " + highStr);
-		        		desc = highStr;
-		        	}
-	        	}
-	        }
-	    	
-	    	SearchResultsDto rslts = new SearchResultsDto(id, userId, name, desc, photo, allowShare, approved);
-	    	resultsList.add(rslts);
-	    }
-	    
-	    return resultsList;
-	}
-	
-	public void addRecipe(Recipe recipe) {
-
-		SolrInputDocument document = new SolrInputDocument();
-		document.addField("id", recipe.getId());
-		document.addField("userid", recipe.getUser().getId());
-		document.addField("name", recipe.getName());
-		document.addField("catname", recipe.getCategory().getName());
-		document.addField("description", recipe.getDescription());
-		document.addField("allowshare", recipe.getAllowShare());
-		document.addField("approved", recipe.getApproved());
-		if (!recipe.getServings().isEmpty())
-			document.addField("servings", recipe.getServings());
-		if (!recipe.getNotes().isEmpty())
-			document.addField("notes", recipe.getNotes());
-		if (!recipe.getBackground().isEmpty())
-			document.addField("background", recipe.getBackground());
-		if (!recipe.getPhotoName().isEmpty())
-			document.addField("photo", recipe.getPhotoName());
-		if (recipe.getSource() != null) {
-			document.addField("sourcetype", recipe.getSource().getType());
-			if (!recipe.getSource().getCookbook().isEmpty()) {
-				document.addField("cookbook", recipe.getSource().getCookbook());
-				document.addField("source", recipe.getSource().getCookbook());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
-				document.addField("magazine", recipe.getSource().getMagazine());
-				document.addField("source", recipe.getSource().getMagazine());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
-				document.addField("newspaper", recipe.getSource().getNewspaper());
-				document.addField("source", recipe.getSource().getNewspaper());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
-				document.addField("person", recipe.getSource().getPerson());
-				document.addField("source", recipe.getSource().getPerson());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
-				document.addField("other", recipe.getSource().getOther());
-				document.addField("source", recipe.getSource().getOther());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty())
-				document.addField("website", recipe.getSource().getWebsiteUrl());
-		}
-		for (InstructionSection section : recipe.getInstructSections()) {
-			List<Instruction> instructs = section.getInstructions();
-			for (Instruction instruct : instructs)
-				document.addField("instructdesc", instruct.getDescription());
-		}
-		for (IngredientSection section : recipe.getIngredSections()) {
-			List<RecipeIngredient> ingreds = section.getRecipeIngredients();
-			for (RecipeIngredient recipeIngred : ingreds) {
-				document.addField("ingredname", recipeIngred.getIngredient().getName());
-			}			
-		}
-
-		try {
-			solrCore.add(document);
-			solrCore.commit();
-		} catch (SolrServerException ex) {
-	    	logService.addException(ex);
-	    } catch (IOException ex) {
-	    	logService.addException(ex);
-	    }		
-	}
-	
-	public void deleteRecipe(Long recipeId) {
-		
-		String idStr = recipeId.toString();
-		
-		try {
-			solrCore.deleteById(idStr);
-			solrCore.commit();
-		} catch (SolrServerException ex) {
-	    	logService.addException(ex);
-	    } catch (IOException ex) {
-	    	logService.addException(ex);
-	    }		
-	}
 }

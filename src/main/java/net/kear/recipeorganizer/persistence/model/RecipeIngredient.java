@@ -68,8 +68,9 @@ public class RecipeIngredient implements Serializable {
 	
 	public RecipeIngredient() {}
 			
-	public RecipeIngredient(String quantity, float qtyAmt, String qtyType, String qualifier, Ingredient ingredient) {
+	public RecipeIngredient(int sequenceNo, String quantity, float qtyAmt, String qtyType, String qualifier, Ingredient ingredient) {
 		super();
+		this.sequenceNo = sequenceNo;
 		this.quantity = quantity;
 		this.qtyAmt = qtyAmt;
 		this.qtyType = qtyType;
@@ -139,9 +140,6 @@ public class RecipeIngredient implements Serializable {
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((ingredient == null) ? 0 : ingredient.hashCode());
-		result = prime * result + Float.floatToIntBits(qtyAmt);
-		result = prime * result + ((qtyType == null) ? 0 : qtyType.hashCode());
-		result = prime * result + ((qualifier == null) ? 0 : qualifier.hashCode());
 		result = prime * result + ((quantity == null) ? 0 : quantity.hashCode());
 		result = prime * result + sequenceNo;
 		return result;
@@ -162,18 +160,6 @@ public class RecipeIngredient implements Serializable {
 			if (other.ingredient != null)
 				return false;
 		} else if (!ingredient.equals(other.ingredient))
-			return false;
-		if (Float.floatToIntBits(qtyAmt) != Float.floatToIntBits(other.qtyAmt))
-			return false;
-		if (qtyType == null) {
-			if (other.qtyType != null)
-				return false;
-		} else if (!qtyType.equals(other.qtyType))
-			return false;
-		if (qualifier == null) {
-			if (other.qualifier != null)
-				return false;
-		} else if (!qualifier.equals(other.qualifier))
 			return false;
 		if (quantity == null) {
 			if (other.quantity != null)

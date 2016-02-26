@@ -2,7 +2,7 @@ function checkForFileError() {
 	var photoErr = $("#photoErr").val();
 	var name = $("#recipeName").val();
 	if (photoErr.length) {
-		$("#messageTitle").text(messageMap.get('exception.file.failure'));
+		$("#messageTitle").text(getMessage('exception.file.failure'));
 		$("#messageMsg").text(photoErr);
 		$(".msgDlgBtn").hide();
 		$("#okBtn").show();
@@ -22,8 +22,8 @@ function saveRecipe(e) {
 }
 
 function cancelEditRecipe() {
-	$("#messageTitle").text(messageMap.get('common.cancel'));
-	$("#messageMsg").text(messageMap.get('recipe.edit.cancel'));
+	$("#messageTitle").text(getMessage('common.cancel'));
+	$("#messageMsg").text(getMessage('recipe.edit.cancel'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
@@ -117,7 +117,7 @@ $(function() {
 		if (option == 'change') {
 			var filename = $('#photoname').val();
 			if (filename == null || filename == "") {
-				displayOKMsg(messageMap.get('recipe.optional.photo'), messageMap.get('recipe.optional.photo.noneselected'));
+				displayOKMsg(getMessage('recipe.optional.photo'), getMessage('recipe.optional.photo.noneselected'));
 				return false;
 			}
 		}

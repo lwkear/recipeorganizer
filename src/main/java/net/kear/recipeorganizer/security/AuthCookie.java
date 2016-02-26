@@ -13,15 +13,17 @@ import org.springframework.util.Assert;
 
 @Component
 public class AuthCookie implements Serializable {
+
+	private static final long serialVersionUID = 1L;	
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	private static final long serialVersionUID = 1L;
 	private HttpServletRequest request = null;
 	private HttpServletResponse response = null;
 	private boolean anonymous = false;
 	private String value = "";
 	private Cookie cookie = null;
+	private static final String authCookieName = "authUser"; 
+	public static final String ANNON_USER = "anonymousUser";
 	
 	public AuthCookie() {}
 	
@@ -49,9 +51,9 @@ public class AuthCookie implements Serializable {
 		
 				logger.debug("cookieName = " + cookie.getName() + " cookieValue = " + cookie.getValue());
 				
-				if (cookie.getName().equals("authUser")) {
+				if (cookie.getName().equals(authCookieName)) {
 					this.cookie = cookie;
-					if (cookie.getValue().equals("anonymousUser"))
+					if (cookie.getValue().equals(ANNON_USER))
 						anonymous = true;
 					break;
 				}
@@ -68,7 +70,7 @@ public class AuthCookie implements Serializable {
 			cookie.setPath(request.getContextPath());
 		}
 		else {
-			cookie = new Cookie("authUser", value);
+			cookie = new Cookie(authCookieName, value);
 			cookie.setPath(request.getContextPath());
 		}
 		
@@ -86,7 +88,7 @@ public class AuthCookie implements Serializable {
 		if (cookies != null && cookies.length > 0) {
 			for (int i=0;i<cookies.length;i++) {
 				Cookie cookie = cookies[i];
-				if (cookie.getName().equals("authUser"))
+				if (cookie.getName().equals(authCookieName))
 					return true;
 			}
 		}

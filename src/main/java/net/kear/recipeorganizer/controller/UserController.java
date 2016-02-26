@@ -58,7 +58,7 @@ import net.kear.recipeorganizer.exception.SaveAccountException;
 import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.persistence.dto.PasswordDto;
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
+import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
@@ -69,7 +69,6 @@ import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
@@ -103,8 +102,6 @@ public class UserController {
 	private FileActions fileAction;
 	@Autowired
 	private CookieUtil cookieUtil;
-	@Autowired
-	private AuthCookie authCookie;
 	@Autowired
 	private ExceptionLogService logService;
 	@Autowired
@@ -330,20 +327,13 @@ public class UserController {
 
 		User user = null;
 		try {
-			user = userService.getUserWithProfile(currentUser.getId());
+			user = userService.getUser(currentUser.getId());
 		} 
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
 		}
 		
-		UserProfile userProfile = null; 
-		try {
-			userProfile = user.getUserProfile();
-		} 
-		catch (Exception ex) {
-			throw new AccessProfileException(ex);
-		}
-		
+		UserProfile userProfile = user.getUserProfile();
 		if (userProfile == null) {
 			userProfile = new UserProfile();
 			userProfile.setUser(user);
@@ -406,6 +396,9 @@ public class UserController {
 			fileAction.deleteFile(FileType.AVATAR, user.getId(), name);
 			userProfile.setAvatar("");
 		}
+
+		//set the user to this profile
+		user.setUserProfile(userProfile);		
 		
 		try {		
 			userService.saveUserProfile(userProfile);
@@ -474,7 +467,8 @@ public class UserController {
 		
 		User user = null;
 		try {
-			user = userService.getUserWithProfile(currentUser.getId());
+			//user = userService.getUserWithProfile(currentUser.getId());
+			user = userService.getUser(currentUser.getId());
 		} 
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
@@ -489,7 +483,7 @@ public class UserController {
 			logService.addException(ex);
 		}
 		
-		List<SearchResultsDto> viewedRecipes = null;		
+		List<RecipeDisplayDto> viewedRecipes = null;		
 		Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, "recentRecipes", user.getId()); 
 		if (recentRecipesCookie != null) {
 			String recipes = recentRecipesCookie.getValue();
@@ -503,7 +497,7 @@ public class UserController {
 			}
 		}
 		
-		List<SearchResultsDto> recentRecipes = null;
+		List<RecipeDisplayDto> recentRecipes = null;
 		long views = 0;
 		try {
 			recentRecipes = recipeService.recentRecipes(user.getId());
@@ -527,10 +521,7 @@ public class UserController {
 	public void getAvatar(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("user/avatar GET: id=" + id);
 		
-		//User user = (User)userInfo.getUserDetails();
-		
 		//errors are not fatal and will be logged by FileAction
-		//fileAction.downloadFile(FileType.AVATAR, user.getId(), fileName, response);
 		fileAction.downloadFile(FileType.AVATAR, id, fileName, response);
 	}
 	
@@ -553,6 +544,8 @@ public class UserController {
 	public String postPassword(@ModelAttribute @Valid PasswordDto passwordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
 		logger.info("user/changePassword POST");
 
+		User currentUser = (User)userInfo.getUserDetails();
+		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
 			return "user/changePassword";
@@ -560,7 +553,7 @@ public class UserController {
 		
 		User user = null;
 		try {
-			userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+			user = userService.getUser(currentUser.getId());
 		} 
 		catch (Exception ex) {
 			throw new AccessUserException(ex);

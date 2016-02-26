@@ -51,6 +51,7 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.ResponseObject;
@@ -94,6 +95,8 @@ public class DisplayController {
 	private ViewReferer viewReferer;
 	@Autowired
 	private ExceptionLogService logService;
+	@Autowired
+	private ConstraintMap constraintMap;
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -183,7 +186,8 @@ public class DisplayController {
 		RecipeNote recipeNote = recipeService.getRecipeNote(user.getId(), recipeId);
 		long commentCount = commentService.getCommentCount(recipeId);
 		List<CommentDto> commentList = commentService.listComments(recipeId);
-				
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", RecipeComment.class); 
+
 		String jsonNote = null;
 		if (recipeNote != null) {
 			ObjectMapper mapper = new ObjectMapper();
@@ -201,6 +205,7 @@ public class DisplayController {
 		model.addAttribute("favorite", fav);
 		model.addAttribute("commentCount", commentCount);
 		model.addAttribute("commentList", commentList);
+		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("recipe", recipe);
 		model.addAttribute("submitJoin", recipe.getUser().getDateAdded());
 		model.addAttribute("profile", profile);

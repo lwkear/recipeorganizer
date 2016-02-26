@@ -118,6 +118,7 @@ public class FileActionsImpl implements FileActions {
 
 	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 	    	ImageIO.write(img, ext, stream);
+	    	stream.close();
 	    	recipe.setPhotoName(file.getOriginalFilename());
 	        logger.debug("Successful upload");
         
@@ -252,6 +253,7 @@ public class FileActionsImpl implements FileActions {
 
 	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 	    	ImageIO.write(img, ext, stream);
+	    	stream.close();
 	        logger.debug("Successful upload");
 
 	    } catch (IOException ex) {
@@ -272,6 +274,7 @@ public class FileActionsImpl implements FileActions {
         	ServletOutputStream stream = response.getOutputStream();
         	Files.copy(path, stream);
         	stream.flush();
+        	stream.close();
         	logger.debug("Successful download");                
         } catch (IOException ex) {
         	logService.addException(ex);

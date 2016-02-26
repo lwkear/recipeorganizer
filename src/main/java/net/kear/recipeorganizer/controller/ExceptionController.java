@@ -63,6 +63,18 @@ public class ExceptionController {
 	NullPointerException
 	3) solr not running
 	NullPointerException
+
+Solr errors not accounted for:
+###exception log id=703###	
+HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: undefined field _text_
+
+###exception log id=718###
+HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: org.apache.solr.search.SyntaxError: Cannot parse '{allowshare:true}': Encountered " "}" "} "" at line 1, column 16.
+Was expecting one of:
+    "TO" ...
+    <RANGE_QUOTED> ...
+    <RANGE_GOOP> ...
+
 */
 	
 	@ExceptionHandler(value={
@@ -97,7 +109,7 @@ public class ExceptionController {
 			InternalAuthenticationServiceException.class,
 			ConnectException.class
 			})
-	public String handleDBException(Exception ex) {
+	public ModelAndView handleDBException(Exception ex, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("handleDBExceptions exception class: " + ex.getClass().toString());
 		String msg = ExceptionUtils.getMessage(ex);
 		logger.debug("handleDBExceptions msg: " + msg);
@@ -112,24 +124,34 @@ public class ExceptionController {
 		//log the exception in the error log file
 		logger.error(ex.getClass().toString(), ex);		
 
-		return "redirect:/systemError";
+		return commonView.getSystemErrorPage(request, response, locale);
 	}
 	
 	@ExceptionHandler(Exception.class)
-	public ModelAndView handleGeneralException(Exception ex, HttpServletRequest request, HttpServletResponse response) {		
+	public ModelAndView handleGeneralException(Exception ex, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("handleGeneralExceptions exception class: " + ex.getClass().toString());
 		String msg = ExceptionUtils.getMessage(ex);
 		logger.debug("handleGeneralExceptions msg: " + msg);
+		//log the exception in the error log file
+		logger.error(ex.getClass().toString(), ex);
+
 		Throwable excptn = ExceptionUtils.getRootCause(ex);
 		if (excptn != null) {
 			msg = ExceptionUtils.getRootCause(ex).getClass().toString();
 			logger.debug("handleGeneralExceptions root class: " + msg);
 			msg = ExceptionUtils.getRootCauseMessage(ex);
 			logger.debug("handleGeneralExceptions root msg: " + msg);
+			
+			//is the database down?
+			if (excptn instanceof ConnectException) {
+				return commonView.getSystemErrorPage(request, response, locale);
+			}
 		}
 
-		//log the exception in the error log file
-		logger.error(ex.getClass().toString(), ex);
+		//wrap the logService just in case the db is down but the exception is not a ConnectException - do not want to throw another exception!
+		try {
+			logService.addException(ex);
+		} catch (Exception excpt) {}
 		
 		return commonView.getStandardErrorPage(ex);
 	}
@@ -137,23 +159,6 @@ public class ExceptionController {
 	@ExceptionHandler(RestException.class)
 	@ResponseBody
 	public ResponseObject handleRestException(RestException ex, HttpServletResponse response, Locale locale) {
-		/*//the RestException is a wrapper around a custom exception, but there may also be underlying exceptions so it's necessary to get the next exception
-		logger.info("handleRestExceptions exception class: " + ExceptionUtils.getCause(ex).getClass().toString());
-		List<Throwable> throwList = ExceptionUtils.getThrowableList(ex);
-		
-		String code;
-		if (throwList.size() > 1) {
-			Throwable excptn = throwList.get(1);
-			//get the error string - it consists of the exception class name plus a code for looking up the message
-			code = ExceptionUtils.getMessage(excptn);
-			//ExceptionUtils prepends the error code with the exception class followed by ": "; need to remove this to look up the message
-			code = code.substring(code.indexOf(":")+2, code.length());
-		}		
-		else {
-			//have to allow that somehow an exception was not coded correctly, so use the original exception
-			code = "exception.default";
-		}*/
-		
 		//the RestException may or may not have underlying exception(s)
 		logger.info("handleRestExceptions exception class: " + ExceptionUtils.getCause(ex).getClass().toString());
 		//get the error string - it consists of the exception class name plus a code for looking up the message

@@ -35,9 +35,13 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		
 		authCookie.setCookie(request, response, authentication.getName());
 
-		User user = userService.findUserByEmail(authentication.getName());
-		user.setLastLogin(new Date());
-		userService.updateUser(user);
+		//try {
+			User user = userService.findUserByEmail(authentication.getName());
+			user.setLastLogin(new Date());
+			userService.updateUser(user);
+		//} catch (Exception ex) {
+			//do nothing - the exception is probably caused by the db being down 
+		//}
 		
 		String uri = request.getRequestURI();
 		logger.debug("AuthenticationSuccess uri: " + uri);

@@ -31,7 +31,6 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     		return;
     	}
     	
-    	ingredient.setRank(99);
     	getSession().save(ingredient);
     }
 

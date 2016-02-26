@@ -5,7 +5,7 @@
 //notify the user in popup modal
 function deleteRecipe(id, name) {
 	$("#messageTitle").text(name);
-	$("#messageMsg").text(messageMap.get('recipe.delete.areyousure'));
+	$("#messageMsg").text(getMessage('recipe.delete.areyousure'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
@@ -53,7 +53,7 @@ function recipeDeleted(recipeId) {
 //notify the user in popup modal
 function removeFavorite(userId, recipeId, name) {
 	$("#messageTitle").text(name);
-	$("#messageMsg").text(messageMap.get('recipe.remove.favorite.areyousure'));
+	$("#messageMsg").text(getMessage('recipe.remove.favorite.areyousure'));
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
 	$("#noBtn").show();
@@ -122,24 +122,24 @@ function approveRecipe(recipeId) {
 }
 
 function postFailed(error) {
-	displayOKMsg(messageMap.get('errordlg.title'), error);
+	displayOKMsg(getMessage('errordlg.title'), error);
 }
 
 $(document).ready(function() {
 	$('#recipeList').DataTable({
 		language : {
-	    	emptyTable:     messageMap.get('recipe.table.emptyTable'),
-		    info:           messageMap.get('recipe.table.info'),
-		    infoEmpty:      messageMap.get('recipe.table.infoEmpty'),
-		    infoFiltered:	messageMap.get('recipe.table.infoFiltered'),
-		    lengthMenu:		messageMap.get('recipe.table.lengthMenu'),
-		    zeroRecords:	messageMap.get('recipe.table.zeroRecords'),
-		    search:			messageMap.get('common.table.search'),
+	    	emptyTable:     getMessage('recipe.table.emptyTable'),
+		    info:           getMessage('recipe.table.info'),
+		    infoEmpty:      getMessage('recipe.table.infoEmpty'),
+		    infoFiltered:	getMessage('recipe.table.infoFiltered'),
+		    lengthMenu:		getMessage('recipe.table.lengthMenu'),
+		    zeroRecords:	getMessage('recipe.table.zeroRecords'),
+		    search:			getMessage('common.table.search'),
 		    paginate: {
-		    	first:      messageMap.get('common.table.paginate.first'),
-		    	last:       messageMap.get('common.table.paginate.last'),
-		    	next:       messageMap.get('common.table.paginate.next'),
-		    	previous:   messageMap.get('common.table.paginate.previous')
+		    	first:      getMessage('common.table.paginate.first'),
+		    	last:       getMessage('common.table.paginate.last'),
+		    	next:       getMessage('common.table.paginate.next'),
+		    	previous:   getMessage('common.table.paginate.previous')
 		    }
 		},	
 		stateSave : true

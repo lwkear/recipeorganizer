@@ -70,6 +70,7 @@ public class RecipeMadeKey implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RecipeMadeKey [userId=" + userId + ", recipeId=" + recipeId + "]";
+		return "RecipeMadeKey [userId=" + userId 
+				+ ", recipeId=" + recipeId + "]";
 	}
 }

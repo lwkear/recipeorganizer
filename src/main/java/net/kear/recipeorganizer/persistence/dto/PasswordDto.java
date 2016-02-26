@@ -6,6 +6,7 @@ import javax.validation.constraints.Size;
 
 //import net.kear.recipeorganizer.validation.PasswordMatch;
 
+
 import org.hibernate.validator.constraints.NotBlank;
 
 //TODO: VALIDATION: @PasswordMatch
@@ -64,27 +65,47 @@ public class PasswordDto implements Serializable {
 		this.confirmPassword = password;
 	}
 
-    @Override
-    public int hashCode() {
-        return password.hashCode();
-    }	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((confirmPassword == null) ? 0 : confirmPassword.hashCode());
+		result = prime * result + ((currentPassword == null) ? 0 : currentPassword.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		return result;
+	}
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PasswordDto other = (PasswordDto) obj;
+		if (confirmPassword == null) {
+			if (other.confirmPassword != null)
+				return false;
+		} else if (!confirmPassword.equals(other.confirmPassword))
+			return false;
+		if (currentPassword == null) {
+			if (other.currentPassword != null)
+				return false;
+		} else if (!currentPassword.equals(other.currentPassword))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		return true;
+	}
 
 	@Override
 	public String toString() {
-		return "PasswordDto [currentPassword=" + currentPassword + ", password=" + password + ", confirmPassword=" + confirmPassword + "]";
+		return "PasswordDto [currentPassword=" + currentPassword 
+				+ ", password=" + password 
+				+ ", confirmPassword=" + confirmPassword + "]";
 	}
 }

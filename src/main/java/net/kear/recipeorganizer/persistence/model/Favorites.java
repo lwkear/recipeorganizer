@@ -83,6 +83,7 @@ public class Favorites implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Favorites [id=" + id + ", dateAdded=" + dateAdded + "]";
+		return "Favorites [id=" + id 
+				+ ", dateAdded=" + dateAdded + "]";
 	}
 }

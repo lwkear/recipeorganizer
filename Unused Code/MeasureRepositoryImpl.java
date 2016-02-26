@@ -2,8 +2,8 @@ package net.kear.recipeorganizer.persistence.repository;
  
 import java.util.List;
 
-import net.kear.recipeorganizer.persistence.model.Measure;
-import net.kear.recipeorganizer.persistence.repository.MeasureRepository;
+//import net.kear.recipeorganizer.persistence.model.Measure;
+//import net.kear.recipeorganizer.persistence.repository.MeasureRepository;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

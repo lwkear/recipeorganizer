@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.persistence.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Temporal;
@@ -7,8 +8,10 @@ import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class CommentDto {
+public class CommentDto implements Serializable {
 
+	private static final long serialVersionUID = 1L;	
+	
 	private long id;
 	private long userId;
 	private String firstName;
@@ -96,5 +99,48 @@ public class CommentDto {
 
 	public void setFlag(int flag) {
 		this.flag = flag;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dateAdded == null) ? 0 : dateAdded.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + (int) (userId ^ (userId >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CommentDto other = (CommentDto) obj;
+		if (dateAdded == null) {
+			if (other.dateAdded != null)
+				return false;
+		} else if (!dateAdded.equals(other.dateAdded))
+			return false;
+		if (id != other.id)
+			return false;
+		if (userId != other.userId)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "CommentDto [id=" + id 
+				+ ", userId=" + userId 
+				+ ", firstName=" + firstName 
+				+ ", lastName=" + lastName 
+				+ ", avatar=" + avatar 
+				+ ", userComment=" + userComment 
+				+ ", dateAdded=" + dateAdded 
+				+ ", flag=" + flag + "]";
 	}
 }

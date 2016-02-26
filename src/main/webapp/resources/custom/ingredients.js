@@ -184,7 +184,7 @@ $(function() {
 			if ((desc == null) || (desc == ''))
 				return;
 			if (desc.length < 3) {
-				displayOKMsg(messageMap.get('recipe.ingredients.title'), messageMap.get('recipe.ingredients.length'));
+				displayOKMsg(getMessage('recipe.ingredients.title'), getMessage('recipe.ingredients.length'));
 				return;
 			}
 		

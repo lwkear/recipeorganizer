@@ -145,7 +145,7 @@ $(function() {
 			if (option == 'change') {
 				var filename = $('#photoname').val();
 				if (filename == null || filename == "") {
-					displayOKMsg(messageMap.get('recipe.optional.photo'), messageMap.get('recipe.optional.photo.noneselected'));
+					displayOKMsg(getMessage('recipe.optional.photo'), getMessage('recipe.optional.photo.noneselected'));
 					return false;
 				}
 			}

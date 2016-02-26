@@ -70,6 +70,7 @@ public class FavoritesKey implements Serializable {
 
 	@Override
 	public String toString() {
-		return "FavoritesKey [userId=" + userId + ", recipeId=" + recipeId + "]";
+		return "FavoritesKey [userId=" + userId 
+				+ ", recipeId=" + recipeId + "]";
 	}
 }

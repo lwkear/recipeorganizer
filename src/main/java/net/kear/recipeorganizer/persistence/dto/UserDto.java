@@ -65,7 +65,6 @@ public class UserDto implements Serializable {
 	}
 	
 	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes) {
-		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -154,7 +153,10 @@ public class UserDto implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "UserDto [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + 
-				", password=" + password + ", submitRecipes=" + submitRecipes + "]";
+		return "UserDto [firstName=" + firstName 
+				+ ", lastName=" + lastName 
+				+ ", email=" + email 
+				+ ", password=" + password 
+				+ ", submitRecipes=" + submitRecipes + "]";
 	}
 }

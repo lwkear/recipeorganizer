@@ -138,18 +138,14 @@ public class IngredientSection implements Serializable {
 			return false;
 		if (sequenceNo != other.sequenceNo)
 			return false;
-		if (recipeIngredients == null) {
-			if (other.recipeIngredients != null)
-				return false;
-		} else if (!recipeIngredients.equals(other.recipeIngredients))
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "IngredientSection [id=" + id  
+		return "IngredientSection [id=" + id 
 				+ ", sequenceNo=" + sequenceNo 
-				+ ", name=" + name + ", recipeIngredients=" + recipeIngredients + "]";
+				+ ", name=" + name 
+				+ ", recipeIngredients=" + recipeIngredients + "]";
 	}
 }

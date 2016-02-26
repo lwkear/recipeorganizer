@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
@@ -216,7 +216,7 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.listRecipes(userId);
     }
     
-    public List<SearchResultsDto> listRecipes(List<String> ids) {
+    public List<RecipeDisplayDto> listRecipes(List<String> ids) {
     	ArrayList<Long> recipeIds = new ArrayList<Long>();
     	for (String id : ids) {
     		recipeIds.add(Long.valueOf(id));
@@ -225,7 +225,7 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.listRecipes(recipeIds);
     }
 
-    public List<SearchResultsDto> recentRecipes(Long userId) {
+    public List<RecipeDisplayDto> recentRecipes(Long userId) {
     	return recipeRepository.recentRecipes(userId);
     }
 

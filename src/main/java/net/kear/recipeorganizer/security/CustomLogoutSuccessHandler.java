@@ -20,7 +20,7 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
 	
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		authCookie.setCookie(request, response, "anonymousUser");
+		authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
 		setDefaultTargetUrl("/thankyou");
 		super.onLogoutSuccess(request, response, authentication);
 	}

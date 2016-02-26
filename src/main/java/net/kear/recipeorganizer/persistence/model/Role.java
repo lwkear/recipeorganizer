@@ -37,20 +37,12 @@ public class Role implements Serializable {
 	@Size(max=20)
 	private String description;
 	
-    /*@OneToMany(mappedBy = "role")
-    private Collection<User> user;*/
-	
-    //need to rethink how privileges work - this version returns multiple records for each user's role object
-    /*@ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(name = "ROLES_PRIVILEGES", joinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID"), 
-    	inverseJoinColumns = @JoinColumn(name = "PRIVILEGE_ID", referencedColumnName = "ID") )
-    private Collection<Privilege> privileges;*/
-    
 	public Role() {};
 	
-	public Role(String name) {
+	public Role(String name, String description) {
 		super();
 		this.name = name;
+		this.description = description;
 	}
 
 	public long getId() {
@@ -77,42 +69,38 @@ public class Role implements Serializable {
 		this.description = description;
 	}
 	
-	/*public Collection<User> getUsers() {
-        return user;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
 
-    public void setUsers(final Collection<User> user) {
-        this.user = user;
-    }*/
-
-    /*public Collection<Privilege> getPrivileges() {
-        return privileges;
-    }
-
-    public void setPrivileges(final Collection<Privilege> privileges) {
-        this.privileges = privileges;
-    }*/
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Role role = (Role) obj;
-        if (!role.equals(role.name)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Role other = (Role) obj;
+		if (id != other.id)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 
 	@Override
 	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", description=" + description + "]";
+		return "Role [id=" + id 
+				+ ", name=" + name 
+				+ ", description=" + description + "]";
 	}   
 }

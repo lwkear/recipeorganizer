@@ -35,10 +35,10 @@ function displayCount(count, userId, userFirst, userLast) {
 	$("#messageTitle").text(userFirst + " " + userLast);
 	var msg;
 	if (count == 0)
-		msg = messageMap.get('useradmin.delete.areyousure');
+		msg = getMessage('useradmin.delete.areyousure');
 	else
-		msg = userFirst + " " + userLast + " " + messageMap.get('useradmin.delete.hasrecipe1') + " " + count + " " +
-				messageMap.get('useradmin.delete.hasrecipe2') +  " " + messageMap.get('useradmin.delete.areyousure');
+		msg = userFirst + " " + userLast + " " + getMessage('useradmin.delete.hasrecipe1') + " " + count + " " +
+				getMessage('useradmin.delete.hasrecipe2') +  " " + getMessage('useradmin.delete.areyousure');
 	$("#messageMsg").text(msg);
 	$(".msgDlgBtn").hide();
 	$("#yesBtn").show();
@@ -160,15 +160,15 @@ function postUser(e) {
 function userUpdate(user) {
 	var table = $('#userList').DataTable();
 	var ndx = table.row('#' + user.id).index();
-	table.cell(ndx,5).data(user.enabled ? messageMap.get('common.yes') : messageMap.get('common.no'));
-	table.cell(ndx,6).data(user.locked ? messageMap.get('common.yes') : messageMap.get('common.no'));
-	table.cell(ndx,7).data(user.passwordExpired ? messageMap.get('common.yes') : messageMap.get('common.no'));
-	table.cell(ndx,8).data(user.accountExpired ? messageMap.get('common.yes') : messageMap.get('common.no'));
+	table.cell(ndx,5).data(user.enabled ? getMessage('common.yes') : getMessage('common.no'));
+	table.cell(ndx,6).data(user.locked ? getMessage('common.yes') : getMessage('common.no'));
+	table.cell(ndx,7).data(user.passwordExpired ? getMessage('common.yes') : getMessage('common.no'));
+	table.cell(ndx,8).data(user.accountExpired ? getMessage('common.yes') : getMessage('common.no'));
 	table.cell(ndx,9).data(user.role.name).draw();
 };
 
 function postFailed(error) {
-	displayOKMsg(messageMap.get('errordlg.title'), error);
+	displayOKMsg(getMessage('errordlg.title'), error);
 }
 
 $(function() {
@@ -179,18 +179,18 @@ $(function() {
     		orderable: false
     	}],
 		language : {
-	    	emptyTable:     messageMap.get('useradmin.table.emptyTable'),
-		    info:           messageMap.get('useradmin.table.info'),
-		    infoEmpty:      messageMap.get('useradmin.table.infoEmpty'),
-		    infoFiltered:	messageMap.get('useradmin.table.infoFiltered'),
-		    lengthMenu:		messageMap.get('useradmin.table.lengthMenu'),
-		    zeroRecords:	messageMap.get('useradmin.table.zeroRecords'),
-		    search:			messageMap.get('common.table.search'),
+	    	emptyTable:     getMessage('useradmin.table.emptyTable'),
+		    info:           getMessage('useradmin.table.info'),
+		    infoEmpty:      getMessage('useradmin.table.infoEmpty'),
+		    infoFiltered:	getMessage('useradmin.table.infoFiltered'),
+		    lengthMenu:		getMessage('useradmin.table.lengthMenu'),
+		    zeroRecords:	getMessage('useradmin.table.zeroRecords'),
+		    search:			getMessage('common.table.search'),
 		    paginate: {
-		    	first:      messageMap.get('common.table.paginate.first'),
-		    	last:       messageMap.get('common.table.paginate.last'),
-		    	next:       messageMap.get('common.table.paginate.next'),
-		    	previous:   messageMap.get('common.table.paginate.previous')
+		    	first:      getMessage('common.table.paginate.first'),
+		    	last:       getMessage('common.table.paginate.last'),
+		    	next:       getMessage('common.table.paginate.next'),
+		    	previous:   getMessage('common.table.paginate.previous')
 		    }
 		},	
 		stateSave : true

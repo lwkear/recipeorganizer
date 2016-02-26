@@ -78,7 +78,6 @@ public class Instruction implements Serializable {
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + sequenceNo;
 		return result;
 	}
 
@@ -97,8 +96,6 @@ public class Instruction implements Serializable {
 		} else if (!description.equals(other.description))
 			return false;
 		if (id != other.id)
-			return false;
-		if (sequenceNo != other.sequenceNo)
 			return false;
 		return true;
 	}

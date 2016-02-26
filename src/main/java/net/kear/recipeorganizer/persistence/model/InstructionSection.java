@@ -52,7 +52,7 @@ public class InstructionSection implements Serializable {
 	@Size(max=50, groups=SizeGroup.class)	//50
 	private String name;
 
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY) //EAGER)	//mappedBy="instructionSection", 
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY) 
 	@JoinColumn(name="SECTION_ID", nullable=false)
 	@OrderBy("sequenceNo")
 	@Valid
@@ -138,11 +138,6 @@ public class InstructionSection implements Serializable {
 			return false;
 		if (sequenceNo != other.sequenceNo)
 			return false;
-		if (instructions == null) {
-			if (other.instructions != null)
-				return false;
-		} else if (!instructions.equals(other.instructions))
-			return false;
 		return true;
 	}
 
@@ -150,6 +145,7 @@ public class InstructionSection implements Serializable {
 	public String toString() {
 		return "Instruction [id=" + id  
 				+ ", sequenceNo=" + sequenceNo 
-				+ ", name=" + name + ", instructions=" + instructions + "]";
+				+ ", name=" + name 
+				+ ", instructions=" + instructions + "]";
 	}
 }

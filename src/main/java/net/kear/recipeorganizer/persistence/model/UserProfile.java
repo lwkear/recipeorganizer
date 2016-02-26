@@ -193,6 +193,11 @@ public class UserProfile implements Serializable {
 
 	@Override
 	public String toString() {
-		return "UserProfile [id=" + id + ", city=" + city + ", state=" + state + ", age=" + age + ", interests=" + interests + ", avatar=" + avatar + "]";
+		return "UserProfile [id=" + id 
+				+ ", city=" + city 
+				+ ", state=" + state 
+				+ ", age=" + age 
+				+ ", interests=" + interests 
+				+ ", avatar=" + avatar + "]";
 	}
 }

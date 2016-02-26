@@ -132,10 +132,6 @@ public class ExceptionLog implements Serializable {
 		result = prime * result + (int) (eventId ^ (eventId >>> 32));
 		result = prime * result + ((eventTimestamp == null) ? 0 : eventTimestamp.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((lineNum == null) ? 0 : lineNum.hashCode());
-		result = prime * result + ((messsage == null) ? 0 : messsage.hashCode());
-		result = prime * result + ((method == null) ? 0 : method.hashCode());
-		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		return result;
 	}
 
@@ -162,29 +158,18 @@ public class ExceptionLog implements Serializable {
 			return false;
 		if (id != other.id)
 			return false;
-		if (lineNum == null) {
-			if (other.lineNum != null)
-				return false;
-		} else if (!lineNum.equals(other.lineNum))
-			return false;
-		if (messsage == null) {
-			if (other.messsage != null)
-				return false;
-		} else if (!messsage.equals(other.messsage))
-			return false;
-		if (method == null) {
-			if (other.method != null)
-				return false;
-		} else if (!method.equals(other.method))
-			return false;
-		if (userName != other.userName)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ExceptionLog [id=" + id + ", eventId=" + eventId + ", eventTimestamp=" + eventTimestamp + ", userName=" + userName + ", messsage=" + messsage + ", className="
-				+ className + ", method=" + method + ", lineNum=" + lineNum + "]";
+		return "ExceptionLog [id=" + id 
+				+ ", eventId=" + eventId 
+				+ ", eventTimestamp=" + eventTimestamp 
+				+ ", userName=" + userName 
+				+ ", messsage=" + messsage 
+				+ ", className=" + className 
+				+ ", method=" + method 
+				+ ", lineNum=" + lineNum + "]";
 	}
 }

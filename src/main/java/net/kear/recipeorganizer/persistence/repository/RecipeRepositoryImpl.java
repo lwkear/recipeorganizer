@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
-import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
@@ -239,7 +239,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public List<SearchResultsDto> listRecipes(List<Long> ids) {
+    public List<RecipeDisplayDto> listRecipes(List<Long> ids) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
     		.add(Restrictions.in("id", ids))
@@ -251,12 +251,12 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.approved").as("approved"))
     			.add(Projections.property("r.photoName").as("photo")))
-    		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
+    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
 
-    	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
-    	List<SearchResultsDto> sorted = new AutoPopulatingList<SearchResultsDto>(SearchResultsDto.class);
+    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) criteria.list();
+    	List<RecipeDisplayDto> sorted = new AutoPopulatingList<RecipeDisplayDto>(RecipeDisplayDto.class);
     	for (Long id : ids) {
-    		for (SearchResultsDto dto : recipes) {
+    		for (RecipeDisplayDto dto : recipes) {
     			if (id == dto.getId()) {
     				sorted.add(dto);
     				break;
@@ -268,7 +268,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<SearchResultsDto> recentRecipes(Long userId) {
+    public List<RecipeDisplayDto> recentRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
     		.add(Restrictions.eq("u.id", userId))
@@ -282,9 +282,9 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.photoName").as("photo")))
     		.addOrder(Order.desc("r.dateAdded"))
     		.setMaxResults(5)
-    		.setResultTransformer(Transformers.aliasToBean(SearchResultsDto.class));
+    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
 
-    	List<SearchResultsDto> recipes = (List<SearchResultsDto>) criteria.list();
+    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) criteria.list();
     	return recipes;
     }
 

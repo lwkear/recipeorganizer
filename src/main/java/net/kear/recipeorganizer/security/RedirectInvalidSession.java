@@ -14,7 +14,6 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-
 @Component
 public class RedirectInvalidSession implements InvalidSessionStrategy {
 	
@@ -49,7 +48,7 @@ public class RedirectInvalidSession implements InvalidSessionStrategy {
 		}
 
 		//always revert to anonymous user
-		authCookie.setCookie(request, response, "anonymousUser");
+		authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
 		
 		logger.debug("Starting new session (if required) and redirecting to '" + url + "'");
 		

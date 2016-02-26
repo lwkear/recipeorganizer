@@ -2,11 +2,10 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
-public class SearchResultsDto extends Object implements Serializable {
+public class RecipeDisplayDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
 	
-	private int rank;
 	private long id;
 	private long userId;
 	private String name;
@@ -14,13 +13,10 @@ public class SearchResultsDto extends Object implements Serializable {
 	private String photo;
 	private boolean allowShare;
 	private boolean approved;
-	private long catId;
-	private String source;
 	
-	public SearchResultsDto() {};
+	public RecipeDisplayDto() {};
 	
-	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, boolean approved, long catId, String source) {
-		this.rank = rank;
+	public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, boolean approved) {
 		this.id = id;
 		this.userId = userId;
 		this.name = name;
@@ -28,17 +24,7 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.photo = photo;
 		this.allowShare = allowShare;
 		this.approved = approved;
-		this.catId = catId;
-		this.source = source;
 	};	
-
-	public int getRank() {
-		return rank;
-	}
-
-	public void setRank(int rank) {
-		this.rank = rank;
-	}
 
 	public long getId() {
 		return id;
@@ -96,22 +82,6 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.approved = approved;
 	}
 
-	public long getCatId() {
-		return catId;
-	}
-	
-	public void setCatId(Long catId) {
-		this.catId = catId;
-	}
-
-	public String getSource() {
-		return source;
-	}
-
-	public void setSource(String source) {
-		this.source = source;
-	}	
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -130,7 +100,7 @@ public class SearchResultsDto extends Object implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SearchResultsDto other = (SearchResultsDto) obj;
+		RecipeDisplayDto other = (RecipeDisplayDto) obj;
 		if (id != other.id)
 			return false;
 		if (name == null) {
@@ -145,15 +115,12 @@ public class SearchResultsDto extends Object implements Serializable {
 
 	@Override
 	public String toString() {
-		return "SearchResultsDto [rank=" + rank
-				+ ", id=" + id 
+		return "SearchResultsDto [id=" + id 
 				+ ", userId=" + userId 
 				+ ", name=" + name 
 				+ ", description=" + description 
 				+ ", photo=" + photo 
 				+ ", allowShare=" + allowShare 
-				+ ", approved=" + approved 
-				+ ", catId=" + catId 
-				+ ", source=" + source + "]";
+				+ ", approved=" + approved + "]";
 	}
 }

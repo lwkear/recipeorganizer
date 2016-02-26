@@ -106,7 +106,7 @@ public class Recipe implements Serializable {
 	@Column(name = "COPYRIGHTED")
 	private boolean copyrighted;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch=FetchType.EAGER)
 	@JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID")
 	@Valid
 	private Category category;
@@ -126,7 +126,7 @@ public class Recipe implements Serializable {
 	private int currIngredSection;
 	
 	/*** instructions page ***/
-	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY)	//mappedBy="recipe", 
+	@OneToMany(orphanRemoval=true, cascade=CascadeType.ALL, fetch=FetchType.LAZY) 
 	@JoinColumn(name="RECIPE_ID", nullable=false)
 	@OrderBy("sequenceNo")
 	@Valid
@@ -302,7 +302,6 @@ public class Recipe implements Serializable {
 		this.copyrighted = copyrighted;
 	}
 	
-
 	public void setApproved(boolean approved) {
 		this.approved = approved;
 	}
@@ -425,9 +424,9 @@ public class Recipe implements Serializable {
 		int result = 1;
 		result = prime * result + (allowShare ? 1231 : 1237);
 		result = prime * result + (approved ? 1231 : 1237);
-		result = prime * result + (copyrighted ? 1231 : 1237);
 		result = prime * result + ((background == null) ? 0 : background.hashCode());
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
+		result = prime * result + (copyrighted ? 1231 : 1237);
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -453,8 +452,6 @@ public class Recipe implements Serializable {
 			return false;
 		if (approved != other.approved)
 			return false;
-		if (copyrighted != other.copyrighted)
-			return false;
 		if (background == null) {
 			if (other.background != null)
 				return false;
@@ -465,17 +462,14 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!category.equals(other.category))
 			return false;
+		if (copyrighted != other.copyrighted)
+			return false;
 		if (description == null) {
 			if (other.description != null)
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
 		if (id != other.id)
-			return false;
-		if (instructSections == null) {
-			if (other.instructSections != null)
-				return false;
-		} else if (!instructSections.equals(other.instructSections))
 			return false;
 		if (name == null) {
 			if (other.name != null)
@@ -502,39 +496,39 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!prepMinutes.equals(other.prepMinutes))
 			return false;
-		if (ingredSections == null) {
-			if (other.ingredSections != null)
-				return false;
-		} else if (!ingredSections.equals(other.ingredSections))
-			return false;
 		if (servings == null) {
 			if (other.servings != null)
 				return false;
 		} else if (!servings.equals(other.servings))
-			return false;
-		if (source == null) {
-			if (other.source != null)
-				return false;
-		} else if (!source.equals(other.source))
 			return false;
 		if (tags == null) {
 			if (other.tags != null)
 				return false;
 		} else if (!tags.equals(other.tags))
 			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "Recipe [id=" + id + ", user=" + user + ", name=" + name + ", background=" + background + ", description=" + description +
-				", servings=" + servings + ", prepHours=" + prepHours + ", prepMinutes=" + prepMinutes + ", notes=" + notes + ", allowShare=" + allowShare + 
-				", approved=" + approved + ", copyrighted=" + copyrighted + ", photoName=" + photoName + ", tags=" + tags + ", category=" + category +  
-				", instructSections=" + instructSections + ", ingredSections=" + ingredSections + ", source=" + source + ", views=" + views + "]";
+		return "Recipe [id=" + id 
+				+ ", user=" + user 
+				+ ", name=" + name 
+				+ ", background=" + background 
+				+ ", description=" + description 
+				+ ", servings=" + servings 
+				+ ", prepHours=" + prepHours 
+				+ ", prepMinutes=" + prepMinutes 
+				+ ", notes=" + notes 
+				+ ", allowShare=" + allowShare 
+				+ ", approved=" + approved 
+				+ ", copyrighted=" + copyrighted 
+				+ ", photoName=" + photoName 
+				+ ", tags=" + tags 
+				+ ", category=" + category 
+				+ ", instructSections=" + instructSections 
+				+ ", ingredSections=" + ingredSections 
+				+ ", source=" + source 
+				+ ", views=" + views + "]";
 	}
 }

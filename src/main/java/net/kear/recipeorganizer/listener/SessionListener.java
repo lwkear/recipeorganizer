@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import net.kear.recipeorganizer.security.AuthCookie;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -43,8 +45,7 @@ public class SessionListener implements HttpSessionListener {
 			if (auth != null) {
 				Object principal = auth.getPrincipal();
 				if (principal != null) {
-					
-					if (principal.toString().equals("anonymousUser")) {
+					if (principal.toString().equals(AuthCookie.ANNON_USER)) {
 						logger.debug("sessionCreated: bypassing " + principal);
 						return;
 					}

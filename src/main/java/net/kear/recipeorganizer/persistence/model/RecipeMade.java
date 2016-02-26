@@ -68,7 +68,6 @@ public class RecipeMade implements Serializable {
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((lastMade == null) ? 0 : lastMade.hashCode());
-		result = prime * result + madeCount;
 		return result;
 	}
 
@@ -91,13 +90,13 @@ public class RecipeMade implements Serializable {
 				return false;
 		} else if (!lastMade.equals(other.lastMade))
 			return false;
-		if (madeCount != other.madeCount)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "RecipeMade [id=" + id + ", lastMade=" + lastMade + ", madeCount=" + madeCount + "]";
+		return "RecipeMade [id=" + id 
+				+ ", lastMade=" + lastMade 
+				+ ", madeCount=" + madeCount + "]";
 	}	
 }

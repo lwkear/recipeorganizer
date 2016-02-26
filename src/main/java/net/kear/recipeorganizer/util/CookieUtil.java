@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class CookieUtil {
@@ -42,4 +43,13 @@ public class CookieUtil {
 		cookie.setMaxAge(60 * 60 * 24 * 365 * 10);
 		response.addCookie(cookie);
 	}
+	
+	public void deleteRememberMe(HttpServletRequest request, HttpServletResponse response) {
+		String cookieName = "remember-me";
+		Cookie cookie = new Cookie(cookieName, null);
+		cookie.setMaxAge(0);
+		cookie.setPath(StringUtils.hasLength(request.getContextPath()) ? request.getContextPath() : "/");
+		response.addCookie(cookie);
+	}
+	
 }

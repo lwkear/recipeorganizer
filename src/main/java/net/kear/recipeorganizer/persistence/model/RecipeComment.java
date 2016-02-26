@@ -115,9 +115,7 @@ public class RecipeComment implements Serializable {
 		result = prime * result + ((dateAdded == null) ? 0 : dateAdded.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + (int) (recipeId ^ (recipeId >>> 32));
-		result = prime * result + ((userComment == null) ? 0 : userComment.hashCode());
 		result = prime * result + (int) (userId ^ (userId >>> 32));
-		result = prime * result + (int) (flag ^ (flag >>> 32));
 		return result;
 	}
 
@@ -139,20 +137,18 @@ public class RecipeComment implements Serializable {
 			return false;
 		if (recipeId != other.recipeId)
 			return false;
-		if (userComment == null) {
-			if (other.userComment != null)
-				return false;
-		} else if (!userComment.equals(other.userComment))
-			return false;
 		if (userId != other.userId)
-			return false;
-		if (flag != other.flag)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "RecipeComment [id=" + id + ", userId=" + userId + ", recipeId=" + recipeId + ", userComment=" + userComment + ", dateAdded=" + dateAdded + ", flag=" + flag + "]";
+		return "RecipeComment [id=" + id 
+				+ ", userId=" + userId 
+				+ ", recipeId=" + recipeId 
+				+ ", userComment=" + userComment 
+				+ ", dateAdded=" + dateAdded 
+				+ ", flag=" + flag + "]";
 	}
 }

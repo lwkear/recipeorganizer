@@ -38,14 +38,10 @@ public class Ingredient implements Serializable {
 	@Size(max=250, groups=SizeGroup.class)	//250
 	private String name;
 	
-	@Column(name = "RANK")
-	private int rank;
-
 	public Ingredient() {}
 	
-	public Ingredient(String name, int rank) {
+	public Ingredient(String name) {
 		this.name = name;
-		this.rank = rank;
 	}
 	
 	public long getId() {
@@ -64,21 +60,12 @@ public class Ingredient implements Serializable {
 		this.name = name;
 	}
 
-	public int getRank() {
-		return rank;
-	}
-
-	public void setRank(int rank) {
-		this.rank = rank;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + rank;
 		return result;
 	}
 
@@ -98,15 +85,12 @@ public class Ingredient implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (rank != other.rank)
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
 		return "Ingredient [id=" + id 
-				+ ", name=" + name 
-				+ ", rank=" + rank +"]";
+				+ ", name=" + name +"]"; 
 	}
 }

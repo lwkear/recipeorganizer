@@ -312,8 +312,21 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", password=" + password + ", enabled=" + enabled 
-				+ ", tokenExpired=" + tokenExpired + ", locked=" + locked + ", accountExpired=" + accountExpired + ", dateAdded=" + dateAdded + ", lastLogin=" + lastLogin 
-				+ ", passwordExpired=" + passwordExpired + ", loggedIn=" + loggedIn + ", numRecipes=" + numRecipes + ", role=" + role + ", userProfile=" + userProfile + "]";
+		return "User [id=" + id 
+				+ ", firstName=" + firstName 
+				+ ", lastName=" + lastName 
+				+ ", email=" + email 
+				+ ", password=" + password 
+				+ ", enabled=" + enabled 
+				+ ", tokenExpired=" + tokenExpired 
+				+ ", locked=" + locked 
+				+ ", accountExpired=" + accountExpired 
+				+ ", dateAdded=" + dateAdded 
+				+ ", lastLogin=" + lastLogin 
+				+ ", passwordExpired=" + passwordExpired 
+				+ ", loggedIn=" + loggedIn 
+				+ ", numRecipes=" + numRecipes 
+				+ ", role=" + role 
+				+ ", userProfile=" + userProfile + "]";
 	}	
 }

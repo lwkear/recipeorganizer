@@ -30,7 +30,7 @@ function checkAvatarOptions() {
 	if (opt == 'change') {
 		var filename = $('#photoname').val();
 		if (filename == null || filename == "") {
-			displayOKMsg(messageMap.get('profile.photo'), messageMap.get('recipe.optional.photo.noneselected'));
+			displayOKMsg(getMessage('profile.photo'), getMessage('recipe.optional.photo.noneselected'));
 			return false;
 		}
 	}	
@@ -39,7 +39,7 @@ function checkAvatarOptions() {
 function checkForFileError() {
 	var avatarErr = $("#avatarErr").val();
 	if (avatarErr.length) {
-		$("#messageTitle").text(messageMap.get('exception.file.failure'));
+		$("#messageTitle").text(getMessage('exception.file.failure'));
 		$("#messageMsg").text(avatarErr);
 		$(".msgDlgBtn").hide();
 		$("#okBtn").show();

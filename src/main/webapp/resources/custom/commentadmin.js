@@ -50,7 +50,7 @@ function removeRow(commentId) {
 }
 
 function postFailed(error) {
-	displayOKMsg(messageMap.get('errordlg.title'), error);
+	displayOKMsg(getMessage('errordlg.title'), error);
 }
 
 $(function() {
@@ -61,18 +61,18 @@ $(function() {
     		orderable: false
     	}],
 		language : {
-	    	emptyTable:     messageMap.get('commentadmin.table.emptyTable'),
-		    info:           messageMap.get('commentadmin.table.info'),
-		    infoEmpty:      messageMap.get('commentadmin.table.infoEmpty'),
-		    infoFiltered:	messageMap.get('commentadmin.table.infoFiltered'),
-		    lengthMenu:		messageMap.get('commentadmin.table.lengthMenu'),
-		    zeroRecords:	messageMap.get('commentadmin.table.zeroRecords'),
-		    search:			messageMap.get('common.table.search'),
+	    	emptyTable:     getMessage('commentadmin.table.emptyTable'),
+		    info:           getMessage('commentadmin.table.info'),
+		    infoEmpty:      getMessage('commentadmin.table.infoEmpty'),
+		    infoFiltered:	getMessage('commentadmin.table.infoFiltered'),
+		    lengthMenu:		getMessage('commentadmin.table.lengthMenu'),
+		    zeroRecords:	getMessage('commentadmin.table.zeroRecords'),
+		    search:			getMessage('common.table.search'),
 		    paginate: {
-		    	first:      messageMap.get('common.table.paginate.first'),
-		    	last:       messageMap.get('common.table.paginate.last'),
-		    	next:       messageMap.get('common.table.paginate.next'),
-		    	previous:   messageMap.get('common.table.paginate.previous')
+		    	first:      getMessage('common.table.paginate.first'),
+		    	last:       getMessage('common.table.paginate.last'),
+		    	next:       getMessage('common.table.paginate.next'),
+		    	previous:   getMessage('common.table.paginate.previous')
 		    }
 		},	
 		stateSave : true

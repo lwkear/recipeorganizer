@@ -15,38 +15,81 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="blurInputFocus()">
 	
 <%@include file="common/nav.jsp" %>	
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="title.searchresults"></spring:message> for "${searchTerm}"</h3>
+				<h3><spring:message code="title.searchresultsfor"></spring:message> "${searchTerm}"</h3>
 			</div>
-			<table class="table" id="recipeList">
-				<thead>
-					<tr>
-						<th data-orderable="false"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="recipe" items="${resultList}">
-						<tr id="${recipe.id}">
-							<td>
-								<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
-								<c:if test="${not empty recipe.photo}">
-									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
-								</c:if>	
-								<h4 class="header-blue">${recipe.name}</h4>
-								<p class="list-group-item-text">${recipe.description}</p>
-								<p class="clearfix"></p>										
-								</a>
-							</td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
+		</div>
+		<div class="col-sm-12">
+			<div class="row">
+				<div class="col-sm-2">
+					<div class="col-sm-12">
+						<form>
+							<h4><spring:message code="recipe.table.category"></spring:message></h4>
+							<div class="form-group">
+								<c:forEach var="cat" items="${categories}">
+									<div class="checkbox">
+										<label>
+											<input class="category" id="cat${cat.catId}" type="checkbox">${cat.catName} (${cat.catCount})
+										</label>
+									</div>
+								</c:forEach>
+							</div>
+						</form>
+					</div>
+					<div class="col-sm-12">
+						<form>
+							<h4><spring:message code="recipe.table.source"></spring:message></h4>
+							<div class="form-group">
+								<c:forEach var="src" items="${sources}">
+									<div class="checkbox">
+										<label>
+											<input class="source" id="src${src.sourceType}" type="checkbox">${src.sourceName} (${src.sourceCount})
+										</label>
+									</div>
+								</c:forEach>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="col-sm-10">
+					<table class="table" id="recipeList">
+						<thead>
+							<tr>
+								<th>Rank</th>
+								<th></th>
+								<th>CatId</th>
+								<th>Source</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="recipe" items="${resultList}">
+								<tr id="${recipe.id}">
+									<td>${recipe.rank}</td>
+									<td>
+										<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
+										<c:if test="${not empty recipe.photo}">
+											<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
+										</c:if>	
+										<h4 class="std-blue">${recipe.name}</h4>
+										<p class="list-group-item-text">${recipe.description}</p>
+										<p class="clearfix"></p>										
+										</a>
+									</td>
+									<td>cat${recipe.catId}</td>
+									<td>src${recipe.source}</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<input type="hidden" id="newSearch" value="${newSearch}"/>
 		</div>
 	</div>
 
@@ -55,6 +98,6 @@
 </body>
 
 <!-- include list-specific routines -->
-<script src="<c:url value="/resources/custom/recipelist.js" />"></script>
+<script src="<c:url value="/resources/custom/searchlist.js" />"></script>
 
 </html>
