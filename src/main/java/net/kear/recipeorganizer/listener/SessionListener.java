@@ -1,26 +1,13 @@
 package net.kear.recipeorganizer.listener;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import net.kear.recipeorganizer.security.AuthCookie;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class SessionListener implements HttpSessionListener {
 
@@ -29,7 +16,27 @@ public class SessionListener implements HttpSessionListener {
 	@Override
 	public void sessionCreated(HttpSessionEvent event) {
 
+		logger.debug("Checking event.session...");
 		HttpSession session = event.getSession();
+		Date createTime = new Date(session.getCreationTime());
+		Date lastAccess = new Date(session.getLastAccessedTime());
+		int maxInactive = session.getMaxInactiveInterval();
+		String sessID = session.getId();
+		String principal = (String) session.getAttribute("authUser");
+		
+		String sCreate = "Session created on: " + createTime;
+		String sLast = "Session last accessed on: " + lastAccess;
+		String sInactive = "Session expires after: " + maxInactive + " seconds";
+		String sID = "Session ID: " + sessID;
+		String sPrincipal = "Session principal: " + principal;
+		
+		logger.debug("sessionCreated: " + sCreate);
+		logger.debug("sessionCreated: " + sLast);
+		logger.debug("sessionCreated: " + sInactive); 
+		logger.debug("sessionCreated: " + sID);
+		logger.debug("sessionCreated: " + sPrincipal);
+		
+		/*HttpSession session = event.getSession();
 		String sessionId = session.getId();
 		
 		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(session.getServletContext());
@@ -63,7 +70,7 @@ public class SessionListener implements HttpSessionListener {
 					logger.debug("sessionCreated: registerNewSession called for " + principal);
 				}
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -89,7 +96,7 @@ public class SessionListener implements HttpSessionListener {
 		logger.debug("sessionDestroyed: " + sID);
 		logger.debug("sessionDestroyed: " + sPrincipal);
 
-		logger.debug("Checking SecurityContext...");
+		/*logger.debug("Checking SecurityContext...");
 		SecurityContext context = SecurityContextHolder.getContext();
 		if (context != null) {
 
@@ -115,7 +122,7 @@ public class SessionListener implements HttpSessionListener {
 				logger.debug("Authentication is null");
 		}
 		else
-			logger.debug("SecurityContext is null");
+			logger.debug("SecurityContext is null");*/
 	}
 }
 

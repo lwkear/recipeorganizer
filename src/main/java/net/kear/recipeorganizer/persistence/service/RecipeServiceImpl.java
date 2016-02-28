@@ -87,6 +87,7 @@ public class RecipeServiceImpl implements RecipeService {
 		}
     	else {
     		recipe.getSource().setRecipe(recipe);
+    		adjustSourceFields(recipe);
     		if (type.equals(Source.TYPE_COOKBOOK) || 
     			type.equals(Source.TYPE_MAGAZINE) ||
     			type.equals(Source.TYPE_NEWSPAPER) ||
@@ -442,5 +443,72 @@ public class RecipeServiceImpl implements RecipeService {
     			recipe.setCurrIngredSection(sectNdx-1);
     		}
     	}
+	}
+	
+	private void adjustSourceFields(Recipe recipe) {
+		String type = recipe.getSource().getType();
+		
+		if (type.equals(Source.TYPE_COOKBOOK)) {
+			recipe.getSource().setMagazine("");
+			recipe.getSource().setMagazinePubdate(null);
+			recipe.getSource().setNewspaper("");
+			recipe.getSource().setNewspaperPubdate(null);
+			recipe.getSource().setOther("");
+			recipe.getSource().setPerson("");
+			recipe.getSource().setWebsiteUrl("");
+			recipe.getSource().setRecipeUrl("");			
+		}
+		if (type.equals(Source.TYPE_MAGAZINE)) {
+			recipe.getSource().setCookbook("");
+			recipe.getSource().setCookbookPage(null);
+			recipe.getSource().setNewspaper("");
+			recipe.getSource().setNewspaperPubdate(null);
+			recipe.getSource().setOther("");
+			recipe.getSource().setPerson("");
+			recipe.getSource().setWebsiteUrl("");
+			recipe.getSource().setRecipeUrl("");			
+		}
+		if (type.equals(Source.TYPE_NEWSPAPER)) {
+			recipe.getSource().setCookbook("");
+			recipe.getSource().setCookbookPage(null);
+			recipe.getSource().setMagazine("");
+			recipe.getSource().setMagazinePubdate(null);
+			recipe.getSource().setOther("");
+			recipe.getSource().setPerson("");
+			recipe.getSource().setWebsiteUrl("");
+			recipe.getSource().setRecipeUrl("");			
+		}
+		if (type.equals(Source.TYPE_PERSON)) {
+			recipe.getSource().setCookbook("");
+			recipe.getSource().setCookbookPage(null);
+			recipe.getSource().setMagazine("");
+			recipe.getSource().setMagazinePubdate(null);
+			recipe.getSource().setNewspaper("");
+			recipe.getSource().setNewspaperPubdate(null);
+			recipe.getSource().setOther("");
+			recipe.getSource().setWebsiteUrl("");
+			recipe.getSource().setRecipeUrl("");			
+		}
+		if (type.equals(Source.TYPE_WEBSITE)) {
+			recipe.getSource().setCookbook("");
+			recipe.getSource().setCookbookPage(null);
+			recipe.getSource().setMagazine("");
+			recipe.getSource().setMagazinePubdate(null);
+			recipe.getSource().setNewspaper("");
+			recipe.getSource().setNewspaperPubdate(null);
+			recipe.getSource().setOther("");
+			recipe.getSource().setPerson("");
+		}
+		if (type.equals(Source.TYPE_OTHER)) {
+			recipe.getSource().setCookbook("");
+			recipe.getSource().setCookbookPage(null);
+			recipe.getSource().setMagazine("");
+			recipe.getSource().setMagazinePubdate(null);
+			recipe.getSource().setNewspaper("");
+			recipe.getSource().setNewspaperPubdate(null);
+			recipe.getSource().setPerson("");
+			recipe.getSource().setWebsiteUrl("");
+			recipe.getSource().setRecipeUrl("");			
+		}
 	}
 }

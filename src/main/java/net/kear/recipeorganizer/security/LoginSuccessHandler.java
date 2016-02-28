@@ -35,17 +35,16 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		
 		authCookie.setCookie(request, response, authentication.getName());
 
-		//try {
-			User user = userService.findUserByEmail(authentication.getName());
-			user.setLastLogin(new Date());
-			userService.updateUser(user);
-		//} catch (Exception ex) {
-			//do nothing - the exception is probably caused by the db being down 
-		//}
+		User user = userService.findUserByEmail(authentication.getName());
+		user.setLastLogin(new Date());
+		userService.updateUser(user);
+
+		String servePath = request.getServletPath();
+		logger.debug("servePath:" + servePath);
 		
-		String uri = request.getRequestURI();
-		logger.debug("AuthenticationSuccess uri: " + uri);
-		
-		super.onAuthenticationSuccess(request, response, authentication);
+		if (servePath != null && !servePath.isEmpty() && servePath.indexOf("login") == -1)
+			getRedirectStrategy().sendRedirect(request, response, servePath);
+		else
+			super.onAuthenticationSuccess(request, response, authentication);
 	}
 }

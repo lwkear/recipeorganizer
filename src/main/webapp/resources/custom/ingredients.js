@@ -208,10 +208,7 @@ $(function() {
 			var data = {"id":"0","name":desc};
 		
 			$.ajax({
-				/*headers: { 
-			        'Accept': 'application/json',
-			        'Content-Type': 'application/json' 
-			    },*/
+			    contentType: 'application/json',
 				type: 'POST',
 				url: '/recipeorganizer/recipe/addIngredient',
 				dataType: 'json',

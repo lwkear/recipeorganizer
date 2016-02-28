@@ -54,13 +54,11 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     public List<Ingredient> getIngredients(String searchStr) {
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
     		.add(Restrictions.ilike("name", searchStr, MatchMode.ANYWHERE))
-    		.addOrder(Order.asc("rank"))
     		.addOrder(Order.asc("name"));
     	List<Ingredient> ingredList = criteria.list();
     	List<Ingredient> ingredResults = new AutoPopulatingList<Ingredient>(Ingredient.class);
     	
 		//loop through the results looking for ingredients that start with the searchStr;
-    	//since the list is sorted by rank/name, these will appear first in the typeahead dropdown
     	for (Ingredient ingred : ingredList) {
 			String lowerName = ingred.getName().toLowerCase();
 			if (lowerName.startsWith(searchStr))

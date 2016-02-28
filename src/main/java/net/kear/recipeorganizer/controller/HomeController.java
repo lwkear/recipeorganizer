@@ -44,7 +44,6 @@ public class HomeController {
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private MessageSource messages;
-
 	@Autowired
 	private UserService userService;
 	@Autowired

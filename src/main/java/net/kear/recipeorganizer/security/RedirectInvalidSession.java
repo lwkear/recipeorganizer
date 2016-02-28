@@ -35,6 +35,7 @@ public class RedirectInvalidSession implements InvalidSessionStrategy {
 
 	@Override
 	public void onInvalidSessionDetected(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger.debug("onInvalidSessionDetected");
 
 		String url = destinationUrl;
 		

@@ -148,6 +148,7 @@ public class SolrUtilImpl implements SolrUtil {
 		document.addField("userid", recipe.getUser().getId());
 		document.addField("name", recipe.getName());
 		document.addField("catname", recipe.getCategory().getName());
+		document.addField("catid", recipe.getCategory().getId());
 		document.addField("description", recipe.getDescription());
 		document.addField("allowshare", recipe.getAllowShare());
 		document.addField("approved", recipe.getApproved());
@@ -163,27 +164,16 @@ public class SolrUtilImpl implements SolrUtil {
 			document.addField("tag", recipe.getTags());
 		if (recipe.getSource() != null) {
 			document.addField("sourcetype", recipe.getSource().getType());
-			document.addField("srctype", recipe.getSource().getType());
-			if (!recipe.getSource().getCookbook().isEmpty()) {
+			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("cookbook", recipe.getSource().getCookbook());
-				document.addField("source", recipe.getSource().getCookbook());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
+			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("magazine", recipe.getSource().getMagazine());
-				document.addField("source", recipe.getSource().getMagazine());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
+			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("newspaper", recipe.getSource().getNewspaper());
-				document.addField("source", recipe.getSource().getNewspaper());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
+			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("person", recipe.getSource().getPerson());
-				document.addField("source", recipe.getSource().getPerson());
-			}
-			if (!recipe.getSource().getCookbook().isEmpty()) {
+			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("other", recipe.getSource().getOther());
-				document.addField("source", recipe.getSource().getOther());
-			}
 			if (!recipe.getSource().getCookbook().isEmpty())
 				document.addField("website", recipe.getSource().getWebsiteUrl());
 		}

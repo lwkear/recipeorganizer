@@ -73,10 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return db;
 	}*/
 
-	@Bean
+	/*@Bean
 	public SessionManagementBeanPostProcessor sessionManagementBeanPostProcessor() {
 		return new SessionManagementBeanPostProcessor();
-	}
+	}*/
 	
 	@Bean
 	public AuthenticationFailureHandler authenticationFailureHandler() {
@@ -125,6 +125,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	{
 		web
 		.ignoring()
+			//.antMatchers("/resources/**", "/expiredSession")
 			.antMatchers("/resources/**")
 		;
 	}
@@ -136,14 +137,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
     	http
-    	//.csrf().disable()
     	.addFilterBefore(encodingFilter, CsrfFilter.class)
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/technical", "/policies", "/test/testpage").permitAll()
-			.antMatchers("/submitsearch", "/searchresults", "/system*", "/error", "/message").permitAll()
+			.antMatchers("/submitsearch", "/searchresults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
@@ -171,21 +171,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
-			.key("recipeOrganizer-rmkey")
+			.key("recipeOrganizer.rememberme")	//doesn't seem to work?
 			.tokenValiditySeconds(60 * 60 * 24 * 14)	//2 weeks
 			.rememberMeParameter("rememberMe")
 			.and()
     	.sessionManagement()
+    		.invalidSessionUrl("/user/login")
+    		//.sessionAuthenticationErrorUrl("/expiredSession")
+    		.sessionFixation()
+    			.changeSessionId()
+    			//.newSession()
     		.maximumSessions(1)
+    		.expiredUrl("/expiredSession")
     		.sessionRegistry(sessionRegistry())
-    		.maxSessionsPreventsLogin(true)
+    		//.maxSessionsPreventsLogin(false)			//when enabled it prevents a user from logging in before the session expires
     	;
     }
+	
+	//ConcurrentSessionFilter
+	//SessionManagementFilter
+	//DefaultRedirectStrategy
 	
 	//.tokenRepository(persistentTokenRepository()) //rememberMe	
 	
 	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
-	protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
+	/*protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
 
 	    @Override
 	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -200,86 +210,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public Object postProcessAfterInitialization(Object bean, String beanName) {
 	        return bean;
 	    }
-	}
+	}*/
 }
 
+//HttpSessionSecurityContextRepository
 
-/*
-.antMatchers("/user/resetPassword", "/user/fatalError").permitAll()
-.antMatchers("/getSessionTimeout", "/setSessionTimeout", "/lookupUser", "/errorPage").permitAll()
-.antMatchers("/user/forgotPassword", "/user/newPassword", "/recipe/photo**", "/invalidSession").permitAll()
-.regexMatchers("/home/.*", "/user/signup/.*", "/confirmRegistration.*", "/confirmPassword.*").permitAll()
-.regexMatchers("/user/resendRegistrationToken.*", "/user/resendPasswordToken.*").permitAll()
-.regexMatchers("/errors/expiredToken.*","/errors/invalidToken.*").permitAll()			
+/*.sessionManagement()
+	.sessionFixation()
+		.newSession()
+	.maximumSessions(1)
+	.expiredUrl("/expiredSession")
+	.sessionRegistry(sessionRegistry())
 
-.antMatchers("/user/profile", "/user/dashboard", "user/account", "user/changeAccount", "/user/changePassword**", "/user/avatar/**").hasAuthority("GUEST")
-.regexMatchers("user/avatar/.*", "/recipe/viewRecipe/.*", "recipe/favorites").hasAuthority("GUEST")
+.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/expiredSession", "/accessDenied").permitAll()
 
-.antMatchers("/recipe", "/recipe/listRecipes").hasAuthority("AUTHOR")
-.regexMatchers("/report/gethtmlrpt/.*", "/recipe/editRecipe/.*").hasAuthority("AUTHOR")
+;*/
 
-.antMatchers("/admin/**","/admin/deleteUser/.*","/admin/getUser/.*").hasAuthority("ADMIN")	
-.regexMatchers("/recipe/getRecipeCount/.*").hasAuthority("ADMIN")
+
+/*I have the following .sessionManagment config:
+
+    .sessionManagement()
+	    .sessionFixation()
+		    .newSession()
+	    .maximumSessions(1)
+	    .expiredUrl("/expiredSession")
+	    .sessionRegistry(sessionRegistry())
+
+When I login on two different browsers, `ConcurrentSessionFilter` correctly invalidates the session and redirects to the expiredURL.  However, when "/expiredSession" goes through the security filter chain it gets caught in the `SessionManagementFilter` because the session in the request is no longer valid. This redirects the user to the login screen
 */
-/*			
-ANON
-ant
-x "/"
-x "/home"
-x "/about"
-x "/contact"
-x "/faq"
-"/thankyou"
-"/systemError"
-"/system"
-x "user/login"
-"user/loginError"
-"user/fatalError"
-x "user/signup"
-x "/lookupUser" - AJAX
-x "/submitsearch"	- need to allow for search and search results, but not allow to view the recipes
-"/searchresults" - ditto
-"/getSessionTimeout" - AJAX
-"/setSessionTimeout" - AJAX
-regex
-"/confirmRegistration.*"
-"/confirmPassword.*"
-
-GUEST
-ant
-"/recipe/favorites"
-"/recipe/addFavorite" - AJAX
-"/recipe/removeFavorite" - AJAX
-"/recipe/recipeMade" - AJAX
-"/recipe/recipeNote" - AJAX
-"/recipe/recipeComment" - AJAX
-regex
-"/recipe/viewRecipe/.*"
-"/report/getHtmlRpt/.*"
-"/report/getPdfRpt/.*"
-
-AUTHOR
-ant
-"/recipe/listRecipes"
-"recipe/getCategories" - AJAX doesn't requrie an antmatch?
-"recipe/addIngredient" - AJAX
-"recipe/getIngredients" - AJAX
-"recipe/getQualifiers" - AJAX
-"recipe/getSources" - AJAX
-"recipe/getTags" - AJAX
-"recipe/lookupRecipeName" - AJAX
-"recipe/getRecipeCount" - AJAX; why is this in ADMIN above?
-regex
-"/recipe/editRecipe/.*"
-"recipe/deleteRecipe/.*" or "recipe/deleteRecipe" - AJAX
-
-ADMIN
-ant
-"/admin/**"
-"admin/updateUser"
-"/admin/category"
-regex
-"/admin/deleteUser/.*" - AJAX
-"/admin/getUser/.*" - AJAX
-
-*/			
