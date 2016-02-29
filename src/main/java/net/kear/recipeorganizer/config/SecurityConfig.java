@@ -73,10 +73,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return db;
 	}*/
 
-	/*@Bean
+	@Bean
 	public SessionManagementBeanPostProcessor sessionManagementBeanPostProcessor() {
 		return new SessionManagementBeanPostProcessor();
-	}*/
+	}
 	
 	@Bean
 	public AuthenticationFailureHandler authenticationFailureHandler() {
@@ -179,8 +179,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.invalidSessionUrl("/user/login")
     		//.sessionAuthenticationErrorUrl("/expiredSession")
     		.sessionFixation()
-    			.changeSessionId()
+    			//.changeSessionId()
     			//.newSession()
+    			.migrateSession()
     		.maximumSessions(1)
     		.expiredUrl("/expiredSession")
     		.sessionRegistry(sessionRegistry())
@@ -195,7 +196,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//.tokenRepository(persistentTokenRepository()) //rememberMe	
 	
 	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
-	/*protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
+	protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
 
 	    @Override
 	    public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -210,7 +211,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    public Object postProcessAfterInitialization(Object bean, String beanName) {
 	        return bean;
 	    }
-	}*/
+	}
 }
 
 //HttpSessionSecurityContextRepository

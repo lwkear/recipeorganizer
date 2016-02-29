@@ -69,6 +69,8 @@
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span>
 							</a>
+						</c:if>
+						<c:if test="${userId != recipe.user.id}">
 							<button type="button" class="btn btn-link btn-sm" id="noteRight" style="margin-left:5px;font-size:20px"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.message"></spring:message>">
 								<span class="glyphicon glyphicon-user"></span>

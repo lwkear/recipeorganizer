@@ -10,7 +10,6 @@ import java.util.Locale;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Source;
-import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
@@ -64,13 +63,14 @@ public class SearchController {
 		List<Object> objList = results.get(0);
 		ArrayList<SearchResultsDto> resultsList = (ArrayList<SearchResultsDto>)(List<?>)objList;
 
-		long userId = 0;
-		User user = (User)userInfo.getUserDetails();
-		if (user != null)
-			userId = user.getId();
+		//long userId = 0;
+		//User user = (User)userInfo.getUserDetails();
+		//if (user != null)
+			//userId = user.getId();
 		
-		ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
-		int numFound = filteredList.size();
+		//ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
+		//int numFound = filteredList.size();
+		int numFound = resultsList.size();
 
 		List<CategoryFacet> catFacets = null;
 		List<SourceFacet> srcFacets = null;
@@ -80,15 +80,13 @@ public class SearchController {
 			objList = results.get(1);
 			ArrayList<FacetField> facets = (ArrayList<FacetField>)(List<?>)objList;
 			catFacets = getCategories(facets);
-			/*//the third list is the source facets results
-			objList = results.get(2);
-			facets = (ArrayList<FacetField>)(List<?>)objList;*/
 			srcFacets = getSources(facets, numFound, locale);
 		}
 		
 	    ModelAndView mv = new ModelAndView();
 	    redir.addFlashAttribute("searchTerm", searchTerm);
-	    redir.addFlashAttribute("resultList", filteredList);
+	    //redir.addFlashAttribute("resultList", filteredList);
+	    redir.addFlashAttribute("resultList", resultsList);
 	    redir.addFlashAttribute("numFound", numFound);
 	    redir.addFlashAttribute("categories", catFacets);
 	    redir.addFlashAttribute("sources", srcFacets);
@@ -115,19 +113,19 @@ public class SearchController {
 		String searchTerm = (String)val;
 		logger.debug("modelMap searchTerm: " + searchTerm);
 
-		long userId = 0;
-		User user = (User)userInfo.getUserDetails();
-		if (user != null)
-			userId = user.getId();
+		//long userId = 0;
+		//User user = (User)userInfo.getUserDetails();
+		//if (user != null)
+			//userId = user.getId();
 		
 		//the user returned to the results page from viewing a recipe - need to re-run the search
 		if (!found && !list) {
 			List<List<Object>> results = solrUtil.searchRecipes(searchTerm);
 			List<Object> objList = results.get(0);
 			ArrayList<SearchResultsDto> resultsList = (ArrayList<SearchResultsDto>)(List<?>)objList;			
-			ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
-
-			int numFound = filteredList.size();
+			//ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
+			//int numFound = filteredList.size();
+			int numFound = resultsList.size();
 
 			List<CategoryFacet> catFacets = null;
 			List<SourceFacet> srcFacets = null;
@@ -137,15 +135,14 @@ public class SearchController {
 				objList = results.get(1);
 				ArrayList<FacetField> facets = (ArrayList<FacetField>)(List<?>)objList;
 				catFacets = getCategories(facets);
-				/*//the third list is the source facets results
-				objList = results.get(2);
-				facets = (ArrayList<FacetField>)(List<?>)objList;*/
 				srcFacets = getSources(facets, numFound, locale);
 			}
 			
 			model.addAttribute("searchTerm", searchTerm);
-			model.addAttribute("resultList", filteredList);
-			model.addAttribute("numFound", filteredList.size());
+			//model.addAttribute("resultList", filteredList);
+			//model.addAttribute("numFound", filteredList.size());
+			model.addAttribute("resultList", resultsList);
+			model.addAttribute("numFound", resultsList.size());
 			model.addAttribute("categories", catFacets);
 			model.addAttribute("sources", srcFacets);
 			model.addAttribute("newSearch", false);

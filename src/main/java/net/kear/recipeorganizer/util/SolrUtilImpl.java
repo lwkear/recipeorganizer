@@ -59,14 +59,18 @@ public class SolrUtilImpl implements SolrUtil {
 		
 		QueryResponse rsp = null;
 
+		String filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && approved:true)", 39, 39);
+		logger.debug("filterStr: " + filterStr);
+		
 		//Note: the default sort is by score, so no need to explicitly identify score as the sort
 		SolrQuery query = new SolrQuery();
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "name^2 or catname or ingredname or description^1 or background or source or notes or tag");
 		query.setParam("fl", "id, userid, name, description, photo, allowshare, approved, score, catid, srctype");
+		query.addFilterQuery(filterStr);
 		query.setParam("start", "0");
-		query.setParam("rows", "500");
+		query.setParam("rows", "100");
 		query.setHighlight(true);
 		query.addHighlightField("name or description");
 		query.setHighlightSimplePre("<strong>");
