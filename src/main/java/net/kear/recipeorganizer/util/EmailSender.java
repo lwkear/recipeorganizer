@@ -3,6 +3,8 @@ package net.kear.recipeorganizer.util;
 import java.util.List;
 import java.util.Locale;
 
+import javax.mail.internet.MimeMessage;
+
 import net.kear.recipeorganizer.persistence.model.User;
 
 import org.slf4j.Logger;
@@ -65,13 +67,15 @@ public class EmailSender {
         	throw new MailSendException("No message content");
         }
         
+        //MimeMessage msg = mailSender.createMimeMessage();        
+        
         final SimpleMailMessage email = new SimpleMailMessage();
         
         email.setTo(user.getEmail());
         email.setSubject(subject);
         email.setText(message);
         email.setFrom(env.getProperty("support.email"));
-       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
         
 		//throw new MailSendException("sendSimpleEmailMessage forced error");
 
@@ -96,7 +100,7 @@ public class EmailSender {
         email.setSubject(subject);
         email.setText(message + " \r\n\r\n" + msgLink);
         email.setFrom(env.getProperty("support.email"));
-       	//mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
         
 		//throw new MailSendException("sendTokenEmailMessage forced error");
 
@@ -113,7 +117,7 @@ public class EmailSender {
         	message = messages.getMessage(msgCode, null, locale);
         }
         else {
-        	if (msgCodes != null && !msgCodes.isEmpty() ) {
+        	if (!msgCodes.isEmpty()) {
 		        for (String code : msgCodes) {
 		        	String msg = messages.getMessage(code, null, locale);
 		        	message += msg + " \r\n\r\n ";

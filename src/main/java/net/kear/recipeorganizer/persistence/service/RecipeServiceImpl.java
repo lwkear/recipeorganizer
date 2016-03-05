@@ -26,6 +26,7 @@ import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.SolrUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class RecipeServiceImpl implements RecipeService {
     public void saveRecipe(Recipe recipe) {
 	
     	String type = recipe.getSource().getType();
-    	if (type == null || type.isEmpty()) {
+    	if (StringUtils.isBlank(type)) {
 			recipe.setSource(null);
 		}
     	else {
@@ -112,7 +113,7 @@ public class RecipeServiceImpl implements RecipeService {
     		for (RecipeIngredient ingred : section.getRecipeIngredients()) {
     			String value = ingred.getQuantity();
     			float amt = ingred.getQtyAmt();
-    			if (!value.isEmpty() && amt == 0) {
+    			if (!StringUtils.isBlank(value) && amt == 0) {
     				Fraction fract = Fraction.getFraction(value);
     				float qty = fract.floatValue();
     				ingred.setQtyAmt(qty);
@@ -128,20 +129,10 @@ public class RecipeServiceImpl implements RecipeService {
     	//assume if the recipe has an ID then it must already exist
     	if (recipe.getId() > 0)
     		recipeRepository.updateRecipe(recipe);
-    	else {
+    	else
     		recipeRepository.addRecipe(recipe);
-    		
-    		/*String photoName = recipe.getPhotoName(); 
-    		if (photoName!= null && !photoName.isEmpty()) {
-    			String oldName = "0." + photoName;
-    			String newName = recipe.getId() + "." + photoName;
-    			//errors are not fatal and will be logged by FileAction
-    			fileAction.renameFile(FileType.RECIPE, oldName, newName);
-    		}*/
-
-    		//errors are not fatal and will be logged by SolrUtil
-    		solrUtil.addRecipe(recipe);
-    	}    		
+    	
+    	solrUtil.addRecipe(recipe);
     }
     
     public void deleteRecipe(Long id) {
@@ -391,12 +382,12 @@ public class RecipeServiceImpl implements RecipeService {
 				}
 				if (key.contains("ingredient.name")) {
 					ingred.setName(value);
-					if (!value.isEmpty())
+					if (!StringUtils.isBlank(value))
 						hasName = true;
 				}
 				if (key.contains("quantity")) {
 					recipeIngred.setQuantity(value);
-					if (!value.isEmpty()) {
+					if (!StringUtils.isBlank(value)) {
 						Fraction fract = Fraction.getFraction(recipeIngred.getQuantity());
 						float qty = fract.floatValue();
 						recipeIngred.setQtyAmt(qty);

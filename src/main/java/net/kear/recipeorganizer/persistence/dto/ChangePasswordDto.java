@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotBlank;
 
 //TODO: VALIDATION: @PasswordMatch
-public class PasswordDto implements Serializable {
+public class ChangePasswordDto implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -26,15 +26,15 @@ public class PasswordDto implements Serializable {
 	@Size(min=6, max=20)
 	private String confirmPassword;
 	
-	public PasswordDto() {}
+	public ChangePasswordDto() {}
 	
-	public PasswordDto(PasswordDto password) {
+	public ChangePasswordDto(ChangePasswordDto password) {
 		this.currentPassword = password.currentPassword;
 		this.password = password.password;
 		this.confirmPassword = password.confirmPassword;
 	}
 	
-	public PasswordDto(String currentPassword, String password, String confirmPassword) {
+	public ChangePasswordDto(String currentPassword, String password, String confirmPassword) {
 		super();
 		this.currentPassword = currentPassword;
 		this.password = password;
@@ -83,7 +83,7 @@ public class PasswordDto implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PasswordDto other = (PasswordDto) obj;
+		ChangePasswordDto other = (ChangePasswordDto) obj;
 		if (confirmPassword == null) {
 			if (other.confirmPassword != null)
 				return false;

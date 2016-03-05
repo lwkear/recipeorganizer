@@ -67,8 +67,8 @@ $(function() {
 			url: '/recipeorganizer/recipe/lookupRecipeName',
 			dataType: 'json',
 			data: {
-				name : nameStr,
-				userId : userIdStr				 
+				"name" : nameStr,
+				"userId" : userIdStr				 
 			}
 		})
 		.done(function(data) {
@@ -79,7 +79,7 @@ $(function() {
 		})
 		.fail(function(jqXHR, status, error) {
 			var data = jqXHR.responseJSON;
-			console.log('fail data: '+ data);
+			console.log('fail data: '+ data.msg);
 	
 			//server sets CONFLICT error if name exists
 			if (jqXHR.status == 409) {

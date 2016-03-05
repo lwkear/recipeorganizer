@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.persistence.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -29,7 +30,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-
+	private static final int EXPIRATION = 60 * 24 * 90;
+	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_SEQ")
@@ -66,12 +68,22 @@ public class User implements Serializable {
 	private Date dateAdded;
 
 	@Temporal(TemporalType.DATE)
-	@DateTimeFormat(pattern="MM/dd/yyyy")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "DATE_UPDATED", insertable=false, updatable=false)
+	private Date dateUpdated;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@Column(name = "LAST_LOGIN")
 	private Date lastLogin;
 
 	@Column(name = "PASSWORD_EXPIRED")
 	private int passwordExpired;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "PASSWORD_EXPIRY_DATE")
+	private Date passwordExpiryDate;
 	
 	@Transient
 	private boolean loggedIn = false;
@@ -90,7 +102,7 @@ public class User implements Serializable {
 	public User() {}
 	
 	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, Date dateAdded, 
-				Date lastLogin, int passwordExpired, boolean loggedIn, long numRecipes, Role role, UserProfile userProfile) {
+				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean loggedIn, long numRecipes, Role role, UserProfile userProfile) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -108,6 +120,7 @@ public class User implements Serializable {
 		this.numRecipes = numRecipes;
 		this.role = role;
 		this.userProfile = userProfile;
+		this.passwordExpiryDate = passwordExpiryDate;
 	}
 	
 	public User(User user) {
@@ -123,6 +136,7 @@ public class User implements Serializable {
 		this.dateAdded = user.dateAdded;
 		this.lastLogin = user.lastLogin;
 		this.passwordExpired = user.passwordExpired;
+		this.passwordExpiryDate = user.passwordExpiryDate;
 		this.loggedIn = user.loggedIn;
 		this.numRecipes = user.numRecipes;
 		this.role = user.role;
@@ -177,8 +191,6 @@ public class User implements Serializable {
 		this.enabled = enabled;
 	}
 
-	//TODO: HIBERNATE: check into why I set this annotation (don't remember...)
-	//@JsonIgnore
 	public boolean isEnabled() {
 		return (enabled == 1 ? true : false);
 	}
@@ -191,7 +203,6 @@ public class User implements Serializable {
 		this.tokenExpired = tokenExpired;
 	}
 	
-	//@JsonIgnore
 	public boolean isTokenExpired() {
 		return (tokenExpired == 1 ? true : false);
 	}
@@ -204,7 +215,6 @@ public class User implements Serializable {
 		this.locked = locked;
 	}
 	
-	//@JsonIgnore
 	public boolean isLocked() {
 		return (locked == 1 ? true : false);
 	}
@@ -217,17 +227,24 @@ public class User implements Serializable {
 		this.accountExpired = accountExpired;
 	}
 	
-	//@JsonIgnore
 	public boolean isAccountExpired() {
 		return (accountExpired == 1 ? true : false);
 	}
 
-	public Date getDateAdded() {
-		return dateAdded;
+	public Date getPasswordExpiryDate() {
+		return passwordExpiryDate;
 	}
 
-	public void setDateAdded(Date dateAdded) {
-		this.dateAdded = dateAdded;
+	public void setPasswordExpiryDate() {
+		this.passwordExpiryDate = calculateExpiryDate(EXPIRATION);
+	}
+
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
+
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
 	}
 
 	public int getPasswordExpired() {
@@ -238,11 +255,18 @@ public class User implements Serializable {
 		this.passwordExpired = passwordExpired;
 	}
 	
-	//@JsonIgnore
 	public boolean isPasswordExpired() {
 		return (passwordExpired == 1 ? true : false);
 	}
 
+	public Date getDateAdded() {
+		return dateAdded;
+	}
+
+	public void setDateAdded(Date dateAdded) {
+		this.dateAdded = dateAdded;
+	}
+	
 	public Date getLastLogin() {
 		return lastLogin;
 	}
@@ -286,6 +310,13 @@ public class User implements Serializable {
     public void setUserProfile(UserProfile userProfile) {
     	this.userProfile = userProfile;
     }
+ 
+    private Date calculateExpiryDate(final int expiryTimeInMinutes) {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(new Date().getTime());
+        cal.add(Calendar.MINUTE, expiryTimeInMinutes);
+        return new Date(cal.getTime().getTime());
+    }
     
     @Override
     public int hashCode() {
@@ -323,7 +354,8 @@ public class User implements Serializable {
 				+ ", accountExpired=" + accountExpired 
 				+ ", dateAdded=" + dateAdded 
 				+ ", lastLogin=" + lastLogin 
-				+ ", passwordExpired=" + passwordExpired 
+				+ ", passwordExpired=" + passwordExpired
+				+ ", passwordExpiryDate=" +  passwordExpiryDate
 				+ ", loggedIn=" + loggedIn 
 				+ ", numRecipes=" + numRecipes 
 				+ ", role=" + role 

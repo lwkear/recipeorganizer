@@ -46,6 +46,7 @@ function checkForFileError() {
 		$("#cnclBtn").show();
 		$("#okBtn").one('click', saveProfile);
 		$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+		$("#messageDlg").on('hidden.bs.modal', function(){$("#okBtn").unbind('click');})
 		$("#messageDlg").modal('show');
 	}
 }

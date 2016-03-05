@@ -6,8 +6,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 import javax.servlet.SessionTrackingMode;
 
-import net.kear.recipeorganizer.listener.PasswordResetListener;
-import net.kear.recipeorganizer.listener.RegistrationListener;
 import net.kear.recipeorganizer.listener.SessionListener;
 
 import org.springframework.core.Conventions;
@@ -26,8 +24,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         rootContext.register(WebMvcConfig.class, RepositoryConfig.class, SecurityConfig.class, WebFlowConfig.class);
 
     	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-    	applicationContext.addApplicationListener(new RegistrationListener());
-    	applicationContext.addApplicationListener(new PasswordResetListener());
 
     	DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
     	dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
@@ -42,7 +38,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
         servletContext.addListener(new ContextLoaderListener(rootContext));
     	servletContext.addListener(new HttpSessionEventPublisher());
         servletContext.addListener(new SessionListener());
-    	servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+        servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
     }
 }
 

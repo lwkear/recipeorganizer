@@ -1,10 +1,17 @@
-<%-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
-<title>Expired</title>
-</head>
 
 <%@include file="../common/head.jsp"%>
+
+<c:if test="${register}">
+	<title><spring:message code="registration.title"></spring:message> - <spring:message code="menu.product"></spring:message></title> 		
+</c:if>
+<c:if test="${password}">
+	<title><spring:message code="password.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
+</c:if>
+
+</head>
 
 <body role="document">
 
@@ -14,18 +21,19 @@
 	 	<div class="col-sm-12">
 			<div class="page-header">
 				<c:if test="${register}"> 		
-					<h3><spring:message code="registration.expired.title"></spring:message></h3>
+					<h3><spring:message code="registration.title"></spring:message></h3>
 				</c:if>
 				<c:if test="${password}">
-					<spring:message code="password.expired.title"></spring:message>
+					<h3><spring:message code="password.title"></spring:message></h3>
 				</c:if>
 			</div>			
 			<div class="row">
-				<div class="span12 center alert alert-danger text-center">
-					<span>${message}</span>
+				<div class="col-sm-8 col col-sm-offset-2">			
+					<div class="center alert text-center strong">
+						<div><h4>${message}</h4></div>
+					</div>
 				</div>
-				<div class="form-group col-sm-12">&nbsp;</div>
-		        <div class="form-group col-sm-2 col-sm-offset-5">
+		        <div class="form-group col-sm-2 col-sm-offset-5 spacer-vert-sm">
 		        	<c:if test="${register}">
 		        		<a class="btn btn-default" href="<c:url value="/user/resendRegistrationToken"><c:param name="token" value="${token}"/></c:url>" role="button">
 		        			<spring:message code="common.resend"></spring:message></a>
@@ -42,4 +50,4 @@
 <%@include file="../common/footer.jsp" %>
 
 </body>
-</html> --%>
+</html>

@@ -3,7 +3,6 @@ package net.kear.recipeorganizer.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -153,7 +152,7 @@ public class SearchController {
 		return "searchResults";
 	}
 	
-	private ArrayList<SearchResultsDto> filterResults(ArrayList<SearchResultsDto> results, long userId) {
+	/*private ArrayList<SearchResultsDto> filterResults(ArrayList<SearchResultsDto> results, long userId) {
 
 		Iterator<SearchResultsDto> iter = results.iterator();
 		while (iter.hasNext()) {
@@ -166,7 +165,7 @@ public class SearchController {
 		}
 		
 		return results;
-	}
+	}*/
 	
 	private List<CategoryFacet> getCategories(ArrayList<FacetField> facets) {
 		

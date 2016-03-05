@@ -47,7 +47,8 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 @EnableTransactionManagement
 @ComponentScan(basePackages = { 
 	"net.kear.recipeorganizer.controller",
-	"net.kear.recipeorganizer.util"	
+	"net.kear.recipeorganizer.listener",
+	"net.kear.recipeorganizer.util"
 	})
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),

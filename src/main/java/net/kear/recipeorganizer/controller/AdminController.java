@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +36,7 @@ import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
+import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
@@ -45,6 +48,7 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.ResponseObject;
+import net.kear.recipeorganizer.util.SolrUtil;
 
 @Controller
 public class AdminController {
@@ -54,7 +58,7 @@ public class AdminController {
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
-	private UserService userService;	
+	private UserService userService;
 	@Autowired
 	private RoleService roleService;
 	@Autowired
@@ -71,6 +75,8 @@ public class AdminController {
 	private ExceptionLogService logService;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private SolrUtil solrUtil;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -126,7 +132,6 @@ public class AdminController {
 	public ResponseObject deleteUser(@RequestParam("userId") Long userId) throws RestException {
 		logger.info("admin/deleteUser POST: userId=" + userId);
 		
-		//delete the user
 		try {
 			userService.deleteUser(userId);
 		} catch (Exception ex) {
@@ -174,17 +179,49 @@ public class AdminController {
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject updateUser(@RequestBody User user) throws RestException {
+	public ResponseObject updateUser(@RequestBody User user, HttpSession session) throws RestException {
 		logger.info("admin/updateUser POST: userId=" + user.getId());
+
+		User originalUser = userService.getUser(user.getId());
+		//Role originalRole = originalUser.getRole();
 		
 		//update the user
 		try {
-			//fixes issue with the user object not containing the profile userId
+			//fixes issue with the profile object not containing the userId
 			if (user.getUserProfile() != null)
 				user.getUserProfile().setUser(user);
 			userService.updateUser(user);
 		} catch (Exception ex) {
 			throw new RestException("exception.updateUser", ex);
+		}
+
+		//TODO: SECURITY: sendPrivateMessage on role change
+		//if (originalRole != user.getRole())
+		
+		//if the user no longer should have access then expire the user's session if present
+		if ((originalUser.isEnabled() 			&& !user.isEnabled())		||
+			(!originalUser.isLocked()			&& user.isLocked())			||
+			(!originalUser.isAccountExpired()	&& user.isAccountExpired())	||
+			(!originalUser.isPasswordExpired()	&& user.isPasswordExpired())) {
+			List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+			if (allPrincipals != null && allPrincipals.size() > 0) {
+				for (Object obj : allPrincipals) {
+					UserDetails principal = (UserDetails) obj;
+					if (principal.getUsername().equalsIgnoreCase(user.getEmail())) {
+						List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
+						for (SessionInformation sessionInfo : sessions) {
+							
+							String sessId = sessionInfo.getSessionId();
+							Object sessObj = sessionInfo.getPrincipal();
+							boolean exp = sessionInfo.isExpired();
+							logger.debug("Found sessionInfo id/obj/exp: " + sessId + " / " + sessObj.toString() + " / " + exp);
+							
+							if (!sessionInfo.isExpired()) 
+								sessionInfo.expireNow();
+						}
+					}
+				}
+			}
 		}
 		
 		return new ResponseObject();		
@@ -225,13 +262,7 @@ public class AdminController {
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		}/*	catch (Exception ex) {
-			logService.addException(ex);
-			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
-			FieldError fieldError = new FieldError("category", "name", msg);
-			result.addError(fieldError);
-			return "admin/category";
-		}*/
+		}
 		
 		return "redirect:category";
 	}
@@ -253,13 +284,7 @@ public class AdminController {
 			FieldError fieldError = new FieldError("category", "name", msg);
 			result.addError(fieldError);
 			return "admin/category";
-		}/* catch (Exception ex) {
-			logService.addException(ex);
-			String msg = messages.getMessage("exception.categoryError", null, ex.getClass().getSimpleName(), locale);
-			FieldError fieldError = new FieldError("category", "name", msg);
-			result.addError(fieldError);
-			return "admin/category";
-		}*/
+		}
 
 		return "redirect:category";
 	}
@@ -283,7 +308,6 @@ public class AdminController {
 	public ResponseObject deleteComment(@RequestParam("commentId") Long commentId) throws RestException {
 		logger.info("admin/deleteComment POST: commentId=" + commentId);
 		
-		//delete the comment
 		try {
 			commentService.deleteComment(commentId);
 		} catch (Exception ex) {
@@ -299,7 +323,6 @@ public class AdminController {
 	public ResponseObject removeCommentFlag(@RequestParam("commentId") Long commentId) throws RestException {
 		logger.info("admin/removeCommentFlag POST: commentId=" + commentId);
 		
-		//delete the user
 		try {
 			commentService.setCommentFlag(commentId, 0);
 		} catch (Exception ex) {
@@ -328,12 +351,17 @@ public class AdminController {
 	public ResponseObject approveRecipe(@RequestParam("recipeId") Long recipeId) throws RestException {
 		logger.info("admin/approveRecipe POST: recipeId=" + recipeId);
 		
-		//delete the user
+		Recipe recipe; 
+		
 		try {
+			recipe = recipeService.getRecipe(recipeId);
 			recipeService.approveRecipe(recipeId);
 		} catch (Exception ex) {
 			throw new RestException("exception.approveRecipe", ex);
 		}
+		
+		solrUtil.deleteRecipe(recipeId);
+		solrUtil.addRecipe(recipe);
 		
 		return new ResponseObject();
 	}

@@ -4,7 +4,7 @@
 
 <%@include file="../common/head.jsp" %>
 
-<title><spring:message code="forgotpswd.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
+<title><spring:message code="password.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -17,7 +17,7 @@
 	<div class="container container-white">	
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="forgotpswd.title"></spring:message></h3>
+				<h3><spring:message code="password.title"></spring:message></h3>
 			</div>			
 			<div class="row">
 				<div class="form-group col-sm-4 col-sm-offset-4 text-center">

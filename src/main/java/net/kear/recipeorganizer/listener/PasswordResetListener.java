@@ -40,8 +40,8 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
     	
     	emailSender.setUser(user);
     	emailSender.setLocale(event.getLocale());
-    	emailSender.setSubjectCode("user.password.resetSubject");
-    	emailSender.setMessageCode("user.password.resetMessage");
+    	emailSender.setSubjectCode("user.email.accountChange");
+    	emailSender.setMessageCode("user.email.passwordResetMessage");
     	emailSender.sendTokenEmailMessage(confirmationUrl);
     }
 }

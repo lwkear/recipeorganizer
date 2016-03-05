@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
     	user.setLocked(0);
     	user.setAccountExpired(0);
     	user.setPasswordExpired(0);
+    	user.setPasswordExpiryDate();
     	if (userDto.getSubmitRecipes()) {
     		Role role = roleRepository.getRole(Role.TYPE_AUTHOR);
     		if (role != null)
@@ -117,6 +118,8 @@ public class UserServiceImpl implements UserService {
     
     public void changePassword(String password, User user) {
     	user.setPassword(passwordEncoder.encode(password));
+    	user.setPasswordExpired(0);
+    	user.setPasswordExpiryDate();
     	userRepository.updateUser(user);  	
     }
     
@@ -135,7 +138,6 @@ public class UserServiceImpl implements UserService {
     		userProfileRepository.updateUserProfile(userProfile);
     }
     
-    @Override
     public void createUserVerificationToken(final User user, final String token) {
         final VerificationToken newToken = new VerificationToken(token, user);
         verificationTokenRepository.saveToken(newToken);
@@ -148,18 +150,19 @@ public class UserServiceImpl implements UserService {
 	    return newToken;
     }
     
-    @Override
     public VerificationToken getVerificationToken(String token) {
         return verificationTokenRepository.findByToken(token);
     }
+
+    public void deleteVerificationToken(VerificationToken token) {
+        verificationTokenRepository.deleteToken(token);
+    }
     
-    @Override
     public void createPasswordResetTokenForUser(final User user, final String token) {
         final PasswordResetToken newToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.saveToken(newToken);
     }
     
-    @Override
     public PasswordResetToken recreatePasswordResetTokenForUser(String token) {
     	PasswordResetToken newToken = passwordResetTokenRepository.findByToken(token);
 	    newToken.updateToken(UUID.randomUUID().toString());
@@ -167,8 +170,11 @@ public class UserServiceImpl implements UserService {
 	    return newToken;
     }    
     
-    @Override
     public PasswordResetToken getPasswordResetToken(String token) {
     	return passwordResetTokenRepository.findByToken(token);
+    }
+
+    public void deletePasswordResetToken(long userId) {
+    	passwordResetTokenRepository.deleteToken(userId);
     }
 }

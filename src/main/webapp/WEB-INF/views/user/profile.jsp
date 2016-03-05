@@ -24,7 +24,6 @@
 			</div>
 			<div class="row">
 				<form:form name="profileForm" id="profileForm" role="form" method="post" onsubmit="return checkAvatarOptions()" modelAttribute="userProfile" enctype="multipart/form-data">
-				<%-- <form:form name="profileForm" id="profileForm" role="form" method="post" modelAttribute="userProfile"> --%>
 					<input type="text" id="avatarErr" value="${avatarError}" style="display:none"></input>
 					<div class="col-sm-12">
 			        	<div class="form-group col-sm-6 col-sm-offset-2 <c:if test="${not empty cityError}">has-error</c:if>">

@@ -214,6 +214,8 @@ function cancelSubmitRecipe() {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', continueSubmitCancel);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$("#messageDlg").on('hidden.bs.modal', function(){$("#yesBtn").unbind('click');})
 	$("#messageDlg").modal('show');
 } 
 

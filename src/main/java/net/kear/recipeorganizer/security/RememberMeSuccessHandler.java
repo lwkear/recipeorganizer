@@ -1,7 +1,9 @@
 package net.kear.recipeorganizer.security;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,9 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -36,13 +40,36 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 		authCookie.setCookie(request, response, authentication.getName());
 		
 		User user = userService.findUserByEmail(authentication.getName());
-		user.setLastLogin(new Date());
+
+		Calendar todaysDt = Calendar.getInstance();
+		todaysDt.setTimeInMillis(new Date().getTime());
+		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
 		userService.updateUser(user);
+		
+		boolean foundUser = false;
+		boolean foundSession = false;
+		
+		//rememberMe does not automatically add the user to the sessionRegistry so must do so manually
+		List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+		if (allPrincipals != null && allPrincipals.size() > 0) {
+			for (Object obj : allPrincipals) {
+				UserDetails principal = (UserDetails) obj;
+				if (principal.getUsername() == user.getEmail()) {
+					foundUser = true;
+					List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
+					if (!sessions.isEmpty())
+						foundSession = true;
+				}
+			}
+		}
+		
+		if (!foundUser || !foundSession)
+			sessionRegistry.registerNewSession(request.getSession().getId(), authentication.getPrincipal());
 		
 		String servePath = request.getServletPath();
 		logger.debug("servePath:" + servePath);
 		
-		if (servePath != null && !servePath.isEmpty())
+		if (!servePath.isEmpty() && servePath.length() > 1)
 			getRedirectStrategy().sendRedirect(request, response, servePath);
 		else
 			super.onAuthenticationSuccess(request, response, authentication);

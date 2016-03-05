@@ -19,14 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -57,7 +51,8 @@ import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.exception.SaveAccountException;
 import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
-import net.kear.recipeorganizer.persistence.dto.PasswordDto;
+import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto;
+import net.kear.recipeorganizer.persistence.dto.NewPasswordDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
@@ -69,6 +64,7 @@ import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EmailSender;
@@ -85,7 +81,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private UserSecurityService userSecurityService;
 	@Autowired
 	private RecipeService recipeService;
 	@Autowired
@@ -106,8 +102,6 @@ public class UserController {
 	private ExceptionLogService logService;
 	@Autowired
 	private ConstraintMap constraintMap;
-	@Autowired
-	private UserDetailsService detailsService;
 	
     /*********************/
     /*** Login handler ***/
@@ -206,16 +200,15 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Success", locale));
+        redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
         return mv;
 	}
 
 	//AJAX/JSON request for checking user (email) duplication
-	@RequestMapping(value="/lookupUser", produces="text/javascript")
+	@RequestMapping(value="/lookupUser", method = RequestMethod.GET)
 	@ResponseBody
-	@ResponseStatus(value=HttpStatus.OK)
 	public ResponseObject lookupUser(@RequestParam("email") String lookupEmail, HttpServletResponse response, Locale locale) throws RestException {
 		logger.info("lookupUser GET: email=" + lookupEmail);
 		
@@ -230,12 +223,14 @@ public class UserController {
 		logger.debug("lookupEmail result=" + result);
 	
 		ResponseObject obj = new ResponseObject();
+		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//name was found
 		if (result) {
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
 			obj.setStatus(HttpServletResponse.SC_CONFLICT);
-			obj.setMsg("user.duplicateEmail");
+			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
+			obj.setMsg(msg);
 		}
 
 		return obj;
@@ -256,9 +251,11 @@ public class UserController {
 		}
         
         if (verificationToken == null) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.invalidToken", null, "Invalid token", locale));
+        	String msg = messages.getMessage("user.register.invalidToken1", null, "Invalid token", locale) + 
+        				 messages.getMessage("user.register.invalidToken2", null, "Invalid token", locale);
+        	redir.addFlashAttribute("message", msg);
         	redir.addFlashAttribute("register", true);
-        	mv.setViewName("redirect:/errors/invalidToken");
+        	mv.setViewName("redirect:/user/invalidToken");
         	return mv;     	
         }
 
@@ -269,13 +266,14 @@ public class UserController {
         	redir.addFlashAttribute("register", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
-        	mv.setViewName("redirect:/errors/expiredToken");
+        	mv.setViewName("redirect:/user/expiredToken");
         	return mv;
         }
 
         user.setEnabled(1);
         try {
         	userService.updateUser(user);
+        	userService.deleteVerificationToken(verificationToken);
         } catch (Exception ex) {
         	throw new SaveAccountException(ex);
         }
@@ -310,7 +308,7 @@ public class UserController {
      	emailSender.setMessageCode("user.email.signupSuccess");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.success.title", null, "Successful registration", locale));
+        redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
         return mv;
@@ -371,7 +369,7 @@ public class UserController {
 			FileResult rslt = fileAction.uploadFile(FileType.AVATAR, user.getId(), file);
 			if (rslt == FileResult.SUCCESS) {
 				String currAvatar = userProfile.getAvatar();
-				if (currAvatar != null && !currAvatar.isEmpty()) {
+				if (!StringUtils.isBlank(currAvatar)) {
 					String newAvatar = file.getOriginalFilename();
 					if (!currAvatar.equals(newAvatar))
 						fileAction.deleteFile(FileType.AVATAR, user.getId(), currAvatar);
@@ -405,10 +403,12 @@ public class UserController {
 			if (userInfo.isUserRole(Role.TYPE_GUEST)) {
 				if (userProfile.getSubmitRecipes()) {
 					//reload the user's authentication with the AUTHOR role
-					userService.changeRole(Role.TYPE_AUTHOR, user);					
-					UserDetails details = detailsService.loadUserByUsername(user.getEmail());
+					userService.changeRole(Role.TYPE_AUTHOR, user);
+					userSecurityService.reauthenticateUser(user);
+					
+					/*UserDetails details = userDetailsService.loadUserByUsername(user.getEmail());
 					Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
-					SecurityContextHolder.getContext().setAuthentication(auth);
+					SecurityContextHolder.getContext().setAuthentication(auth);*/
 				}
 			}
 		} 
@@ -449,9 +449,11 @@ public class UserController {
 		User currentUser = (User)userInfo.getUserDetails();
 		User user = userService.getUser(currentUser.getId());
 		userService.changeRole(Role.TYPE_AUTHOR, user);
-		UserDetails details = detailsService.loadUserByUsername(user.getEmail());
+		userSecurityService.reauthenticateUser(user);
+		
+		/*UserDetails details = userDetailsService.loadUserByUsername(user.getEmail());
 		Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(auth);
+		SecurityContextHolder.getContext().setAuthentication(auth);*/
 		
 		return "redirect:/user/dashboard";
 	}
@@ -467,7 +469,6 @@ public class UserController {
 		
 		User user = null;
 		try {
-			//user = userService.getUserWithProfile(currentUser.getId());
 			user = userService.getUser(currentUser.getId());
 		} 
 		catch (Exception ex) {
@@ -509,6 +510,8 @@ public class UserController {
 		}
 
 		model.addAttribute("user", user);
+		//need to use the userInfo role because an admin may have changed the user's role in the DB, but the user hasn't re-logged in yet
+		model.addAttribute("role", currentUser.getRole());
 		model.addAttribute("recipeCount", count);
 		model.addAttribute("viewCount", views);
 		model.addAttribute("recentRecipes", recentRecipes);
@@ -532,16 +535,16 @@ public class UserController {
 	public String getPassword(Model model) {
 		logger.info("user/changePassword GET");
 
-		PasswordDto passwordDto = new PasswordDto();
-		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", PasswordDto.class); 
+		ChangePasswordDto changePasswordDto = new ChangePasswordDto();
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", ChangePasswordDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
-		model.addAttribute(passwordDto);
+		model.addAttribute("changePasswordDto", changePasswordDto);
 		
 		return "user/changePassword";
 	}
 
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
-	public String postPassword(@ModelAttribute @Valid PasswordDto passwordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
+	public String postPassword(@ModelAttribute @Valid ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
 		logger.info("user/changePassword POST");
 
 		User currentUser = (User)userInfo.getUserDetails();
@@ -559,16 +562,16 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
-		if (!userService.isPasswordValid(passwordDto.getCurrentPassword(), user)) {
+		if (!userService.isPasswordValid(changePasswordDto.getCurrentPassword(), user)) {
 			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.invalidPassword", null, "Invalid password", locale);
-			FieldError err = new FieldError("passwordDto","currentPassword", msg);
+			FieldError err = new FieldError("changePasswordDto","currentPassword", msg);
 			result.addError(err);
 			return "user/changePassword";
         }
         
 		try {		
-			userService.changePassword(passwordDto.getPassword(), user);
+			userService.changePassword(changePasswordDto.getPassword(), user);
 		} 
 		catch (Exception ex) {
 			throw new SaveAccountException(ex);
@@ -583,17 +586,17 @@ public class UserController {
 		return "redirect:/home";
 	}
 
-	/************************************************/
-	/*** Forgot password and new password handler ***/
-	/************************************************/
-	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.GET)
-	public String getForgotPassword(Model model) {
-		logger.info("user/forgotPassword GET");
+	/***********************************************/
+	/*** Reset password and new password handler ***/
+	/***********************************************/
+	@RequestMapping(value = "user/resetPassword", method = RequestMethod.GET)
+	public String getResetPassword(Model model) {
+		logger.info("user/resetPassword GET");
 		
 		UserEmail email = new UserEmail();
 		model.addAttribute("userEmail", email);
 		
-		return "user/forgotPassword";
+		return "user/resetPassword";
 	}
 
 	//single-field class (not worth creating a DTO object)
@@ -615,12 +618,12 @@ public class UserController {
 		}
 	}
 
-	@RequestMapping(value = "user/forgotPassword", method = RequestMethod.POST)
-	public ModelAndView postForgotPassword(@ModelAttribute @Valid UserEmail userEmail, BindingResult result, HttpServletRequest request, RedirectAttributes redir, 
+	@RequestMapping(value = "user/resetPassword", method = RequestMethod.POST)
+	public ModelAndView postResetPassword(@ModelAttribute @Valid UserEmail userEmail, BindingResult result, HttpServletRequest request, RedirectAttributes redir, 
 			Locale locale) throws AccessUserException {
-		logger.info("user/forgotPassword POST: email=" + userEmail);
+		logger.info("user/resetPassword POST: email=" + userEmail);
 		
-		ModelAndView mv = new ModelAndView("user/forgotPassword");
+		ModelAndView mv = new ModelAndView("user/resetPassword");
 		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
@@ -647,7 +650,7 @@ public class UserController {
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
        	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
+        redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
         return mv;
@@ -678,7 +681,7 @@ public class UserController {
     	if (passwordResetToken == null || user == null || user.getId() != id) {
         	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, "Invalid token", locale));
         	redir.addFlashAttribute("password", true);
-        	mv.setViewName("redirect:/errors/invalidToken");
+        	mv.setViewName("redirect:/user/invalidToken");
         	return mv;     	
     	}
 		
@@ -688,7 +691,7 @@ public class UserController {
         	redir.addFlashAttribute("password", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
-        	mv.setViewName("redirect:/errors/expiredToken");
+        	mv.setViewName("redirect:/user/expiredToken");
         	return mv;
         }
 
@@ -698,11 +701,11 @@ public class UserController {
         //final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
         //SecurityContextHolder.getContext().setAuthentication(auth);
         
-        NewPassword newPassword = new NewPassword();
-		newPassword.setUserId(user.getId());
-		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", NewPassword.class); 
+        NewPasswordDto newPasswordDto = new NewPasswordDto();
+		newPasswordDto.setUserId(user.getId());
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", NewPasswordDto.class); 
 		redir.addFlashAttribute("sizeMap", sizeMap);
-		redir.addFlashAttribute("newPassword", newPassword);
+		redir.addFlashAttribute("newPasswordDto", newPasswordDto);
 		mv.setViewName("redirect:/user/newPassword");
         return mv;
     }	
@@ -728,11 +731,11 @@ public class UserController {
         
         emailSender.setUser(user);
      	emailSender.setLocale(request.getLocale());
-     	emailSender.setSubjectCode("user.email.resetSubject");
-     	emailSender.setMessageCode("user.email.resetSuccess");
+    	emailSender.setSubjectCode("user.email.accountChange");
+    	emailSender.setMessageCode("user.email.passwordResetMessage");
      	emailSender.sendTokenEmailMessage(confirmationUrl);
         
-        redir.addFlashAttribute("title", messages.getMessage("password.success.title", null, "Success", locale));
+        redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
         return mv;
@@ -744,61 +747,9 @@ public class UserController {
 				
 		return "user/newPassword";
 	}
-
-	//two-field class (not worth creating a DTO object)
-	//TODO: SECURITY: need to figure out how to make the password validator usable by different classes
-	//@PasswordMatch
-	public static class NewPassword {
-		
-		@NotBlank
-		@Size(min=6,max=20)
-		private String password;
-		
-		@NotBlank
-		@Size(min=6,max=20)
-		private String confirmPassword;
-		
-		private long userId;
-		
-		public NewPassword() {}
-
-		public NewPassword(NewPassword newPassword) {
-			this.password = newPassword.password;
-			this.confirmPassword = newPassword.confirmPassword;
-		}
-		
-		public NewPassword(String password, String confirmPassword) {
-			this.password = password;
-			this.confirmPassword = confirmPassword;
-		}
-		
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-		
-		public String getConfirmPassword() {
-			return confirmPassword;
-		}
-
-		public void setConfirmPassword(String password) {
-			this.confirmPassword = password;
-		}
-		
-		public long getUserId() {
-			return userId;
-		}
-		
-		public void setUserId(long userId) {
-			this.userId = userId;
-		}
-	}
 	
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
-	public String postNewPassword(Model model, @ModelAttribute @Valid NewPassword newPassword, BindingResult result, Locale locale) throws PasswordResetException {
+	public String postNewPassword(Model model, @ModelAttribute @Valid NewPasswordDto newPasswordDto, BindingResult result, Locale locale) throws PasswordResetException {
 		logger.info("user/newPassword POST");
 
 		if (result.hasErrors()) {
@@ -808,8 +759,12 @@ public class UserController {
 		
 		User user = null;
 		try {
-			user = userService.getUser(newPassword.getUserId());
-			userService.changePassword(newPassword.getPassword(), user);
+			user = userService.getUser(newPasswordDto.getUserId());
+			user.setAccountExpired(0);
+			user.setPasswordExpired(0);
+			userService.updateUser(user);
+			userService.changePassword(newPasswordDto.getPassword(), user);
+			userService.deletePasswordResetToken(user.getId());
 		} catch (Exception ex) {
         	throw new PasswordResetException(ex);
         }
@@ -826,18 +781,18 @@ public class UserController {
 	/********************/
 	/*** Shared pages ***/
 	/********************/
-	@RequestMapping(value = "errors/expiredToken", method = RequestMethod.GET)
+	@RequestMapping(value = "user/expiredToken", method = RequestMethod.GET)
 	public String getExpiredToken(Model model) {
-		logger.info("errors/expiredToken GET");
+		logger.info("user/expiredToken GET");
 		
-		return "errors/expiredToken";
+		return "user/expiredToken";
 	}
 	
-	@RequestMapping(value = "errors/invalidToken", method = RequestMethod.GET)
+	@RequestMapping(value = "user/invalidToken", method = RequestMethod.GET)
 	public String getInvalidToken(Model model) {
-		logger.info("errors/invalidToken GET");
+		logger.info("user/invalidToken GET");
 		
-		return "errors/invalidToken";
+		return "user/invalidToken";
 	}	
 
 	@RequestMapping(value = "message", method = RequestMethod.GET)
@@ -874,4 +829,7 @@ for (Object obj : allPrinc) {
 		logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
 	}
 }
+
+UsernamePasswordAuthenticationFilter
+
 */

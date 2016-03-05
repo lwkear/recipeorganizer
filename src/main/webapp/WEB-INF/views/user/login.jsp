@@ -33,7 +33,7 @@
 								<input class="form-control" type="password" id="password" name="password" autocomplete="off"/>
 							</div>
 							<div class="col-sm-2">
-								<a class="btn btn-default" href="<c:url value="/user/forgotPassword"></c:url>" role="button">
+								<a class="btn btn-default" href="<c:url value="/user/resetPassword"></c:url>" role="button">
 									<spring:message code="login.forgotpassword"></spring:message></a>
 							</div>
 						</div>

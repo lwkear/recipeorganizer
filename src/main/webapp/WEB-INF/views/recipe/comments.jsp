@@ -7,7 +7,7 @@
 					<button type="button" class="btn btn-link btn-sm" onclick="toggleComments()"><spring:message code="recipe.comments"></spring:message>
 						<span class="badge" style="background-color:#337ab7">${commentCount}</span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px"
+					<button type="button" class="btn btn-link btn-sm" id="commentBtn" onclick="addComment(${viewerId}, ${recipe.id})" style="font-size:20px"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.comment"></spring:message>">
 						<span class="glyphicon glyphicon-comment"></span>
 					</button>
@@ -28,7 +28,7 @@
 									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.flagged"></spring:message>">
 									<span class="glyphicon glyphicon-flag"></span>
 								</button>
-								<button type="button" class="btn btn-link btn-sm" id="flagComment-${comment.id}" onclick="flagComment(${comment.id})" 
+								<button type="button" class="btn btn-link btn-sm commentFlag" id="flagComment-${comment.id}" onclick="flagComment(${comment.id})" 
 									style="margin-left:5px;font-size:20px; <c:if test="${comment.flag == 1}">display:none</c:if>" 
 									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.flagcomment"></spring:message>">
 									<span class="glyphicon glyphicon-flag"></span>

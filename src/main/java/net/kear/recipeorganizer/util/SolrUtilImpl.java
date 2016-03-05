@@ -14,6 +14,7 @@ import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -156,29 +157,29 @@ public class SolrUtilImpl implements SolrUtil {
 		document.addField("description", recipe.getDescription());
 		document.addField("allowshare", recipe.getAllowShare());
 		document.addField("approved", recipe.getApproved());
-		if (!recipe.getServings().isEmpty())
+		if (!StringUtils.isBlank(recipe.getServings()))
 			document.addField("servings", recipe.getServings());
-		if (!recipe.getNotes().isEmpty())
+		if (!StringUtils.isBlank(recipe.getNotes()))
 			document.addField("notes", recipe.getNotes());
-		if (!recipe.getBackground().isEmpty())
+		if (!StringUtils.isBlank(recipe.getBackground()))
 			document.addField("background", recipe.getBackground());
-		if (!recipe.getPhotoName().isEmpty())
+		if (!StringUtils.isBlank(recipe.getPhotoName()))
 			document.addField("photo", recipe.getPhotoName());
 		if (!recipe.getTags().isEmpty())
 			document.addField("tag", recipe.getTags());
 		if (recipe.getSource() != null) {
 			document.addField("sourcetype", recipe.getSource().getType());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("cookbook", recipe.getSource().getCookbook());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("magazine", recipe.getSource().getMagazine());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("newspaper", recipe.getSource().getNewspaper());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("person", recipe.getSource().getPerson());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("other", recipe.getSource().getOther());
-			if (!recipe.getSource().getCookbook().isEmpty())
+			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("website", recipe.getSource().getWebsiteUrl());
 		}
 		for (InstructionSection section : recipe.getInstructSections()) {

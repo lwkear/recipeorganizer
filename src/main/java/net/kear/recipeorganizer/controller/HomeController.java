@@ -1,5 +1,7 @@
 package net.kear.recipeorganizer.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.kear.recipeorganizer.exception.AccessUserException;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.ConstraintMap;
@@ -64,7 +68,6 @@ public class HomeController {
 		logger.debug("Session ID: " + sessID);
 
 		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
-
 		for (Object obj : allPrinc) {
 			final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
 
@@ -186,7 +189,40 @@ public class HomeController {
 		model.addAttribute("webGreeting", wg);
 
         model.addAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
+
+		User currentUser = (User)userInfo.getUserDetails();
 		
+		User user = null;
+		try {
+			user = userService.getUser(currentUser.getId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+        
+		//Date lastLogin = user.getLastLogin();
+		//if (lastLogin == null)
+		Date lastLogin = user.getDateAdded();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(lastLogin);
+		cal.add(Calendar.DATE, 365);
+		
+		Calendar tdy = Calendar.getInstance();
+		
+        if (tdy.getTime().getTime() > cal.getTime().getTime())
+        	model.addAttribute("expired", "account has expired");
+        else
+        	model.addAttribute("expired", "account valid");
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String fmt = sdf.format(lastLogin);
+        logger.debug("lastLogin: " + fmt);
+        fmt = sdf.format(cal.getTime());
+        logger.debug("lastLogin + 365: " + fmt);
+        fmt = sdf.format(tdy.getTime());
+        logger.debug("today: " + fmt);
+        
 		return "test/testpage";
 	}
 

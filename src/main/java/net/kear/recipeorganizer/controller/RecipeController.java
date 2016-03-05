@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class RecipeController {
 			FileResult rslt = fileAction.uploadFile(FileType.RECIPE, recipe.getId(), file);
 			if (rslt == FileResult.SUCCESS) {
 				String currPhoto = recipe.getPhotoName();
-				if (currPhoto != null && !currPhoto.isEmpty()) {
+				if (!StringUtils.isBlank(currPhoto)) {
 					String newPhoto = file.getOriginalFilename();
 					if (!currPhoto.equals(newPhoto))
 						fileAction.deleteFile(FileType.RECIPE, recipe.getId(), currPhoto);
@@ -153,13 +154,15 @@ public class RecipeController {
 			recipe.setPhotoName("");
 		}
 
+		//remove the recipe from solr; recipeService.saveRecipe will add it back
+		//this is necessary because recipeService.saveRecipe is called from webflow
+		//there looks to be an issue, though, with the saveRecipe transaction being rolled back if the solrUtil.addRecipe fails
+		//TODO: make solr.addrecipe accessible to webflow and remove the addRecipe from recipeService
 		boolean newRecipe = recipe.getId() > 0 ? true : false;
-		recipeService.saveRecipe(recipe);
-		
-		//errors are not fatal and will be logged by SolrUtil
 		if (!newRecipe)
 			solrUtil.deleteRecipe(recipe.getId());
-		solrUtil.addRecipe(recipe);
+		
+		recipeService.saveRecipe(recipe);
 		
 		String uri = (String) request.getSession().getAttribute("returnUrl");
 		if (uri != null && uri.contains("approval"))
@@ -304,22 +307,29 @@ public class RecipeController {
 	}
 
 	//request for checking name duplication
-	@RequestMapping(value = "recipe/lookupRecipeName", method = RequestMethod.GET, produces="text/javascript")
+	@RequestMapping(value = "recipe/lookupRecipeName", method = RequestMethod.GET)
 	@ResponseBody 
-	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response) {
+	public ResponseObject lookupRecipeName(@RequestParam("name") String lookupName, @RequestParam("userId") Long userId, HttpServletResponse response, Locale locale) 
+			throws RestException {
 		logger.info("recipe/lookupRecipeName GET: name/userid=" + lookupName + "/" + userId);
 		
-		//add the ingredient to the DB
-		boolean result = recipeService.lookupName(lookupName, userId);
+		//query the DB for the recipe name
+		boolean result = false;
+		try {
+			result = recipeService.lookupName(lookupName, userId);
+		} catch (Exception ex) {
+			throw new RestException("exception.default", ex);
+		}
+
 		logger.debug("lookupName result=" + result);
 
 		ResponseObject obj = new ResponseObject();
+		response.setStatus(HttpServletResponse.SC_OK);
 		
 		//name was found
 		if (result) {
-			Locale locale = LocaleContextHolder.getLocale();
 			response.setStatus(HttpServletResponse.SC_CONFLICT);
+			obj.setStatus(HttpServletResponse.SC_CONFLICT);
 			String msg = messages.getMessage("recipe.name.duplicate", null, "Duplicate name", locale);
 			obj.setMsg(msg);
 		}

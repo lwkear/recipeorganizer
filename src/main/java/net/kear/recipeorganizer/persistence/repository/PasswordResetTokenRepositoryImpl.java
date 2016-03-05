@@ -1,5 +1,7 @@
 package net.kear.recipeorganizer.persistence.repository;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,6 +22,19 @@ public class PasswordResetTokenRepositoryImpl implements PasswordResetTokenRepos
 	@Override
 	public void saveToken(PasswordResetToken token) {
     	getSession().save(token);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void deleteToken(long userId) {
+		Criteria criteria = getSession().createCriteria(PasswordResetToken.class)
+				.createAlias("user", "u")
+	       		.add(Restrictions.eq("user.id", userId));
+		List<PasswordResetToken> passwordTokens = (List<PasswordResetToken>) criteria.list();
+	    if (!passwordTokens.isEmpty()) {
+	    	for (PasswordResetToken token : passwordTokens) {
+	    		getSession().delete(token);
+	    	}
+	    }
 	}
 
 	@Override

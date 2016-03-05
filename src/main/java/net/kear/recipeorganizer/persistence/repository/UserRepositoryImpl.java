@@ -5,6 +5,7 @@ import java.util.List;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.UserRepository;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -49,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
            		.setProjection(Projections.projectionList()
            			.add(Projections.property("email")));
        	String userEmail = (String) criteria.uniqueResult();
-       	if (userEmail == null || userEmail.isEmpty())
+       	if (StringUtils.isBlank(userEmail))
        		return false;
        	return true;
     }

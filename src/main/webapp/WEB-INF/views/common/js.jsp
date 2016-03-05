@@ -10,6 +10,7 @@
 <script src="<c:url value="/resources/js/js.cookie.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/js/jquery.dataTables.js"/>"></script>
 <script src="<c:url value="/resources/DataTables/js/dataTables.bootstrap.js"/>"></script>
+<script src="<c:url value="/resources/pwstrength/pwstrength-bootstrap-1.2.10.js"/>"></script>
 <script src="<c:url value="/resources/custom/general.js"/>"></script>
 
 <%-- <script src="<c:url value="/resources/js/jquery-2.1.3.min.js"/>"></script>

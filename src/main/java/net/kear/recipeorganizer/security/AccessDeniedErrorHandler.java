@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.util.UserInfo;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,7 +38,7 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 
 		setErrorPage("/accessDenied");
 		
-		if (auth != null && auth.isAuthenticated() && !uri.isEmpty()) {
+		if (auth != null && auth.isAuthenticated() && !StringUtils.isEmpty(uri)) {
 			if (!userInfo.isUserAnonymous() && 
 				role.equalsIgnoreCase(Role.TYPE_GUEST) && 
 				(uri.equals("/recipeorganizer/recipe/recipeList") || uri.equals("/recipeorganizer/recipe"))) { 

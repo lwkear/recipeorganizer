@@ -15,6 +15,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,13 +223,14 @@ public class DisplayController {
 	public void getPhoto(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("recipe/photo GET: fileName=" + fileName);
 
-		if (fileName != null && !fileName.isEmpty())
+		//if (fileName != null && !fileName.isEmpty())
+		if (!StringUtils.isBlank(fileName))
 			//errors are not fatal and will be logged by FileAction
 			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
 	
 	@RequestMapping(value = "/report/getHtmlRpt/{recipeId}", method = RequestMethod.GET)
-	public void getHtmlRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long recipeId) {
+	public void getHtmlRpt(@PathVariable Long recipeId, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("recipe/getHtmlRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -281,7 +283,7 @@ public class DisplayController {
 	}
 
 	@RequestMapping(value = "/report/getPdfRpt/{recipeId}", method = RequestMethod.GET)
-	public void getPdfRpt(HttpServletRequest request, HttpServletResponse response, @PathVariable Long recipeId) {
+	public void getPdfRpt(@PathVariable Long recipeId, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("recipe/getPdfRpt GET: recipeId=" + recipeId);
 
 		Map<String,Object> params = new HashMap<String,Object>();
@@ -435,14 +437,14 @@ public class DisplayController {
 		return "recipe/comments";
 	}
 
-	@RequestMapping(value = "/recipe/flagComment/{recipeId}", method = RequestMethod.POST, produces="text/javascript")
+	@RequestMapping(value = "/recipe/flagComment", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject flagComment(@PathVariable Long recipeId) throws RestException {
-		logger.info("recipe/flagComment POST: recipeId=" + recipeId);
+	public ResponseObject flagComment(@RequestParam("commentId") Long commentId) throws RestException {
+		logger.info("recipe/flagComment POST: commentId=" + commentId);
 		
 		try {
-			commentService.setCommentFlag(recipeId, 1);
+			commentService.setCommentFlag(commentId, 1);
 		} catch (DataAccessException ex) {
 			throw new RestException("exception.flagComment", ex);
 		}

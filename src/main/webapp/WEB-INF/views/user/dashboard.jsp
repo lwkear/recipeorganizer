@@ -33,7 +33,7 @@
 				</div>
 				<div class="col-sm-4">
 					<h5><strong><spring:message code="dashboard.memberlevel"></spring:message></strong>&nbsp;
-						<span class="bold-maroon">${user.role.description}</span></h5>
+						<span class="bold-maroon">${role.description}</span></h5>
 				</div>
 			</div>
 		</div>

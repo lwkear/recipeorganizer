@@ -4,6 +4,7 @@
 	<p id="common.yes"/><spring:message code="common.yes"></spring:message>
 	<p id="common.no"/><spring:message code="common.no"></spring:message>
 	<p id="common.cancel"/><spring:message code="common.cancel"></spring:message>
+	<p id="common.warning"/><spring:message code="common.warning"></spring:message>
 	<p id="common.table.search"/><spring:message code="common.table.search"></spring:message>
 	<p id="common.table.paginate.first"/><spring:message code="common.table.paginate.first"></spring:message>
 	<p id="common.table.paginate.last"/><spring:message code="common.table.paginate.last"></spring:message>
@@ -37,6 +38,18 @@
 	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
 	<p id="profile.photo"/><spring:message code="profile.photo"></spring:message>
 	<p id="common.size.max"/><spring:message code="common.size.max"></spring:message>
+	<p id="pswd.wordLength"/><spring:message code="pswd.wordLength"></spring:message>
+	<p id="pswd.wordNotEmail"/><spring:message code="pswd.wordNotEmail"></spring:message>
+	<p id="pswd.wordSimilarToUsername"/><spring:message code="pswd.wordSimilarToUsername"></spring:message>
+	<p id="pswd.wordTwoCharacterClasses"/><spring:message code="pswd.wordTwoCharacterClasses"></spring:message>
+	<p id="pswd.wordRepetitions"/><spring:message code="pswd.wordRepetitions"></spring:message>
+	<p id="pswd.wordSequences"/><spring:message code="pswd.wordSequences"></spring:message>
+	<p id="pswd.verdict.weak"/><spring:message code="pswd.verdict.weak"></spring:message>
+	<p id="pswd.verdict.normal"/><spring:message code="pswd.verdict.normal"></spring:message>
+	<p id="pswd.verdict.medium"/><spring:message code="pswd.verdict.medium"></spring:message>
+	<p id="pswd.verdict.strong"/><spring:message code="pswd.verdict.strong"></spring:message>
+	<p id="pswd.verdict.verystrong"/><spring:message code="pswd.verdict.verystrong"></spring:message>
+	<p id="pswd.score.risky"/><spring:message code="pswd.score.risky"></spring:message>
 	<p id="recipe.edit.cancel"/><spring:message code="recipe.edit.cancel"></spring:message>
 	<p id="recipe.submit.cancel"/><spring:message code="recipe.submit.cancel"></spring:message>
 	<p id="commentadmin.table.emptyTable"/><spring:message code="commentadmin.table.emptyTable"></spring:message>

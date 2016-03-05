@@ -23,6 +23,7 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.FileResult;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class FileActionsImpl implements FileActions {
 		String originalName = file.getOriginalFilename();
 		
 	    if (file.isEmpty() || fSize == 0) {
-	    	if (originalName == null || originalName.isEmpty())
+	    	if (StringUtils.isBlank(originalName))
 	    		return FileResult.NO_FILE;
 	    	if (!originalName.isEmpty())
 	    		return FileResult.EMPTY_FILE;
@@ -183,7 +184,7 @@ public class FileActionsImpl implements FileActions {
 		logger.info("deleteFile: recipeId=" + recipe.getId());
 		
 		String fileName = recipe.getPhotoName();
-		if (fileName == null || fileName.isEmpty())
+		if (StringUtils.isBlank(fileName))
 			return FileResult.SUCCESS;
 		
     	boolean exists = fileExists(FileType.RECIPE, 0L, fileName);
@@ -199,7 +200,7 @@ public class FileActionsImpl implements FileActions {
 		logger.info("renameFile: recipeId=" + recipe.getId());
 			
 		String fileName = recipe.getPhotoName(); 
-		if (fileName == null || fileName.isEmpty())
+		if (StringUtils.isBlank(fileName))
 			return FileResult.SUCCESS;
 
     	boolean exists = fileExists(FileType.RECIPE, 0L, fileName);
@@ -224,7 +225,7 @@ public class FileActionsImpl implements FileActions {
 		String originalName = file.getOriginalFilename();
 		
 	    if (file.isEmpty() || fSize == 0) {
-	    	if (originalName == null || originalName.isEmpty())
+	    	if (StringUtils.isBlank(originalName))
 	    		return FileResult.NO_FILE;
 	    	if (!originalName.isEmpty())
 	    		return FileResult.EMPTY_FILE;

@@ -27,7 +27,8 @@ function toggleComments() {
 //set the last made date in popup dialog
 function selectMadeDate(viewerId, recipeId) {
 	$('#madeRight').tooltip("hide");
-	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);	
+	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);
+	$("#madeDateDlg").on('hidden.bs.modal', function(){$("#submitMadeDate").unbind('click');})
 	$("#madeDateDlg").modal('show');
 } 
 
@@ -75,6 +76,7 @@ function postMadeDate(e) {
 function addNote(recipeNote) {
 	$('#noteRight').tooltip("hide");
 	$("#submitNote").one('click', {recipeNote: recipeNote}, postNote);
+	$("#noteDlg").on('hidden.bs.modal', function(){$("#submitNote").unbind('click');})
 	$("#noteDlg").modal('show');
 } 
 
@@ -116,8 +118,9 @@ function postNote(e) {
 function addComment(viewerId, recipeId) {
 	$('#userComment').val("");
 	$('#userCommentErrMsg').html("");
-	$('#submitComment').tooltip("hide");
+	$('#commentBtn').tooltip("hide");
 	$("#submitComment").one('click', {viewerId : viewerId, recipeId : recipeId}, postComment);
+	$("#commentDlg").on('hidden.bs.modal', function(){$("#submitComment").unbind('click');})
 	$("#commentDlg").modal('show');
 }
 
@@ -164,12 +167,13 @@ function postComment(e) {
 }
 
 function flagComment(commentId) {
+	$('.commentFlag').tooltip("hide");
 	var id = commentId;
 	$.ajax({
 		type: 'POST',
 		url: '/recipeorganizer/recipe/flagComment',
 		dataType: 'json',
-		data : {id : commentId}
+		data : {"commentId" : commentId}
 	})
 	.done(function(data) {
 		console.log('comment flagged');

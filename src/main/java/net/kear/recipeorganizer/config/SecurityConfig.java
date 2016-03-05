@@ -17,7 +17,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
@@ -47,9 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	CharacterEncodingFilter encodingFilter;
 	
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth, UserDetailsService userDetailsService) throws Exception {
+	public void configureGlobal(AuthenticationManagerBuilder auth, UserSecurityService userSecurityService) throws Exception {
 		auth
-		.userDetailsService(userDetailsService)
+		.userDetailsService(userSecurityService)
 		.passwordEncoder(encoder());
 	}
 
@@ -144,7 +143,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/technical", "/policies", "/test/testpage").permitAll()
 			.antMatchers("/submitsearch", "/searchresults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
-    		.antMatchers("/user/login**", "/user/signup**", "/user/forgotPassword", "/user/fatalError", "/lookupUser").permitAll()
+    		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword").permitAll()
+    		.antMatchers("/user/fatalError", "/user/expiredToken", "/user/invalidToken", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
     		.antMatchers("user/account", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
@@ -171,29 +171,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
-			.key("recipeOrganizer.rememberme")	//doesn't seem to work?
+			.key("recipeOrganizerSecretKey")
 			.tokenValiditySeconds(60 * 60 * 24 * 14)	//2 weeks
 			.rememberMeParameter("rememberMe")
+			//.tokenRepository(persistentTokenRepository()) //rememberMe
 			.and()
     	.sessionManagement()
     		.invalidSessionUrl("/user/login")
     		//.sessionAuthenticationErrorUrl("/expiredSession")
-    		.sessionFixation()
-    			//.changeSessionId()
-    			//.newSession()
-    			.migrateSession()
     		.maximumSessions(1)
-    		.expiredUrl("/expiredSession")
     		.sessionRegistry(sessionRegistry())
-    		//.maxSessionsPreventsLogin(false)			//when enabled it prevents a user from logging in before the session expires
+    		.expiredUrl("/expiredSession")
+    		//.maxSessionsPreventsLogin(false)	//when enabled it prevents a user from logging in before the session expires
     	;
     }
-	
-	//ConcurrentSessionFilter
-	//SessionManagementFilter
-	//DefaultRedirectStrategy
-	
-	//.tokenRepository(persistentTokenRepository()) //rememberMe	
 	
 	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
 	protected static class SessionManagementBeanPostProcessor implements BeanPostProcessor {
@@ -214,28 +205,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 
-//HttpSessionSecurityContextRepository
-
-/*.sessionManagement()
-	.sessionFixation()
-		.newSession()
-	.maximumSessions(1)
-	.expiredUrl("/expiredSession")
-	.sessionRegistry(sessionRegistry())
-
-.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/expiredSession", "/accessDenied").permitAll()
-
-;*/
-
-
-/*I have the following .sessionManagment config:
-
-    .sessionManagement()
-	    .sessionFixation()
-		    .newSession()
-	    .maximumSessions(1)
-	    .expiredUrl("/expiredSession")
-	    .sessionRegistry(sessionRegistry())
-
+/*
 When I login on two different browsers, `ConcurrentSessionFilter` correctly invalidates the session and redirects to the expiredURL.  However, when "/expiredSession" goes through the security filter chain it gets caught in the `SessionManagementFilter` because the session in the request is no longer valid. This redirects the user to the login screen
+
+w/o rememberMe
+2016-03-02 08:22:42,890 DEBUG: org.springframework.security.core.session.SessionRegistryImpl - Registering session 3C71392ABA556D50734501B54E404CA7, for principal User [id=3, firstName=Larry, lastName=Kear, email=lwk@outlook.com, password=$2a$10$dWsT1NSw68Shy.1Kxf5pMOtwfYbliTz2qCUQrOEn234QFDJ52HJZq, enabled=1, tokenExpired=0, locked=0, accountExpired=0, dateAdded=2015-09-03, lastLogin=2016-03-02, passwordExpired=0, loggedIn=false, numRecipes=0, role=Role [id=21, name=ADMIN, description=Administrator], userProfile=UserProfile [id=5, city=Evanston, state=Illinois, age=4, interests=Cooking and baking. Learning to stir-fry.  Love baking cookies and cakes.  ATK is a favorite source for recipes.  Chicken is the best.  I'm stuffed from Thanksgiving!!!  Love my pumpkin bundt cake, avatar=2015 Lamium.JPG]]
+checked rememberMe
+2016-03-02 08:26:33,550 DEBUG: org.springframework.security.core.session.SessionRegistryImpl - Registering session 0D3F1D35EB01ECE5B699562F5CB52BA2, for principal User [id=3, firstName=Larry, lastName=Kear, email=lwk@outlook.com, password=$2a$10$dWsT1NSw68Shy.1Kxf5pMOtwfYbliTz2qCUQrOEn234QFDJ52HJZq, enabled=1, tokenExpired=0, locked=0, accountExpired=0, dateAdded=2015-09-03, lastLogin=2016-03-02, passwordExpired=0, loggedIn=false, numRecipes=0, role=Role [id=21, name=ADMIN, description=Administrator], userProfile=UserProfile [id=5, city=Evanston, state=Illinois, age=4, interests=Cooking and baking. Learning to stir-fry.  Love baking cookies and cakes.  ATK is a favorite source for recipes.  Chicken is the best.  I'm stuffed from Thanksgiving!!!  Love my pumpkin bundt cake, avatar=2015 Lamium.JPG]]
+2016-03-02 08:26:33,561 DEBUG: org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices - Added remember-me cookie for user 'lwk@outlook.com', expiry: 'Wed Mar 16 09:26:33 CDT 2016'
+close browser/open app
+2016-03-02 08:30:59,799 DEBUG: org.springframework.security.web.FilterChainProxy - / at position 11 of 15 in additional filter chain; firing Filter: 'RememberMeAuthenticationFilter'
+2016-03-02 08:30:59,799 DEBUG: org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices - Remember-me cookie detected
+2016-03-02 08:30:59,816 DEBUG: org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices - Remember-me cookie accepted
+2016-03-02 08:30:59,816 DEBUG: org.springframework.security.authentication.ProviderManager - Authentication attempt using org.springframework.security.authentication.RememberMeAuthenticationProvider
+2016-03-02 08:30:59,817 DEBUG: org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter - SecurityContextHolder populated with remember-me token: 'org.springframework.security.authentication.RememberMeAuthenticationToken@9182a08f: Principal: User [id=3, firstName=Larry, lastName=Kear, email=lwk@outlook.com, password=$2a$10$dWsT1NSw68Shy.1Kxf5pMOtwfYbliTz2qCUQrOEn234QFDJ52HJZq, enabled=1, tokenExpired=0, locked=0, accountExpired=0, dateAdded=2015-09-03, lastLogin=2016-03-02, passwordExpired=0, loggedIn=false, numRecipes=0, role=Role [id=21, name=ADMIN, description=Administrator], userProfile=UserProfile [id=5, city=Evanston, state=Illinois, age=4, interests=Cooking and baking. Learning to stir-fry.  Love baking cookies and cakes.  ATK is a favorite source for recipes.  Chicken is the best.  I'm stuffed from Thanksgiving!!!  Love my pumpkin bundt cake, avatar=2015 Lamium.JPG]]; Credentials: [PROTECTED]; Authenticated: true; Details: org.springframework.security.web.authentication.WebAuthenticationDetails@b364: RemoteIpAddress: 0:0:0:0:0:0:0:1; SessionId: null; Granted Authorities: ADMIN'
+2016-03-02 08:30:59,817 INFO : net.kear.recipeorganizer.security.RememberMeSuccessHandler - onAuthenticationSuccess: name=lwk@outlook.com
 */

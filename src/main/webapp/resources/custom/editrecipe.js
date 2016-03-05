@@ -9,6 +9,7 @@ function checkForFileError() {
 		$("#cnclBtn").show();
 		$("#okBtn").one('click', saveRecipe);
 		$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+		$("#messageDlg").on('hidden.bs.modal', function(){$("#okBtn").unbind('click');})
 		$("#messageDlg").modal('show');
 	}
 }
@@ -28,6 +29,8 @@ function cancelEditRecipe() {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', continueEditCancel);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$("#messageDlg").on('hidden.bs.modal', function(){$("#yesBtn").unbind('click');})
 	$("#messageDlg").modal('show');
 } 
 

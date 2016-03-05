@@ -12,10 +12,10 @@
 
 <%@include file="../common/nav.jsp" %>
 
-	<spring:bind path="newPassword.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
-	<spring:bind path="newPassword.confirmPassword"><c:set var="confirmPasswordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="newPasswordDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
+	<spring:bind path="newPasswordDto.confirmPassword"><c:set var="confirmPasswordError">${status.errorMessage}</c:set></spring:bind>
 
-	<spring:bind path="newPassword">
+	<spring:bind path="newPasswordDto">
 		<c:if test="${status.error}">
 			<c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
 				<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
@@ -33,12 +33,11 @@
 				<h3><spring:message code="newpswd.title"></spring:message></h3>
 			</div>
 			<div class="row">
-				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
-					<spring:message code="user.password.resetInstructions"></spring:message>
-				</div>
-				<form:form name="passswordForm" role="form" modelAttribute="newPassword" method="post">
-					<div class="col-sm-12">
-						<div class="form-group col-sm-4 col-sm-offset-4 <c:if test="${not empty passwordError}">has-error</c:if>">
+				<form:form name="formWithPswd" id="formWithPswd" role="form" modelAttribute="newPasswordDto" method="post">
+					<div class="col-sm-12" id="pwd-container">
+						<div class="col-sm-4 pwstrength_viewport_errors text-danger">
+						</div>
+						<div class="form-group col-sm-4 <c:if test="${not empty passwordError}">has-error</c:if>">
 							<label class="control-label" for="password"><spring:message code="common.password"></spring:message></label>
 							<form:input class="form-control maxSize" type="password" id="password" path="password" autocomplete="off" data-max="${sizeMap['password.max']}"/>
 							<span class="text-danger" id="passwordErrMsg">${passwordError}</span>
@@ -51,8 +50,9 @@
 							<span class="text-danger" id="confirmPasswordErrMsg">${confirmPasswordError}</span>
 						</div>
 					</div>
+					<input type="text" id="pswdScore" style="display:none"/>
 			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
-						<button class="btn btn-primary" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
+						<button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
 	        		<form:hidden path="userId" />
 	      		</form:form>
@@ -66,4 +66,7 @@
 <%@include file="../common/footer.jsp" %>	
 	
 </body>
+
+<script src="<c:url value="/resources/custom/usersignup.js" />"></script>
+
 </html>

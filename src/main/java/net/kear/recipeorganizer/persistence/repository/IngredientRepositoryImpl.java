@@ -57,11 +57,13 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     		.addOrder(Order.asc("name"));
     	List<Ingredient> ingredList = criteria.list();
     	List<Ingredient> ingredResults = new AutoPopulatingList<Ingredient>(Ingredient.class);
+
+    	String str = searchStr.toLowerCase();
     	
 		//loop through the results looking for ingredients that start with the searchStr;
     	for (Ingredient ingred : ingredList) {
 			String lowerName = ingred.getName().toLowerCase();
-			if (lowerName.startsWith(searchStr))
+			if (lowerName.startsWith(str))
 				ingredResults.add(ingred);
 			if (ingredResults.size() >= 20)
 				break;
@@ -75,7 +77,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 				String[] splitStr = lowerName.split("\\s+");
 				if (splitStr.length > 1) {
 					for (int i=1;i<splitStr.length;i++) {
-						if (splitStr[i].startsWith(searchStr)) {
+						if (splitStr[i].startsWith(str)) {
 							ingredResults.add(ingred);
 							break;
 						}

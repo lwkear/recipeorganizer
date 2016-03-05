@@ -20,6 +20,10 @@ public class VerificationTokenRepositoryImpl implements VerificationTokenReposit
     	getSession().save(token);
 	}
 	
+	public void deleteToken(VerificationToken token) {
+		getSession().delete(token);
+	}
+	
 	public VerificationToken findByToken(String token) {
 		Criteria criteria = getSession().createCriteria(VerificationToken.class)
 	       		.add(Restrictions.eq("token", token).ignoreCase());

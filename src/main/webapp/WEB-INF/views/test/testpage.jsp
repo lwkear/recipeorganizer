@@ -24,6 +24,9 @@
 			${text}
 		</div>
 		<div class="col-sm-12">
+			${expired}
+		</div>
+		<div class="col-sm-12">
 			<form:form role="form" modelAttribute="webGreeting" method="post">
 				<div>
 					<form:input id="greeting" type="text" path="greeting"/>

@@ -4,9 +4,6 @@
 
 //call function to request recipe count for the user from the server
 function checkRecipeCount(userId, userFirst, userLast) {
-	uId = userId;
-	firstName = userFirst;
-	lastName = userLast;
 	getRecipeCount(userId, userFirst, userLast, displayCount);
 }
 
@@ -44,6 +41,8 @@ function displayCount(count, userId, userFirst, userLast) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {id : userId}, deleteUser);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$("#messageDlg").on('hidden.bs.modal', function(){$("#yesBtn").unbind('click');})
 	$("#messageDlg").modal('show');
 } 
 
@@ -85,7 +84,6 @@ function userDeleted(userId) {
 
 //call function to request user object from server
 function updateUser(userId) {
-	uId = userId;	
 	getUser(userId, displayUser);	
 }
 
@@ -113,16 +111,15 @@ function getUser(userId, callback) {
 
 //modify the user in popup dialog
 function displayUser(user) {
-	//if (user.role === null)
-		//$("#inputRole option[data-id=0]").prop('selected',true);
-	//else
-		$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
+	$("#inputRole option[data-id='" + user.role.id + "']").prop('selected',true);
 	$("input[name='enabled'][value='" + user.enabled + "']").prop('checked',true);
 	$("input[name='locked'][value='" + user.locked + "']").prop('checked',true);
 	$("input[name='pswdExpired'][value='" + user.passwordExpired + "']").prop('checked',true);
 	$("input[name='acctExpired'][value='" + user.accountExpired + "']").prop('checked',true);
 	$(".userName").text(user.firstName + " " + user.lastName);
 	$("#submit").one('click', {user : user}, postUser);
+	$('#updateUser').modal({backdrop: 'static', keyboard: false, show: false});
+	$("#updateUser").on('hidden.bs.modal', function(){$("#submit").unbind('click');})
 	$("#updateUser").modal('show');
 } 
 

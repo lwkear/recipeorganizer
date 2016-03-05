@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.security;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -36,13 +37,16 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		authCookie.setCookie(request, response, authentication.getName());
 
 		User user = userService.findUserByEmail(authentication.getName());
-		user.setLastLogin(new Date());
+		
+		Calendar todaysDt = Calendar.getInstance();
+		todaysDt.setTimeInMillis(new Date().getTime());
+		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
 		userService.updateUser(user);
 
 		String servePath = request.getServletPath();
 		logger.debug("servePath:" + servePath);
 		
-		if (servePath != null && !servePath.isEmpty() && servePath.indexOf("login") == -1)
+		if (!servePath.isEmpty() && servePath.indexOf("login") == -1)
 			getRedirectStrategy().sendRedirect(request, response, servePath);
 		else
 			super.onAuthenticationSuccess(request, response, authentication);
