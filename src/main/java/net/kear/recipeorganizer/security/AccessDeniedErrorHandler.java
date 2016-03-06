@@ -44,8 +44,13 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 				(uri.equals("/recipeorganizer/recipe/recipeList") || uri.equals("/recipeorganizer/recipe"))) { 
 					setErrorPage("/user/changeAccount");
 			}
+			if (userInfo.isUserAnonymous() &&
+				uri.equals("/recipeorganizer/recipe")) {
+					setErrorPage("/user/join");
+			}
 		}
 		
 		super.handle(request, response, ex);
 	}
 }
+//ExceptionTranslationFilter

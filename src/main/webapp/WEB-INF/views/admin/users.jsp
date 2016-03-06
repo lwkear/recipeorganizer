@@ -43,7 +43,7 @@
 							<td>${user.email}</td>
 							<td>${user.lastName},&nbsp;${user.firstName}</td>
 							<td>${user.dateAdded}</td>
-							<td>${user.lastLogin}</td>
+							<td><fmt:formatDate type="date" pattern="yyyy-MM-dd" value="${user.lastLogin}"/></td>
 							<td><c:out value="${user.loggedIn ? yesLabel : noLabel}"/></td>							
 							<td><c:out value="${user.enabled ? yesLabel : noLabel}"/></td>
 							<td><c:out value="${user.locked ? yesLabel : noLabel}"/></td>

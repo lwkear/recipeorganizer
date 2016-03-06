@@ -457,7 +457,14 @@ public class UserController {
 		
 		return "redirect:/user/dashboard";
 	}
-	
+
+	@RequestMapping(value = "user/join", method = RequestMethod.GET)
+	public String getJoin(Model model) {
+		logger.info("user/join GET");
+		
+		return "user/join";
+	}
+
 	/*************************/
 	/*** Dashboard handler ***/
 	/*************************/
