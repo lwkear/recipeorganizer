@@ -25,6 +25,12 @@
 				</div>
 				<div class="form-group col-sm-6 col-sm-offset-3 text-center spacer-vert-md"><spring:message code="account.join.message3"></spring:message></div>
 			</div>
+			<div class="row">
+				<div class="form-group col-sm-6 col-sm-offset-3 text-center"><spring:message code="account.join.message4"></spring:message></div>
+				<div class="col-sm-2 col-sm-offset-5 text-center spacer-vert-xs">
+					<a class="btn btn-default" href="<c:url value="/user/login"></c:url>" role="button"><spring:message code="menu.login"></spring:message></a>
+				</div>
+			</div>
     	</div>
     </div>
     

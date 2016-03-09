@@ -75,17 +75,55 @@ function getMessage(key) {
 	if (messageMap !== null) {
 		return messageMap.get(key);
 	}
-	return null;
+	return "";
+}
+
+function displayLoginMsg() {
+	$("#messageTitle").text(getMessage('timeout.title'));
+	$("#messageMsg").text(getMessage('timeout.text3'));
+	$(".msgDlgBtn").hide();
+	$("#okBtn").show();
+	$("#okBtn").one('click', null, redirectLogin);
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$("#messageDlg").on('hidden.bs.modal', function(){$("#okBtn").unbind('click');})
+	$("#messageDlg").modal('show');
+}
+	
+function redirectLogin() {
+	$("#messageDlg").modal('hide');
+	
+	var loginUrl = "/recipeorganizer/user/login";
+	window.location.href = loginUrl;
 }
 
 function closeTimeout() {
 	$("#sessionTimeout").modal('hide');
-	//TODO: SECURITY: check if already logged out (more than one tab/window expires at once)
-	submitLogoutForm();
+
+	//prior to logging out the user, double-check that
+	//the user has not already been logged out, presumably by
+	//a session in another tab; this prevents a CSRF error
+	var user = Cookies.get('authUser');
+	if (user === 'anonymousUser') {
+		var thankyouUrl = "/recipeorganizer/thankyou";
+		window.location.href = thankyouUrl;
+	}
+	else	
+		submitLogoutForm();
 }
 
 function displayTimeout() {
 	console.log('displayTimeout()');
+	
+	//prior to displaying the timeout dialog, double-check that
+	//the user has not already been logged out, presumably by
+	//a session in another tab
+	var user = Cookies.get('authUser');
+	if (user === 'anonymousUser') {
+		clearTimeout(closeModalTimer);
+		displayLoginMsg();		
+		return;
+	}	
+	
 	$("#timeLeft").text(remainTime);
 	$("#sessionTimeout").modal();
 	closeModalTimer = setTimeout(closeTimeout, ((remainTime-15)*1000));	

@@ -28,6 +28,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
+import net.kear.recipeorganizer.security.CustomAuthLoginEntryPoint;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
 import net.kear.recipeorganizer.security.LoginSuccessHandler;
 import net.kear.recipeorganizer.security.RedirectInvalidSession;
@@ -108,6 +109,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	@Bean
+	public CustomAuthLoginEntryPoint customAuthLoginEntryPoint() {
+		CustomAuthLoginEntryPoint entryPoint = new CustomAuthLoginEntryPoint("/user/login");
+		entryPoint.setJoinPage("/user/join");
+		return entryPoint;
+	}
+	
+	@Bean
 	public SessionRegistry sessionRegistry() {
 		return new SessionRegistryImpl();
 	}
@@ -147,7 +155,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("/user/fatalError", "/user/expiredToken", "/user/invalidToken", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
-    		.antMatchers("user/account", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
+    		.antMatchers("user/account", "user/newMember", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)
     		.antMatchers("/admin/**").hasAuthority(Role.TYPE_ADMIN)
@@ -168,6 +176,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 		.exceptionHandling()
 			.accessDeniedHandler(accessDeniedHandler())
+			.authenticationEntryPoint(customAuthLoginEntryPoint())
 			.and()
 		.rememberMe()
 			.authenticationSuccessHandler(rememberMeSuccessHandler())
@@ -206,6 +215,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 
 /*
+CsrfFilter
+
 When I login on two different browsers, `ConcurrentSessionFilter` correctly invalidates the session and redirects to the expiredURL.  However, when "/expiredSession" goes through the security filter chain it gets caught in the `SessionManagementFilter` because the session in the request is no longer valid. This redirects the user to the login screen
 
 w/o rememberMe

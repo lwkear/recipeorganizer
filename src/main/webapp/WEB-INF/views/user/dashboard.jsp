@@ -2,13 +2,11 @@
 <html>
 <head>
 
-<title>Dashboard</title>
-
 <%@include file="../common/head.jsp" %>
 
-</head>
-
 <title><spring:message code="dashboard.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
+
+</head>
 
 <body role="document">
 

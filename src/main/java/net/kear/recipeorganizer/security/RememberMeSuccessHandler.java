@@ -18,6 +18,9 @@ import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
@@ -27,6 +30,8 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private UserService userService;	
+
+	private RequestCache requestCache = new HttpSessionRequestCache();
 	
 	public RememberMeSuccessHandler() {
 		super();
@@ -69,6 +74,16 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 		String servePath = request.getServletPath();
 		logger.debug("servePath:" + servePath);
 		
+		String redirectUrl = null;
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		if (savedRequest != null) {
+			redirectUrl = savedRequest.getRedirectUrl();
+			logger.debug("redirectUrl:" + redirectUrl);
+		}
+
+		if (redirectUrl != null)
+			getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+		else
 		if (!servePath.isEmpty() && servePath.length() > 1)
 			getRedirectStrategy().sendRedirect(request, response, servePath);
 		else

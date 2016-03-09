@@ -141,6 +141,16 @@ public class UserController {
 		AuthenticationException authEx = (AuthenticationException)request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 		throw authEx;
 	}
+
+	@RequestMapping(value = "user/newMember", method = RequestMethod.GET)
+	public String getNewMember(Model model) {
+		logger.info("user/newMember GET");
+		
+		User user = (User)userInfo.getUserDetails();
+		model.addAttribute("user", user);
+		
+		return "user/newMember";
+	}
 	
 	/****************************/
 	/*** Registration handler ***/
