@@ -3,6 +3,7 @@
 <head>
 
 <%@include file="../common/head.jsp"%>
+<%@ page import="net.kear.recipeorganizer.util.file.FileConstant"%>
 
 <title>${recipe.name} - <spring:message code="menu.product"></spring:message></title>
 
@@ -14,14 +15,6 @@
 
 <%@include file="../common/nav.jsp" %>
 
-    <!-- TODO: EXCEPTION: move this to the server into a custom message interpolator -->
-	<%-- <c:if test="${fn:contains(nameCode,'Size')}">
-		<c:set var="nameLen">${fn:length(nameDisplayValue)}</c:set>
-		<c:if test="${nameLen gt 0}">
-			<c:set var="nameError">${nameError += " (you entered " += nameLen += ")"}</c:set>  
-		</c:if>
-	</c:if> --%>	
-    
 	<spring:bind path="recipe.name"><c:set var="nameError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.description"><c:set var="descriptionError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="recipe.servings"><c:set var="servingsError">${status.errorMessage}</c:set></spring:bind>
@@ -47,6 +40,9 @@
 	<c:if test="${not empty prepMinuteError}"><c:set var="prepTimeError">X</c:set></c:if>
 
 	<div class="container container-white">	
+		<c:if test="${not empty warningMaint}">
+			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+		</c:if>
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3>${recipe.name}</h3>
@@ -168,6 +164,7 @@
 					<a id="cancelEditBtn" style="display:none" href="${returnUrl}"></a>
 				</div>
 			</div>
+			<input type="text" id="removePrefix" style="display:none" value="${FileConstant.REMOVE_PHOTO_PREFIX}"/>
 		</form:form>
 		</div>
 	</div>

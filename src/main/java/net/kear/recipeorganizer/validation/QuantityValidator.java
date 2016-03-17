@@ -11,11 +11,10 @@ public class QuantityValidator implements ConstraintValidator<Quantity, String> 
 
 	@Override
 	public boolean isValid(String str, ConstraintValidatorContext context) {
-		str = str.trim();
-		
 		if (str == null) {
 	        return false;
 	    }
+		str = str.trim();
 	    int length = str.length();
 	    if (length == 0) {
 	        return false;

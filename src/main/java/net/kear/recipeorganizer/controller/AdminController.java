@@ -33,7 +33,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
+import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
+import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -45,10 +47,12 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.util.ConstraintMap;
-import net.kear.recipeorganizer.util.FileActions;
+import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
-import net.kear.recipeorganizer.util.SolrUtil;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.file.FileActions;
+import net.kear.recipeorganizer.util.maint.MaintAware;
+import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
 
 @Controller
 public class AdminController {
@@ -77,10 +81,15 @@ public class AdminController {
 	private ConstraintMap constraintMap;
 	@Autowired
 	private SolrUtil solrUtil;
+	@Autowired
+	MaintenanceUtil maintUtil;
+	@Autowired
+	private MaintenanceInterceptor maintInterceptor; 
 
 	/********************************/
 	/*** User maintenance handler ***/
 	/********************************/
+	@MaintAware
 	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public String userMaint(Model model) {
 		logger.info("admin/users GET");
@@ -230,6 +239,7 @@ public class AdminController {
 	/************************************/
 	/*** Category maintenance handler ***/
 	/************************************/
+	@MaintAware
 	@RequestMapping(value = "/admin/category", method = RequestMethod.GET)
 	public String getCategory(Model model) {
 		logger.info("admin/category GET");
@@ -292,6 +302,7 @@ public class AdminController {
 	/*******************************/
 	/*** Comments review handler ***/
 	/*******************************/
+	@MaintAware
 	@RequestMapping(value = "/admin/comments", method = RequestMethod.GET)
 	public String getComments(Model model) {
 		logger.info("admin/comments GET");
@@ -335,6 +346,7 @@ public class AdminController {
 	/*******************************/
 	/*** Recipe approval handler ***/
 	/*******************************/
+	@MaintAware
 	@RequestMapping(value = "/admin/approval", method = RequestMethod.GET)
 	public String getApprovalRecipes(Model model) {
 		logger.info("admin/approval GET");
@@ -364,5 +376,46 @@ public class AdminController {
 		solrUtil.addRecipe(recipe);
 		
 		return new ResponseObject();
+	}
+	
+	/**********************************/
+	/*** System Maintenance handler ***/
+	/**********************************/
+	@RequestMapping(value = "/admin/maintenance", method = RequestMethod.GET)
+	public String getMaintenance(Model model, Locale locale) {
+		logger.info("admin/maintenance GET");
+				
+		MaintenanceDto maintDto = new MaintenanceDto();
+		maintDto.setMaintenanceEnabled(maintInterceptor.isMaintenanceEnabled());
+		maintDto.setEmergencyMaintenance(maintInterceptor.isEmergencyMaintenance());
+		maintDto.setEmergencyDuration(maintInterceptor.getEmergencyDuration());
+		maintDto.setDuration(maintInterceptor.getDuration());
+		maintDto.setStartTime(maintInterceptor.getStartHourMinute());
+		maintDto.setDaysOfWeek(maintInterceptor.getDaysOfWeek());
+		
+		model.addAttribute("maintenanceDto", maintDto);
+		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
+		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));
+		return "admin/maintenance";
+	}
+
+	@RequestMapping(value = "/admin/maintenance", method = RequestMethod.POST)
+	public String postMaintenance(Model model, @ModelAttribute @Valid MaintenanceDto maintenanceDto, BindingResult result, Locale locale) {	
+		logger.info("admin/maintenance POST");
+		logger.debug("MaintenanceDto: " + maintenanceDto);
+		
+		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
+		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));
+
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			return "admin/maintenance";
+		}
+
+		if (maintInterceptor.refreshSettings(maintenanceDto))
+			maintInterceptor.setNextWindow();
+		
+		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));
+		return "admin/maintenance";
 	}
 }

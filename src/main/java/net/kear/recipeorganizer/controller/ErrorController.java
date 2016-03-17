@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.security.AuthCookie;
-import net.kear.recipeorganizer.util.CommonView;
 import net.kear.recipeorganizer.util.CookieUtil;
+import net.kear.recipeorganizer.util.view.CommonView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

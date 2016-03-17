@@ -1,9 +1,7 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.util.email;
 
 import java.util.List;
 import java.util.Locale;
-
-import javax.mail.internet.MimeMessage;
 
 import net.kear.recipeorganizer.persistence.model.User;
 
@@ -75,14 +73,9 @@ public class EmailSender {
         email.setSubject(subject);
         email.setText(message);
         email.setFrom(env.getProperty("support.email"));
-       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);
         
 		//throw new MailSendException("sendSimpleEmailMessage forced error");
-
-		//TODO: EMAIL: not sure if variables need to be initialized???
-		//initialize();
-		
-        //return true;        
     }
 
 	public void sendTokenEmailMessage(String msgLink) throws MailException {
@@ -100,14 +93,9 @@ public class EmailSender {
         email.setSubject(subject);
         email.setText(message + " \r\n\r\n" + msgLink);
         email.setFrom(env.getProperty("support.email"));
-       	mailSender.send(email);	//TODO: SECURITY: don't forget to add this back in production
+       	mailSender.send(email);
         
 		//throw new MailSendException("sendTokenEmailMessage forced error");
-
-		//TODO: EMAIL: not sure if variables need to be initialized???
-		//initialize();
-		
-        //return true;        
     }
 	
 	private String getMessage() {
@@ -128,11 +116,11 @@ public class EmailSender {
 		return message;
 	}
 	
-	private void initialize() {
+	/*private void initialize() {
 	    subjCode = "";
 	    msgCode = "";
 	    msgCodes.clear();
 	    locale = null;
 	    user = null;
-	}
+	}*/
 }

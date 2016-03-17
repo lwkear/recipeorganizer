@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.util.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,9 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.util.CookieUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,8 @@ public class CommonViewImpl implements CommonView {
 	private AuthCookie authCookie;
 	@Autowired
 	private CookieUtil cookieUtil;
+	@Autowired
+	private MaintenanceInterceptor maintInterceptor; 
 
 	public ModelAndView getStandardErrorPage(Exception ex) {
 		//log the error in the log file
@@ -75,5 +79,19 @@ public class CommonViewImpl implements CommonView {
         mv.setViewName("/system");
 		
         return mv;
+	}
+
+	public ModelAndView getMaintenancePage(Locale locale) {
+		
+		List<String> systemMsgs = new ArrayList<String>();
+		systemMsgs.add(messages.getMessage("sysmaint.message1", null, "", locale));
+		systemMsgs.add(maintInterceptor.getMaintEnd(locale));
+		systemMsgs.add(messages.getMessage("sysmaint.message3", null, "", locale));		
+		
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("systemMsgs", systemMsgs);
+        mv.setViewName("/sysmaint");
+		
+		return mv;
 	}
 }

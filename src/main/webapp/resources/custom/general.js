@@ -182,6 +182,7 @@ function setInputFocus()
 {
 	//the first two controls on any page are the search input and button
 	//:eq(2) ensures that those controls do NOT get the focus
+	//TODO: GUI: the above is not true in iPad-sized viewport - the search input is hidden
 	var control = $(':input:visible:enabled:eq(2)').focus();
 }
 

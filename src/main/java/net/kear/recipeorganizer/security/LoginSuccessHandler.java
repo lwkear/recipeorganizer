@@ -28,6 +28,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	private AuthCookie authCookie;
 	@Autowired
 	private UserService userService;	
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 	
@@ -48,6 +50,10 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		Calendar todaysDt = Calendar.getInstance();
 		todaysDt.setTimeInMillis(new Date().getTime());
 		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
+		if (user.isLocked()) {
+			loginAttemptService.loginSucceeded(user.getEmail());
+			user.setLocked(0);
+		}
 		userService.updateUser(user);
 
 		String servePath = request.getServletPath();

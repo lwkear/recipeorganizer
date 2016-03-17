@@ -52,12 +52,13 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
-import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
-import net.kear.recipeorganizer.util.FileActions;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
-import net.kear.recipeorganizer.util.ViewReferer;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.file.FileActions;
+import net.kear.recipeorganizer.util.maint.MaintAware;
+import net.kear.recipeorganizer.util.view.ViewReferer;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -102,6 +103,7 @@ public class DisplayController {
 	/****************************/
 	/*** List recipes handler ***/
 	/****************************/
+	@MaintAware
 	@RequestMapping(value = "recipe/recipeList", method = RequestMethod.GET)
 	public String listRecipes(ModelMap model, Locale locale) {
 		logger.info("recipe/listRecipes GET");
@@ -117,6 +119,7 @@ public class DisplayController {
 		return "recipe/recipeList";
 	}
 
+	@MaintAware
 	@RequestMapping(value = "recipe/favorites", method = RequestMethod.GET)
 	public String favoriteRecipeS(ModelMap model, Locale locale) {
 		logger.info("recipe/favoriteRecipes GET");
@@ -136,6 +139,7 @@ public class DisplayController {
 	/***************************/
 	/*** View recipe handler ***/
 	/***************************/
+	@MaintAware
 	@RequestMapping(value = "recipe/viewRecipe/{recipeId}", method = RequestMethod.GET)
 	public String viewRecipe(ModelMap model, @RequestHeader(value="referer", required=false) String refer, @PathVariable Long recipeId, 
 			HttpServletResponse response, HttpServletRequest request, Locale locale) throws RecipeNotFound {

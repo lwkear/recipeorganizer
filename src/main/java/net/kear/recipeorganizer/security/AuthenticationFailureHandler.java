@@ -9,12 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 	
 	public AuthenticationFailureHandler() {
 		super();
@@ -46,6 +50,12 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 			default:
 				setDefaultFailureUrl("/user/fatalError");
 				break;
+		}
+		
+		if (className.equalsIgnoreCase("BadCredentialsException")) {
+			String userName = request.getParameter("username");
+			if (userName != null)
+				loginAttemptService.loginFailed(userName);
 		}
 		
 		logger.debug("onAuthenticationFailure exception class: " + ex.getClass().toString());

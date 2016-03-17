@@ -30,6 +30,8 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 	private SessionRegistry sessionRegistry;
 	@Autowired
 	private UserService userService;	
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 
 	private RequestCache requestCache = new HttpSessionRequestCache();
 	
@@ -49,6 +51,10 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 		Calendar todaysDt = Calendar.getInstance();
 		todaysDt.setTimeInMillis(new Date().getTime());
 		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
+		if (user.isLocked()) {
+			loginAttemptService.loginSucceeded(user.getEmail());
+			user.setLocked(0);
+		}
 		userService.updateUser(user);
 		
 		boolean foundUser = false;

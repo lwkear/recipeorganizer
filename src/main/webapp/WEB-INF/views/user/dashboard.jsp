@@ -13,6 +13,9 @@
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">
+		<c:if test="${not empty warningMaint}">
+			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+		</c:if>
 		<div class="col-sm-12">
 			<div class="page-header">
 				<h3>
@@ -23,6 +26,20 @@
 				</h3>
 			</div>
 		</div>
+		<c:if test="${not empty nextMaint}">
+			<div class="row">
+				<h5 class="bold-maroon text-center"><em>${nextMaint}</em></h5>
+			</div>
+		</c:if>
+		<c:if test="${not empty pswdExpire}">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5 class="bold-maroon text-center"><em>${pswdExpire}</em></h5>
+					</div>
+				</div>
+			</div>
+		</c:if>
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="col-sm-3">

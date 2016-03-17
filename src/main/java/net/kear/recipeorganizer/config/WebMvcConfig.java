@@ -4,10 +4,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileActionsImpl;
-import net.kear.recipeorganizer.util.SolrUtil;
-import net.kear.recipeorganizer.util.SolrUtilImpl;
+import javax.servlet.ServletContext;
+
+import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
+import net.kear.recipeorganizer.solr.SolrUtil;
+import net.kear.recipeorganizer.solr.SolrUtilImpl;
+import net.kear.recipeorganizer.util.file.FileActions;
+import net.kear.recipeorganizer.util.file.FileActionsImpl;
+import net.kear.recipeorganizer.util.maint.MaintenanceProperties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -41,7 +44,7 @@ import org.springframework.webflow.mvc.servlet.FlowHandlerAdapter;
 import org.springframework.webflow.mvc.servlet.FlowHandlerMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 
 @EnableWebMvc
 @EnableTransactionManagement
@@ -53,22 +56,25 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),
 						@PropertySource("classpath:filedir.properties"),
+						//@PropertySource("classpath:maintenance.properties"),
 						@PropertySource("classpath:solr.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
-    private Environment env;	
+    private Environment env;
 	@Autowired
 	private WebFlowConfig webFlowConfig;
+	@Autowired
+	private ServletContext servletContext;
 	
 	/*** resource location configuration ***/
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
-        registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(0);
+        registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(31556926);
     }
 	
 	/*** JSON configuration ***/
@@ -88,8 +94,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
 	
 		ObjectMapper mapper = new ObjectMapper();
-		//register Hibernate4Module to support lazy objects
-		mapper.registerModule(new Hibernate4Module());
+		//register Hibernate5Module to support lazy objects
+		mapper.registerModule(new Hibernate5Module());
 		
 		messageConverter.setObjectMapper(mapper);
 		return messageConverter;
@@ -104,13 +110,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return resolver;
 	}
 
-	/*@Bean	//causes issues with UTF-8 on forms with a file upload
-	public StandardServletMultipartResolver filterMultipartResolver() {
-		logger.debug("StandardServletMultipartResolver");
-		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
-		return resolver;
-	}*/
-	
 	@Bean
 	public FileActions fileActions() {
 		logger.debug("FileActionsImpl");
@@ -179,13 +178,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		logger.debug("MessageSource");
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasenames(
-        		"classpath:content",
-        		"classpath:messages",
-        		"classpath:labels",
-        		"classpath:validation"
-        		);
+    		"WEB-INF/messages/content",
+    		"WEB-INF/messages/messages",
+    		"WEB-INF/messages/labels",
+    		"WEB-INF/messages/validation"
+    		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(0);	//TODO: VALIDATION: be sure to change this value in production
+        source.setCacheSeconds(1);	//TODO: VALIDATION: be sure to change this value in production
         return source;
     }
 
@@ -220,17 +219,29 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		interceptor.setParamName("lang");
 		return interceptor;
 	}
+	
+	@Bean
+	public MaintenanceProperties maintProps() {
+		return new MaintenanceProperties(servletContext);
+	}
+	
+	@Bean
+	public MaintenanceInterceptor maintenanceInterceptor() {
+		logger.debug("MaintenanceInterceptor");
+		MaintenanceInterceptor interceptor = new MaintenanceInterceptor();
+		interceptor.setMaintenanceUrl("/sysmaint");		
+		interceptor.setMaintProperties(maintProps());
+		interceptor.initializeSettings();
+		interceptor.setNextWindow();
+		return interceptor;
+	}
 
     public void addInterceptors(InterceptorRegistry registry) {
     	logger.debug("addInterceptors");
     	registry.addInterceptor(localeInterceptor());
+    	registry.addInterceptor(maintenanceInterceptor());
     }
-	
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-	
+		
     /*** email configuration ***/
 	@Bean
     public JavaMailSenderImpl javaMailSenderImpl() {
@@ -248,15 +259,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return mailSenderImpl;
     }
 		
-	/*@Override
-	protected void configureMessageConverters(
-	        List<HttpMessageConverter<?>> converters) {
-	    // put the jackson converter to the front of the list so that application/json content-type strings will be treated as JSON
-	    converters.add(new MappingJackson2HttpMessageConverter());
-	    // and probably needs a string converter too for text/plain content-type strings to be properly handled
-	    converters.add(new StringHttpMessageConverter());
-	}*/
-	
 	//TODO: GUI: create favicon
 	/*@Controller
     static class FaviconController {

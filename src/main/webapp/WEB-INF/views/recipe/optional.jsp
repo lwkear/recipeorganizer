@@ -26,6 +26,9 @@
     <spring:bind path="recipe.source.recipeUrl"><c:set var="recipeUrlError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">	
+		<c:if test="${not empty warningMaint}">
+			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+		</c:if>
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="recipe.optional.title"></spring:message></h3>

@@ -1185,3 +1185,67 @@ NullPointerException
 				
 		}*/
 	
+	
+****************************
+*** text file stuff ********
+	
+	
+		/*private File getFile(String filePath) {
+		File propFile = new File(filePath);
+		if (propFile.exists())
+			return propFile;
+		
+		boolean success = false;
+		try {
+			success = propFile.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		
+		if (!success)
+			return null;
+		
+		List<String> lines = new ArrayList<String>();
+		lines.add("maint.enabled");
+		lines.add("maint.daysofweek");
+		lines.add("maint.starttime");
+		//lines.add("maint.duration");
+		
+		try {
+			FileUtils.writeLines(propFile, "UTF-8",	lines);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			return null;
+		}
+		
+		return propFile;
+	}*/
+	
+	
+******************************
+*** log out all users ********
+//not sure it really works...
+	
+		private void logoutUsers() {
+		List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+		if (allPrincipals != null && allPrincipals.size() > 0) {
+			for (Object obj : allPrincipals) {
+				//UserDetails principal = (UserDetails) obj;
+				//if (principal.getUsername().equalsIgnoreCase(user.getEmail())) {
+					List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
+					for (SessionInformation sessionInfo : sessions) {
+						
+						String sessId = sessionInfo.getSessionId();
+						Object sessObj = sessionInfo.getPrincipal();
+						boolean exp = sessionInfo.isExpired();
+						logger.debug("Found sessionInfo id/obj/exp: " + sessId + " / " + sessObj.toString() + " / " + exp);
+						
+						if (!sessionInfo.isExpired()) 
+							sessionInfo.expireNow();
+					}
+				//}
+			}
+		}
+	}
+	

@@ -10,25 +10,16 @@
 
 	<properties>
 		<webflow-version>2.4.2.RELEASE</webflow-version>
-		<spring-framework-version>4.1.6.RELEASE</spring-framework-version>
-		<springsecurity-version>4.0.2.RELEASE</springsecurity-version>
-		<slf4j-version>1.7.16</slf4j-version>
+		<spring-framework-version>4.2.5.RELEASE</spring-framework-version>
+		<springsecurity-version>4.0.4.RELEASE</springsecurity-version>
+		<slf4j-version>1.7.18</slf4j-version>
 		<log4j-version>2.5</log4j-version>
-		<hibernate-version>4.3.11.Final</hibernate-version>
+		<hibernate-version>5.1.0.Final</hibernate-version>
 		<apache-connection-pooling-version>2.1.1</apache-connection-pooling-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jasper-version>6.2.0</jasper-version>
+		<jackson-version>2.7.2</jackson-version>
 	</properties>
-
-	<!-- <repositories>
-		<repository>
-			<id>spring</id>
-			<name>Spring Repository</name>
-			<url>http://repo.spring.io/snapshot</url>
-			<releases><enabled>true</enabled></releases>
-			<snapshots><enabled>true</enabled></snapshots>
-		</repository>
-	</repositories> -->
 
 	<dependencyManagement>
 		<dependencies>
@@ -135,18 +126,6 @@
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${slf4j-version}</version>
 		</dependency>
-		<!-- <dependency>	//original config
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j-version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-			<scope>runtime</scope>
-		</dependency> -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -179,11 +158,6 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate-version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate-version}</version>
-		</dependency> -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-c3p0</artifactId>
@@ -192,7 +166,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>5.1.3.Final</version>
+			<version>5.2.4.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>com.oracle</groupId>
@@ -200,28 +174,11 @@
 			<version>11.2.0.4</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<version>${apache-connection-pooling-version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.20.0-GA</version>
 		</dependency>
 
-		<!-- JSR 303 with Hibernate Validator -->	<!-- Duplicate??? see above -->
-		<!-- <dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>4.3.0.Final</version>
-		</dependency> -->
-		
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -246,47 +203,75 @@
 			<version>1.4.7</version>
 		</dependency>
 
+		<!-- support (caching & date/time) -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>19.0</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
 		<!-- JSON -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.6.4</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.6.4</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.6.4</version>
+			<version>${jackson-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-hibernate4</artifactId>
-			<version>2.6.4</version>
+			<artifactId>jackson-datatype-hibernate5</artifactId>
+			<version>${jackson-version}</version>
 		</dependency>
 
-		<!-- file -->
+		<!-- commons -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-
-		<!-- Solr -->
 		<dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-solrj</artifactId>
-			<version>5.3.1</version>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>${apache-connection-pooling-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.10</version>
+		</dependency>		
 
+		<!-- Solr -->
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>5.5.0</version>
+		</dependency>
+
+		<!-- Jasper Reports -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>

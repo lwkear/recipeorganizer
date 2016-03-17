@@ -139,7 +139,12 @@ body {
 
 /* original page-header bottom border for home and thankyou pages */
 .page-header-white {
-  border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+}
+
+/* horizontal line bottom border */
+.hr-black {
+	border-top: 1px solid #000;
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */

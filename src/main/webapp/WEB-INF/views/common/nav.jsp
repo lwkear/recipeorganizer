@@ -58,6 +58,8 @@
 							<li><a href="<c:url value="/admin/users" />"><spring:message code="menu.users"></spring:message></a></li>
 							<li role="separator" class="divider"></li>
 							<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="<c:url value="/admin/maintenance" />"><spring:message code="menu.maintenance"></spring:message></a></li>
 						</ul>
 					</li>
 				</c:if>

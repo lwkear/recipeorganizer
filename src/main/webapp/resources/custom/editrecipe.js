@@ -127,7 +127,8 @@ $(function() {
 		else {
 			if (option == 'remove') {
 				var photo = $('#hiddenphoto').val();
-				$('#hiddenphoto').val('xxxREMOVExxx' + photo);
+				var prefix = $('#removePrefix').val();
+				$('#hiddenphoto').val(prefix + photo);
 			}
 		}
 

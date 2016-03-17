@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.solr;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,12 +55,16 @@ public class SolrUtilImpl implements SolrUtil {
     }
     
 	@Override
-	public List<List<Object>> searchRecipes(String searchTerm) throws SolrServerException, IOException {
+	public List<List<Object>> searchRecipes(String searchTerm, long userId) throws SolrServerException, IOException {
 		logger.info("searchRecipes: qstr=" + searchTerm);
 		
 		QueryResponse rsp = null;
-
-		String filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && approved:true)", 39, 39);
+		String filterStr = "";
+		
+		if (userId > 0)
+			filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && approved:true)", userId, userId);
+		else
+			filterStr = "allowshare:true && approved:true";
 		logger.debug("filterStr: " + filterStr);
 		
 		//Note: the default sort is by score, so no need to explicitly identify score as the sort
@@ -73,7 +77,7 @@ public class SolrUtilImpl implements SolrUtil {
 		query.setParam("start", "0");
 		query.setParam("rows", "100");
 		query.setHighlight(true);
-		query.addHighlightField("name or description");
+		query.addHighlightField("name or description or catname or ingredname or background or source or notes or tag");
 		query.setHighlightSimplePre("<strong>");
 		query.setHighlightSimplePost("</strong>");
 		query.setFacet(true);
@@ -93,7 +97,7 @@ public class SolrUtilImpl implements SolrUtil {
 	    	
 	    	String idStr = (String)doc.getFieldValue("id");
 	    	Long id = Long.valueOf(idStr);
-	    	Long userId = (Long)doc.getFieldValue("userid");
+	    	Long uId = (Long)doc.getFieldValue("userid");
 	    	String name = (String)doc.getFieldValue("name");
 	    	String desc = (String)doc.getFieldValue("description");
 	    	String photo = (String)doc.getFieldValue("photo");
@@ -103,6 +107,8 @@ public class SolrUtilImpl implements SolrUtil {
 	    	String source = (String)doc.getFieldValue("srctype");
 	    	if (source == null)
 	    		source = Source.TYPE_NONE;
+	    	
+	    	boolean addResult = true;
 
 	    	if (rsp.getHighlighting().containsKey(idStr)) {
 	    		Map<String, List<String>> highMap = rsp.getHighlighting().get(idStr);
@@ -120,10 +126,17 @@ public class SolrUtilImpl implements SolrUtil {
 		        		desc = highStr;
 		        	}
 	        	}
+	        	if (highMap.containsKey("tag")) {
+	        		//if the only match was a tag but the recipe doesn't belong to the user, don't add it to the results
+	        		if (highMap.size() == 1 && uId != userId)
+	        			addResult = false;
+	        	}
 	        }
 	    	
-	    	SearchResultsDto rslts = new SearchResultsDto(rank++, id, userId, name, desc, photo, allowShare, approved, catId, source);
-	    	resultsList.add(rslts);
+	    	if (addResult) {
+	    		SearchResultsDto rslts = new SearchResultsDto(rank++, id, uId, name, desc, photo, allowShare, approved, catId, source);
+	    		resultsList.add(rslts);
+	    	}
 	    }
 	    
 	    ArrayList<FacetField> facets = new ArrayList<FacetField>();

@@ -30,7 +30,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private static final int EXPIRATION = 60 * 24 * 90;
+	private static final int PASSWORD_EXPIRATION = 60 * 24 * 90;
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
@@ -236,7 +236,7 @@ public class User implements Serializable {
 	}
 
 	public void setPasswordExpiryDate() {
-		this.passwordExpiryDate = calculateExpiryDate(EXPIRATION);
+		this.passwordExpiryDate = calculateExpiryDate(PASSWORD_EXPIRATION);
 	}
 
 	public Date getDateUpdated() {

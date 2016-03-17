@@ -22,9 +22,9 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
-import net.kear.recipeorganizer.util.ConstraintMap;
-import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.SolrUtil;
+import net.kear.recipeorganizer.solr.SolrUtil;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.file.FileActions;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.Fraction;

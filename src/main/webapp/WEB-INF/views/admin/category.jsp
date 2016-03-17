@@ -15,6 +15,9 @@
 	<spring:bind path="category.name"><c:set var="nameError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">
+		<c:if test="${not empty warningMaint}">
+			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+		</c:if>
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="category.title"></spring:message></h3>
@@ -37,8 +40,7 @@
 		                <span class="text-danger" id="nameErrMsg">${nameError}</span>
 		            </div>
 		        </div>
-		        <br>
-		        <div class="form-group">
+		        <div class="form-group spacer-vert-sm">
 		            <div class="col-sm-offset-4 col-sm-3 text-center">
 		                <form:button type="submit" class="btn btn-primary pull-left" name="save"><spring:message code="common.save"></spring:message></form:button>
 		                <form:button type="submit" class="btn btn-primary" name="delete"><spring:message code="common.delete"></spring:message></form:button>

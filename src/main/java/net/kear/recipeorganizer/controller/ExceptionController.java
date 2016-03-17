@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
-import net.kear.recipeorganizer.util.CommonView;
 import net.kear.recipeorganizer.util.ResponseObject;
+import net.kear.recipeorganizer.util.view.CommonView;
 import net.sf.jasperreports.engine.JRException;
 
 import org.apache.commons.lang.exception.ExceptionUtils;

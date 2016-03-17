@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.solr;
 
 public class SourceFacet {
 

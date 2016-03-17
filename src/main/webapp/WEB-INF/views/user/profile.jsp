@@ -3,6 +3,7 @@
 <head>
 
 <%@include file="../common/head.jsp" %>
+<%@ page import="net.kear.recipeorganizer.util.file.FileConstant"%>
 
 <title><spring:message code="profile.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
@@ -18,6 +19,9 @@
 	<spring:bind path="userProfile.avatar"><c:set var="avatarError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">	
+		<c:if test="${not empty warningMaint}">
+			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+		</c:if>
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="profile.title"></spring:message></h3>
@@ -159,6 +163,7 @@
 					</div>
 	        		<form:hidden path="id" />
 	        		<form:hidden path="user.id" />
+	        		<input type="text" id="removePrefix" style="display:none" value="${FileConstant.REMOVE_PHOTO_PREFIX}"/>
 	      		</form:form>
 			</div>
 	    </div>

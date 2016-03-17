@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.util.file;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
-import net.kear.recipeorganizer.util.FileResult;
+import net.kear.recipeorganizer.util.file.FileResult;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.StringUtils;

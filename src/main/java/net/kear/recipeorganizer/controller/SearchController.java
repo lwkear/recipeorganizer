@@ -6,17 +6,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Source;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
-import net.kear.recipeorganizer.util.CategoryFacet;
+import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.solr.CategoryFacet;
+import net.kear.recipeorganizer.solr.SolrUtil;
+import net.kear.recipeorganizer.solr.SourceFacet;
 import net.kear.recipeorganizer.util.CookieUtil;
-import net.kear.recipeorganizer.util.SolrUtil;
-import net.kear.recipeorganizer.util.SourceFacet;
 import net.kear.recipeorganizer.util.UserInfo;
+import net.kear.recipeorganizer.util.maint.MaintAware;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
@@ -38,6 +43,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SearchController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private static final AuthCookie authCookie = new AuthCookie();
 	
 	@Autowired
 	private RecipeService recipeService;
@@ -54,21 +60,20 @@ public class SearchController {
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
-	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir, Locale locale) throws SolrServerException, IOException {
+	public ModelAndView submitSearch(@RequestParam String searchTerm, RedirectAttributes redir, HttpServletRequest request, Locale locale) throws SolrServerException, IOException {
 		logger.info("submitSearch POST: searchTerm=" + searchTerm);
-		
-		List<List<Object>> results = solrUtil.searchRecipes(searchTerm);
+
+		long userId = 0L;
+		if (!authCookie.isCurrentCookieAnonymous(request)) {
+			User user = (User)userInfo.getUserDetails();
+			userId = user.getId();
+		}
+				
+		List<List<Object>> results = solrUtil.searchRecipes(searchTerm, userId);
 		//the first list in the 2D results set is the actual search results
 		List<Object> objList = results.get(0);
 		ArrayList<SearchResultsDto> resultsList = (ArrayList<SearchResultsDto>)(List<?>)objList;
 
-		//long userId = 0;
-		//User user = (User)userInfo.getUserDetails();
-		//if (user != null)
-			//userId = user.getId();
-		
-		//ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
-		//int numFound = filteredList.size();
 		int numFound = resultsList.size();
 
 		List<CategoryFacet> catFacets = null;
@@ -84,7 +89,6 @@ public class SearchController {
 		
 	    ModelAndView mv = new ModelAndView();
 	    redir.addFlashAttribute("searchTerm", searchTerm);
-	    //redir.addFlashAttribute("resultList", filteredList);
 	    redir.addFlashAttribute("resultList", resultsList);
 	    redir.addFlashAttribute("numFound", numFound);
 	    redir.addFlashAttribute("categories", catFacets);
@@ -93,9 +97,10 @@ public class SearchController {
 	    return mv;
 	}	
 
+	@MaintAware
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/searchResults", method = RequestMethod.GET)
-	public String getSearchResults(Model model, Locale locale) throws SolrServerException, IOException {
+	public String getSearchResults(Model model, HttpServletRequest request, Locale locale) throws SolrServerException, IOException {
 		logger.info("searchResults GET");
 		
 		HashMap<String, Object> modelMap = (HashMap<String, Object>) model.asMap();
@@ -112,18 +117,17 @@ public class SearchController {
 		String searchTerm = (String)val;
 		logger.debug("modelMap searchTerm: " + searchTerm);
 
-		//long userId = 0;
-		//User user = (User)userInfo.getUserDetails();
-		//if (user != null)
-			//userId = user.getId();
+		long userId = 0L;
+		if (!authCookie.isCurrentCookieAnonymous(request)) {
+			User user = (User)userInfo.getUserDetails();
+			userId = user.getId();
+		}
 		
 		//the user returned to the results page from viewing a recipe - need to re-run the search
 		if (!found && !list) {
-			List<List<Object>> results = solrUtil.searchRecipes(searchTerm);
+			List<List<Object>> results = solrUtil.searchRecipes(searchTerm, userId);
 			List<Object> objList = results.get(0);
 			ArrayList<SearchResultsDto> resultsList = (ArrayList<SearchResultsDto>)(List<?>)objList;			
-			//ArrayList<SearchResultsDto> filteredList = filterResults(resultsList, userId);
-			//int numFound = filteredList.size();
 			int numFound = resultsList.size();
 
 			List<CategoryFacet> catFacets = null;
@@ -138,8 +142,6 @@ public class SearchController {
 			}
 			
 			model.addAttribute("searchTerm", searchTerm);
-			//model.addAttribute("resultList", filteredList);
-			//model.addAttribute("numFound", filteredList.size());
 			model.addAttribute("resultList", resultsList);
 			model.addAttribute("numFound", resultsList.size());
 			model.addAttribute("categories", catFacets);
@@ -151,21 +153,6 @@ public class SearchController {
 		
 		return "searchResults";
 	}
-	
-	/*private ArrayList<SearchResultsDto> filterResults(ArrayList<SearchResultsDto> results, long userId) {
-
-		Iterator<SearchResultsDto> iter = results.iterator();
-		while (iter.hasNext()) {
-			SearchResultsDto result = iter.next(); 
-			if (result.getUserId() != userId) {
-				if (result.getAllowShare() == false || result.getApproved() == false) {
-					iter.remove();
-				}
-			}					
-		}
-		
-		return results;
-	}*/
 	
 	private List<CategoryFacet> getCategories(ArrayList<FacetField> facets) {
 		

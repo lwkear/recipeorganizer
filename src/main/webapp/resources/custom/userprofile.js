@@ -25,7 +25,8 @@ function checkAvatarOptions() {
 	var opt = $('input[name="photoOpts"]:checked').val();
 	if (opt == 'remove') {
 		var photo = $('#avatar').val();
-		$('#avatar').val('xxxREMOVExxx' + photo);
+		var prefix = $('#removePrefix').val();
+		$('#avatar').val(prefix + photo);
 	}
 	if (opt == 'change') {
 		var filename = $('#photoname').val();

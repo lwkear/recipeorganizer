@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.util;
+package net.kear.recipeorganizer.util.view;
 
 import java.util.Locale;
 
@@ -11,5 +11,5 @@ public interface CommonView {
 
 	public ModelAndView getStandardErrorPage(Exception ex);
 	public ModelAndView getSystemErrorPage(HttpServletRequest request, HttpServletResponse response, Locale locale);
-
+	public ModelAndView getMaintenancePage(Locale locale);
 }

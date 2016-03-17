@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.util.EmailSender;
+import net.kear.recipeorganizer.util.email.EmailSender;
 
 @Component
 public class PasswordResetListener implements ApplicationListener<OnPasswordResetEvent> {

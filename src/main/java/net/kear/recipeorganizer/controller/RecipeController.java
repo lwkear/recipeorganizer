@@ -45,12 +45,14 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.util.ConstraintMap;
-import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileResult;
+import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
-import net.kear.recipeorganizer.util.SolrUtil;
-import net.kear.recipeorganizer.util.ViewReferer;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.file.FileActions;
+import net.kear.recipeorganizer.util.file.FileConstant;
+import net.kear.recipeorganizer.util.file.FileResult;
+import net.kear.recipeorganizer.util.maint.MaintAware;
+import net.kear.recipeorganizer.util.view.ViewReferer;
 
 @Controller
 public class RecipeController {
@@ -83,6 +85,7 @@ public class RecipeController {
 	/***************************/
 	/*** Edit recipe handler ***/
 	/***************************/
+	@MaintAware
 	@RequestMapping(value = "recipe/editRecipe/{recipeId}", method = RequestMethod.GET)
 	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, HttpServletRequest request) throws RecipeNotFound {
 		logger.info("recipe/editRecipe GET: recipeId=" + recipeId);
@@ -147,7 +150,7 @@ public class RecipeController {
         }
 		
 		String photoName = recipe.getPhotoName();
-		if (photoName != null && photoName.startsWith("xxxREMOVExxx")) {
+		if (photoName != null && photoName.startsWith(FileConstant.REMOVE_PHOTO_PREFIX)) {
 			String name = photoName.substring(12);
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.RECIPE, recipe.getId(), name);

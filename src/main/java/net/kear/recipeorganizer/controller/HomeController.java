@@ -1,7 +1,5 @@
 package net.kear.recipeorganizer.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,13 +25,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
-import net.kear.recipeorganizer.exception.AccessUserException;
-import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
-import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.UserInfo;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
+import net.kear.recipeorganizer.util.view.CommonView;
 
 @Controller
 public class HomeController {
@@ -52,6 +52,10 @@ public class HomeController {
 	private UserService userService;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private CommonView commonView;
+	@Autowired
+	MaintenanceUtil maintUtil;
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
@@ -146,6 +150,13 @@ public class HomeController {
 				
 		return "policies";
 	}
+
+	@RequestMapping(value = "/sysmaint", method = RequestMethod.GET)
+	public ModelAndView getMaintenance(Model model, Locale locale) {
+		logger.info("sysmaint GET");
+
+		return commonView.getMaintenancePage(locale);
+	}
 	
 	//AJAX/JSON request for getting the timeout interval for the current user
 	@RequestMapping(value="/getSessionTimeout")
@@ -182,7 +193,7 @@ public class HomeController {
 	public String getTestpage(Model model, Locale locale) {
 		logger.debug("getTestpage");
 
-		String text = "celery, and ½ teaspoon salt";
+		/*String text = "celery, and ½ teaspoon salt";
 		model.addAttribute("text", text);
 		
 		WebGreeting wg = new WebGreeting();
@@ -221,8 +232,13 @@ public class HomeController {
         fmt = sdf.format(cal.getTime());
         logger.debug("lastLogin + 365: " + fmt);
         fmt = sdf.format(tdy.getTime());
-        logger.debug("today: " + fmt);
+        logger.debug("today: " + fmt);*/
         
+		MaintenanceDto maintDto = new MaintenanceDto();
+		
+		model.addAttribute("maintenanceDto", maintDto);
+		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
+		
 		return "test/testpage";
 	}
 

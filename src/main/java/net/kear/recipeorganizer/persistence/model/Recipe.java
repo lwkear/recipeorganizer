@@ -29,7 +29,7 @@ import javax.validation.GroupSequence;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Source;
-import net.kear.recipeorganizer.util.TagList;
+import net.kear.recipeorganizer.util.db.TagList;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;

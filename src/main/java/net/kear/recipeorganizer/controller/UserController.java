@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,6 +39,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
 
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
@@ -51,6 +55,7 @@ import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.exception.SaveAccountException;
 import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
+import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto;
 import net.kear.recipeorganizer.persistence.dto.NewPasswordDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
@@ -65,19 +70,21 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.UserSecurityService;
-import net.kear.recipeorganizer.util.ConstraintMap;
 import net.kear.recipeorganizer.util.CookieUtil;
-import net.kear.recipeorganizer.util.EmailSender;
-import net.kear.recipeorganizer.util.FileActions;
-import net.kear.recipeorganizer.util.FileResult;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
+import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.file.FileActions;
+import net.kear.recipeorganizer.util.file.FileConstant;
+import net.kear.recipeorganizer.util.file.FileResult;
+import net.kear.recipeorganizer.util.maint.MaintAware;
 
 @Controller
 public class UserController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-
+	
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -102,10 +109,13 @@ public class UserController {
 	private ExceptionLogService logService;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private MaintenanceInterceptor maintInterceptor; 
 	
     /*********************/
     /*** Login handler ***/
     /*********************/
+	@MaintAware
 	@RequestMapping(value = "user/login", method = RequestMethod.GET)
 	public String getLogin(Model model) {
 		logger.info("user/login GET");
@@ -113,6 +123,7 @@ public class UserController {
 		return "user/login";
 	}
 
+	@MaintAware
 	@RequestMapping(value = "user/loginError", method = RequestMethod.GET)
 	public ModelAndView handleLoginError(RedirectAttributes redir, HttpServletRequest request, Locale locale) {
 		logger.info("user/loginError GET");
@@ -151,10 +162,11 @@ public class UserController {
 		
 		return "user/newMember";
 	}
-	
+
 	/****************************/
 	/*** Registration handler ***/
 	/****************************/
+	@MaintAware
 	@RequestMapping(value = "user/signup", method = RequestMethod.GET)
 	public String getSignup(Model model) {
 		logger.info("user/signup GET");
@@ -169,6 +181,7 @@ public class UserController {
 		return "user/signup";
 	}
 	
+	@MaintAware
 	@RequestMapping(value = "user/signup", method = RequestMethod.POST)
 	public ModelAndView postSignup(@ModelAttribute @Validated(UserDtoSequence.class) UserDto userDto, 
 			BindingResult result, HttpServletRequest request, RedirectAttributes redir, Locale locale) throws AddUserException {
@@ -327,6 +340,7 @@ public class UserController {
 	/******************************************/
 	/*** Profile and Account change handler ***/
 	/******************************************/
+	@MaintAware
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
 	public String getProfile(Model model) throws AccessUserException, AccessProfileException {
 		logger.info("user/profile GET");
@@ -357,6 +371,7 @@ public class UserController {
 		return "user/profile";
 	}
 
+	@MaintAware
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
 	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
 			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) throws AccessUserException, SaveAccountException {
@@ -397,8 +412,7 @@ public class UserController {
 		}
 		
 		String avatarName = userProfile.getAvatar();
-		//TODO: move xxxREMOVExxx to a constant
-		if (avatarName!= null && avatarName.startsWith("xxxREMOVExxx")) {
+		if (avatarName!= null && avatarName.startsWith(FileConstant.REMOVE_PHOTO_PREFIX)) {
 			String name = avatarName.substring(12);
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.AVATAR, user.getId(), name);
@@ -415,10 +429,6 @@ public class UserController {
 					//reload the user's authentication with the AUTHOR role
 					userService.changeRole(Role.TYPE_AUTHOR, user);
 					userSecurityService.reauthenticateUser(user);
-					
-					/*UserDetails details = userDetailsService.loadUserByUsername(user.getEmail());
-					Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
-					SecurityContextHolder.getContext().setAuthentication(auth);*/
 				}
 			}
 		} 
@@ -461,10 +471,6 @@ public class UserController {
 		userService.changeRole(Role.TYPE_AUTHOR, user);
 		userSecurityService.reauthenticateUser(user);
 		
-		/*UserDetails details = userDetailsService.loadUserByUsername(user.getEmail());
-		Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
-		SecurityContextHolder.getContext().setAuthentication(auth);*/
-		
 		return "redirect:/user/dashboard";
 	}
 
@@ -478,8 +484,9 @@ public class UserController {
 	/*************************/
 	/*** Dashboard handler ***/
 	/*************************/
+	@MaintAware
 	@RequestMapping(value = "user/dashboard", method = RequestMethod.GET)
-	public String getDashboard(Model model, HttpServletRequest request) throws AccessUserException {
+	public String getDashboard(Model model, HttpServletRequest request, Locale locale) throws AccessUserException {
 		logger.info("user/dashboard GET");
 
 		User currentUser = (User)userInfo.getUserDetails();
@@ -525,12 +532,38 @@ public class UserController {
 			//do nothing - these are not a fatal errors
 			logService.addException(ex);
 		}
+		
+		Date passwordExpirtyDt = user.getPasswordExpiryDate();
+		Date todaysDt = new Date(); 
+		if (passwordExpirtyDt != null) {
+	        if (todaysDt.getTime() < passwordExpirtyDt.getTime()) {
+	        	int days = Days.daysBetween(new DateTime(todaysDt), new DateTime(passwordExpirtyDt)).getDays();
+	        	if (days <= 15) {
+		        	int hours = Hours.hoursBetween(new DateTime(todaysDt), new DateTime(passwordExpirtyDt)).getHours();
+		        	//float hrsToDays = (float)hours / 24;
+		        	//days = Math.round(hrsToDays);
+		        	days = Math.round((float)hours / 24);
+	        		String msg1 = messages.getMessage("user.password.willExpire1", null, "Your password is about to expire!", locale);
+	        		String msg2;
+	        		if (hours < 24)
+	        			msg2 = messages.getMessage("user.password.willExpire3", null, "", locale);
+	        		else {
+		        		String plural = days > 1 ? "s" : ""; 
+		        		Object[] args = new Object[] {days, plural};
+	        			msg2 = messages.getMessage("user.password.willExpire2", args, "", locale);
+	        		}
+	        		String pswdExpire = msg1 + " " + msg2;	        		
+	        		model.addAttribute("pswdExpire", pswdExpire);
+	        	}
+	        }
+		}		
 
 		model.addAttribute("user", user);
 		//need to use the userInfo role because an admin may have changed the user's role in the DB, but the user hasn't re-logged in yet
 		model.addAttribute("role", currentUser.getRole());
 		model.addAttribute("recipeCount", count);
 		model.addAttribute("viewCount", views);
+		model.addAttribute("nextMaint", maintInterceptor.getNextStartWindow(true, "sysmaint.usermessage", locale));
 		model.addAttribute("recentRecipes", recentRecipes);
 		model.addAttribute("viewedRecipes", viewedRecipes);
 
@@ -548,6 +581,7 @@ public class UserController {
 	/*******************************/
 	/*** Change password handler ***/
 	/*******************************/
+	@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
 	public String getPassword(Model model) {
 		logger.info("user/changePassword GET");
@@ -560,6 +594,7 @@ public class UserController {
 		return "user/changePassword";
 	}
 
+	@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
 	public String postPassword(@ModelAttribute @Valid ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
 		logger.info("user/changePassword POST");
@@ -758,6 +793,7 @@ public class UserController {
         return mv;
     }
 
+	@MaintAware
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.GET)
 	public String getNewPassword(Model model) {
 		logger.info("user/newPassword GET");
@@ -765,6 +801,7 @@ public class UserController {
 		return "user/newPassword";
 	}
 	
+	@MaintAware
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
 	public String postNewPassword(Model model, @ModelAttribute @Valid NewPasswordDto newPasswordDto, BindingResult result, Locale locale) throws PasswordResetException {
 		logger.info("user/newPassword POST");
@@ -848,5 +885,5 @@ for (Object obj : allPrinc) {
 }
 
 UsernamePasswordAuthenticationFilter
-
+AbstractAuthenticationProcessingFilter
 */

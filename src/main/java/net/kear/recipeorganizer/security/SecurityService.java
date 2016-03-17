@@ -24,8 +24,11 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 @Transactional
 public class SecurityService implements UserSecurityService {
 
-	private UserService userService;
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 
+	private UserService userService;	
+	
     @Autowired
 	public SecurityService(UserService userService) {
 		this.userService = userService;
@@ -69,6 +72,18 @@ public class SecurityService implements UserSecurityService {
 	        	bUpdateUser = true;
 	        }
 		}		
+
+        //if user exceeded the attempts, lock the account;
+		//if account was previously locked, unlock it
+		if (loginAttemptService.isBlocked(username)) {
+        	user.setLocked(1);
+        	bUpdateUser = true;
+        }
+        else
+        	if (user.isLocked()) {
+            	user.setLocked(0);
+            	bUpdateUser = true;
+        	}
 		
 		if (bUpdateUser)
 			userService.updateUser(user);
