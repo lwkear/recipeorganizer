@@ -158,6 +158,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("user/account", "user/newMember", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)
+    		.antMatchers("/admin/approval", "/admin/approveRecipe", "/admin/comments", "/admin/ingredients").hasAuthority(Role.TYPE_EDITOR)
     		.antMatchers("/admin/**").hasAuthority(Role.TYPE_ADMIN)
     		.anyRequest().authenticated()
 			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem

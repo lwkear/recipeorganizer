@@ -35,6 +35,9 @@ public class ViewReferer {
 		if (referer.contains("approval"))
 			returnLabel = "menu.approval";
 		else
+		if (referer.contains("ingredientRecipes"))
+			returnLabel = "title.searchingredients";
+		else
 			returnLabel = "";
 
 		logger.debug("referLabel: " + returnLabel);

@@ -45,6 +45,7 @@
 					<div class="form-group">
 						<form:hidden class="recipeIngredID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].id"/>
 						<form:hidden class="ingredID" id="ingredientID" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].ingredient.id"/>
+						<input class="ingredSelection" type="text" style="display:none"/>
 						<form:hidden class="ingredSeq" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].sequenceNo"/>
 						<div class="col-sm-1 <c:if test="${not empty qtyError}">has-error</c:if>">
 							<form:input type="text" class="form-control ingredQty maxSize" id="quantity" path="ingredSections[${currNdx}].recipeIngredients[${loop.index}].quantity" 

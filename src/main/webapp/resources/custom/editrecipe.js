@@ -1,9 +1,10 @@
 function checkForFileError() {
 	var photoErr = $("#photoErr").val();
 	var name = $("#recipeName").val();
+	var continueMsg = getMessage('exception.file.continuecancel');
 	if (photoErr.length) {
 		$("#messageTitle").text(getMessage('exception.file.failure'));
-		$("#messageMsg").text(photoErr);
+		$("#messageMsg").text(photoErr + " " + continueMsg);
 		$(".msgDlgBtn").hide();
 		$("#okBtn").show();
 		$("#cnclBtn").show();

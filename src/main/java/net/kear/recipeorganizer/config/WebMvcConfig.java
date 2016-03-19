@@ -12,6 +12,7 @@ import net.kear.recipeorganizer.solr.SolrUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileActionsImpl;
 import net.kear.recipeorganizer.util.maint.MaintenanceProperties;
+import net.kear.recipeorganizer.webflow.RecipeFlowHandlerAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -166,7 +167,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public FlowHandlerAdapter flowHandlerAdapter() {
 		logger.debug("FlowHandlerAdapter");
-		FlowHandlerAdapter handlerAdapter = new FlowHandlerAdapter();
+		FlowHandlerAdapter handlerAdapter = new RecipeFlowHandlerAdapter();
 		handlerAdapter.setFlowExecutor(this.webFlowConfig.flowExecutor());
 		handlerAdapter.setSaveOutputToFlashScopeOnRedirect(true);
 		return handlerAdapter;
@@ -184,7 +185,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/validation"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(1);	//TODO: VALIDATION: be sure to change this value in production
+        source.setCacheSeconds(1);	//TODO: PRODUCTION: be sure to change this value in production
         return source;
     }
 

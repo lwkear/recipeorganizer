@@ -8,7 +8,8 @@ public interface RecipeIngredientRepository {
 
     public void addRecipeIngredient(RecipeIngredient recipeIngredient);
     public void updateRecipeIngredient(RecipeIngredient recipeIngredient);
-    public void deleteRecipeIngredient(Long recipID);
+    public void deleteRecipeIngredient(Long recipeIngredientId);
+    public void replaceIngredient(Long oldIngredientId, Long newIngredientId);
     public List<RecipeIngredient> getRecipeIngredients(Long recipeID);
     public List<String> getQualifiers(String searchStr);
 

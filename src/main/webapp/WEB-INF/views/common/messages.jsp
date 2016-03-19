@@ -39,6 +39,7 @@
 	<p id="recipe.submit.cancel"/><spring:message code="recipe.submit.cancel"></spring:message>
 	<p id="exception.JRException"/><spring:message code="exception.JRException"></spring:message>
 	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
+	<p id="exception.file.continuecancel"/><spring:message code="exception.file.continuecancel"></spring:message>
 	<p id="profile.photo"/><spring:message code="profile.photo"></spring:message>
 	<p id="pswd.wordLength"/><spring:message code="pswd.wordLength"></spring:message>
 	<p id="pswd.wordNotEmail"/><spring:message code="pswd.wordNotEmail"></spring:message>
@@ -60,4 +61,12 @@
 	<p id="commentadmin.table.zeroRecords"/><spring:message code="commentadmin.table.zeroRecords"></spring:message>
 	<p id="timeout.title"/><spring:message code="timeout.title"></spring:message>
 	<p id="timeout.text3"/><spring:message code="timeout.text3"></spring:message>
+	<p id="exception.ingredient.cannotadd"/><spring:message code="exception.ingredient.cannotadd"></spring:message>	
+	<p id="exception.ingredient.cannotdelete"/><spring:message code="exception.ingredient.cannotdelete"></spring:message>
+	<p id="ingredadmin.table.emptyTable"/><spring:message code="ingredadmin.table.emptyTable"></spring:message>
+	<p id="ingredadmin.table.info"/><spring:message code="ingredadmin.table.info"></spring:message>
+	<p id="ingredadmin.table.infoEmpty"/><spring:message code="ingredadmin.table.infoEmpty"></spring:message>
+	<p id="ingredadmin.table.infoFiltered"/><spring:message code="ingredadmin.table.infoFiltered"></spring:message>
+	<p id="ingredadmin.table.lengthMenu"/><spring:message code="ingredadmin.table.lengthMenu"></spring:message>
+	<p id="ingredadmin.table.zeroRecords"/><spring:message code="ingredadmin.table.zeroRecords"></spring:message>
 </div>

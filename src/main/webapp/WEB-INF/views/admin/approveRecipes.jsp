@@ -44,17 +44,23 @@
 							<td>${recipe.submitted}</td>
 							<td>${recipe.category}</td>
 							<td>${recipe.sourcetype}</td>
-							<td><a class="btn btn-info btn-sm" href="../recipe/viewRecipe/${recipe.id}">
+							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td><a class="btn btn-success btn-sm" href="../recipe/editRecipe/${recipe.id}">
+							<td><a class="btn btn-success btn-xs" href="../recipe/editRecipe/${recipe.id}"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td>
-								<button class="btn btn-danger btn-sm" type="button" onclick="deleteRecipe(${recipe.id}, '${recipe.name}')"><span class="glyphicon glyphicon-remove"></span></button>
+								<button class="btn btn-success btn-xs" type="button" onclick="approveRecipe(${recipe.id})"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.approve"></spring:message>">
+								<span class="glyphicon glyphicon-ok"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-success btn-sm" type="button" onclick="approveRecipe(${recipe.id})"><span class="glyphicon glyphicon-ok"></span></button>
+								<button class="btn btn-danger btn-xs" type="button" onclick="deleteRecipe(${recipe.id}, '${recipe.name}')"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
+								<span class="glyphicon glyphicon-remove"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

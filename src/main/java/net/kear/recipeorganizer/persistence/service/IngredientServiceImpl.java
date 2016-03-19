@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.repository.IngredientRepository;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -28,6 +29,14 @@ public class IngredientServiceImpl implements IngredientService {
     public void deleteIngredient(Long id) {
     	ingredientRepository.deleteIngredient(id);
     }
+    
+    public Ingredient getIngredient(Long id) {
+    	return ingredientRepository.getIngredient(id);
+    }
+    
+    public void setReviewed(long id, int reviewed) {
+    	ingredientRepository.setReviewed(id, reviewed);
+    }
 
     public List<Ingredient> listIngredient() {
     	return ingredientRepository.listIngredient();
@@ -35,5 +44,13 @@ public class IngredientServiceImpl implements IngredientService {
  
     public List<Ingredient> getIngredients(String searchStr) {
     	return ingredientRepository.getIngredients(searchStr);
+    }
+
+    public long getNotReviewedCount() {
+    	return ingredientRepository.getNotReviewedCount();
+    }
+    
+    public List<IngredientReviewDto> listNotReviewed() {
+    	return ingredientRepository.listNotReviewed();
     }
 }

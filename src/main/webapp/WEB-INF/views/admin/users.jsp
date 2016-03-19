@@ -54,12 +54,14 @@
 							<td><c:out value="${user.accountExpired ? yesLabel : noLabel}"/></td>
 							<td>${user.role.name}</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="updateUser(${user.id})"><span class="glyphicon glyphicon-pencil"></span></button>
+								<button class="btn btn-success btn-xs" type="button" onclick="updateUser(${user.id})"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
+								<span class="glyphicon glyphicon-pencil"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-danger btn-xs" type="button" onclick="checkRecipeCount(${user.id},'${user.firstName}','${user.lastName}')">
-									<span class="glyphicon glyphicon-remove"></span>
-								</button>
+								<button class="btn btn-danger btn-xs" type="button" onclick="checkRecipeCount(${user.id},'${user.firstName}','${user.lastName}')"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
+								<span class="glyphicon glyphicon-remove"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

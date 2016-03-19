@@ -6,8 +6,6 @@
       	http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
       	<!-- use this to examine the xsd: https://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd -->
 	
-	<!-- <secured attributes = "ROLE_AUTHOR, ROLE_EDITOR, ROLE_ADMIN" match="any"></secured> -->
-	
 	<on-start>
     	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
     	<evaluate expression="recipeService.getConstraintMap('Size', 'max')" result="flowScope.sizeMap" />
@@ -36,12 +34,6 @@
 			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
 			<evaluate expression="recipeService.checkArraySizes(recipe)"></evaluate>
 		</transition>
-		<!-- <transition on="proceed" to="optional" validation-hints="'recipeBasicGroup'">
-			<set name="flowScope.instructCount" value="recipe.numInstructSections"/>
-			<set name="flowScope.instructIndex" value="recipe.currInstructSection"/>
-			<set name="flowScope.ingredCount" value="recipe.numIngredSections"/>
-			<set name="flowScope.ingredIndex" value="recipe.currIngredSection"/>
-		</transition> -->
 		<transition on="cancel" to="deleteFile" bind="false" validate="false"></transition>
 	</view-state>
 
@@ -115,7 +107,12 @@
 
 	<action-state id="uploadFile">
 		<evaluate expression="fileActions.uploadFile(recipe, flowRequestContext)"/>
-		<transition to="review"/>
+			<transition on="NO_FILE" to="review"></transition>
+			<transition on="SUCCESS" to="review"></transition>
+			<transition on="NOT_IMAGE" to="optional"></transition>
+			<transition on="NO_EXTENSION" to="optional"></transition>
+			<transition on="INVALID_TYPE" to="optional"></transition>
+			<transition on="EXCEPTION_ERROR" to="optional"></transition>
 	</action-state>
 
 	<view-state id="review" view="recipe/review" model="recipe">

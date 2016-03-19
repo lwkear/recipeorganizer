@@ -86,7 +86,7 @@
 				</h5>
 				<c:if test="${privateRecipe}">
 					<h5 class="spacer-vert-xs">
-						<span>Note: This is a copyrighted recipe.  Click on the member message icon to ask the submitter to email you a copy.</span>
+						<span><spring:message code="recipe.view.copyright"></spring:message></span>
 					</h5>
 				</c:if>
 			</div>
@@ -211,7 +211,7 @@
 					<div class="form-group">
 			            <label class="control-label" for="recipeComment"><spring:message code="recipe.comments.label"></spring:message></label>
 			            <textarea class="form-control maxSize" rows="5" id="userComment" data-max="${sizeMap['userComment.max']}"></textarea>
-			            <span class="text-danger" id="userCommentErrMsg">${nameError}</span>
+			            <span class="text-danger" id="userCommentErrMsg">${userCommentErr}</span>
 				    </div>           
 				</form>
 			</div>

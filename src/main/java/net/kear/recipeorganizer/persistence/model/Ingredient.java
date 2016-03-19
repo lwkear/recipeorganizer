@@ -38,6 +38,9 @@ public class Ingredient implements Serializable {
 	@Size(max=250, groups=SizeGroup.class)	//250
 	private String name;
 	
+	@Column(name = "REVIEWED")
+	private boolean reviewed;
+	
 	public Ingredient() {}
 	
 	public Ingredient(String name) {
@@ -60,6 +63,14 @@ public class Ingredient implements Serializable {
 		this.name = name;
 	}
 
+	public Boolean getReviewed() {
+		return reviewed;
+	}
+
+	public void setReviewed(Boolean reviewed) {
+		this.reviewed = reviewed;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -91,6 +102,7 @@ public class Ingredient implements Serializable {
 	@Override
 	public String toString() {
 		return "Ingredient [id=" + id 
-				+ ", name=" + name +"]"; 
+				+ ", name=" + name 
+				+ ", reviewed=" + reviewed + "]"; 
 	}
 }

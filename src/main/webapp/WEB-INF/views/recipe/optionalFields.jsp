@@ -132,7 +132,7 @@
 			<div class="row">
 				<c:choose>
 					<c:when test="${not empty recipe.photoName}">
-						<label class="control-label col-sm-5" style="text-align: left;" 
+						<label class="control-label col-sm-5 <c:if test="${not empty photoError}">text-danger</c:if>" style="text-align: left;" 
 							id="photoLabel" for="selectedFile"><spring:message code="recipe.optional.photo"></spring:message></label>
 						<label class="control-label col-sm-2" style="text-align: left;" 
 							id="photoOptionsLabel" for="file"><spring:message code="common.photo.options"></spring:message></label>
@@ -140,7 +140,7 @@
 							id="newPhotoLabel" for="file"><spring:message code="common.photo.new"></spring:message></label>
 					</c:when>
 					<c:otherwise>
-						<label class="control-label col-sm-5" style="text-align: left;" 
+						<label class="control-label col-sm-5 <c:if test="${not empty photoError}">text-danger</c:if>" style="text-align: left;" 
 							id="fileLabel" for="file"><spring:message code="recipe.optional.photo"></spring:message></label>
 					</c:otherwise>
 				</c:choose>
@@ -190,6 +190,11 @@
 						</div>
 					</c:otherwise>
 				</c:choose>
+				<c:if test="${not empty photoError}">
+					<div class="col-sm-12">
+						<span class="text-danger">${photoError}</span>
+					</div>
+				</c:if>
 			</div>
 		</div>							
 	</div>

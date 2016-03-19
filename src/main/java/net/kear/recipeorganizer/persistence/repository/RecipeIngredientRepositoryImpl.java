@@ -5,6 +5,7 @@ import java.util.List;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 import net.kear.recipeorganizer.persistence.repository.RecipeIngredientRepository;
 
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Criteria;
@@ -29,9 +30,18 @@ public class RecipeIngredientRepositoryImpl implements RecipeIngredientRepositor
     	getSession().merge(recipeRecipeIngredient);
     }
     
-    public void deleteRecipeIngredient(Long id) {
-    	RecipeIngredient recipeRecipeIngredient = (RecipeIngredient) getSession().load(RecipeIngredient.class, id);
+    public void deleteRecipeIngredient(Long recipeIngredientId) {
+    	RecipeIngredient recipeRecipeIngredient = (RecipeIngredient) getSession().load(RecipeIngredient.class, recipeIngredientId);
     	getSession().delete(recipeRecipeIngredient);
+    }
+    
+    public void replaceIngredient(Long oldIngredientId, Long newIngredientId) {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+			"update recipe_ingredients set ingredient_id = :newId where ingredient_id = :oldId")
+			.setLong("newId", newIngredientId)
+    		.setLong("oldId", oldIngredientId);
+   	
+    	query.executeUpdate();		
     }
     
     @SuppressWarnings("unchecked")

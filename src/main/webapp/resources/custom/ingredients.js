@@ -63,6 +63,17 @@ function getIngredId(obj) {
 	return ingredId;
 }
 
+function getIngredSelection(obj) {
+	//get the index of the current Description element
+	var ndx = obj.parents('.form-group').find('.ingredDesc').index(obj);
+	//typeahead adds an element with same class name so need to divide by 2 and round down
+	ndx = Math.floor(ndx / 2);
+	//find the corresponding ingredient ID element and save it off for the .done function
+	var ingredId = obj.parents('.form-group').find('.ingredSelection').eq(ndx);
+
+	return ingredId;
+}
+
 function fixIngredArrayIndexes(element, sequence) {
 	console.log("fixIngredArray:" + element);
 	$(element).each(function(index) {
@@ -161,8 +172,10 @@ $(function() {
 				return;
 			
 			var ingredId = getIngredId($(this));
+			var ingredSel = getIngredSelection($(this));
 			
 			ingredId.val(datum.id);
+			ingredSel.val(datum.name);
 		})
 		.on('typeahead:active', '.ingredDesc', function(obj, datum)
 		{
@@ -171,9 +184,11 @@ $(function() {
 			console.log(datum);
 		
 			var ingredId = getIngredId($(this));
+			var ingredSel = getIngredSelection($(this));
 		
 			//zero out the id in case a previously entered ingredient is written over with a new one
 			ingredId.val(0);
+			ingredSel.val("");
 		})
 		.on('blur', '.ingredDesc', function(e)
 		{
@@ -190,13 +205,16 @@ $(function() {
 		
 			//save off these variables for the .done and .fail methods
 			var ingredDesc = $(this);
-			var ingredId = getIngredId($(this)); 
+			var ingredId = getIngredId($(this));
+			var ingredSel = getIngredSelection($(this));
 			
 			//nothing to do
 			if (ingredId.val() != 0)
 			{
-				console.log('ingredient ID already set: '+ ingredId.val());
-				return;
+				if (ingredSel.val() === desc) {
+					console.log('ingredient selected from list: '+ ingredSel.val());
+					return;
+				}
 			}
 		
 			//capitalize the first letter of each word
@@ -205,7 +223,7 @@ $(function() {
 			});
 		
 			//new entry - format the json for adding it to the database
-			var data = {"id":"0","name":desc};
+			var data = {"id":"0","name":desc,"reviewed":0};
 		
 			$.ajax({
 			    contentType: 'application/json',

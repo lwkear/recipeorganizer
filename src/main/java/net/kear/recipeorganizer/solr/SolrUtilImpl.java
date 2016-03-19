@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Instruction;
@@ -159,6 +160,47 @@ public class SolrUtilImpl implements SolrUtil {
 	}
 	
 	@Override
+	public List<RecipeListDto> searchIngredients(String searchTerm) throws SolrServerException, IOException {
+		logger.info("searchRecipes: qstr=" + searchTerm);
+		
+		//Note: the default sort is by score, so no need to explicitly identify score as the sort
+		SolrQuery query = new SolrQuery();
+		query.setQuery(searchTerm);
+		query.setParam("defType","edismax");
+		query.setParam("qf", "ingredid");
+		query.setParam("fl", "id, userid, name, description, allowshare, approved, score, catname, srctype");
+		query.setParam("start", "0");
+		query.setParam("rows", "100000");
+	    
+		QueryResponse rsp = solrCore.query(query);
+
+		ArrayList<RecipeListDto> resultsList = new ArrayList<RecipeListDto>();
+	    
+		SolrDocumentList docs = rsp.getResults();
+		for (SolrDocument doc : docs) {
+	    	String result = doc.toString();
+	    	logger.debug("doc: " + result);
+
+	    	String idStr = (String)doc.getFieldValue("id");
+	    	Long id = Long.valueOf(idStr);
+	    	Long uId = (Long)doc.getFieldValue("userid");
+	    	String name = (String)doc.getFieldValue("name");
+	    	String desc = (String)doc.getFieldValue("description");
+	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
+	    	boolean approved = (boolean)doc.getFieldValue("approved");
+	    	String catName = (String)doc.getFieldValue("catname");
+	    	String source = (String)doc.getFieldValue("srctype");
+	    	if (source == null)
+	    		source = Source.TYPE_NONE;
+	    	
+	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, source, allowShare, approved);
+    		resultsList.add(rslts);
+	    }
+	    
+	    return resultsList;
+	}	
+
+	@Override
 	public void addRecipe(Recipe recipe) {
 
 		SolrInputDocument document = new SolrInputDocument();
@@ -204,6 +246,7 @@ public class SolrUtilImpl implements SolrUtil {
 			List<RecipeIngredient> ingreds = section.getRecipeIngredients();
 			for (RecipeIngredient recipeIngred : ingreds) {
 				document.addField("ingredname", recipeIngred.getIngredient().getName());
+				document.addField("ingredid", recipeIngred.getIngredient().getId());
 			}			
 		}
 

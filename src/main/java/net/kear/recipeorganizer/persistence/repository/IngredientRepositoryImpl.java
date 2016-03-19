@@ -2,16 +2,21 @@ package net.kear.recipeorganizer.persistence.repository;
  
 import java.util.List;
 
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
 
+import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.repository.IngredientRepository;
 
@@ -41,6 +46,20 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     public void deleteIngredient(Long id) {
     	Ingredient ingredient = (Ingredient) getSession().load(Ingredient.class, id);
     	sessionFactory.getCurrentSession().delete(ingredient);
+    }
+    
+    public Ingredient getIngredient(Long id) {
+    	Ingredient ingredient = (Ingredient) getSession().get(Ingredient.class, id);
+    	return ingredient;
+    }
+
+    public void setReviewed(long id, int reviewed) {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+			"update ingredient set reviewed = :reviewed where id = :id")
+			.setInteger("reviewed", reviewed)
+			.setLong("id", id);
+   	
+    	query.executeUpdate();		
     }
     
     @SuppressWarnings("unchecked")
@@ -91,6 +110,27 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     	return ingredResults;
     }
 
+	public long getNotReviewedCount() {
+    	Criteria criteria = getSession().createCriteria(Ingredient.class)
+    		.add(Restrictions.eq("reviewed", 0))
+   			.setProjection(Projections.rowCount());
+       	return (Long)criteria.uniqueResult();
+	}
+ 
+    @SuppressWarnings("unchecked")
+    public List<IngredientReviewDto> listNotReviewed() {
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    			"select i.id, i.name, (select count(ri.id) from recipe_ingredients ri where ri.ingredient_id = i.id) as usage from ingredient i"
+    			+ " where i.reviewed = 0")
+    			.addScalar("id",StandardBasicTypes.LONG)
+    			.addScalar("name",StandardBasicTypes.STRING)
+    			.addScalar("usage",StandardBasicTypes.LONG)
+    			.setResultTransformer(Transformers.aliasToBean(IngredientReviewDto.class));
+    	
+    	List<IngredientReviewDto> ingredList = (List<IngredientReviewDto>) query.list();
+    	return ingredList;
+    }
+	
     private Session getSession() {
 		Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {

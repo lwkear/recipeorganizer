@@ -8,6 +8,7 @@ public class RecipeListDto implements Serializable {
 	private static final long serialVersionUID = 1L;	
 	
 	private long id;
+	private long userId;
 	private String name;
 	private String description;
 	private Date submitted;
@@ -20,9 +21,10 @@ public class RecipeListDto implements Serializable {
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, String name, String description, Date submitted, String firstName, String lastName, String category, String sourcetype,
+	public RecipeListDto(long id, long userId, String name, String description, Date submitted, String firstName, String lastName, String category, String sourcetype,
 			boolean allowShare, boolean approved) {
 		this.id = id;
+		this.userId = userId;
 		this.name = name;
 		this.description = description;
 		this.submitted = submitted;
@@ -40,6 +42,14 @@ public class RecipeListDto implements Serializable {
 	
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public String getName() {
@@ -151,6 +161,7 @@ public class RecipeListDto implements Serializable {
 	@Override
 	public String toString() {
 		return "RecipeListDto [id=" + id 
+				+ ", userId=" + userId
 				+ ", name=" + name 
 				+ ", description=" + description 
 				+ ", submitted=" + submitted 

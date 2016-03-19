@@ -47,7 +47,7 @@
 						</ul>
 					</li>
 				</c:if>
-				<c:if test="${isAdmin}">
+				<c:if test="${isEditor}">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 								<spring:message code="menu.admin"></spring:message><span class="caret"></span></a>
@@ -55,11 +55,13 @@
 							<li><a href="<c:url value="/admin/approval" />"><spring:message code="menu.approval"></spring:message></a></li>
 							<li><a href="<c:url value="/admin/comments" />"><spring:message code="menu.comments"></spring:message></a></li>
 							<li role="separator" class="divider"></li>
-							<li><a href="<c:url value="/admin/users" />"><spring:message code="menu.users"></spring:message></a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="<c:url value="/admin/maintenance" />"><spring:message code="menu.maintenance"></spring:message></a></li>
+							<li><a href="<c:url value="/admin/ingredients" />"><spring:message code="menu.ingredients"></spring:message></a></li>
+							<c:if test="${isAdmin}">
+								<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>							
+								<li role="separator" class="divider"></li>
+								<li><a href="<c:url value="/admin/users" />"><spring:message code="menu.users"></spring:message></a></li>
+								<li><a href="<c:url value="/admin/maintenance" />"><spring:message code="menu.maintenance"></spring:message></a></li>
+							</c:if>
 						</ul>
 					</li>
 				</c:if>
@@ -83,6 +85,7 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${firstname}<span class="caret"></span></a>
 						        <ul class="dropdown-menu" role="menu">
+						        	<li><a href="<c:url value="/user/dashboard" />"><spring:message code="menu.dashboard"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
 						        </ul>

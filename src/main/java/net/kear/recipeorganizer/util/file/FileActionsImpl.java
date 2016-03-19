@@ -27,6 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.binding.message.MessageBuilder;
+import org.springframework.binding.message.MessageContext;
+import org.springframework.binding.message.MessageResolver;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.web.firewall.FirewalledRequest;
@@ -89,7 +92,8 @@ public class FileActionsImpl implements FileActions {
 	    	if (StringUtils.isBlank(originalName))
 	    		return FileResult.NO_FILE;
 	    	if (!originalName.isEmpty())
-	    		return FileResult.EMPTY_FILE;
+	    		return returnErrorMsg(FileResult.EMPTY_FILE, requestContext);
+	    		//return FileResult.EMPTY_FILE;
 	    }
 	    
     	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
@@ -104,18 +108,21 @@ public class FileActionsImpl implements FileActions {
 	    	//if the file is not an image, ImageIO returns null
 	    	BufferedImage img = ImageIO.read(file.getInputStream());
 	    	if (img == null)
-	    		return FileResult.NOT_IMAGE;
+	    		return returnErrorMsg(FileResult.NOT_IMAGE, requestContext);
+	    		//return FileResult.NOT_IMAGE;
 	    	
 	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
 	    	int size = nameParts.size();
 	    	if (size <= 1)
-	    		return FileResult.NO_EXTENSION;
+	    		return returnErrorMsg(FileResult.NO_EXTENSION, requestContext);
+	    		//return FileResult.NO_EXTENSION;
 	    	
 	    	String ext = nameParts.get(size-1);
 	    	logger.debug("extension = " + ext);
 	    	ext = ext.toLowerCase();
 	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
-	    		return FileResult.INVALID_TYPE;
+	    		return returnErrorMsg(FileResult.INVALID_TYPE, requestContext);
+	    		//return FileResult.INVALID_TYPE;
 
 	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 	    	ImageIO.write(img, ext, stream);
@@ -125,7 +132,8 @@ public class FileActionsImpl implements FileActions {
         
         } catch (IOException ex) {
         	logService.addException(ex);
-        	return FileResult.EXCEPTION_ERROR;
+        	return returnErrorMsg(FileResult.EXCEPTION_ERROR, requestContext);
+        	//return FileResult.EXCEPTION_ERROR;
         }
 
 		return FileResult.SUCCESS;
@@ -360,5 +368,14 @@ public class FileActionsImpl implements FileActions {
 		}
 		
 		return msg;
+	}
+	
+	private FileResult returnErrorMsg(FileResult result, RequestContext requestContext) { 
+		Locale locale = requestContext.getExternalContext().getLocale();
+		String msg = getErrorMessage(result, locale);
+		MessageContext msgContext = requestContext.getMessageContext();
+		MessageResolver msgResolver = new MessageBuilder().error().source("photoName").defaultText(msg).build();
+		msgContext.addMessage(msgResolver);
+		return result;
 	}
 }

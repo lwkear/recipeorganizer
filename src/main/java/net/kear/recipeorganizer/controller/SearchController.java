@@ -8,13 +8,17 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
+import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
+import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
+import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.solr.CategoryFacet;
 import net.kear.recipeorganizer.solr.SolrUtil;
@@ -46,7 +50,11 @@ public class SearchController {
 	private static final AuthCookie authCookie = new AuthCookie();
 	
 	@Autowired
+	private UserService userService;
+	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private IngredientService ingredientService;
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
@@ -152,6 +160,78 @@ public class SearchController {
 			model.addAttribute("newSearch", true);
 		
 		return "searchResults";
+	}
+
+	@RequestMapping(value = "/submitIngredientSearch", method = RequestMethod.POST)
+	public ModelAndView submitIngredientSearch(@RequestParam String searchTerm, RedirectAttributes redir, HttpServletRequest request, Locale locale) throws SolrServerException, IOException, Exception {
+		logger.info("submitIngredientSearch POST: searchTerm=" + searchTerm);
+
+		List<RecipeListDto> resultsList = solrUtil.searchIngredients(searchTerm);
+
+		int numFound = resultsList.size();
+		if (numFound > 0) {
+			for (RecipeListDto dto : resultsList) {
+				String userName = userService.getUserFullName(dto.getUserId());
+				dto.setFirstName(userName);
+			}			
+		}		
+		
+		long ingredId = Long.parseLong(searchTerm);
+		Ingredient ingredient = ingredientService.getIngredient(ingredId);
+		
+	    ModelAndView mv = new ModelAndView();
+	    redir.addFlashAttribute("searchTerm", searchTerm);
+	    redir.addFlashAttribute("ingredientName", ingredient.getName());
+	    redir.addFlashAttribute("recipes", resultsList);
+	    redir.addFlashAttribute("numFound", numFound);
+        mv.setViewName("redirect:/admin/ingredientRecipes");
+	    return mv;
+	}	
+	
+	@MaintAware
+	@RequestMapping(value = "/admin/ingredientRecipes", method = RequestMethod.GET)
+	public String getIngredientSearchResults(Model model, HttpServletRequest request, Locale locale) throws SolrServerException, IOException {
+		logger.info("ingredientSearchResults GET");
+		
+		HashMap<String, Object> modelMap = (HashMap<String, Object>) model.asMap();
+		int num = modelMap.size();
+		logger.debug("modelMap size: " + num);
+		boolean term = modelMap.containsKey("searchTerm");
+		boolean list = modelMap.containsKey("resultList");
+		boolean found = modelMap.containsKey("numFound");
+		logger.debug("modelMap contains serchTerm: " + term);
+		logger.debug("modelMap contains resultList: " + list);
+		logger.debug("modelMap contains numFound: " + found);
+
+		Object val = modelMap.get("searchTerm");
+		String searchTerm = (String)val;
+		logger.debug("modelMap searchTerm: " + searchTerm);
+
+		//the user returned to the results page from viewing a recipe - need to re-run the search
+		if (!found && !list) {
+			List<RecipeListDto> resultsList = solrUtil.searchIngredients(searchTerm);
+
+			int numFound = resultsList.size();
+			if (numFound > 0) {
+				for (RecipeListDto dto : resultsList) {
+					String userName = userService.getUserFullName(dto.getUserId());
+					dto.setFirstName(userName);
+				}			
+			}		
+
+			long ingredId = Long.parseLong(searchTerm);
+			Ingredient ingredient = ingredientService.getIngredient(ingredId);
+			
+		    model.addAttribute("searchTerm", searchTerm);
+		    model.addAttribute("ingredientName", ingredient.getName());
+		    model.addAttribute("recipes", resultsList);
+		    model.addAttribute("numFound", numFound);
+			model.addAttribute("newSearch", false);
+		}
+		else
+			model.addAttribute("newSearch", true);
+		
+		return "admin/ingredientRecipes";
 	}
 	
 	private List<CategoryFacet> getCategories(ArrayList<FacetField> facets) {

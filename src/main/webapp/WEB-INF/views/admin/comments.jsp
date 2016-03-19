@@ -42,11 +42,14 @@
 							<td>${comment.dateAdded}</td>
 							<td>${comment.lastName},&nbsp;${comment.firstName}</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="removeCommentFlag(${comment.id})"><span class="glyphicon glyphicon-ok"></span></button>
+								<button class="btn btn-success btn-xs" type="button" onclick="removeCommentFlag(${comment.id})"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.approve"></spring:message>">
+								<span class="glyphicon glyphicon-ok"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-danger btn-xs" type="button" onclick="deleteComment(${comment.id})"><span class="glyphicon glyphicon-remove"></span>
-								</button>
+								<button class="btn btn-danger btn-xs" type="button" onclick="deleteComment(${comment.id})"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
+								<span class="glyphicon glyphicon-remove"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

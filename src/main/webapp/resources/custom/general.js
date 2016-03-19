@@ -302,7 +302,9 @@ $(function() {
     
     getSessionTimeout();
    
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({
+    	container : 'body'
+    });
     
 	$(document)
 	.on('blur', '.maxSize', function(e)

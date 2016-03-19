@@ -71,9 +71,8 @@ public class UserRepositoryImpl implements UserRepository {
     
     public String getUserFullName(Long id) {
     	User user = (User) getSession().load(User.class, id);
-        if (null != user) {
+        if (null != user)
         	return user.getFirstName() + " " + user.getLastName();
-        }
         else
         	return null;
     }

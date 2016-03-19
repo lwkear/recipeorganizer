@@ -35,15 +35,19 @@ import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
+import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
+import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
+import net.kear.recipeorganizer.persistence.service.IngredientService;
+import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -62,13 +66,17 @@ public class AdminController {
 	@Autowired
 	private CategoryService categoryService;
 	@Autowired
+	private RecipeService recipeService;
+	@Autowired
+	private IngredientService ingredientService;
+	@Autowired
+	private RecipeIngredientService recipeIngredientService;
+	@Autowired
 	private UserService userService;
 	@Autowired
 	private RoleService roleService;
 	@Autowired
 	private CommentService commentService;
-	@Autowired
-	private RecipeService recipeService;
 	@Autowired
 	private SessionRegistry sessionRegistry;
 	@Autowired
@@ -299,6 +307,104 @@ public class AdminController {
 		return "redirect:category";
 	}
 
+	/**********************************/
+	/*** Ingredients review handler ***/
+	/**********************************/
+	@MaintAware
+	@RequestMapping(value = "/admin/ingredients", method = RequestMethod.GET)
+	public String getIngredientReviewList(Model model) {
+		logger.info("admin/ingredients GET");
+
+		List<IngredientReviewDto> ingredients = ingredientService.listNotReviewed(); 
+		
+		model.addAttribute("ingredients", ingredients);
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Ingredient.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		return "admin/ingredients";
+	}
+
+	@RequestMapping(value="admin/deleteIngredient", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteIngredient(@RequestParam("ingredId") Long ingredId) throws RestException {
+		logger.info("admin/deleteIngredient POST: ingredId=" + ingredId);
+		
+		try {
+			ingredientService.deleteIngredient(ingredId);
+		} catch (Exception ex) {
+			throw new RestException("exception.deleteIngredient", ex);
+		}
+
+		return new ResponseObject();
+	}
+
+	@RequestMapping(value="admin/approveIngredient", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject approveIngredient(@RequestParam("ingredId") Long ingredId) throws RestException {
+		logger.info("admin/approveIngredient POST: ingredId=" + ingredId);
+		
+		try {
+			ingredientService.setReviewed(ingredId, 1);
+		} catch (Exception ex) {
+			throw new RestException("exception.approveIngredient", ex);
+		}
+		
+		return new ResponseObject();
+	}
+
+	@RequestMapping(value="admin/getIngredient", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public Ingredient getIngredient(@RequestParam("ingredId") Long ingredId) throws RestException {
+		logger.info("admin/getIngredient GET: ingredId=" + ingredId);
+		
+		Ingredient ingredient = null;
+		try {
+			ingredient = ingredientService.getIngredient(ingredId);
+		} catch (Exception ex) {
+			throw new RestException("exception.updateIngredient", ex);
+		}
+		
+		return ingredient;
+	}
+
+	@RequestMapping(value="admin/updateIngredient", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public Ingredient updateIngredient(@RequestBody Ingredient ingredient) throws RestException {
+		logger.info("admin/updateIngredient POST: ingredId=" + ingredient.getId());
+		
+		try {
+			ingredientService.updateIngredient(ingredient);
+		} catch (DataIntegrityViolationException ex) {
+			String exClass = ex.getClass().toString();
+			logger.debug("Exception: " + exClass);
+			throw new RestException("exception.duplicateIngredient", ex);
+		} catch (Exception ex) {
+			throw new RestException("exception.updateIngredient", ex);
+		}
+		
+		return ingredient;
+	}
+
+	@RequestMapping(value="admin/replaceIngredient", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public IngredientReviewDto replaceIngredient(@RequestBody IngredientReviewDto ingredientReviewDto) throws RestException {
+		logger.info("admin/replaceIngredient POST: old ingredId/new ingredId " + ingredientReviewDto.getId() + " / " + ingredientReviewDto.getUsage());
+		
+		try {
+			recipeIngredientService.replaceIngredient(ingredientReviewDto);
+			ingredientService.deleteIngredient(ingredientReviewDto.getId());
+		} catch (Exception ex) {
+			throw new RestException("exception.replaceIngredient", ex);
+		}
+				
+		//return the original object so the client can remove the ingredient from the list
+		return ingredientReviewDto;
+	}
+	
 	/*******************************/
 	/*** Comments review handler ***/
 	/*******************************/

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="net/kear/recipeorganizer/util/CurrentUser.java|net/kear/recipeorganizer/controller/GlobalModelController.java" kind="src" output="target/classes" path="src/main/java">
+	<classpathentry excluding="net/kear/recipeorganizer/util/CurrentUser.java|net/kear/recipeorganizer/controller/GlobalModelController.java|net/kear/recipeorganizer/webflow/RecipeFlowHandler.java" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
