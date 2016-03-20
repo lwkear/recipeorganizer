@@ -73,3 +73,15 @@
 <script src="<c:url value="/resources/custom/usersignup.js" />"></script>
 
 </html>
+
+
+<%-- <spring:hasBindErrors name="newPasswordDto">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors> --%>
+	

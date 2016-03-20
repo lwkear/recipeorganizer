@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -506,7 +507,7 @@ public class AdminController {
 	}
 
 	@RequestMapping(value = "/admin/maintenance", method = RequestMethod.POST)
-	public String postMaintenance(Model model, @ModelAttribute @Valid MaintenanceDto maintenanceDto, BindingResult result, Locale locale) {	
+	public String postMaintenance(Model model, @ModelAttribute @Valid MaintenanceDto maintenanceDto, BindingResult result, HttpServletRequest request, Locale locale) {	
 		logger.info("admin/maintenance POST");
 		logger.debug("MaintenanceDto: " + maintenanceDto);
 		

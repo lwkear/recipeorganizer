@@ -40,33 +40,38 @@
 				</div>
 			</div>
 		</c:if>
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="col-sm-3">
-					<h5><strong><spring:message code="dashboard.membersince"></spring:message></strong>&nbsp;
-						<span class="bold-maroon"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></h5>
-				</div>
+
+		<div class="row col-sm-12">
+			<div class="col-sm-4">
+				<h5><strong><spring:message code="dashboard.membersince"></spring:message></strong>&nbsp;
+					<span class="bold-maroon"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></h5>
+				<h5><strong><spring:message code="dashboard.memberlevel"></spring:message></strong>&nbsp;
+					<span class="bold-maroon">${role.description}</span></h5>
+			</div>
+			<c:if test="${(isAuthor || isEditor || isAdmin)}">
 				<div class="col-sm-4">
-					<h5><strong><spring:message code="dashboard.memberlevel"></spring:message></strong>&nbsp;
-						<span class="bold-maroon">${role.description}</span></h5>
+					<h5><strong><spring:message code="dashboard.recipessubmitted"></spring:message></strong>&nbsp;
+						<span class="bold-maroon">${recipeCount}</span></h5>
+					<h5><strong><spring:message code="dashboard.viewcount1"></spring:message></strong>&nbsp;
+						<span class="bold-maroon">${viewCount}</span>&nbsp;
+						<strong><spring:message code="dashboard.viewcount2"></spring:message></strong></h5>
 				</div>
-			</div>
+			</c:if>
+			<c:if test="${(isEditor || isAdmin)}">
+				<div class="col-sm-4">
+					<h5><strong><spring:message code="dashboard.approvalrequired"></spring:message></strong>&nbsp;
+						<a class="btn btn-link btn-xs" href="../admin/approval"><span class="badge" style="background-color:#337ab7">${recipeApprovals}</span></a>
+					</h5>	
+					<h5><strong><spring:message code="dashboard.flaggedcomments"></spring:message></strong>&nbsp;
+						<a class="btn btn-link btn-xs" href="../admin/comments"><span class="badge" style="background-color:#337ab7">${flaggedComments}</span></a>
+					</h5>
+					<h5><strong><spring:message code="dashboard.ingredientreview"></spring:message></strong>&nbsp;
+						<a class="btn btn-link btn-xs" href="../admin/ingredients"><span class="badge" style="background-color:#337ab7">${ingredientReviews}</span></a>
+					</h5>
+				</div>
+			</c:if>
 		</div>
-		<c:if test="${(isAuthor || isEditor || isAdmin)}">
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="col-sm-3">
-						<h5><strong><spring:message code="dashboard.recipessubmitted"></spring:message></strong>&nbsp;
-							<span class="bold-maroon">${recipeCount}</span></h5>
-					</div>
-					<div class="col-sm-6">
-						<h5><strong><spring:message code="dashboard.viewcount1"></spring:message></strong>&nbsp;
-							<span class="bold-maroon">${viewCount}</span>&nbsp;
-							<strong><spring:message code="dashboard.viewcount2"></spring:message></strong></h5>
-					</div>
-				</div>
-			</div>
-		</c:if>
+
 		<div class="col-sm-12">
 			<div class="row">
 				<div class="col-sm-6">
@@ -75,16 +80,16 @@
 						<c:forEach var="recipe" items="${viewedRecipes}">
 							<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 								<c:if test="${not empty recipe.photo}">
-									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:50px;height:50px;"/></span>
+									<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:36px;height:36px;"/></span>
 								</c:if>	
-								<h4 class="header-blue">${recipe.name}</h4>
+								<h5 class="header-blue">${recipe.name}</h5>
 								<p class="list-group-item-text">${recipe.description}</p>
 								<p class="clearfix"></p>										
 							</a>
 						</c:forEach>
 						<c:if test="${empty viewedRecipes}">
 							<a href="#" class="list-group-item">
-								<h4 class="text-center"><em><small><spring:message code="dashboard.noviewed"></spring:message></small></em></h4>
+								<h5 class="text-center"><em><small><spring:message code="dashboard.noviewed"></spring:message></small></em></h5>
 								<p class="clearfix"></p>										
 							</a>
 						</c:if>
@@ -97,16 +102,16 @@
 							<c:forEach var="recipe" items="${recentRecipes}">
 								<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 									<c:if test="${not empty recipe.photo}">
-										<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:50px;height:50px;"/></span>
+										<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="" style="width:36px;height:36px;"/></span>
 									</c:if>	
-									<h4 class="header-blue">${recipe.name}</h4>
+									<h5 class="header-blue">${recipe.name}</h5>
 									<p class="list-group-item-text">${recipe.description}</p>
 									<p class="clearfix"></p>										
 								</a>
 							</c:forEach>
 							<c:if test="${empty recentRecipes}">
 								<a href="#" class="list-group-item">
-									<h4 class="text-center"><em><small><spring:message code="dashboard.nosubmitted"></spring:message></small></em></h4>
+									<h5 class="text-center"><em><small><spring:message code="dashboard.nosubmitted"></spring:message></small></em></h5>
 									<p class="clearfix"></p>										
 								</a>
 							</c:if>

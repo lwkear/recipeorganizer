@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,7 +58,9 @@ import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto;
+import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto.ChangePasswordDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.NewPasswordDto;
+import net.kear.recipeorganizer.persistence.dto.NewPasswordDto.NewPasswordDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
@@ -66,7 +69,9 @@ import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
+import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
+import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.UserSecurityService;
@@ -87,10 +92,16 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserSecurityService userSecurityService;
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private IngredientService ingredientService;
+	@Autowired
+	private CommentService commentService;
 	@Autowired
 	private MessageSource messages;
 	@Autowired
@@ -499,9 +510,9 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
-		Long count = null;
+		Long recipeCount = null;
 		try {
-			count = recipeService.getRecipeCount(user.getId());
+			recipeCount = recipeService.getRecipeCount(user.getId());
 		} 
 		catch (Exception ex) {
 			//do nothing - this is not a fatal error
@@ -523,10 +534,10 @@ public class UserController {
 		}
 		
 		List<RecipeDisplayDto> recentRecipes = null;
-		long views = 0;
+		long viewCount = 0;
 		try {
 			recentRecipes = recipeService.recentRecipes(user.getId());
-			views = recipeService.getUserViewCount(user.getId());
+			viewCount = recipeService.getUserViewCount(user.getId());
 		} 
 		catch (Exception ex) {
 			//do nothing - these are not a fatal errors
@@ -556,13 +567,24 @@ public class UserController {
 	        		model.addAttribute("pswdExpire", pswdExpire);
 	        	}
 	        }
-		}		
+		}
+		
+		
+		String roleType = currentUser.getRole().getName(); 
+		if (roleType.equalsIgnoreCase(Role.TYPE_EDITOR) || roleType.equalsIgnoreCase(Role.TYPE_ADMIN)) {
+			long recipeApprovals = recipeService.getRequireApprovalCount();
+			long ingredientReviews = ingredientService.getNotReviewedCount();
+			long flaggedComments = commentService.getFlaggedCount();
+			model.addAttribute("recipeApprovals", recipeApprovals);
+			model.addAttribute("ingredientReviews", ingredientReviews);
+			model.addAttribute("flaggedComments", flaggedComments);
+		}
 
 		model.addAttribute("user", user);
 		//need to use the userInfo role because an admin may have changed the user's role in the DB, but the user hasn't re-logged in yet
 		model.addAttribute("role", currentUser.getRole());
-		model.addAttribute("recipeCount", count);
-		model.addAttribute("viewCount", views);
+		model.addAttribute("recipeCount", recipeCount);
+		model.addAttribute("viewCount", viewCount);
 		model.addAttribute("nextMaint", maintInterceptor.getNextStartWindow(true, "sysmaint.usermessage", locale));
 		model.addAttribute("recentRecipes", recentRecipes);
 		model.addAttribute("viewedRecipes", viewedRecipes);
@@ -596,7 +618,8 @@ public class UserController {
 
 	@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
-	public String postPassword(@ModelAttribute @Valid ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) throws SaveAccountException, AccessUserException {
+	public String postPassword(@ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
+			throws SaveAccountException, AccessUserException {
 		logger.info("user/changePassword POST");
 
 		User currentUser = (User)userInfo.getUserDetails();
@@ -803,7 +826,7 @@ public class UserController {
 	
 	@MaintAware
 	@RequestMapping(value = "user/newPassword", method = RequestMethod.POST)
-	public String postNewPassword(Model model, @ModelAttribute @Valid NewPasswordDto newPasswordDto, BindingResult result, Locale locale) throws PasswordResetException {
+	public String postNewPassword(Model model, @ModelAttribute @Validated(NewPasswordDtoSequence.class) NewPasswordDto newPasswordDto, BindingResult result, Locale locale) throws PasswordResetException {
 		logger.info("user/newPassword POST");
 
 		if (result.hasErrors()) {
@@ -811,9 +834,16 @@ public class UserController {
 			return "user/newPassword";
 		}
 		
-		User user = null;
+		User user = userService.getUser(newPasswordDto.getUserId());
+
+		if (passwordEncoder.matches(newPasswordDto.getPassword(), user.getPassword())) {
+			String msg = messages.getMessage("PasswordNotDuplicate", null, "", locale);
+			FieldError fieldError = new FieldError("newPasswordDto", "password", msg);
+			result.addError(fieldError);
+			return "user/newPassword";
+		}
+				
 		try {
-			user = userService.getUser(newPasswordDto.getUserId());
 			user.setAccountExpired(0);
 			user.setPasswordExpired(0);
 			userService.updateUser(user);

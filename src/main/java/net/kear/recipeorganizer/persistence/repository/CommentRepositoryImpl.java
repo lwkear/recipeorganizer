@@ -59,7 +59,9 @@ public class CommentRepositoryImpl implements CommentRepository {
     	Criteria criteria = getSession().createCriteria(RecipeComment.class)
     		.add(Restrictions.eq("recipeId", recipeId))
    			.setProjection(Projections.rowCount());
-       	return (Long)criteria.uniqueResult();
+       	
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
 	}
 	
 	public void setCommentFlag(long id, int flag) {
@@ -91,6 +93,15 @@ public class CommentRepositoryImpl implements CommentRepository {
     	
     	List<FlaggedCommentDto> comments = (List<FlaggedCommentDto>) query.list();
     	return comments;
+    }
+    
+    public Long getFlaggedCount() {
+    	Criteria criteria = getSession().createCriteria(RecipeComment.class)
+    		.add(Restrictions.eq("flag", 1))
+   			.setProjection(Projections.rowCount());
+    	
+    	Object result = criteria.uniqueResult();
+       	return (result == null ? 0L : (Long)result);
     }
 	
     private Session getSession() {

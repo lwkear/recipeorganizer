@@ -2,18 +2,27 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
+import javax.validation.GroupSequence;
 import javax.validation.constraints.Size;
+import javax.validation.groups.Default;
 
-//import net.kear.recipeorganizer.validation.PasswordMatch;
-
+import net.kear.recipeorganizer.validation.PasswordMatch;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-//TODO: VALIDATION: @PasswordMatch
+@PasswordMatch(groups=NewPasswordDto.ValidMatch.class)
 public class NewPasswordDto implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
+	//Hibernate validation groups
+	public interface ValidSize {}
+	public interface ValidMatch {}
+	
+	//Hibernate validation sequence
+	@GroupSequence({Default.class,ValidSize.class,ValidMatch.class})
+	public interface NewPasswordDtoSequence {}
+	
 	@NotBlank
 	@Size(min=6, max=20)
 	private String password;

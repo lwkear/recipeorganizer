@@ -33,6 +33,7 @@ public interface RecipeService {
     public void addView(Recipe recipe);
     public Long getRecipeViewCount(Long recipeId);
     public Long getUserViewCount(Long userId);
+    public Long getRequireApprovalCount();
     public List<RecipeListDto> approveRecipesList();
     public List<RecipeListDto> listRecipes(Long userId);
     public List<RecipeDisplayDto> listRecipes(List<String> ids);

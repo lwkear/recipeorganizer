@@ -1,6 +1,15 @@
 function checkPasswordScore() {
 	//defaultOptions.ui.scores = [14, 26, 38, 50];
 	
+	var pswd = $('#password').val();
+	var confirmPswd = $('#confirmPassword').val();
+	
+	//do not show warning if either are empty
+	if (!pswd || !confirmPswd) {
+		document.forms["formWithPswd"].submit();
+		return;
+	}
+	
 	var score = $('#pswdScore').val();
 	if (score >= 38)
 		submitSignup();
@@ -31,7 +40,25 @@ $(function() {
 				$("#pswdScore").val(data.score);
 			}
 		},
-		//rules: {},
+		rules: {
+			activated: {
+				wordNotEmail: true,
+				wordLength: true,
+				wordSimilarToUsername: false,
+				wordSequences: true,
+				wordTwoCharacterClasses: false,
+				wordRepetitions: true,
+				wordLowercase: true,
+				wordUppercase: true,
+				wordOneNumber: true,
+				wordThreeNumbers: false,
+				wordOneSpecialChar: true,
+				wordTwoSpecialChar: false,
+				wordUpperLowerCombo: false,
+				wordLetterNumberCombo: false,
+				wordLetterNumberCharCombo: false
+			}
+		},
 		ui: {
 			verdicts: [getMessage('pswd.verdict.weak'),
 			           getMessage('pswd.verdict.normal'),
@@ -40,12 +67,15 @@ $(function() {
 			           getMessage('pswd.verdict.verystrong')],
 			errorMessages:
 			{
-				wordLength: getMessage('pswd.wordLength'),
 				wordNotEmail: getMessage('pswd.wordNotEmail'),
-				wordSimilarToUsername: getMessage('pswd.wordSimilarToUsername'),
-				wordTwoCharacterClasses: getMessage('pswd.wordTwoCharacterClasses'),
+				wordLength: getMessage('pswd.wordLength'),
+				wordSequences: getMessage('pswd.wordSequences'),
 				wordRepetitions: getMessage('pswd.wordRepetitions'),
-				wordSequences: getMessage('pswd.wordSequences')
+				wordLowercase: getMessage('pswd.wordLowercase'),
+				wordUppercase: getMessage('pswd.wordUppercase'),
+				wordOneNumber: getMessage('pswd.wordOneNumber'),
+				wordOneSpecialChar: getMessage('pswd.wordOneSpecialChar'),
+				wordPassword: getMessage('pswd.wordPassword')
 			},
 			container: "#pwd-container",
 			viewports: 
@@ -62,6 +92,11 @@ $(function() {
 				}
 		}
 	});
+	$("#password").pwstrength("addRule", "wordPassword", function (options, word, score) {
+		if (word.match(/password/ig))
+			return score;
+		return 0;},
+		-100, true);
 	
 	$(document)
 	.on('click', '#btnSubmit', function(e){

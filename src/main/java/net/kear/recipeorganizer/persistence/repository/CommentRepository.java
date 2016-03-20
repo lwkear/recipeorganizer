@@ -13,5 +13,6 @@ public interface CommentRepository {
     public List<CommentDto> listComments(long recipeId);
     public long getCommentCount(long recipeId);
     public void setCommentFlag(long id, int flag);
+    public Long getFlaggedCount();
     public List<FlaggedCommentDto> getFlaggedComments();
 }

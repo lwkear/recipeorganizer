@@ -33,7 +33,7 @@
 				<div class="col-sm-2">
 					<div class="col-sm-12">
 						<form>
-							<h4><spring:message code="recipe.table.category"></spring:message></h4>
+							<h5><spring:message code="recipe.table.category"></spring:message></h5>
 							<div class="form-group">
 								<c:forEach var="cat" items="${categories}">
 									<div class="checkbox">
@@ -47,7 +47,7 @@
 					</div>
 					<div class="col-sm-12">
 						<form>
-							<h4><spring:message code="recipe.table.source"></spring:message></h4>
+							<h5><spring:message code="recipe.table.source"></spring:message></h5>
 							<div class="form-group">
 								<c:forEach var="src" items="${sources}">
 									<div class="checkbox">
@@ -77,12 +77,12 @@
 									<td>
 										<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
 										<c:if test="${not empty recipe.photo}">
-											<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:75px;height:75px;"/></span>
+											<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:48px;height:48px;"/></span>
 										</c:if>	
 										<h4 class="std-blue">${recipe.name}</h4>
 										<p class="list-group-item-text">${recipe.description}</p>
 										<p class="clearfix"></p>										
-										</a>
+										</a>									
 									</td>
 									<td>cat${recipe.catId}</td>
 									<td>src${recipe.source}</td>

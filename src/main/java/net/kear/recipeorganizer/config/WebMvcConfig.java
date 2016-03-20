@@ -57,7 +57,6 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),
 						@PropertySource("classpath:filedir.properties"),
-						//@PropertySource("classpath:maintenance.properties"),
 						@PropertySource("classpath:solr.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
@@ -185,7 +184,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/validation"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(1);	//TODO: PRODUCTION: be sure to change this value in production
+        source.setCacheSeconds(0);	//TODO: PRODUCTION: be sure to change this value in production
         return source;
     }
 

@@ -38,6 +38,10 @@ public class CommentServiceImpl implements CommentService {
     public void setCommentFlag(long id, int flag) {
     	commentRepository.setCommentFlag(id, flag);
     }
+
+    public Long getFlaggedCount() {
+    	return commentRepository.getFlaggedCount();
+    }
     
     public List<FlaggedCommentDto> getFlaggedComments() {
     	return commentRepository.getFlaggedComments();

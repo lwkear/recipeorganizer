@@ -199,6 +199,10 @@ public class RecipeServiceImpl implements RecipeService {
     public Long getUserViewCount(Long userId) {
     	return recipeRepository.getUserViewCount(userId);
     }
+
+    public Long getRequireApprovalCount() {
+    	return recipeRepository.getRequireApprovalCount();
+    }
     
     public List<RecipeListDto> approveRecipesList() {
     	return recipeRepository.approveRecipesList();

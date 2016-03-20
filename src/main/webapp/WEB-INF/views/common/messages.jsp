@@ -41,12 +41,15 @@
 	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
 	<p id="exception.file.continuecancel"/><spring:message code="exception.file.continuecancel"></spring:message>
 	<p id="profile.photo"/><spring:message code="profile.photo"></spring:message>
-	<p id="pswd.wordLength"/><spring:message code="pswd.wordLength"></spring:message>
 	<p id="pswd.wordNotEmail"/><spring:message code="pswd.wordNotEmail"></spring:message>
-	<p id="pswd.wordSimilarToUsername"/><spring:message code="pswd.wordSimilarToUsername"></spring:message>
-	<p id="pswd.wordTwoCharacterClasses"/><spring:message code="pswd.wordTwoCharacterClasses"></spring:message>
-	<p id="pswd.wordRepetitions"/><spring:message code="pswd.wordRepetitions"></spring:message>
+	<p id="pswd.wordLength"/><spring:message code="pswd.wordLength"></spring:message>
 	<p id="pswd.wordSequences"/><spring:message code="pswd.wordSequences"></spring:message>
+	<p id="pswd.wordRepetitions"/><spring:message code="pswd.wordRepetitions"></spring:message>
+	<p id="pswd.wordLowercase"/><spring:message code="pswd.wordLowercase"></spring:message>
+	<p id="pswd.wordUppercase"/><spring:message code="pswd.wordUppercase"></spring:message>
+	<p id="pswd.wordOneNumber"/><spring:message code="pswd.wordOneNumber"></spring:message>
+	<p id="pswd.wordOneSpecialChar"/><spring:message code="pswd.wordOneSpecialChar"></spring:message>
+	<p id="pswd.wordPassword"/><spring:message code="pswd.wordPassword"></spring:message>	
 	<p id="pswd.verdict.weak"/><spring:message code="pswd.verdict.weak"></spring:message>
 	<p id="pswd.verdict.normal"/><spring:message code="pswd.verdict.normal"></spring:message>
 	<p id="pswd.verdict.medium"/><spring:message code="pswd.verdict.medium"></spring:message>

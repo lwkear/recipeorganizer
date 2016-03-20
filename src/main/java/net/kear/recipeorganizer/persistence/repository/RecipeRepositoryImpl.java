@@ -178,6 +178,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	Object result = criteria.uniqueResult();
     	return (result == null ? 0L : (Long)result);
     }
+    
+    public Long getRequireApprovalCount() {
+    	Criteria criteria = getSession().createCriteria(Recipe.class)
+    		.add(Restrictions.eq("approved", false))
+    		.setProjection(Projections.rowCount());
+        
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
+    }
   
     @SuppressWarnings("unchecked")
     public List<Favorites> getFavorites(Long userId) {

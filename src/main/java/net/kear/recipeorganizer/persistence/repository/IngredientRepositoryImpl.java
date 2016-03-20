@@ -112,9 +112,11 @@ public class IngredientRepositoryImpl implements IngredientRepository {
 
 	public long getNotReviewedCount() {
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
-    		.add(Restrictions.eq("reviewed", 0))
+    		.add(Restrictions.eq("reviewed", false))
    			.setProjection(Projections.rowCount());
-       	return (Long)criteria.uniqueResult();
+    	
+    	Object result = criteria.uniqueResult();
+    	return (result == null ? 0L : (Long)result);
 	}
  
     @SuppressWarnings("unchecked")

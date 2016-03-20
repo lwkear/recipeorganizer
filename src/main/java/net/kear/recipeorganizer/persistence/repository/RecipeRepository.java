@@ -27,6 +27,7 @@ public interface RecipeRepository {
     public void addView(Recipe recipe);
     public Long getRecipeViewCount(Long recipeId);
     public Long getUserViewCount(Long userId);
+    public Long getRequireApprovalCount();
     public List<Favorites> getFavorites(Long userId);
     public List<RecipeListDto> approveRecipesList();
     public List<RecipeListDto> listRecipes(Long userId);

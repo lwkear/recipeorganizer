@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -61,6 +62,8 @@ public class MaintenanceInterceptor extends HandlerInterceptorAdapter {
 	private MessageSource messages;
 	@Autowired
 	private SessionRegistry sessionRegistry;
+	@Autowired
+	private ServletContext servletContext;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -195,6 +198,13 @@ public class MaintenanceInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	public void setNextWindow() {
+		//remove any prior window message
+		if (servletContext != null) {
+			String attr = (String)servletContext.getAttribute("warningMaint");
+			if (attr != null)
+				servletContext.setAttribute("warningMaint", null);
+		}
+		
 		if (!maintenanceEnabled && !emergencyMaintenance) {
 			logger.debug("Maintenance not enabled");
 			return;

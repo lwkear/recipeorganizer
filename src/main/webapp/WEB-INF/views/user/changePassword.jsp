@@ -24,6 +24,11 @@
 						<c:set var="confirmPasswordError">${error}</c:set>
 					</c:forEach>
 				</c:if>
+				<c:if test="${fn:containsIgnoreCase(code, 'PasswordNotDuplicate')}">
+					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
+						<c:set var="duplicatePasswordError">${error}</c:set>
+					</c:forEach>
+				</c:if>
 			</c:forEach>
 		</c:if>
 	</spring:bind>
@@ -35,7 +40,7 @@
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
 				<h3><spring:message code="changepswd.title"></spring:message></h3>
-			</div>			
+			</div>
 			<div class="row">
 				<form:form name="formWithPswd" id="formWithPswd" role="form" modelAttribute="changePasswordDto" method="post">
 					<div class="col-sm-12">
@@ -48,10 +53,11 @@
 					<div class="col-sm-12" id="pwd-container">
 						<div class="col-sm-4 pwstrength_viewport_errors text-danger">
 						</div>
-						<div class="form-group col-sm-4 <c:if test="${not empty passwordError}">has-error</c:if>">
+						<div class="form-group col-sm-4 <c:if test="${not empty passwordError || not empty duplicatePasswordError}">has-error</c:if>">
 							<label class="control-label" for="password"><spring:message code="common.password"></spring:message></label>
 							<form:input class="form-control maxSize" type="password" id="password" path="password" autocomplete="off" data-max="${sizeMap['password.max']}"/>
 							<span class="text-danger" id="passwordErrMsg">${passwordError}</span>
+							<span class="text-danger" id="passwordErrMsg">${duplicatePasswordError}</span>
 						</div>
 					</div>
 					<div class="col-sm-12">
