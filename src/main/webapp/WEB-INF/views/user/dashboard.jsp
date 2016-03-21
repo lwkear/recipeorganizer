@@ -59,14 +59,14 @@
 			</c:if>
 			<c:if test="${(isEditor || isAdmin)}">
 				<div class="col-sm-4">
-					<h5><strong><spring:message code="dashboard.approvalrequired"></spring:message></strong>&nbsp;
-						<a class="btn btn-link btn-xs" href="../admin/approval"><span class="badge" style="background-color:#337ab7">${recipeApprovals}</span></a>
+					<h5><a class="btn btn-link btn-xs" href="../admin/approval"><span class="badge" style="background-color:#337ab7">${recipeApprovals}</span></a>
+					<strong><spring:message code="dashboard.approvalrequired"></spring:message></strong>&nbsp;						
 					</h5>	
-					<h5><strong><spring:message code="dashboard.flaggedcomments"></spring:message></strong>&nbsp;
-						<a class="btn btn-link btn-xs" href="../admin/comments"><span class="badge" style="background-color:#337ab7">${flaggedComments}</span></a>
+					<h5><a class="btn btn-link btn-xs" href="../admin/comments"><span class="badge" style="background-color:#337ab7">${flaggedComments}</span></a>
+					<strong><spring:message code="dashboard.flaggedcomments"></spring:message></strong>&nbsp;						
 					</h5>
-					<h5><strong><spring:message code="dashboard.ingredientreview"></spring:message></strong>&nbsp;
-						<a class="btn btn-link btn-xs" href="../admin/ingredients"><span class="badge" style="background-color:#337ab7">${ingredientReviews}</span></a>
+					<h5><a class="btn btn-link btn-xs" href="../admin/ingredients"><span class="badge" style="background-color:#337ab7">${ingredientReviews}</span></a>
+					<strong><spring:message code="dashboard.ingredientreview"></spring:message></strong>&nbsp;						
 					</h5>
 				</div>
 			</c:if>
