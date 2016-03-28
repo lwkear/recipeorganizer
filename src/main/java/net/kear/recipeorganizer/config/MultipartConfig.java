@@ -15,7 +15,6 @@ public class MultipartConfig {
 	public MultipartConfig() {}
 
 	public MultipartConfigElement getMultipartConfig() {
-		//String tempDir = env.getProperty("file.directory.temp");
 		String tempDir = null;
 		long maxFileSize = 1024*1024*5;
 		long maxRequestSize = 1024*1024*5*5;

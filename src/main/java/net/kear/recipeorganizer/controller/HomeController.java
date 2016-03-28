@@ -28,10 +28,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.RegistrationEmail;
 import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
 import net.kear.recipeorganizer.util.view.CommonView;
 
@@ -56,7 +60,14 @@ public class HomeController {
 	private CommonView commonView;
 	@Autowired
 	MaintenanceUtil maintUtil;
-	
+
+	@Autowired
+	private ReportGenerator reportGenerator; 
+	@Autowired
+	private EmailSender emailSender;
+	@Autowired
+	private RegistrationEmail registrationEmail; 
+
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("home GET");
@@ -190,7 +201,7 @@ public class HomeController {
 	/*** test page ***/
 	/*****************/
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
-	public String getTestpage(Model model, Locale locale) {
+	public String getTestpage(Model model, HttpServletRequest request, Locale locale) {
 		logger.debug("getTestpage");
 
 		/*String text = "celery, and ½ teaspoon salt";
@@ -234,10 +245,30 @@ public class HomeController {
         fmt = sdf.format(tdy.getTime());
         logger.debug("today: " + fmt);*/
         
-		MaintenanceDto maintDto = new MaintenanceDto();
+		//reportGenerator.createRecipePDF(421L);
 		
+		MaintenanceDto maintDto = new MaintenanceDto();
 		model.addAttribute("maintenanceDto", maintDto);
 		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
+		
+		/*User user = (User)userInfo.getUserDetails();
+        emailSender.setUser(user);
+     	emailSender.setLocale(request.getLocale());
+     	emailSender.setSubjectCode("user.email.signupSubject");
+     	emailSender.setMessageCode("user.email.signupSuccess");
+
+     	try {
+			emailSender.sendFreemarkeMessage();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
+		
+		//registrationEmail.init("Larry Kear", "lkear@outlook.com", locale);
+		/*registrationEmail.init("Peggy McKinney", "pmckinney1943@att.net", locale);*/
+		registrationEmail.init("Gene Kear", "gene@kear.co", locale);
+		registrationEmail.setTokenUrl("/confirmRegistration?token=123456");
+        registrationEmail.constructEmail();
+    	emailSender.sendTokenEmail(registrationEmail);
 		
 		return "test/testpage";
 	}

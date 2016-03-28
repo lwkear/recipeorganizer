@@ -1,16 +1,11 @@
 package net.kear.recipeorganizer.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +47,7 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
@@ -59,22 +55,6 @@ import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.maint.MaintAware;
 import net.kear.recipeorganizer.util.view.ViewReferer;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.SimpleFileResolver;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
-import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 @Controller
 public class DisplayController {
@@ -99,6 +79,8 @@ public class DisplayController {
 	private ExceptionLogService logService;
 	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+	private ReportGenerator reportGenerator; 
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -227,118 +209,18 @@ public class DisplayController {
 	public void getPhoto(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
 		logger.info("recipe/photo GET: fileName=" + fileName);
 
-		//if (fileName != null && !fileName.isEmpty())
 		if (!StringUtils.isBlank(fileName))
 			//errors are not fatal and will be logged by FileAction
 			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
-	
+
 	@RequestMapping(value = "/report/getHtmlRpt/{recipeId}", method = RequestMethod.GET)
-	public void getHtmlRpt(@PathVariable Long recipeId, HttpServletRequest request, HttpServletResponse response) {
+	public void getHtmlRpt(@PathVariable Long recipeId, HttpServletResponse response) {
 		logger.info("recipe/getHtmlRpt GET: recipeId=" + recipeId);
-
-		Map<String,Object> params = new HashMap<String,Object>();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipe.jasper"));    	
-    	
-    	String dirPath = request.getSession().getServletContext().getRealPath("/jasper/");
-    	File reportsDir = new File(dirPath);
-
-		List<Recipe> list = new ArrayList<Recipe>();
-		Recipe recipe = recipeService.getRecipe(recipeId);
-		list.add(recipe);
-    	JRDataSource src = new JRBeanCollectionDataSource(list);
-    	
-    	try {
-        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
-        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
-        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, src);
-        	
-        	HtmlExporter exporter = new HtmlExporter();
-
-        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
-            exporter.setExporterInput(expInput);
-            SimpleHtmlReportConfiguration reportExportConfiguration = new SimpleHtmlReportConfiguration();
-            exporter.setConfiguration(reportExportConfiguration);
-            
-            SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(baos);
-            exporter.setExporterOutput(htmlOutput);
-            exporter.exportReport();
-
-    	} catch (JRException ex) {
-			//log the error and do nothing - the client will notify the user of the lack of a report
-			logService.addException(ex);
-    		return;
-		}
-    	
-        response.setContentType("text/html");
-        response.setHeader("Content-disposition", "inline; filename=RecipePrint.html");
-        ServletOutputStream outStream = null;
-    	
-        try {
-        	outStream = response.getOutputStream();
-        	baos.writeTo(outStream);
-        } catch (IOException ex) {
-			//log the error and do nothing - the client will notify the user of the lack of a report
-			logService.addException(ex);
-		}
-	}
-
-	@RequestMapping(value = "/report/getPdfRpt/{recipeId}", method = RequestMethod.GET)
-	public void getPdfRpt(@PathVariable Long recipeId, HttpServletRequest request, HttpServletResponse response) {
-		logger.info("recipe/getPdfRpt GET: recipeId=" + recipeId);
-
-		Map<String,Object> params = new HashMap<String,Object>();
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		
-    	File reportFile = new File(request.getSession().getServletContext().getRealPath("/jasper/recipe.jasper"));    	
-    	
-    	String dirPath = request.getSession().getServletContext().getRealPath("/jasper/");
-    	File reportsDir = new File(dirPath);
-
-		List<Recipe> list = new ArrayList<Recipe>();
-		Recipe recipe = recipeService.getRecipe(recipeId);
-		list.add(recipe);
-    	JRDataSource src = new JRBeanCollectionDataSource(list);
-    	
-    	try {
-        	JasperReport jasperReport = (JasperReport)JRLoader.loadObjectFromFile(reportFile.getPath());
-        	jasperReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
-        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, src);
-        	
-        	JRPdfExporter exporter = new JRPdfExporter();
-
-        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
-            exporter.setExporterInput(expInput);
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
-            
-            SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
-            configuration.setPdfJavaScript("this.print({bUI: false,bSilent: true,bShrinkToFit: true});");
-        	
-        	exporter.setConfiguration(configuration);
-        	exporter.exportReport();
-        } catch (JRException ex) {
-			//log the error and do nothing - the client will notify the user of the lack of a report
-			logService.addException(ex);
-			return;
-		}
-
-        response.setContentType("text/html");
-        response.setHeader("Content-disposition", "inline; filename=TestPrint.html");
-        ServletOutputStream outStream = null;
-    	
-        try {
-        	outStream = response.getOutputStream();
-        	baos.writeTo(outStream);
-        } catch (IOException ex) {
-			//log the error and do nothing - the client will notify the user of the lack of a report
-			logService.addException(ex);
-		}
-	}
 	
+		reportGenerator.createRecipeHtml(recipeId, response);
+	}
+
 	/*************************/
 	/*** Favorites handler ***/
 	/*************************/

@@ -39,7 +39,7 @@
 						<tr id="${comment.id}">
 							<td>${comment.recipeName}</td>
 							<td>${comment.userComment}</td>
-							<td>${comment.dateAdded}</td>
+							<td><fmt:formatDate type="both" timeStyle="short" value="${comment.dateAdded}" /></td>
 							<td>${comment.lastName},&nbsp;${comment.firstName}</td>
 							<td>
 								<button class="btn btn-success btn-xs" type="button" onclick="removeCommentFlag(${comment.id})"

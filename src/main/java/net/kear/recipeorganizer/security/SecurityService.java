@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 
 @Service
@@ -26,7 +27,9 @@ public class SecurityService implements UserSecurityService {
 
 	@Autowired
 	private LoginAttemptService loginAttemptService;
-
+	@Autowired
+	private UserMessageService userMessageService; 
+	
 	private UserService userService;	
 	
     @Autowired
@@ -80,13 +83,17 @@ public class SecurityService implements UserSecurityService {
         	bUpdateUser = true;
         }
         else
-        	if (user.isLocked()) {
-            	user.setLocked(0);
-            	bUpdateUser = true;
-        	}
-		
+    	if (user.isLocked()) {
+        	user.setLocked(0);
+        	bUpdateUser = true;
+    	}
+
 		if (bUpdateUser)
 			userService.updateUser(user);
+
+		long count = userMessageService.getNotViewedCount(user.getId());
+		if (count > 0)
+			user.setNewMsgCount(count);
 		
 		return new CustomUserDetails(user);
 	}

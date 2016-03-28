@@ -20,7 +20,6 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
 	
 	@Autowired
     private UserService userService;
-
 	@Autowired
 	private EmailSender emailSender;
 	

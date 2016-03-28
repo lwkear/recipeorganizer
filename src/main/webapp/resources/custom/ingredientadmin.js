@@ -218,10 +218,6 @@ function removeRow(ingredId) {
 	table.draw();
 }
 
-function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
-}
-
 $(function() {
 	
 	initIngredientsTA();

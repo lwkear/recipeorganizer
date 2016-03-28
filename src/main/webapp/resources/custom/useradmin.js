@@ -164,10 +164,6 @@ function userUpdate(user) {
 	table.cell(ndx,9).data(user.role.name).draw();
 };
 
-function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
-}
-
 $(function() {
 	
 	$('#userList').DataTable({

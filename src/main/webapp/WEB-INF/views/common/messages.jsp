@@ -72,4 +72,11 @@
 	<p id="ingredadmin.table.infoFiltered"/><spring:message code="ingredadmin.table.infoFiltered"></spring:message>
 	<p id="ingredadmin.table.lengthMenu"/><spring:message code="ingredadmin.table.lengthMenu"></spring:message>
 	<p id="ingredadmin.table.zeroRecords"/><spring:message code="ingredadmin.table.zeroRecords"></spring:message>
+	<p id="usermessage.to"/><spring:message code="usermessage.to"></spring:message>	
+	<p id="messages.table.emptyTable"/><spring:message code="messages.table.emptyTable"></spring:message>
+	<p id="messages.table.info"/><spring:message code="messages.table.info"></spring:message>
+	<p id="messages.table.infoEmpty"/><spring:message code="messages.table.infoEmpty"></spring:message>
+	<p id="messages.table.infoFiltered"/><spring:message code="messages.table.infoFiltered"></spring:message>
+	<p id="messages.table.lengthMenu"/><spring:message code="messages.table.lengthMenu"></spring:message>
+	<p id="messages.table.zeroRecords"/><spring:message code="messages.table.zeroRecords"></spring:message>
 </div>

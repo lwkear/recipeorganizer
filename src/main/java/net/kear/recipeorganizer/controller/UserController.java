@@ -20,20 +20,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -64,15 +68,18 @@ import net.kear.recipeorganizer.persistence.dto.NewPasswordDto.NewPasswordDtoSeq
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
+import net.kear.recipeorganizer.persistence.dto.UserMessageDto;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.UserMessage;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.CookieUtil;
@@ -102,6 +109,8 @@ public class UserController {
 	private IngredientService ingredientService;
 	@Autowired
 	private CommentService commentService;
+	@Autowired
+	private UserMessageService userMessageService;
 	@Autowired
 	private MessageSource messages;
 	@Autowired
@@ -231,8 +240,7 @@ public class UserController {
 		}
 		
        	logger.debug("user added - publishing event");
-       	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-       	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, request.getLocale(), appUrl));
+       	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, locale));
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
@@ -860,6 +868,59 @@ public class UserController {
      	emailSender.sendSimpleEmailMessage();
 		
 		return "redirect:/user/login";
+	}
+
+	/****************************/
+	/*** User message handler ***/
+	/****************************/
+	@MaintAware
+	@RequestMapping(value = "user/messages", method = RequestMethod.GET)
+	public String listMessages(ModelMap model, Locale locale) {
+		logger.info("user/messages GET");
+	
+		User user = (User)userInfo.getUserDetails();
+		List<UserMessageDto> messages = userMessageService.listMessages(user.getId()); 
+	
+		if (messages.size() > 0 && user.getNewMsgCount() > 0) {
+			//set the viewed flag
+			userMessageService.setUserViewed(user.getId());
+			//re-authenticate the user so that the nav bar will no longer show new messages
+			userSecurityService.reauthenticateUser(user);
+		}
+		
+		model.addAttribute("messages", messages);
+
+		return "user/messages";
+	}
+	
+	@RequestMapping(value = "user/sendMessage", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject sendUserMessage(@RequestBody UserMessage userMessage) throws RestException {
+		logger.info("recipe/addFavorite POST");
+		
+		try {
+			userMessageService.addMessage(userMessage);
+		} catch (Exception ex) {
+			throw new RestException("exception.sendUserMessage", ex);
+		}
+		
+		return new ResponseObject();
+	}
+
+	@RequestMapping(value="user/deleteMessage", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteMessage(@RequestParam("messageId") Long messageId) throws RestException {
+		logger.info("user/deleteMessage POST: messageId=" + messageId);
+		
+		try {
+			userMessageService.deleteMessage(messageId);
+		} catch (Exception ex) {
+			throw new RestException("exception.deleteMessage", ex);
+		}
+
+		return new ResponseObject();
 	}
 
 	/********************/

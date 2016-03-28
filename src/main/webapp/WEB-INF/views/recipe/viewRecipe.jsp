@@ -74,8 +74,9 @@
 							</a>
 						</c:if>
 						<c:if test="${userId != recipe.user.id}">
-							<button type="button" class="btn btn-link btn-sm" id="noteRight" style="margin-left:5px;font-size:20px"
-								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.message"></spring:message>">
+							<button type="button" class="btn btn-link btn-sm" id="userMessage" 
+								onclick="sendMessage(${viewerId}, ${recipe.user.id}, '${recipe.user.firstName}', '${recipe.user.lastName}', ${recipe.id})" 
+								style="margin-left:5px;font-size:20px" data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.message"></spring:message>">
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
 						</c:if>						
@@ -223,9 +224,12 @@
 	</div>
 </div>
 
+<%@include file="../user/userMessage.jsp" %>
+
 </body>
 
 <!-- include recipe-specific routines -->
 <script src="<c:url value="/resources/custom/viewrecipe.js" />"></script>
+<script src="<c:url value="/resources/custom/usermessage.js" />"></script>
 
 </html>

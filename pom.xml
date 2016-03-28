@@ -19,6 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jasper-version>6.2.0</jasper-version>
 		<jackson-version>2.7.2</jackson-version>
+		<freemarker-version>2.3.23</freemarker-version>
 	</properties>
 
 	<dependencyManagement>
@@ -263,6 +264,11 @@
 			<artifactId>commons-configuration</artifactId>
 			<version>1.10</version>
 		</dependency>		
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>		
 
 		<!-- Solr -->
 		<dependency>
@@ -277,6 +283,14 @@
 			<artifactId>jasperreports</artifactId>
 			<version>${jasper-version}</version>
 		</dependency>
+
+		<!-- Freemarker -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker-version}</version>
+		</dependency>
+
 	</dependencies>
 
      <build>

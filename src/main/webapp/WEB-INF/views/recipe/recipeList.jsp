@@ -46,7 +46,7 @@
 							<c:if test="${fav}">
 								<td>${recipe.firstName} ${recipe.lastName}</td>
 							</c:if>
-							<td>${recipe.submitted}</td>
+							<td><fmt:formatDate type="date" value="${recipe.submitted}" /></td>
 							<td>${recipe.category}</td>
 							<td>${recipe.sourcetype}</td>
 							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}"

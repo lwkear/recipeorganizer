@@ -123,10 +123,6 @@ function approveRecipe(recipeId) {
 	});
 }
 
-function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
-}
-
 $(document).ready(function() {
 	$('#recipeList').DataTable({
 		language : {

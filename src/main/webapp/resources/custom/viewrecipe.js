@@ -241,10 +241,6 @@ function removeFavorite(viewerId, recipeId) {
 	});
 }
 
-function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
-}
-
 function getTitle() {
 	var title = $("#popoverTitle").html();
 	return title;

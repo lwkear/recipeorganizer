@@ -12,6 +12,7 @@ import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.RegistrationEmail;
 
 @Component
 public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
@@ -20,9 +21,10 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 	
 	@Autowired
     private UserService userService;
-
 	@Autowired
 	private EmailSender emailSender;
+	@Autowired
+	private RegistrationEmail registrationEmail; 
 	
     @Override
     public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
@@ -37,12 +39,12 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         final String token = UUID.randomUUID().toString();
         userService.createUserVerificationToken(user, token);
 
-    	String confirmationUrl = event.getAppUrl() + "/confirmRegistration?token=" + token;
-    	
-    	emailSender.setUser(user);
-    	emailSender.setLocale(event.getLocale());
-    	emailSender.setSubjectCode("user.email.signupSubject");
-    	emailSender.setMessageCode("user.email.signupSuccess");
-    	emailSender.sendTokenEmailMessage(confirmationUrl);
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmRegistration?token=" + token;
+        
+        registrationEmail.init(userName, user.getEmail(), event.getLocale());
+        registrationEmail.setTokenUrl(confirmationUrl);
+        registrationEmail.constructEmail();
+    	emailSender.sendTokenEmail(registrationEmail);
     }
 }

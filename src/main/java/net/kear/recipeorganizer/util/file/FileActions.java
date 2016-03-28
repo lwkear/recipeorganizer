@@ -21,5 +21,5 @@ public interface FileActions {
 	public boolean deleteFile(FileType fileType, long id, String fileName);
 	public String fileExists(FileType fileType, long id);
 	public boolean fileExists(FileType fileType, long id, String fileName);
-	public String getErrorMessage(FileResult fileResult, Locale locale);	
+	public String getErrorMessage(FileResult fileResult, Locale locale);
 }

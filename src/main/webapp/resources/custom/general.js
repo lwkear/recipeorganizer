@@ -263,6 +263,10 @@ function continueSubmitCancel(e) {
 	$("#cancelSubmitBtn").click();
 }
 
+function postFailed(error) {
+	displayOKMsg(getMessage('errordlg.title'), error);
+}
+
 function fixTags() {
 	var tags = $("#tags").html();
 	console.log(tags);

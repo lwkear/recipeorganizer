@@ -15,6 +15,7 @@
 	<sec:authentication var="firstname" property="principal.firstName"/>
 	<sec:authentication var="lastname" property="principal.lastName" />
 	<sec:authentication var="userId" property="principal.id" />
+	<sec:authentication var="newmsgs" property="principal.newMsgCount" />
 </c:if>
 
 <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
@@ -25,12 +26,12 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<c:choose>
+			<c:choose>				
 				<c:when test="${isAuth}">
-					<a class="navbar-brand" href="<c:url value="/user/dashboard" />"><spring:message code="menu.product"></spring:message></a>
+					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo3.png"/>" height=36 style="margin-top:7px"></a>
 				</c:when>
 				<c:otherwise>
-					<a class="navbar-brand" href="<c:url value="/home" />"><spring:message code="menu.product"></spring:message></a>
+					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo3.png"/>" height=36 style="margin-top:7px"></a>
 				</c:otherwise>
 			</c:choose>			
 		</div>
@@ -82,10 +83,15 @@
 					<c:url var="logoutUrl" value="/logout"/>
 					<form:form id="logoutForm" action="${logoutUrl}" method="post">
 						<ul class="nav navbar-nav navbar-right">
+							<li><a href="<c:url value="/user/messages" />"><span class="glyphicon glyphicon-inbox"></span>
+									<c:if test="${newmsgs > 0}"><span class="badge" style="background-color:red;margin-bottom:5px;position:relative">${newmsgs}</span></c:if>
+								</a></li>
 							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${firstname}<span class="caret"></span></a>
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+									<span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${firstname}<span class="caret"></span></a>
 						        <ul class="dropdown-menu" role="menu">
 						        	<li><a href="<c:url value="/user/dashboard" />"><spring:message code="menu.dashboard"></spring:message></a></li>
+						        	<li><a href="<c:url value="/user/messages" />"><spring:message code="menu.messages"></spring:message></a></li>						        	
 						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
 						        </ul>
@@ -117,6 +123,5 @@
 </nav>
 
 <c:if test="${empty vertFiller}">
-	<div class="container verticalFiller">
-	</div>
+	<div class="container verticalFiller"></div>
 </c:if>

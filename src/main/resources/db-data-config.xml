@@ -1,0 +1,22 @@
+<dataConfig>
+	<dataSource driver="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@localhost:1521:xe"
+		user="recipe" password="recipe" />
+	<document>
+		<entity name="recipe" query="select ID, USER_ID as USERID, NAME, SERVINGS, PHOTO, ALLOW_SHARE as ALLOWSHARE, APPROVED, CATEGORY_ID as CATID, DESCRIPTION, NOTES, BACKGROUND from recipe" transformer="ClobTransformer">
+			<field column="DESCRIPTION" name="description" clob="true"></field>
+			<field column="NOTES" name="notes" clob="true"></field>
+			<field column="BACKGROUND" name="background" clob="true"></field>
+			<entity name="source" query="select TYPE as sourcetype, COOKBOOK, MAGAZINE, NEWSPAPER, PERSON, WEBSITE_URL as website, OTHER from source where RECIPE_ID='${recipe.ID}'"></entity>
+			<entity name="category" query="select NAME as catname from category where ID='${recipe.CATID}'"></entity>
+			<entity name="instruction_section" query="select ID from instruction_section where RECIPE_ID='${recipe.ID}'">			
+				<entity name="instructions" query="select DESCRIPTION as instructdesc from instructions where SECTION_ID='${instruction_section.ID}'"></entity>
+			</entity>
+			<entity name="ingredient_section" query="select ID from ingredient_section where RECIPE_ID='${recipe.ID}'">			
+				<entity name="recipe_ingredients" query="select INGREDIENT_ID from recipe_ingredients where SECTION_ID='${ingredient_section.ID}'">			
+					<entity name="ingredient" query="select ID as ingredid, NAME as ingredname from ingredient where ID='${recipe_ingredients.INGREDIENT_ID}'"></entity>
+				</entity>
+			</entity>
+			<entity name="recipe" query="select t.column_value as tag from recipe r, table(r.TAGS) t where r.ID='${recipe.ID}'"></entity>
+		</entity>
+	</document>
+</dataConfig>

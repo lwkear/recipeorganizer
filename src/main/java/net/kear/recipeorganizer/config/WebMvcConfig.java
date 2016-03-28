@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.servlet.ServletContext;
 
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
+import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -29,6 +30,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -76,7 +78,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
         registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(31556926);
     }
-	
+
 	/*** JSON configuration ***/
 	//required in order to return a String as a JSON response to an AJAX method;
 	//by default the first converter in the array returns the String as text/javascript, not JSON, so removing
@@ -140,19 +142,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return solr;
 	}	
 	
-    //this is an easy way to avoid creating a .GET method for every single page;
-	//works best if there is little content on the page, e.g., error pages
-	/*@Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-		logger.debug("addViewControllers");
-        super.addViewControllers(registry);
-        registry.addViewController("/recipe/basics.htm");        
-        registry.addViewController("/recipe/ingredients.htm");
-        registry.addViewController("/recipe/instructions.htm");
-        registry.addViewController("/recipe/optional.htm");
-        registry.addViewController("/recipe/end.htm");
-    }*/
-
 	/*** webflow configuration ***/
 	@Bean
 	public FlowHandlerMapping flowHandlerMapping() {
@@ -220,6 +209,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return interceptor;
 	}
 	
+	/*** system maintenance configuration ***/
 	@Bean
 	public MaintenanceProperties maintProps() {
 		return new MaintenanceProperties(servletContext);
@@ -236,7 +226,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return interceptor;
 	}
 
-    public void addInterceptors(InterceptorRegistry registry) {
+	/*** interceptors ***/
+	public void addInterceptors(InterceptorRegistry registry) {
     	logger.debug("addInterceptors");
     	registry.addInterceptor(localeInterceptor());
     	registry.addInterceptor(maintenanceInterceptor());
@@ -258,7 +249,24 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         return mailSenderImpl;
     }
-		
+	
+	@Bean
+	public FreeMarkerConfigurationFactoryBean freemarkerConfig() {
+		FreeMarkerConfigurationFactoryBean config = new FreeMarkerConfigurationFactoryBean();
+		config.setTemplateLoaderPath("WEB-INF/emails");
+		config.setDefaultEncoding("UTF-8");
+		config.setPreferFileSystemAccess(false);	//TODO: EMAIL: turn this on for production?
+		return config;
+	}
+	
+    /*** jasper reports configuration ***/
+	@Bean
+	public ReportGenerator reportGenerator() {
+		ReportGenerator generator = new ReportGenerator(servletContext);
+		generator.configureReports();
+		return generator;
+	}
+	
 	//TODO: GUI: create favicon
 	/*@Controller
     static class FaviconController {

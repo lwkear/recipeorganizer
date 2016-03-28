@@ -45,12 +45,10 @@ public class FileActionsImpl implements FileActions {
 	private final Logger logger = LoggerFactory.getLogger(getClass());	
 	
 	@Autowired
-    private Environment env;
-	@Autowired
 	private ExceptionLogService logService;
 	@Autowired
 	private MessageSource messages;
-
+	
 	private String avatarDir;	
 	private String recipeDir;
 	

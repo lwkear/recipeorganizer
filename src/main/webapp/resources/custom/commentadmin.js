@@ -19,7 +19,6 @@ function deleteComment(commentId) {
 	});
 }
 
-
 /********************************/
 /*** unflag comment functions ***/
 /********************************/
@@ -47,10 +46,6 @@ function removeRow(commentId) {
 	var row = table.row('#' + commentId);
 	row.remove();
 	table.draw();
-}
-
-function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
 }
 
 $(function() {

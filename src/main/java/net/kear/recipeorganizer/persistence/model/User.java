@@ -91,6 +91,9 @@ public class User implements Serializable {
 	@Transient
 	private long numRecipes = 0;
 	
+	@Transient
+	private long newMsgCount;
+	
 	@ManyToOne(fetch=FetchType.EAGER)
     @JoinTable(name = "USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID") , 
     	inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") )
@@ -102,7 +105,7 @@ public class User implements Serializable {
 	public User() {}
 	
 	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, Date dateAdded, 
-				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean loggedIn, long numRecipes, Role role, UserProfile userProfile) {
+				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean loggedIn, long numRecipes, long newMsgCount, Role role, UserProfile userProfile) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -118,6 +121,7 @@ public class User implements Serializable {
 		this.passwordExpired = passwordExpired;
 		this.loggedIn = loggedIn;
 		this.numRecipes = numRecipes;
+		this.newMsgCount = newMsgCount;
 		this.role = role;
 		this.userProfile = userProfile;
 		this.passwordExpiryDate = passwordExpiryDate;
@@ -139,6 +143,7 @@ public class User implements Serializable {
 		this.passwordExpiryDate = user.passwordExpiryDate;
 		this.loggedIn = user.loggedIn;
 		this.numRecipes = user.numRecipes;
+		this.newMsgCount = user.newMsgCount;
 		this.role = user.role;
 		this.userProfile = user.userProfile;
 	}
@@ -294,8 +299,16 @@ public class User implements Serializable {
 	public void setNumRecipes(long numRecipes) {
 		this.numRecipes = numRecipes;
 	}
+	
+    public long getNewMsgCount() {
+		return newMsgCount;
+	}
 
-    public Role getRole() {
+	public void setNewMsgCount(long newMsgCount) {
+		this.newMsgCount = newMsgCount;
+	}
+
+	public Role getRole() {
         return role;
     }
 
