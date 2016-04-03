@@ -14,7 +14,68 @@
 	
 	<div class="container container-white">
 	 	<div class="col-sm-12">
-			<div class="page-header"> 		
+
+
+	<div class="col-sm-12">
+		<iframe id="iframerpt1" name="iframerpt1" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1463"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1101"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1522"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=741"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1141"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=421"/>"></iframe>
+	</div>
+	<div class="col-sm-12">
+		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1462"/>"></iframe>
+	</div>
+
+<%--
+
+$F{source.type} == null ? "" : 
+($F{source.cookbook} != null ? $F{source.cookbook} : 
+($F{source.magazine} != null ? $F{source.magazine} : 
+($F{source.newspaper} != null ? $F{source.newspaper} : 
+($F{source.other} != null ? $F{source.other} : 
+($F{source.person} != null ? $F{source.person} : 
+($F{source.websiteUrl} != null ? $F{source.websiteUrl} : 
+""))))))
+
+ +
+$V{SourcePerson} + $V{SourceOther} + $V{SourceMagazine} + $V{SourceNewspaper}
+
+	<variable name="SourceLabel" class="java.lang.String">
+		<variableExpression><![CDATA[$F{source.type} == null ? "" :  $R{report.source} + " "]]></variableExpression>
+	</variable>
+	<variable name="Source" class="java.lang.String">
+		<variableExpression><![CDATA[$F{source.type} == null ? "" : ($F{source.cookbook} != null ? $F{source.cookbook}  : "")]]></variableExpression>
+	</variable>
+
+			<printWhenExpression><![CDATA[($F{servings} != null || ($F{prepHours} > 0 || $F{prepMinutes} > 0) || $F{source.type} != null) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+
+			<textField isBlankWhenNull="true">
+				<reportElement x="300" y="10" width="250" height="20" uuid="9b0fbcfc-52d6-46fc-853b-7d9440699f56">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{source.type} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement markup="styled">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{SourceLabel} + "</style>" + $V{Source}]]></textFieldExpression>
+			</textField>
+
+ 			<div class="page-header"> 		
 				<h3><spring:message code="maintenance.title"></spring:message></h3>
 			</div>
 
@@ -118,6 +179,8 @@
 				</div>
 			</div>				
 			</form:form>
+ --%>
+
 		</div>
 	</div>
 

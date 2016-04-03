@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
@@ -28,14 +30,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
-import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.AccountChangeEmail;
 import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.PasswordEmail;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
+import net.kear.recipeorganizer.util.email.ShareRecipeEmail;
 import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
 import net.kear.recipeorganizer.util.view.CommonView;
 
@@ -67,7 +71,17 @@ public class HomeController {
 	private EmailSender emailSender;
 	@Autowired
 	private RegistrationEmail registrationEmail; 
-
+	@Autowired
+	private PasswordEmail passwordEmail; 
+	@Autowired
+	private AccountChangeEmail accountChangeEmail; 
+	@Autowired
+	private ShareRecipeEmail shareRecipeEmail;
+	@Autowired
+	private ServletContext servletContext;
+	@Autowired
+	private Environment env;
+	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("home GET");
@@ -244,12 +258,10 @@ public class HomeController {
         logger.debug("lastLogin + 365: " + fmt);
         fmt = sdf.format(tdy.getTime());
         logger.debug("today: " + fmt);*/
-        
-		//reportGenerator.createRecipePDF(421L);
 		
-		MaintenanceDto maintDto = new MaintenanceDto();
+		/*MaintenanceDto maintDto = new MaintenanceDto();
 		model.addAttribute("maintenanceDto", maintDto);
-		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
+		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));*/
 		
 		/*User user = (User)userInfo.getUserDetails();
         emailSender.setUser(user);
@@ -263,12 +275,48 @@ public class HomeController {
 			e.printStackTrace();
 		}*/
 		
-		//registrationEmail.init("Larry Kear", "lkear@outlook.com", locale);
-		/*registrationEmail.init("Peggy McKinney", "pmckinney1943@att.net", locale);*/
-		registrationEmail.init("Gene Kear", "gene@kear.co", locale);
-		registrationEmail.setTokenUrl("/confirmRegistration?token=123456");
+		/*registrationEmail.init("Gene Kear", "kear.larry@gmail.com", locale);
+		registrationEmail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
         registrationEmail.constructEmail();
-    	emailSender.sendTokenEmail(registrationEmail);
+    	emailSender.sendHtmlEmail(registrationEmail);
+
+		passwordEmail.init("Larry Kear", "kear.larry@gmail.com", locale);
+        String confirmationUrl = "/confirmPassword?id=131&token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920";
+		passwordEmail.setTokenUrl(confirmationUrl);
+		passwordEmail.constructEmail();
+    	emailSender.sendHtmlEmail(passwordEmail);
+		
+		accountChangeEmail.init("William Kear", "kear.larry@gmail.com", locale);
+		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
+		accountChangeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(accountChangeEmail);
+
+		accountChangeEmail.init("Peggy McKinney", "kear.larry@gmail.com", locale);
+		accountChangeEmail.setChangeType(ChangeType.PROFILE);
+		accountChangeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(accountChangeEmail);*/
+
+    	reportGenerator.createRecipePDF(741L, locale);
+    	reportGenerator.createRecipePDF(1463L, locale);
+    	reportGenerator.createRecipePDF(1101L, locale);
+    	reportGenerator.createRecipePDF(1522L, locale);
+    	reportGenerator.createRecipePDF(1141L, locale);
+    	reportGenerator.createRecipePDF(421L, locale);
+    	reportGenerator.createRecipePDF(1462L, locale);
+
+    	/*
+    	//shareRecipeEmail.init("Larry Kear", "kear.larry@gmail.com", locale);
+    	shareRecipeEmail.init("Larry Kear", "lkear@outlook.com", locale);
+		shareRecipeEmail.setSenderName("Larry Kear");
+		shareRecipeEmail.setUserFirstName("Larry");
+		shareRecipeEmail.setUserMessage("Hope you enjoy this recipe!");
+		shareRecipeEmail.setRecipeName("Chicken Pot Pie for Two");
+		shareRecipeEmail.setPdfAttached(true);
+		shareRecipeEmail.setPdfFileName(pdfFileName);
+		shareRecipeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(shareRecipeEmail);*/
+
+		//reportGenerator.configureReports(servletContext, env);
 		
 		return "test/testpage";
 	}

@@ -76,7 +76,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
-        registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(31556926);
+        //registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(31556926);
     }
 
 	/*** JSON configuration ***/
@@ -262,8 +262,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     /*** jasper reports configuration ***/
 	@Bean
 	public ReportGenerator reportGenerator() {
-		ReportGenerator generator = new ReportGenerator(servletContext);
-		generator.configureReports();
+		ReportGenerator generator = new ReportGenerator();
+		generator.configureReports(servletContext, env);
 		return generator;
 	}
 	

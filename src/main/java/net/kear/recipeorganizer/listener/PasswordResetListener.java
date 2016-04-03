@@ -12,6 +12,7 @@ import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.PasswordEmail;
 
 @Component
 public class PasswordResetListener implements ApplicationListener<OnPasswordResetEvent> {
@@ -22,6 +23,8 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
     private UserService userService;
 	@Autowired
 	private EmailSender emailSender;
+	@Autowired
+	private PasswordEmail passwordEmail; 
 	
     @Override
     public void onApplicationEvent(final OnPasswordResetEvent event) {
@@ -35,12 +38,11 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
         final String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
-        String confirmationUrl = event.getAppUrl() + "/confirmPassword?id=" + user.getId() + "&token=" + token;
-    	
-    	emailSender.setUser(user);
-    	emailSender.setLocale(event.getLocale());
-    	emailSender.setSubjectCode("user.email.accountChange");
-    	emailSender.setMessageCode("user.email.passwordResetMessage");
-    	emailSender.sendTokenEmailMessage(confirmationUrl);
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + token;
+        passwordEmail.init(userName, user.getEmail(), event.getLocale());
+        passwordEmail.setTokenUrl(confirmationUrl);
+        passwordEmail.constructEmail();
+    	emailSender.sendHtmlEmail(passwordEmail);
     }
 }

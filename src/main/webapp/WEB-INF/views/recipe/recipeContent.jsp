@@ -139,7 +139,7 @@
 			<table class="table table-condensed recipe-table">
 				<tbody>				
 					<c:forEach var="instrct" items="${section.instructions}">
-						<tr><td><strong>${instrct.sequenceNo}:</strong>&nbsp;&nbsp;${instrct.description}</td></tr>
+						<tr><td><strong>${instrct.sequenceNo}.</strong>&nbsp;&nbsp;${instrct.description}</td></tr>
 					</c:forEach>
 				</tbody>
 			</table>

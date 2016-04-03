@@ -86,7 +86,11 @@ import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.AccountChangeEmail;
 import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.PasswordEmail;
+import net.kear.recipeorganizer.util.email.RegistrationEmail;
+import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileConstant;
 import net.kear.recipeorganizer.util.file.FileResult;
@@ -131,6 +135,12 @@ public class UserController {
 	private ConstraintMap constraintMap;
 	@Autowired
 	private MaintenanceInterceptor maintInterceptor; 
+	@Autowired
+	private RegistrationEmail registrationEmail; 
+	@Autowired
+	private PasswordEmail passwordEmail; 
+	@Autowired
+	private AccountChangeEmail accountChangeEmail; 
 	
     /*********************/
     /*** Login handler ***/
@@ -341,14 +351,13 @@ public class UserController {
         	throw new VerificationResendException(ex);
         }
 
-        final String confirmationUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/confirmRegistration?token=" 
-        		+ newToken.getToken();
-        
-        emailSender.setUser(user);
-     	emailSender.setLocale(request.getLocale());
-     	emailSender.setSubjectCode("user.email.signupSubject");
-     	emailSender.setMessageCode("user.email.signupSuccess");
-     	emailSender.sendTokenEmailMessage(confirmationUrl);
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmRegistration?token=" + newToken.getToken();
+
+        registrationEmail.init(userName, user.getEmail(), locale);
+        registrationEmail.setTokenUrl(confirmationUrl);
+        registrationEmail.constructEmail();
+    	emailSender.sendHtmlEmail(registrationEmail);
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
@@ -455,11 +464,12 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}
 		
-        emailSender.setUser(user);
-     	emailSender.setLocale(locale);
-     	emailSender.setSubjectCode("user.email.accountChange");
-     	emailSender.setMessageCode("user.email.profileChange");
-     	emailSender.sendSimpleEmailMessage();
+        String userName = user.getFirstName() + " " + user.getLastName();
+
+        accountChangeEmail.init(userName, user.getEmail(), locale);
+		accountChangeEmail.setChangeType(ChangeType.PROFILE);
+		accountChangeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(accountChangeEmail);
 		
 		return "redirect:/user/dashboard";
 	}
@@ -660,11 +670,12 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}        
 		
-        emailSender.setUser(user);
-     	emailSender.setLocale(locale);
-     	emailSender.setSubjectCode("user.email.accountChange");
-     	emailSender.setMessageCode("user.email.passwordChange");
-     	emailSender.sendSimpleEmailMessage();
+        String userName = user.getFirstName() + " " + user.getLastName();
+
+        accountChangeEmail.init(userName, user.getEmail(), locale);
+		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
+		accountChangeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(accountChangeEmail);
 		
 		return "redirect:/home";
 	}
@@ -809,14 +820,13 @@ public class UserController {
         	throw new PasswordResendException(ex);
         }
         
-        final String confirmationUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/confirmPassword?id=" 
-        		+ user.getId() + "&token=" + newToken.getToken();
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + newToken.getToken();
         
-        emailSender.setUser(user);
-     	emailSender.setLocale(request.getLocale());
-    	emailSender.setSubjectCode("user.email.accountChange");
-    	emailSender.setMessageCode("user.email.passwordResetMessage");
-     	emailSender.sendTokenEmailMessage(confirmationUrl);
+        passwordEmail.init(userName, user.getEmail(), locale);
+        passwordEmail.setTokenUrl(confirmationUrl);
+        passwordEmail.constructEmail();
+    	emailSender.sendHtmlEmail(passwordEmail);
         
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
@@ -861,11 +871,12 @@ public class UserController {
         	throw new PasswordResetException(ex);
         }
         
-        emailSender.setUser(user);
-     	emailSender.setLocale(locale);
-     	emailSender.setSubjectCode("user.email.accountChange");
-     	emailSender.setMessageCode("user.email.passwordChange");
-     	emailSender.sendSimpleEmailMessage();
+		String userName = user.getFirstName() + " " + user.getLastName();
+		
+        accountChangeEmail.init(userName, user.getEmail(), locale);
+		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
+		accountChangeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(accountChangeEmail);
 		
 		return "redirect:/user/login";
 	}
@@ -947,34 +958,3 @@ public class UserController {
 		return "message";
 	}	
 }
-
-/*
-Date createTime = new Date(session.getCreationTime());
-Date lastAccess = new Date(session.getLastAccessedTime());
-int maxInactive = session.getMaxInactiveInterval();
-String sessID = session.getId();
-
-logger.debug("Session created on: " + createTime);
-logger.debug("Session last accessed on: " + lastAccess);
-logger.debug("Session expires after: " + maxInactive + " seconds");
-logger.debug("Session ID: " + sessID);
-
-List<Object> allPrinc = sessionRegistry.getAllPrincipals();
-
-for (Object obj : allPrinc) {
-	final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
-
-	for (SessionInformation sess : sessions) {
-		Object princ = sess.getPrincipal();
-		String sessId = sess.getSessionId();
-		Date sessDate = sess.getLastRequest();
-		
-		logger.debug("sessionRegistry.princ: " + princ);
-		logger.debug("sessionRegistry.sessId: " + sessId);
-		logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
-	}
-}
-
-UsernamePasswordAuthenticationFilter
-AbstractAuthenticationProcessingFilter
-*/

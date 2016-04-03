@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -13,10 +14,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -34,38 +37,51 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceResourceBundle;
+import org.springframework.core.env.Environment;
 
 public class ReportGenerator {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-	private String recipeReportFilePath = "";
+	private String recipeHtmlReportFilePath = "";
+	private String recipePdfReportFilePath = "";
+	private String logoHtmlImagePath = "";
 	private String jasperReportDirPath = "";
-	private File recipeFile = null;
+	private String pdfReportDirPath = "";
+	private File recipeHtmlFile = null;
+	private File recipePdfFile = null;
 	private File reportsDir = null;
-	private JasperReport recipeReport = null;
+	private JasperReport recipeHtmlReport = null;
+	private JasperReport recipePdfReport = null;	
 
-	private ServletContext servletContext;
-	
 	@Autowired
 	private ExceptionLogService logService;
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private MessageSource messages;
 	
-	public ReportGenerator(ServletContext servletContext) {
+	public ReportGenerator() {
 		logger.debug("ReportGenerator");
-		this.servletContext = servletContext;
 	}
 
-	public boolean configureReports() {
-		this.recipeReportFilePath = this.servletContext.getRealPath("/jasper/recipe.jasper");
-		this.jasperReportDirPath = this.servletContext.getRealPath("/jasper/");
-		recipeFile = new File(this.recipeReportFilePath);
+	public boolean configureReports(ServletContext servletContext, Environment env) {
+		this.recipeHtmlReportFilePath = servletContext.getRealPath("/jasper/recipeHtml.jasper");
+		this.recipePdfReportFilePath = servletContext.getRealPath("/jasper/recipePdf.jasper");
+		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/logo.png";
+		this.jasperReportDirPath = servletContext.getRealPath("/jasper/");
+		this.pdfReportDirPath = env.getProperty("file.directory.pdfs"); 
+		recipeHtmlFile = new File(this.recipeHtmlReportFilePath);
+		recipePdfFile = new File(this.recipePdfReportFilePath);
 		reportsDir = new File(this.jasperReportDirPath);
 
     	try {
-        	recipeReport = (JasperReport)JRLoader.loadObjectFromFile(recipeFile.getPath());
-        	recipeReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
+        	recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	recipePdfReport = (JasperReport)JRLoader.loadObjectFromFile(recipePdfFile.getPath());
+        	recipePdfReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
         } catch (JRException ex) {
 			//log the error and do nothing - the client will notify the user of the lack of a report
 			logService.addException(ex);
@@ -75,18 +91,29 @@ public class ReportGenerator {
         return true;
 	}
 
-	public void createRecipeHtml(long recipeId, HttpServletResponse response) {
+	public void createRecipeHtml(long userId, long recipeId, HttpServletResponse response, Locale locale) {
 		Map<String,Object> params = new HashMap<String,Object>();
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		List<Recipe> list = new ArrayList<Recipe>();
 		Recipe recipe = recipeService.getRecipe(recipeId);
+		recipe.setPrivateNotes(null);
+		RecipeNote recipeNote = recipeService.getRecipeNote(userId, recipeId);
+		if (recipeNote != null)
+			recipe.setPrivateNotes(recipeNote.getNote());
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);
-    	
+
     	try {
+    		//TODO: JASPER: REMOVE THESE TWO LINES when jasper report work is done
+        	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
+        	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+
+        	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale); 
+        	params.put("logoPath", logoHtmlImagePath);
         	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipeReport, params, src);
+        	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipeHtmlReport, params, src);
         	
         	HtmlExporter exporter = new HtmlExporter();
 
@@ -118,8 +145,10 @@ public class ReportGenerator {
 		}
 	}
 	
-	public void createRecipePDF(long recipeId) {
+	public String createRecipePDF(long recipeId, Locale locale) {
 		Map<String,Object> params = new HashMap<String,Object>();
+		
+		String pdfFileName = "";
 		
 		List<Recipe> list = new ArrayList<Recipe>();
 		Recipe recipe = recipeService.getRecipe(recipeId);
@@ -127,12 +156,17 @@ public class ReportGenerator {
     	JRDataSource src = new JRBeanCollectionDataSource(list);
     	
     	try {
+    		//TODO: JASPER: REMOVE THESE TWO LINES when jasper report work is done
+        	//recipePdfReport = (JasperReport)JRLoader.loadObjectFromFile(recipePdfFile.getPath());
+        	//recipePdfReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+
+        	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
         	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipeReport, params, src);
+        	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
+        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipePdfReport, params, src);
         	
         	JRPdfExporter exporter = new JRPdfExporter();
-
-        	String pdfFileName = "G:/recipeorganizer/recipe" + recipeId + ".pdf";
+        	pdfFileName = pdfReportDirPath + "recipe" + recipeId + ".pdf";
         	File pdfFile = new File(pdfFileName);
         	
         	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
@@ -143,7 +177,9 @@ public class ReportGenerator {
         } catch (JRException ex) {
 			//log the error and do nothing - the client will notify the user of the lack of a report
 			logService.addException(ex);
-			return;
+			return null;
 		}
+    	
+    	return pdfFileName;
 	}
 }

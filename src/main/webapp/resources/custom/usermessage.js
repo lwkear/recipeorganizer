@@ -1,3 +1,56 @@
+/******************************/
+/*** share recipe functions ***/
+/******************************/
+//email the recipe popup dialog
+function emailRecipe(fromUserId, toUserId, toUserFirstName, toUserLastName, recipeId, recipeName, messageId) {
+	$('#email' + messageId).tooltip("hide");
+	$('#emailRecipeName').html(recipeName);
+	var msg = getMessage('share.recipient.to.label');
+	var fmt = String.format(msg, toUserFirstName, toUserLastName);
+	$('#emailToLabel').html(fmt);
+	$('#emailMsg').val("");
+	$("#submitEmail").one('click', 
+			{fromUserId:fromUserId, recipeId:recipeId, recipeName:recipeName, toUserId:toUserId, toUserFirstName:toUserFirstName, toUserLastName:toUserLastName}, 
+			postEmail);
+	$("#emailRecipeDlg").on('hidden.bs.modal', function(){$("#submitEmail").unbind('click');})
+	$("#emailRecipeDlg").modal('show');
+}
+
+//request server to update the note
+function postEmail(e) {
+	$("#emailRecipeDlg").modal('hide');
+	console.log('postEmail: viewer=' + e.data.fromUserId + ' recipe='+ e.data.recipeId);
+
+	var userId = e.data.fromUserId;
+	var recipeId = e.data.recipeId;
+	var recipeName = e.data.recipeName;
+	var recipientName = e.data.toUserFirstName + ' ' + e.data.toUserLastName;
+	var recipientId = e.data.toUserId;
+	var message = $('#emailRecipeMsg').val();
+	message = $.trim(message);
+	
+	var data = {"userId":userId,"recipeId":recipeId,"recipientId":recipientId,"recipientName":recipientName,"recipientEmail":"","emailMsg":message,"recipeName":recipeName};
+
+	$.ajax({
+	    type: 'POST',
+		contentType: 'application/json',
+	    url: '/recipeorganizer/recipe/shareRecipe',
+		dataType: 'json',
+		data: JSON.stringify(data)
+	})
+	.done(function(data) {
+		console.log('postShare done');
+		var msg = getMessage('email.recipe.successful');
+		var fmt = String.format(msg, recipientName);
+		displayOKMsg(recipeName, fmt);
+	})
+	.fail(function(jqXHR, status, error) {
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		postFailed(data.msg);
+	});
+}
+
 /*******************************/
 /*** delete message function ***/
 /*******************************/

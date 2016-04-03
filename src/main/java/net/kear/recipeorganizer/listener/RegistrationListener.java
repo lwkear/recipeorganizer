@@ -45,6 +45,6 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         registrationEmail.init(userName, user.getEmail(), event.getLocale());
         registrationEmail.setTokenUrl(confirmationUrl);
         registrationEmail.constructEmail();
-    	emailSender.sendTokenEmail(registrationEmail);
+    	emailSender.sendHtmlEmail(registrationEmail);
     }
 }

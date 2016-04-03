@@ -19,7 +19,7 @@
     			<td>
 					<table width="614" height="70" border="0" cellspacing="0" cellpadding="0">
       					<tr>
-        					<td width="18" height="21"><img src="cid:clear.gif" style="display: block" width="18" height="21" border="0"/></td>
+        					<td width="18" height="21"><img src="cid:cleargif" style="display: block" width="18" height="21" border="0"/></td>
 				            <td></td>
 				            <td></td>
 				            <td></td>
@@ -34,27 +34,27 @@
 				            <td width="28"></td>
 						</tr>
 						<tr>
-							<td width="18" height="11"><img src="cid:clear.gif" style="display: block" width="18" height="11" border="0" /></td>
+							<td width="18" height="11"><img src="cid:cleargif" style="display: block" width="18" height="11" border="0" /></td>
 							<td></td>
 							<td></td>
 						</tr>
 					</table>
 					<table width="614" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
 						<tr>
-							<td width="16" height="28"><img src="cid:clear.gif" border="0" style="display:block" width="16" height="53"/></td>
+							<td width="16" height="28"><img src="cid:cleargif" border="0" style="display:block" width="16" height="53"/></td>
 							<td width="11" bgcolor="#336699"></td>
 							<td width="558" align="left" valign="middle" bgcolor="#336699">
 								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${registrationConfirm}</font></td>
 							<td width="11" align="right" valign="top" bgcolor="#336699">&nbsp;</td>
-							<td width="18" align="right" valign="top"><img src="cid:clear.gif" border="0" style="display:block" width="16" height="20"/></td>
+							<td width="18" align="right" valign="top"><img src="cid:cleargif" border="0" style="display:block" width="16" height="20"/></td>
 						</tr>
 					</table>
 					<table width="614" border="0" cellspacing="0" cellpadding="0">
 						<tr>
-							<td width="18" height="24"><img src="cid:clear.gif" style="display: block" width="18" height="24"/></td>
-							<td width="503"><img src="cid:clear.gif" style="display: block" width="503" height="24"/></td>
-							<td width="75"><img src="cid:clear.gif" style="display: block" width="75" height="24"/></td>
-							<td width="18"><img src="cid:clear.gif" style="display: block" width="18" height="24"/></td>
+							<td width="18" height="24"><img src="cid:cleargif" style="display: block" width="18" height="24"/></td>
+							<td width="503"><img src="cid:cleargif" style="display: block" width="503" height="24"/></td>
+							<td width="75"><img src="cid:cleargif" style="display: block" width="75" height="24"/></td>
+							<td width="18"><img src="cid:cleargif" style="display: block" width="18" height="24"/></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -65,34 +65,36 @@
 							<br><br>
 							${completeProcess}
 							<br>
-							<a href=${tokenUrl}target="_blank">${tokenUrl}</a>
-							<br><br>							
+							<a href=${tokenUrl}>${tokenUrl}</a>
+							<br><br>
+							${pasteLink}
+							<br><br>
 							${nextSteps}
 							<br><br>
 							${enjoy}
 							<br><br><br>
 							</font>
-							<font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${thankyou}</font>							
+							<font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${folks}</font>							
 							</td>
 							<td></td>
 							<td></td>
 						</tr>
 						<tr>
-							<td width="18" height="5"><img src="cid:clear.gif" style="display: block" width="18" height="60"/></td>
+							<td width="18" height="5"><img src="cid:cleargif" style="display: block" width="18" height="60"/></td>
 							<td></td>
 						</tr>
 						<tr>
 							<td height="1"></td>
-							<td width="578" height="1" colspan="2" bgcolor="#999999" background="cid:clear.gif"></td>
+							<td width="578" height="1" colspan="2" bgcolor="#999999" background="cid:cleargif"></td>
 							<td height="1"></td>
 						</tr>
 					</table>
 					<table width="614" border="0" cellpadding="0" cellspacing="0">
 						<tr>
-							<td width="18" height="10"><img src="cid:clear.gif" style="display: block" width="18" height="13"/></td>
-							<td width="503" height="10"><img src="cid:clear.gif" style="display: block" width="503" height="13"/></td>
-							<td width="75"><img src="cid:clear.gif" style="display: block" width="75" height="1"/></td>
-							<td width="18" height="10"><img src="cid:clear.gif" style="display: block" width="18" height="13"/></td>
+							<td width="18" height="10"><img src="cid:cleargif" style="display: block" width="18" height="13"/></td>
+							<td width="503" height="10"><img src="cid:cleargif" style="display: block" width="503" height="13"/></td>
+							<td width="75"><img src="cid:cleargif" style="display: block" width="75" height="1"/></td>
+							<td width="18" height="10"><img src="cid:cleargif" style="display: block" width="18" height="13"/></td>
 						</tr>
 						<tr>
 							<td></td>
@@ -105,7 +107,7 @@
 							<td></td>
 						</tr>
 						<tr>
-							<td width="18" height="10"><img src="cid:clear.gif" style="display: block" width="18" height="13"/></td>
+							<td width="18" height="10"><img src="cid:cleargif" style="display: block" width="18" height="13"/></td>
 						</tr>
 					</table>
 				</td>
@@ -113,7 +115,7 @@
 		</table>
 		<table width="614" border="0" align="center" cellpadding="0" cellspacing="0">
 			<tr>
-				<td width="18" height="42"><img src="cid:clear.gif" style="display: block" width="18" height="42"/></td>
+				<td width="18" height="42"><img src="cid:cleargif" style="display: block" width="18" height="42"/></td>
 			</tr>
 		</table>
 	</td>

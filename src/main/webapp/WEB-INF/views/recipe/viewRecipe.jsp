@@ -15,12 +15,15 @@
 <c:set var="returnLabel" value="${sessionScope.returnLabel}"/>
 <c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
 
-
 <%@include file="../common/nav.jsp" %>
 
 <c:set var="privateRecipe" value="false"></c:set>
 <c:if test="${(userId != recipe.user.id) and (recipe.copyrighted == true)}">
 	<c:set var="privateRecipe" value="true"></c:set>
+</c:if>
+<c:set var="privateNotes" value="false"></c:set>
+<c:if test="${userId == recipe.user.id}">
+	<c:set var="privateNotes" value="true"></c:set>
 </c:if>
 
 	<div class="container container-white">	
@@ -51,8 +54,8 @@
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" style="margin-left:5px;font-size:20px"
-							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.share"></spring:message>">
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" onclick="shareRecipe(${viewerId}, ${recipe.id}, '${recipe.name}')" style="margin-left:5px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 							<span class="glyphicon glyphicon-envelope"></span>
 						</button>
 						<button type="button" class="btn btn-link btn-sm favorite <c:if test="${privateRecipe}">disabled</c:if>" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
@@ -124,15 +127,16 @@
 				<%@include file="recipeContent.jsp" %>
 			
 			</div>
-			<div id="commentSection" class="<c:if test="${privateRecipe}">transparent</c:if>">
+			<div id="commentSection" class="<c:if test="privateRecipe">transparent</c:if>">
 			
 				<%@include file="comments.jsp" %>
 			
 			</div>
 		</div>
 	</div>		
-	<div class="col-sm-12" style="display:none">
-		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt/${recipe.id}"/>"></iframe>
+	<!-- <div class="col-sm-12" style="display:none"> -->
+	<div class="col-sm-12">
+		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=${userId}&rid=${recipe.id}"/>"></iframe>
 	</div>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>
 	<input type="hidden" id="viewerId" value="${viewerId}"/>
@@ -218,6 +222,40 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitComment"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- share recipe dialog -->
+<div class="modal" id="shareRecipeDlg" role="dialog">
+	<div class="modal-dialog modal-sm">
+	    <div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">${recipe.name}</h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form">
+					<div class="form-group">
+			            <label class="control-label" for="recipientName"><spring:message code="share.recipient.name.label"></spring:message></label>
+			            <input class="form-control maxSize" type="text" id="recipientName"></input>
+			            <span class="text-danger" id="recipientNameErrMsg">${recipientNameErr}</span>
+				    </div>           
+					<div class="form-group">
+			            <label class="control-label" for="recipientEmail"><spring:message code="share.recipient.email.label"></spring:message></label>
+			            <input class="form-control maxSize" type="text" id="recipientEmail"></input>
+			            <span class="text-danger" id="recipientEmailErrMsg">${recipientEmailErr}</span>
+				    </div>           
+					<div class="form-group">
+			            <label class="control-label" for="emailMsg"><spring:message code="share.message.label"></spring:message></label>
+			            <textarea class="form-control maxSize" rows="5" id="emailMsg"></textarea>
+				    </div>           
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitShare"><spring:message code="common.submit"></spring:message></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>

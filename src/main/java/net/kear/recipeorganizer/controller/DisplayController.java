@@ -37,6 +37,7 @@ import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.ShareRecipeDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeComment;
@@ -47,11 +48,14 @@ import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.ShareRecipeEmail;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.maint.MaintAware;
 import net.kear.recipeorganizer.util.view.ViewReferer;
@@ -61,6 +65,8 @@ public class DisplayController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private RecipeService recipeService;
 	@Autowired
@@ -81,6 +87,10 @@ public class DisplayController {
 	private ConstraintMap constraintMap;
 	@Autowired
 	private ReportGenerator reportGenerator; 
+	@Autowired
+	private EmailSender emailSender;
+	@Autowired
+	private ShareRecipeEmail shareRecipeEmail;
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -214,11 +224,12 @@ public class DisplayController {
 			fileAction.downloadFile(FileType.RECIPE, id, fileName, response);
 	}
 
-	@RequestMapping(value = "/report/getHtmlRpt/{recipeId}", method = RequestMethod.GET)
-	public void getHtmlRpt(@PathVariable Long recipeId, HttpServletResponse response) {
-		logger.info("recipe/getHtmlRpt GET: recipeId=" + recipeId);
+	@RequestMapping(value = "/report/getHtmlRpt", method = RequestMethod.GET)
+	public void getHtmlRpt(@RequestParam("uid") final Long uid, @RequestParam("rid") final Long rid, HttpServletResponse response, Locale locale) {
+
+		logger.info("recipe/getHtmlRpt GET: userId=" + uid + " recipeId=" + rid);
 	
-		reportGenerator.createRecipeHtml(recipeId, response);
+		reportGenerator.createRecipeHtml(uid, rid, response, locale);
 	}
 
 	/*************************/
@@ -335,6 +346,62 @@ public class DisplayController {
 			throw new RestException("exception.flagComment", ex);
 		}
 		
+		return new ResponseObject();
+	}
+
+	/***************************/
+	/*** ShareRecipe handler ***/
+	/***************************/
+	@RequestMapping(value = "/recipe/shareRecipe", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject shareRecipe(@RequestBody ShareRecipeDto shareRecipeDto, Locale locale) throws RestException {
+		logger.info("recipe/shareRecipe POST: user/recipe=" + shareRecipeDto.getUserId() + "/" + shareRecipeDto.getRecipeId());
+		
+		//validate the Dto?
+		//validate the recipe ID? or assume it's correct?
+		
+		User user = null;
+		try {
+			user = userService.getUser(shareRecipeDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new RestException("exception.shareRecipeUser", ex);
+		}
+		
+		User recipient = null;
+		String recipientName = "";
+		String recipientEmail = "";
+		if (shareRecipeDto.getRecipientId() != 0) {
+			try {
+				recipient = userService.getUser(shareRecipeDto.getRecipientId());
+			} 
+			catch (Exception ex) {
+				throw new RestException("exception.shareRecipeUser", ex);
+			}
+			
+			recipientName = recipient.getFirstName() + " " + recipient.getLastName();
+			recipientEmail = recipient.getEmail();
+		}
+		else {
+			recipientName = shareRecipeDto.getRecipientName();
+			recipientEmail = shareRecipeDto.getRecipientEmail(); 
+		}
+		
+    	String pdfFileName = reportGenerator.createRecipePDF(shareRecipeDto.getRecipeId(), locale);
+
+    	String userName = user.getFirstName() + " " + user.getLastName();
+    	
+    	shareRecipeEmail.init(recipientName, recipientEmail, locale);
+		shareRecipeEmail.setSenderName(userName);
+		shareRecipeEmail.setUserFirstName(user.getFirstName());
+		shareRecipeEmail.setUserMessage(shareRecipeDto.getEmailMsg());
+		shareRecipeEmail.setRecipeName(shareRecipeDto.getRecipeName());
+		shareRecipeEmail.setPdfAttached(true);
+		shareRecipeEmail.setPdfFileName(pdfFileName);
+		shareRecipeEmail.constructEmail();
+    	emailSender.sendHtmlEmail(shareRecipeEmail);
+
 		return new ResponseObject();
 	}
 }

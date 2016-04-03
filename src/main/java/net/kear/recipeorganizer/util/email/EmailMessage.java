@@ -30,13 +30,14 @@ public abstract class EmailMessage {
 	private String recipientName = "";
 	private String recipientEmail = "";
 	private String subject = "";
-	private String subjectCode = "";
 	private String body = "";
 	private HashMap<String, String> msgText;
 	private String appUrl = "";
 	private String tokenUrl = "";
 	private Locale locale = null;
 	private Template template = null;
+	private boolean pdfAttached = false;
+	private String pdfFileName = "";
 	
 	public EmailMessage() {}
 
@@ -63,41 +64,20 @@ public abstract class EmailMessage {
 		return senderEmail;
 	}
 	
-	public void setSenderEmail(String senderEmail) {
-		this.senderEmail = senderEmail;
-	}
-
 	public String getRecipientName() {
 		return recipientName;
-	}
-	
-	public void setRecipientName(String recipientName) {
-		this.recipientName = recipientName;
 	}
 	
 	public String getRecipientEmail() {
 		return recipientEmail;
 	}
 	
-	public void setRecipientEmail(String recipientEmail) {
-		this.recipientEmail = recipientEmail;
-	}
-	
-	public String getSubject() {
-		return subject;
-	}
-	
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
 
-	public String getSubjectCode() {
-		return subjectCode;
-	}
-	
-	public void setSubjectCode(String subjectCode) {
-		this.subjectCode = subjectCode;
-		this.subject = getMessage(subjectCode);
+	public String getSubject() {
+		return subject;
 	}
 	
 	public String getBody() {
@@ -108,16 +88,8 @@ public abstract class EmailMessage {
 		this.body = body;
 	}
 
-	public String getMsgText(String key) {
-		return msgText.get(key);
-	}
-	
 	public String getAppUrl() {
 		return appUrl;
-	}
-
-	public void setAppUrl(String appUrl) {
-		this.appUrl = appUrl;
 	}
 
 	public String getTokenUrl() {
@@ -128,14 +100,22 @@ public abstract class EmailMessage {
 		this.tokenUrl = appUrl + tokenUrl;
 	}
 	
-	public Locale getLocale() {
-		return locale;
+	public boolean isPdfAttached() {
+		return pdfAttached;
 	}
 
-	public void setLocale(Locale locale) {
-		this.locale = locale;
+	public void setPdfAttached(boolean pdfAttached) {
+		this.pdfAttached = pdfAttached;
 	}
-	
+
+	public String getPdfFileName() {
+		return pdfFileName;
+	}
+
+	public void setPdfFileName(String pdfFileName) {
+		this.pdfFileName = pdfFileName;
+	}
+
 	public Template getTemplate() {
 		return template;
 	}
@@ -144,10 +124,6 @@ public abstract class EmailMessage {
 		this.template = freemarkerConfig.getTemplate(template);
 	}
 	
-	private String getMessage(String code) {
-		return messages.getMessage(code, null, "", locale);
-	}
-
 	public String getArgMessage(String code, Object args[]) {
 		return messages.getMessage(code, args, "", locale);
 	}
@@ -161,5 +137,9 @@ public abstract class EmailMessage {
 	        	msgText.put(code, msg);
 	        }
     	}
+	}
+
+	public String getMsgText(String key) {
+		return msgText.get(key);
 	}
 }

@@ -97,6 +97,13 @@ public class Recipe implements Serializable {
 	@Max(value=59, groups=SizeGroup.class)
 	private Integer prepMinutes;
 
+	@Column(name = "TOTAL_HOURS")
+	private Integer totalHours;
+
+	@Column(name = "TOTAL_MINUTES")
+	@Max(value=59, groups=SizeGroup.class)
+	private Integer totalMinutes;
+
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
 
@@ -167,12 +174,16 @@ public class Recipe implements Serializable {
 	
 	@Column(name = "VIEWS")
 	private Integer views;
-	
+
+	@Transient
+	@Lob
+	private String privateNotes;
+
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, String notes, boolean allowShare, boolean approved, boolean copyrighted, String photoName, List<String> tags, 
-				List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
+				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, boolean approved, boolean copyrighted,  
+				String photoName, List<String> tags, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
 		super();
 		this.user = user;
 		this.name = name;
@@ -182,6 +193,8 @@ public class Recipe implements Serializable {
 		this.servings = servings;
 		this.prepHours = prepHours;
 		this.prepMinutes = prepMinutes;
+		this.totalHours = totalHours;
+		this.totalMinutes = totalMinutes;
 		this.notes = notes;
 		this.allowShare = allowShare;
 		this.approved = approved;
@@ -264,6 +277,22 @@ public class Recipe implements Serializable {
 
 	public void setPrepMinutes(Integer prepMinutes) {
 		this.prepMinutes = prepMinutes;
+	}
+	
+	public Integer getTotalHours() {
+		return totalHours;
+	}
+
+	public void setTotalHours(Integer totalHours) {
+		this.totalHours = totalHours;
+	}
+
+	public Integer getTotalMinutes() {
+		return totalMinutes;
+	}
+
+	public void setTotalMinutes(Integer totalMinutes) {
+		this.totalMinutes = totalMinutes;
 	}
 	
 	public String getNotes() {
@@ -418,6 +447,14 @@ public class Recipe implements Serializable {
 		this.views = views;
 	}
 
+	public String getPrivateNotes() {
+		return privateNotes;
+	}
+
+	public void setPrivateNotes(String privateNotes) {
+		this.privateNotes = privateNotes;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -433,7 +470,9 @@ public class Recipe implements Serializable {
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((photoName == null) ? 0 : photoName.hashCode());
 		result = prime * result + ((prepHours == null) ? 0 : prepHours.hashCode());
-		result = prime * result + ((prepMinutes == null) ? 0 : prepMinutes.hashCode());
+		result = prime * result + ((prepMinutes == null) ? 0 : prepMinutes.hashCode());		
+		result = prime * result + ((totalHours == null) ? 0 : totalHours.hashCode());
+		result = prime * result + ((totalMinutes == null) ? 0 : totalMinutes.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
 		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
 		return result;
@@ -496,6 +535,16 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!prepMinutes.equals(other.prepMinutes))
 			return false;
+		if (totalHours == null) {
+			if (other.totalHours != null)
+				return false;
+		} else if (!totalHours.equals(other.totalHours))
+			return false;
+		if (totalMinutes == null) {
+			if (other.totalMinutes != null)
+				return false;
+		} else if (!totalMinutes.equals(other.totalMinutes))
+			return false;
 		if (servings == null) {
 			if (other.servings != null)
 				return false;
@@ -519,6 +568,8 @@ public class Recipe implements Serializable {
 				+ ", servings=" + servings 
 				+ ", prepHours=" + prepHours 
 				+ ", prepMinutes=" + prepMinutes 
+				+ ", totalHours=" + totalHours 
+				+ ", totalMinutes=" + totalMinutes 
 				+ ", notes=" + notes 
 				+ ", allowShare=" + allowShare 
 				+ ", approved=" + approved 
@@ -529,6 +580,7 @@ public class Recipe implements Serializable {
 				+ ", instructSections=" + instructSections 
 				+ ", ingredSections=" + ingredSections 
 				+ ", source=" + source 
-				+ ", views=" + views + "]";
+				+ ", views=" + views
+				+ "]";
 	}
 }

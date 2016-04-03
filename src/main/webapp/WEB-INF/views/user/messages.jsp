@@ -44,9 +44,10 @@
 							<td>${msg.recipeName}</td>
 							<td>${msg.message}</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" id="email${msg.id}" <%-- onclick="approveIngredient(${ingred.id})" --%>
+								<button class="btn btn-success btn-xs" type="button" id="email${msg.id}"
+								onclick="emailRecipe(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', ${msg.recipeId}, '${msg.recipeName}', ${msg.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
-								<span class="glyphicon glyphicon-share"></span></button>
+								<span class="glyphicon glyphicon-envelope"></span></button>
 							</td>
 							<td>
 								<button class="btn btn-primary btn-xs" type="button" id="respond${msg.id}" 
@@ -65,6 +66,33 @@
 			</table>
 		</div>
 	</div>	
+
+<!-- share recipe dialog -->
+<div class="modal" id="emailRecipeDlg" role="dialog">
+	<div class="modal-dialog modal-sm">
+	    <div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title" id="emailRecipeName"></h4>
+			</div>
+			<div class="modal-body">
+				<form role="form" class="form">
+					<div class="form-group">
+			            <label class="control-label" id="emailToLabel"></label>
+				    </div>           
+					<div class="form-group">
+			            <label class="control-label" for="emailRecipeMsg"><spring:message code="share.message.label"></spring:message></label>
+			            <textarea class="form-control maxSize" rows="5" id="emailRecipeMsg"></textarea>
+				    </div>           
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitEmail"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <%@include file="../common/footer.jsp" %>
 <%@include file="../user/userMessage.jsp" %>

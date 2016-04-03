@@ -37,6 +37,8 @@
 	<p id="recipe.optional.photo.noneselected"/><spring:message code="recipe.optional.photo.noneselected"></spring:message>
 	<p id="recipe.edit.cancel"/><spring:message code="recipe.edit.cancel"></spring:message>
 	<p id="recipe.submit.cancel"/><spring:message code="recipe.submit.cancel"></spring:message>
+	<p id="email.recipe.successful"/><spring:message code="email.recipe.successful"></spring:message>
+	<p id="share.recipient.to.label"/><spring:message code="share.recipient.to.label"></spring:message>
 	<p id="exception.JRException"/><spring:message code="exception.JRException"></spring:message>
 	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
 	<p id="exception.file.continuecancel"/><spring:message code="exception.file.continuecancel"></spring:message>
