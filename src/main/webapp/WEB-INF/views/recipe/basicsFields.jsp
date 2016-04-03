@@ -23,7 +23,8 @@
 			id="servingsLabel" for="inputServings"><spring:message code="recipe.basics.servings"></spring:message></label>
 		<label class="control-label col-sm-3 <c:if test="${not empty prepTimeError}">text-danger</c:if>" style="text-align: left;"
 			id="prepLabel" ><spring:message code="recipe.basics.preptime"></spring:message></label>
-		<label class="control-label col-sm-3" style="text-align: left;"><spring:message code="recipe.basics.sharerecipe"></spring:message></label>
+		<label class="control-label col-sm-3 <c:if test="${not empty totalTimeError}">text-danger</c:if>" style="text-align: left;"
+			id="totalLabel" ><spring:message code="recipe.basics.totaltime"></spring:message></label>
 	</div>
 	<div class="row">
 		<form:hidden id="catID" path="category.id"/>
@@ -54,6 +55,29 @@
 				</div>
 			</div>
 		</div>
+		<div class="col-sm-3">
+			<div class="row">
+				<label class="control-label col-sm-1 <c:if test="${not empty totalHourError}">text-danger</c:if>" for="inputTotalHour">
+					<spring:message code="recipe.basics.hour"></spring:message></label>
+				<div class="col-sm-4 <c:if test="${not empty totalHourError}">has-error</c:if>">
+					<form:input type="text" class="form-control" id="inputTotalHour" path="totalHours" autocomplete="off"/>
+					<span class="text-danger">${totalHourError}</span>
+				</div>
+				<label class="control-label col-sm-2 <c:if test="${not empty totalMinuteError}">text-danger</c:if>" for="inputTotalMinute">
+					<spring:message code="recipe.basics.minute"></spring:message></label>
+				<div class="col-sm-4 <c:if test="${not empty totalMinuteError}">has-error</c:if>">
+					<form:input type="text" class="form-control" id="inputTotalMinute" path="totalMinutes" autocomplete="off"/>
+					<span class="text-danger">${totalMinuteError}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="form-group col-sm-12">
+	<div class="row">
+		<div class="col-sm-2">
+			<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.sharerecipe"></spring:message></label>
+		</div>				
 		<div class="col-sm-3">
 			<div class="radio-inline">
 				<form:radiobutton value="true" path="allowShare" checked="true"/><spring:message code="common.yes"></spring:message>

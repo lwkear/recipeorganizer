@@ -23,6 +23,11 @@
 					<p>${recipe.notes}</p>
 				</div>
 			</c:if>
+			<div id="privateNotesSection">
+			
+				<%@include file="privateNotes.jsp" %>
+			
+			</div>
 			<div class="<c:if test="${privateRecipe}">transparent</c:if>">
 			<div class="row">
 				<div class="col-sm-12">
@@ -30,23 +35,37 @@
 						<span><strong><spring:message code="recipe.basics.category"></spring:message></strong>&nbsp;&nbsp;${recipe.category.name}</span>
 					</div>
 					<c:if test="${not empty recipe.servings}">
-						<div class="col-sm-3 spacer-vert-xs">
+						<div class="col-sm-4 spacer-vert-xs">
 							<span><strong><spring:message code="recipe.basics.servings"></spring:message></strong>&nbsp;&nbsp;${recipe.servings}</span>
 						</div>
 					</c:if>	
-					<c:if test="${recipe.prepMinutes != 0 ||
-								  recipe.prepMinutes != 0}">
-						<div class="col-sm-3 spacer-vert-xs">
-							<span>
-								<strong><spring:message code="recipe.basics.prep"></spring:message></strong>&nbsp;&nbsp;
-								<c:if test="${not empty recipe.prepHours}">${recipe.prepHours}&nbsp;<spring:message code="recipe.basics.hour"></spring:message></c:if>
-								<c:if test="${not empty recipe.prepMinutes}">${recipe.prepMinutes}&nbsp;<spring:message code="recipe.basics.minute"></spring:message></c:if>
-							</span>
-						</div>
-					</c:if>
 					<div class="col-sm-2 spacer-vert-xs">
 						<span><strong><spring:message code="recipe.basics.share"></spring:message></strong>&nbsp;&nbsp;${recipe.allowShare ? yesLabel : noLabel}</span>
 					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<c:if test="${recipe.prepHours > 0 ||
+								  recipe.prepMinutes > 0}">
+						<div class="col-sm-4 spacer-vert-xs">
+							<span>
+								<strong><spring:message code="recipe.basics.preptime"></spring:message></strong>&nbsp;&nbsp;
+								<c:if test="${recipe.prepHours > 0}">${recipe.prepHours}&nbsp;<spring:message code="report.hour"></spring:message></c:if>
+								<c:if test="${recipe.prepMinutes > 0}">${recipe.prepMinutes}&nbsp;<spring:message code="report.minute"></spring:message></c:if>
+							</span>
+						</div>
+					</c:if>
+					<c:if test="${recipe.totalHours > 0 ||
+								  recipe.totalMinutes > 0}">
+						<div class="col-sm-4 spacer-vert-xs">
+							<span>
+								<strong><spring:message code="recipe.basics.totaltime"></spring:message></strong>&nbsp;&nbsp;
+								<c:if test="${recipe.totalHours > 0}">${recipe.totalHours}&nbsp;<spring:message code="report.hour"></spring:message></c:if>
+								<c:if test="${recipe.totalMinutes > 0}">${recipe.totalMinutes}&nbsp;<spring:message code="report.minute"></spring:message></c:if>
+							</span>
+						</div>
+					</c:if>
 				</div>
 			</div>
 			<div class="row">
@@ -90,7 +109,6 @@
 				<div class="col-sm-12">			
 					<c:if test="${not empty recipe.tags}">
 						<div class="col-sm-6 spacer-vert-xs">
-							<%-- <c:set var="tags">${recipe.tags}</c:set> --%> 
 							<span>
 								<strong><spring:message code="recipe.optional.tags"></spring:message></strong>&nbsp;&nbsp;<span id="tags">${recipe.tags}</span>
 							</span>

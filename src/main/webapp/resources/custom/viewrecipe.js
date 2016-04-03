@@ -96,12 +96,19 @@ function postNote(e) {
 	    type: 'POST',
 		contentType: 'application/json',
 	    url: '/recipeorganizer/recipe/recipeNote',
-		dataType: 'json',
+		dataType: 'html',
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
-		$('#noteLeft').show();
-		$('#noteRight').hide();
+		if (note.length > 0) {
+			$('#noteLeft').show();
+			$('#noteRight').hide();
+		}
+		else {
+			$('#noteLeft').hide();
+			$('#noteRight').show();
+		}
+		$('#privateNotesSection').html(data);
 		console.log('postNote done');
 	})
 	.fail(function(jqXHR, status, error) {

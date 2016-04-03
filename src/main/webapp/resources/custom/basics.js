@@ -101,7 +101,14 @@ $(function() {
 		num = $('#inputPrepMinute').val();
 		if (!num || !num.length)
 			$('#inputPrepMinute').val(0);
-		
+
+		num = $('#inputTotalHour').val();
+		if (!num || !num.length)
+			$('#inputTotalHour').val(0);
+		num = $('#inputTotalMinute').val();
+		if (!num || !num.length)
+			$('#inputTotalMinute').val(0);
+
 		num = $('#ingredSections').val();
 		if (!num || !num.length || num === "0")
 			$('#ingredSections').val(1);

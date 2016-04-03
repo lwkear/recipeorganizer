@@ -18,6 +18,8 @@
 			<binding property="servings"/>
 			<binding property="prepHours"/>
 			<binding property="prepMinutes"/>
+			<binding property="totalHours"/>
+			<binding property="totalMinutes"/>
 			<binding property="allowShare"/>
 			<binding property="numInstructSections"/>
 			<binding property="currInstructSection"/>

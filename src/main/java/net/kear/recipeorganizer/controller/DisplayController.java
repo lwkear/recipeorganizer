@@ -286,7 +286,7 @@ public class DisplayController {
 	/**************************/
 	/*** RecipeNote handler ***/
 	/**************************/
-	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
 	public ResponseObject updateRecipeNote(@RequestBody RecipeNote recipeNote) throws RestException {
@@ -299,8 +299,25 @@ public class DisplayController {
 		}
 		
 		return new ResponseObject();
-	}
+	}*/
 
+	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
+	@ResponseStatus(value=HttpStatus.OK)
+	public String updateRecipeNote(Model model, @RequestBody RecipeNote recipeNote, HttpServletResponse response) throws RestException {
+		logger.info("recipe/recipeNote POST: user/recipe=" + recipeNote.getId().getUserId() + "/" + recipeNote.getId().getRecipeId());
+		
+		try {
+			recipeService.updateRecipeNote(recipeNote);
+		} catch (DataAccessException ex) {
+			throw new RestException("exception.recipeNote", ex);
+		}
+
+		response.setContentType("text/html");
+		response.setCharacterEncoding("utf-8");
+		model.addAttribute("recipeNote", recipeNote.getNote());
+		
+		return "recipe/privateNotes";
+	}	
 	/*****************************/
 	/*** RecipeComment handler ***/
 	/*****************************/

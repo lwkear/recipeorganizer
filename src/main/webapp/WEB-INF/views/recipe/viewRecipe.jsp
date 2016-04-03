@@ -134,8 +134,8 @@
 			</div>
 		</div>
 	</div>		
-	<!-- <div class="col-sm-12" style="display:none"> -->
-	<div class="col-sm-12">
+	<div class="col-sm-12" style="display:none">
+	<!-- <div class="col-sm-12"> -->
 		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=${userId}&rid=${recipe.id}"/>"></iframe>
 	</div>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>
