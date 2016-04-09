@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
+import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
+import net.kear.recipeorganizer.enums.ApprovalReasonFormatter;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.solr.SolrUtil;
@@ -26,6 +28,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -54,7 +57,8 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @ComponentScan(basePackages = { 
 	"net.kear.recipeorganizer.controller",
 	"net.kear.recipeorganizer.listener",
-	"net.kear.recipeorganizer.util"
+	"net.kear.recipeorganizer.util",
+	"net.kear.recipeorganizer.enums"
 	})
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),
@@ -70,13 +74,16 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	private WebFlowConfig webFlowConfig;
 	@Autowired
 	private ServletContext servletContext;
+	@Autowired
+	private ApprovalActionFormatter actionFormatter;
+	@Autowired
+	private ApprovalReasonFormatter reasonFormatter;
 	
 	/*** resource location configuration ***/
 	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
-        //registry.addResourceHandler("/reports/**").addResourceLocations("/reports").setCachePeriod(31556926);
     }
 
 	/*** JSON configuration ***/
@@ -207,6 +214,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("lang");
 		return interceptor;
+	}
+	
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addFormatter(actionFormatter);
+		registry.addFormatter(reasonFormatter);
+		super.addFormatters(registry);
 	}
 	
 	/*** system maintenance configuration ***/

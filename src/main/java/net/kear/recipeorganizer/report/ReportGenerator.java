@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +21,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -34,6 +36,7 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +104,8 @@ public class ReportGenerator {
 		RecipeNote recipeNote = recipeService.getRecipeNote(userId, recipeId);
 		if (recipeNote != null)
 			recipe.setPrivateNotes(recipeNote.getNote());
+
+		
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);
 
@@ -145,7 +150,7 @@ public class ReportGenerator {
 		}
 	}
 	
-	public String createRecipePDF(long recipeId, Locale locale) {
+	public String createRecipePDF(long recipeId, Locale locale) throws JRException, JRRuntimeException {
 		Map<String,Object> params = new HashMap<String,Object>();
 		
 		String pdfFileName = "";
@@ -153,32 +158,37 @@ public class ReportGenerator {
 		List<Recipe> list = new ArrayList<Recipe>();
 		Recipe recipe = recipeService.getRecipe(recipeId);
 		list.add(recipe);
-    	JRDataSource src = new JRBeanCollectionDataSource(list);
+    	JRDataSource src = new JRBeanCollectionDataSource(list);    	
     	
-    	try {
-    		//TODO: JASPER: REMOVE THESE TWO LINES when jasper report work is done
-        	//recipePdfReport = (JasperReport)JRLoader.loadObjectFromFile(recipePdfFile.getPath());
-        	//recipePdfReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
-
-        	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
-        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
-        	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipePdfReport, params, src);
-        	
-        	JRPdfExporter exporter = new JRPdfExporter();
-        	pdfFileName = pdfReportDirPath + "recipe" + recipeId + ".pdf";
-        	File pdfFile = new File(pdfFileName);
-        	
-        	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
-            exporter.setExporterInput(expInput);
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfFile));
-            exporter.exportReport();
-        	
-        } catch (JRException ex) {
-			//log the error and do nothing - the client will notify the user of the lack of a report
-			logService.addException(ex);
-			return null;
-		}
+    	JRPdfExporter exporter = new JRPdfExporter();
+    	pdfFileName = pdfReportDirPath + "recipe" + recipeId + ".pdf";
+    	File pdfFile = new File(pdfFileName);
+    	
+    	if (pdfFile.exists()) {
+    		long fileTime = pdfFile.lastModified();
+    		if (fileTime != 0) {
+    			Date fileDate = new Date(fileTime);
+    			DateTime fileDateTime = new DateTime(fileDate);
+    			Date recipeDate;
+    			if (recipe.getDateUpdated() != null)
+    				recipeDate = recipe.getDateUpdated();
+    			else
+    				recipeDate = recipe.getDateAdded();
+    			DateTime recipeDateTime = new DateTime(recipeDate);
+    			if (recipeDateTime.isBefore(fileDateTime))
+    				return pdfFileName;
+    		}
+    	}
+		
+    	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
+    	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
+    	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
+    	JasperPrint jasperPrint = JasperFillManager.fillReport(recipePdfReport, params, src);
+    	        	
+    	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
+        exporter.setExporterInput(expInput);
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfFile));
+        exporter.exportReport();
     	
     	return pdfFileName;
 	}

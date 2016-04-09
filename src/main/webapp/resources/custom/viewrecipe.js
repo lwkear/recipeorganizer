@@ -255,21 +255,14 @@ function shareRecipe(viewerId, recipeId, recipeName) {
 	$('#emailMsg').val("");
 	$('#recipientNameErrMsg').html("");
 	$('#recipientEmailErrMsg').html("");
-	$("#submitShare").one('click', {viewerId : viewerId, recipeId : recipeId, recipeName : recipeName}, postShare);
+	$("#submitShare").on('click', {viewerId : viewerId, recipeId : recipeId, recipeName : recipeName}, postShare);
+	$("#cancelShare").on('click', function() {$("#shareRecipeDlg").modal('hide');});
 	$("#shareRecipeDlg").on('hidden.bs.modal', function(){$("#submitShare").unbind('click');})
 	$("#shareRecipeDlg").modal('show');
 }
 
 //request server to update the note
 function postShare(e) {
-	var isVisible = $('#recipientNameErrMsg').is(':visible');
-	if (isVisible == false) {
-		isVisible = $('#recipientEmailErrMsg').is(':visible');
-	}
-	if (isVisible == true)
-		return false;
-	
-	$("#shareRecipeDlg").modal('hide');
 	console.log('postShare: viewer=' + e.data.viewerId + ' recipe='+ e.data.recipeId);
 
 	var viewerId = e.data.viewerId;
@@ -280,9 +273,9 @@ function postShare(e) {
 	var message = $('#emailMsg').val();
 	message = $.trim(message);
 	
-	if ((recipientName.length === 0) || (recipientEmail.length === 0)) 
-		return;
-
+	$('#recipientNameErrMsg').html("");
+	$('#recipientEmailErrMsg').html("");
+	
 	var data = {"userId":viewerId,"recipeId":recipeId,"recipientId":0,"recipientName":recipientName,"recipientEmail":recipientEmail,"emailMsg":message,"recipeName":recipeName};
 
 	$.ajax({
@@ -293,6 +286,7 @@ function postShare(e) {
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
+		$("#shareRecipeDlg").modal('hide');
 		console.log('postShare done');
 		var msg = getMessage('email.recipe.successful');
 		var fmt = String.format(msg, recipientName);
@@ -301,7 +295,18 @@ function postShare(e) {
 	.fail(function(jqXHR, status, error) {
 		var data = jqXHR.responseJSON;
 		console.log('fail data: '+ data);
-		postFailed(data.msg);
+		if (data.result != null) {
+			for (i=0;i<data.result.length;i++) {
+				var errMsg = data.result[i].defaultMessage;
+				var errField = data.result[i].field;
+				var msgId = "#" + errField + "ErrMsg";
+				$(msgId).html(errMsg);
+			}			
+		}
+		else {
+			$("#shareRecipeDlg").modal('hide');
+			postFailed(data.msg);
+		}			
 	});
 }
 

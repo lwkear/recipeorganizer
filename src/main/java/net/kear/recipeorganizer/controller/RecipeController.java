@@ -175,7 +175,7 @@ public class RecipeController {
 	}
 
 	@RequestMapping(value = "recipe/done/{recipeId}", method = RequestMethod.GET)
-	public String getDone(Model model, @PathVariable Long recipeId) throws RecipeNotFound {
+	public String getDone(Model model, @PathVariable Long recipeId, HttpServletRequest request) throws RecipeNotFound {
 		logger.info("recipe/done GET: recipeId=" + recipeId);
 	
 		Recipe recipe;

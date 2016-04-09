@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
+import net.kear.recipeorganizer.enums.ApprovalReason;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
@@ -39,6 +41,7 @@ import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
+import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -242,7 +245,7 @@ public class AdminController {
 			}
 		}
 		
-		return new ResponseObject();		
+		return new ResponseObject();
 	}
 
 	/************************************/
@@ -461,28 +464,48 @@ public class AdminController {
 		List<RecipeListDto> recipes = recipeService.approveRecipesList();
 		
 		model.addAttribute("recipes", recipes);
+		RecipeMessageDto recipeMessageDto = new RecipeMessageDto();
+		model.addAttribute("recipeMessageDto", recipeMessageDto);
+		model.addAttribute("approvalActions", ApprovalAction.list());
+		model.addAttribute("approvalReasons", ApprovalReason.list());
 		return "admin/approveRecipes";
 	}
 
 	@RequestMapping(value="admin/approveRecipe", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)	
-	public ResponseObject approveRecipe(@RequestParam("recipeId") Long recipeId) throws RestException {
-		logger.info("admin/approveRecipe POST: recipeId=" + recipeId);
+	public ResponseObject approveRecipe(@RequestBody RecipeMessageDto recipeMessageDto, Locale locale) throws RestException {
+		logger.info("admin/approveRecipe POST: recipeId=" + recipeMessageDto.getRecipeId());
 		
-		Recipe recipe; 
-		
-		try {
-			recipe = recipeService.getRecipe(recipeId);
-			recipeService.approveRecipe(recipeId);
-		} catch (Exception ex) {
-			throw new RestException("exception.approveRecipe", ex);
+		if (recipeMessageDto.getAction() != ApprovalAction.DELETE) {
+			Recipe recipe;
+			
+			try {
+				recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());
+				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), recipeMessageDto.getAction());
+			} catch (Exception ex) {
+				throw new RestException("exception.approveRecipe", ex);
+			}
+			
+			solrUtil.deleteRecipe(recipeMessageDto.getRecipeId());
+			solrUtil.addRecipe(recipe);
 		}
 		
-		solrUtil.deleteRecipe(recipeId);
-		solrUtil.addRecipe(recipe);
+		if (recipeMessageDto.getAction() == ApprovalAction.DELETE) {
+			try {
+				recipeService.deleteRecipe(recipeMessageDto.getRecipeId());
+			} catch (Exception ex) {
+				throw new RestException("exception.approveRecipe", ex);
+			}
+			
+			solrUtil.deleteRecipe(recipeMessageDto.getRecipeId());
+		}
 		
 		return new ResponseObject();
+	}
+	
+	private void prepareApprovalMessage(RecipeMessageDto recipeMessageDto) {
+		
 	}
 	
 	/**********************************/

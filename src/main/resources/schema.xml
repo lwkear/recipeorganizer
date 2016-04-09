@@ -174,7 +174,7 @@
 	<field name="background" type="text_en" indexed="true" stored="true"/>
 	<field name="photo" type="text_en" indexed="true" stored="true"/>
 	<field name="allowshare" type="boolean" indexed="true" stored="true"/>
-	<field name="approved" type="boolean" indexed="true" stored="true"/>
+	<field name="status" type="int" indexed="true" stored="true"/>
 	<field name="sourcetype" type="text_en" indexed="true" stored="true"/>
 	<field name="cookbook" type="text_en" indexed="true" stored="true"/>
 	<field name="magazine" type="text_en" indexed="true" stored="true"/>

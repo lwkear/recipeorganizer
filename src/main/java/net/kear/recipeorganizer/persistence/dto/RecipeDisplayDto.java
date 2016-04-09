@@ -2,6 +2,8 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
+import net.kear.recipeorganizer.enums.ApprovalStatus;
+
 public class RecipeDisplayDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
@@ -12,18 +14,18 @@ public class RecipeDisplayDto implements Serializable {
 	private String description;
 	private String photo;
 	private boolean allowShare;
-	private boolean approved;
+	private ApprovalStatus status;
 	
 	public RecipeDisplayDto() {};
 	
-	public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, boolean approved) {
+	public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, ApprovalStatus status) {
 		this.id = id;
 		this.userId = userId;
 		this.name = name;
 		this.description = description;
 		this.photo = photo;
 		this.allowShare = allowShare;
-		this.approved = approved;
+		this.status = status;
 	};	
 
 	public long getId() {
@@ -74,12 +76,12 @@ public class RecipeDisplayDto implements Serializable {
 		this.allowShare = allowShare;
 	}
 	
-	public boolean getApproved() {
-		return approved;
+	public ApprovalStatus getStatus() {
+		return status;
 	}
 
-	public void setApproved(boolean approved) {
-		this.approved = approved;
+	public void setStatus(ApprovalStatus status) {
+		this.status = status;
 	}
 
 	@Override
@@ -121,6 +123,6 @@ public class RecipeDisplayDto implements Serializable {
 				+ ", description=" + description 
 				+ ", photo=" + photo 
 				+ ", allowShare=" + allowShare 
-				+ ", approved=" + approved + "]";
+				+ ", status=" + status + "]";
 	}
 }

@@ -1,7 +1,6 @@
 /*******************************/
 /*** delete recipe functions ***/
 /*******************************/
-
 //notify the user in popup modal
 function deleteRecipe(id, name) {
 	$("#messageTitle").text(name);
@@ -50,7 +49,6 @@ function recipeDeleted(recipeId) {
 /*********************************/
 /*** remove favorite functions ***/
 /*********************************/
-
 //notify the user in popup modal
 function removeFavorite(userId, recipeId, name) {
 	$("#messageTitle").text(name);
@@ -74,10 +72,6 @@ function postRemoveFavorite(e) {
 	var data = {"id":{"userId":userId,"recipeId":recipeId},"dateAdded":null};
 	
 	$.ajax({
-		/*headers: { 
-	        'Accept': 'application/json',
-	        'Content-Type': 'application/json' 
-	    },*/
 		type: 'POST',
 		url: '/recipeorganizer/recipe/removeFavorite',
 		dataType: 'json',
@@ -105,15 +99,42 @@ function removeRow(recipeId) {
 /*******************************/
 /*** approve recipe function ***/
 /*******************************/
-function approveRecipe(recipeId) {
+//enter a note in popup dialog
+function recipeAction(toUserId, recipeId, name) {
+	$("#recipeName").text(name);
+	$("#action").val([1]);
+	$('#message').val("");
+	$('#reasons').multiselect('deselectAll',false);
+	$('#reasons').multiselect('updateButtonText');
+	$("#submitActionMessage").one('click', {toUserId : toUserId, recipeId : recipeId}, postActionMessage);
+	$("#recipeActionDlg").on('hidden.bs.modal', function(){$("#submitActionMessage").unbind('click');})
+	$("#recipeActionDlg").modal('show');
+} 
+
+//request server to update the note
+function postActionMessage(e) {
+	$("#recipeActionDlg").modal('hide');
+
+	var toId = e.data.toUserId;
+	var recipeId = e.data.recipeId;
+	var action = $("#action").val();
+	var reasons = $('#reasons').val();
+	var msg = $('#message').val();
+	msg = $.trim(msg);
+	
+	var data = {"toUserId":toId,"recipeId":recipeId,"action":action,"reasons":reasons,"message":msg};
+	var jsondata = JSON.stringify(data);
+	console.log('data: '+ jsondata);
+
 	$.ajax({
-		type: 'POST',
-		url: '/recipeorganizer/admin/approveRecipe',
+	    type: 'POST',
+		contentType: 'application/json',
+	    url: '/recipeorganizer/admin/approveRecipe',
 		dataType: 'json',
-		data : {recipeId:recipeId}
+		data: JSON.stringify(data)
 	})
 	.done(function(data) {
-		console.log('recipe approved');
+		console.log('postMessage done');
 		removeRow(recipeId);
 	})
 	.fail(function(jqXHR, status, error) {
@@ -124,6 +145,10 @@ function approveRecipe(recipeId) {
 }
 
 $(document).ready(function() {
+	$('#reasons').multiselect({
+		nonSelectedText: getMessage('common.none')
+	});
+	
 	$('#recipeList').DataTable({
 		language : {
 	    	emptyTable:     getMessage('recipe.table.emptyTable'),

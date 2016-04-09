@@ -2,7 +2,7 @@
 	<dataSource driver="oracle.jdbc.driver.OracleDriver" url="jdbc:oracle:thin:@localhost:1521:xe"
 		user="recipe" password="recipe" />
 	<document>
-		<entity name="recipe" query="select ID, USER_ID as USERID, NAME, SERVINGS, PHOTO, ALLOW_SHARE as ALLOWSHARE, APPROVED, CATEGORY_ID as CATID, DESCRIPTION, NOTES, BACKGROUND from recipe" transformer="ClobTransformer">
+		<entity name="recipe" query="select ID, USER_ID as USERID, NAME, SERVINGS, PHOTO, ALLOW_SHARE as ALLOWSHARE, STATUS, CATEGORY_ID as CATID, DESCRIPTION, NOTES, BACKGROUND from recipe" transformer="ClobTransformer">
 			<field column="DESCRIPTION" name="description" clob="true"></field>
 			<field column="NOTES" name="notes" clob="true"></field>
 			<field column="BACKGROUND" name="background" clob="true"></field>

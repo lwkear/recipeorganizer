@@ -4,6 +4,7 @@
 
 <%@include file="../common/head.jsp" %>
 <%@ page import="net.kear.recipeorganizer.util.file.FileConstant"%>
+<%@ page import="net.kear.recipeorganizer.enums.UserAge"%>
 
 <title><spring:message code="profile.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
@@ -46,24 +47,11 @@
 							<label class="control-label"><spring:message code="profile.age"></spring:message></label>
 						</div>
 						<div class="form-group col-sm-8 col-sm-offset-2" id="ageGroup">
-							<div class="radio-inline">
-								<form:radiobutton value="1" id="age1" path="age"/>&lt;18
-							</div>
-							<div class="radio-inline">
-								<form:radiobutton value="2" id="age2" path="age"/>18-30
-							</div>
-							<div class="radio-inline">
-								<form:radiobutton value="3" id="age3" path="age"/>31-50
-							</div>
-							<div class="radio-inline">
-								<form:radiobutton value="4" id="age4" path="age"/>51-70
-							</div>
-							<div class="radio-inline">
-								<form:radiobutton value="5" id="age5" path="age"/>>70
-							</div>
-							<div class="radio-inline">
-								<form:radiobutton value="0" id="age0" path="age"/><spring:message code="profile.nevermind"></spring:message>
-							</div>
+							<c:forEach var="ageRange" items="${ageRanges}">
+								<div class="radio-inline">
+									<form:radiobutton value="${ageRange.value}" id="age${ageRange.value}" path="age"/>${ageRange.description}
+								</div>
+							</c:forEach>
 						</div>
 					</div>
 					<div class="col-sm-12">

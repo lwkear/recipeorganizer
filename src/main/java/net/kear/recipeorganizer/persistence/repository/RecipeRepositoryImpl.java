@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
+import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -57,9 +59,10 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	getSession().delete(recipe);
     }
 
-	public void approveRecipe(Long id) {
+	public void approveRecipe(Long id, ApprovalAction action) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"update recipe set approved = 1 where id = :id")
+			"update recipe set status = :status where id = :id")
+			.setInteger("status", action.ordinal())
 			.setLong("id", id);
     	query.executeUpdate();		
 	}
@@ -79,10 +82,11 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	recipe.setNumIngredSections(recipe.getIngredSections().size());
     	recipe.setNumInstructSections(recipe.getInstructSections().size());
     	
-    	if (recipe.getViews() == null)
+    	//removing these setters - they were causing the record to be updated in the database
+    	/*if (recipe.getViews() == null)
     		recipe.setViews(0);
     	if (recipe.getPhotoName() == null)
-    		recipe.setPhotoName("");
+    		recipe.setPhotoName("");*/
     	Hibernate.initialize(recipe.getSource());
     	Hibernate.initialize(recipe.getUser());    	
     	
@@ -181,7 +185,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     
     public Long getRequireApprovalCount() {
     	Criteria criteria = getSession().createCriteria(Recipe.class)
-    		.add(Restrictions.eq("approved", false))
+    		.add(Restrictions.in("status", ApprovalStatus.NOTREVIEWED, ApprovalStatus.PENDING, ApprovalStatus.BLOCKED))
     		.setProjection(Projections.rowCount());
         
     	Object result = criteria.uniqueResult();
@@ -203,14 +207,14 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.createAlias("category", "c")
     		.createAlias("user", "u")    		
     		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
-    		.add(Restrictions.eq("approved", false))
+    		.add(Restrictions.in("status", ApprovalStatus.NOTREVIEWED, ApprovalStatus.PENDING, ApprovalStatus.BLOCKED))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
@@ -236,7 +240,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
@@ -260,7 +264,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("r.photoName").as("photo")))
     		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
 
@@ -289,7 +293,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("r.photoName").as("photo")))
     		.addOrder(Order.desc("r.dateAdded"))
     		.setMaxResults(5)
@@ -312,7 +316,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.description").as("description"))
     			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.approved").as("approved"))
+    			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))

@@ -14,9 +14,58 @@
 	
 	<div class="container container-white">
 	 	<div class="col-sm-12">
+			<div class="page-header"> 		
+				<h3><spring:message code="profile.title"></spring:message></h3>
+			</div>
+			<div class="col-sm-12">
+			<div class="row">
+				<form:form name="approvalForm" role="form" method="post" modelAttribute="recipeMessageDto">
+					<%-- <div class="form-group">
+						<c:forEach var="aaction" items="${approvalActions}">
+							<div class="radio-inline">
+								<form:radiobutton path="action" value="${aaction}" label="${aaction}"/>								
+							</div>
+						</c:forEach>
+					</div>
+					
+					<div class="form-group">
+						<form:radiobuttons element="div class='radio-inline'" cssStyle="'font-weight:400'" path="action" items="${approvalActions}"/>
+					</div> --%>
+				
+					<div class="form-group">
+						<form:select path="action">
+							<form:options items="${approvalActions}"/> 
+						</form:select>
+					</div>
+				
+				
+				</form:form>
+			</div>
+			</div>
 
 
-	<div class="col-sm-12">
+			<%-- <div class="col-sm-12">
+			<div class="row">
+				<form name="approvalForm" role="form" method="post">
+					<div class="form-group">
+						<c:forEach var="item" items="${approvalActions}">
+							<div class="radio-inline">
+								<input type="radio" value="${item}"/>								
+							</div>
+						</c:forEach>
+					</div>
+					
+					<div class="form-group">
+						<form:radiobuttons element="div class='radio-inline'" cssStyle="'font-weight:400'" path="action" items="${approvalActions}"/>
+					</div>
+				</form>
+			</div>
+			</div> --%>
+		</div>
+	</div>
+
+
+	<%-- <div class="col-sm-12">
 		<iframe id="iframerpt1" name="iframerpt1" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1463"/>"></iframe>
 	</div>
 	<div class="col-sm-12">
@@ -36,7 +85,7 @@
 	</div>
 	<div class="col-sm-12">
 		<iframe id="iframerpt2" name="iframerpt2" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=3&rid=1462"/>"></iframe>
-	</div>
+	</div> --%>
 
 <%--
 
@@ -179,11 +228,11 @@ $V{SourcePerson} + $V{SourceOther} + $V{SourceMagazine} + $V{SourceNewspaper}
 				</div>
 			</div>				
 			</form:form>
- --%>
+
 
 		</div>
 	</div>
-
+ --%>
 
 
 <%--

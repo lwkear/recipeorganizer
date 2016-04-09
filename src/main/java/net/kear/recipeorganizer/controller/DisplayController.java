@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,9 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -195,6 +200,8 @@ public class DisplayController {
 			}
 		}
 		
+		ShareRecipeDto shareDto = new ShareRecipeDto();
+		
 		model.addAttribute("madeCount", recipeMade.getMadeCount());
 		model.addAttribute("lastMade", recipeMade.getLastMade());
 		model.addAttribute("recipeNote", recipeNote.getNote());
@@ -206,6 +213,7 @@ public class DisplayController {
 		model.addAttribute("recipe", recipe);
 		model.addAttribute("submitJoin", recipe.getUser().getDateAdded());
 		model.addAttribute("profile", profile);
+		model.addAttribute("recipeShareDto", shareDto);
 		
 		if (user.getId() != recipe.getUser().getId())
 			recipeService.addView(recipe);
@@ -286,21 +294,6 @@ public class DisplayController {
 	/**************************/
 	/*** RecipeNote handler ***/
 	/**************************/
-	/*@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
-	@ResponseBody
-	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject updateRecipeNote(@RequestBody RecipeNote recipeNote) throws RestException {
-		logger.info("recipe/recipeNote POST: user/recipe=" + recipeNote.getId().getUserId() + "/" + recipeNote.getId().getRecipeId());
-		
-		try {
-			recipeService.updateRecipeNote(recipeNote);
-		} catch (DataAccessException ex) {
-			throw new RestException("exception.recipeNote", ex);
-		}
-		
-		return new ResponseObject();
-	}*/
-
 	@RequestMapping(value = "/recipe/recipeNote", method = RequestMethod.POST)
 	@ResponseStatus(value=HttpStatus.OK)
 	public String updateRecipeNote(Model model, @RequestBody RecipeNote recipeNote, HttpServletResponse response) throws RestException {
@@ -317,7 +310,8 @@ public class DisplayController {
 		model.addAttribute("recipeNote", recipeNote.getNote());
 		
 		return "recipe/privateNotes";
-	}	
+	}
+	
 	/*****************************/
 	/*** RecipeComment handler ***/
 	/*****************************/
@@ -369,14 +363,37 @@ public class DisplayController {
 	/***************************/
 	/*** ShareRecipe handler ***/
 	/***************************/
+	//Note: this is an example of using validation with AJAX in a Bootstrap modal dialog
+	//Two aspects of normal validation do not appear to work:
+	//	- the .jsp doesn't recognize the binding errors, probably because the ShareRecipeDto is not the main model for the page (Recipe is)
+	//	- the i18n error messages must be inserted manually
 	@RequestMapping(value = "/recipe/shareRecipe", method = RequestMethod.POST)
 	@ResponseBody
-	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject shareRecipe(@RequestBody ShareRecipeDto shareRecipeDto, Locale locale) throws RestException {
+	public ResponseObject shareRecipe(@RequestBody @Valid ShareRecipeDto shareRecipeDto, BindingResult result, HttpServletResponse response, Locale locale) throws RestException {
 		logger.info("recipe/shareRecipe POST: user/recipe=" + shareRecipeDto.getUserId() + "/" + shareRecipeDto.getRecipeId());
 		
-		//validate the Dto?
-		//validate the recipe ID? or assume it's correct?
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			//need to translate the errors - validation doesn't pick them up automatically in this instance
+			List<FieldError> errors = result.getFieldErrors();
+			List<FieldError> fieldErrors = new ArrayList<FieldError>();
+			for (FieldError error : errors) {
+				String[] codes = error.getCodes();
+				String defaultMsg = error.getDefaultMessage();
+				String msg = messages.getMessage(codes[0], null, defaultMsg, locale);
+				String field = error.getField();
+				FieldError err = new FieldError("shareRecipeDto", field, msg);
+				fieldErrors.add(err);
+			}			
+			
+			ResponseObject obj = new ResponseObject();
+			obj.setResult(fieldErrors);
+			obj.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+			return obj;
+		}
 		
 		User user = null;
 		try {
@@ -405,8 +422,15 @@ public class DisplayController {
 			recipientEmail = shareRecipeDto.getRecipientEmail(); 
 		}
 		
-    	String pdfFileName = reportGenerator.createRecipePDF(shareRecipeDto.getRecipeId(), locale);
-
+    	String pdfFileName = "";
+    	
+    	try {
+    		pdfFileName = reportGenerator.createRecipePDF(shareRecipeDto.getRecipeId(), locale);
+    	} 
+		catch (Exception ex) {
+    		throw new RestException("exception.generatePDF", ex);
+    	}
+    	
     	String userName = user.getFirstName() + " " + user.getLastName();
     	
     	shareRecipeEmail.init(recipientName, recipientEmail, locale);
@@ -417,8 +441,13 @@ public class DisplayController {
 		shareRecipeEmail.setPdfAttached(true);
 		shareRecipeEmail.setPdfFileName(pdfFileName);
 		shareRecipeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(shareRecipeEmail);
+    	try {
+			emailSender.sendHtmlEmail(shareRecipeEmail);
+		} catch (Exception ex) {
+			throw new RestException("exception.sendEmail", ex);
+		}
 
+    	response.setStatus(HttpServletResponse.SC_OK);
 		return new ResponseObject();
 	}
 }

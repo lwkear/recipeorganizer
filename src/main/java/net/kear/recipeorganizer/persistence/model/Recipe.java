@@ -7,6 +7,8 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -26,6 +28,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import javax.validation.GroupSequence;
 
+import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Source;
@@ -46,7 +49,7 @@ import org.springframework.util.AutoPopulatingList;
 public class Recipe implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	//Hibernate validation groups
 	public interface NotBlankGroup {}
 	public interface SizeGroup {}
@@ -107,8 +110,9 @@ public class Recipe implements Serializable {
 	@Column(name = "ALLOW_SHARE")
 	private boolean allowShare;
 
-	@Column(name = "APPROVED")
-	private boolean approved;
+	@Enumerated(EnumType.ORDINAL)
+	@Column(name = "STATUS")
+	private ApprovalStatus status;
 	
 	@Column(name = "COPYRIGHTED")
 	private boolean copyrighted;
@@ -162,19 +166,24 @@ public class Recipe implements Serializable {
 	@Type(type = "tagList") 
 	@Size(max=5, groups=SizeGroup.class)
 	private List<String> tags;
-	
+
+	@Column(name = "VIEWS")
+	private Integer views;
+
 	@OneToOne(mappedBy = "recipe", orphanRemoval=true, optional = true, cascade=CascadeType.ALL, fetch = FetchType.LAZY)
 	@Valid
 	private Source source;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@Column(name = "DATE_ADDED", insertable=false, updatable=false)
 	private Date dateAdded;
-	
-	@Column(name = "VIEWS")
-	private Integer views;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(name = "DATE_UPDATED", insertable=false, updatable=false)
+	private Date dateUpdated;
+	
 	@Transient
 	@Lob
 	private String privateNotes;
@@ -182,7 +191,7 @@ public class Recipe implements Serializable {
 	public Recipe() {}
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
-				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, boolean approved, boolean copyrighted,  
+				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, ApprovalStatus status, boolean copyrighted,  
 				String photoName, List<String> tags, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
 		super();
 		this.user = user;
@@ -197,7 +206,7 @@ public class Recipe implements Serializable {
 		this.totalMinutes = totalMinutes;
 		this.notes = notes;
 		this.allowShare = allowShare;
-		this.approved = approved;
+		this.status = status;
 		this.copyrighted = copyrighted;
 		this.photoName = photoName;
 		this.tags = tags;
@@ -315,12 +324,12 @@ public class Recipe implements Serializable {
 		this.allowShare = allowShare;
 	}
 	
-	public Boolean getApproved() {
-		return approved;
+	public ApprovalStatus getStatus() {
+		return status;
 	}
 
-	public void setApproved(Boolean approved) {
-		this.approved = approved;
+	public void setStatus(ApprovalStatus status) {
+		this.status = status;
 	}
 	
 	public Boolean getCopyrighted() {
@@ -331,10 +340,6 @@ public class Recipe implements Serializable {
 		this.copyrighted = copyrighted;
 	}
 	
-	public void setApproved(boolean approved) {
-		this.approved = approved;
-	}
-
 	public String getPhotoName() {
 		return photoName;
 	}
@@ -439,6 +444,14 @@ public class Recipe implements Serializable {
 		this.dateAdded = dateAdded;
 	}
 
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
+
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
+	}
+
 	public Integer getViews() {
 		return views;
 	}
@@ -460,7 +473,6 @@ public class Recipe implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (allowShare ? 1231 : 1237);
-		result = prime * result + (approved ? 1231 : 1237);
 		result = prime * result + ((background == null) ? 0 : background.hashCode());
 		result = prime * result + ((category == null) ? 0 : category.hashCode());
 		result = prime * result + (copyrighted ? 1231 : 1237);
@@ -489,7 +501,7 @@ public class Recipe implements Serializable {
 		Recipe other = (Recipe) obj;
 		if (allowShare != other.allowShare)
 			return false;
-		if (approved != other.approved)
+		if (status != other.status)
 			return false;
 		if (background == null) {
 			if (other.background != null)
@@ -572,7 +584,7 @@ public class Recipe implements Serializable {
 				+ ", totalMinutes=" + totalMinutes 
 				+ ", notes=" + notes 
 				+ ", allowShare=" + allowShare 
-				+ ", approved=" + approved 
+				+ ", status=" + status
 				+ ", copyrighted=" + copyrighted 
 				+ ", photoName=" + photoName 
 				+ ", tags=" + tags 

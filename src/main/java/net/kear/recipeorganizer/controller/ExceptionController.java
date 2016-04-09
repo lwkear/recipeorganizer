@@ -12,6 +12,7 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.view.CommonView;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRuntimeException;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -79,6 +80,7 @@ Was expecting one of:
 	
 	@ExceptionHandler(value={
 			JRException.class,
+			JRRuntimeException.class,
 			SolrServerException.class,
 			ObjectNotFoundException.class
 			})
@@ -103,6 +105,17 @@ Was expecting one of:
 		
 		return commonView.getStandardErrorPage(ex);
 	}
+	
+/*
+2016-03-29 10:34:08,770 DEBUG: net.kear.recipeorganizer.util.email.PasswordEmail - construct PasswordEmail
+2016-03-29 10:34:10,330 INFO : net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions exception class: class org.springframework.mail.MailSendException
+2016-03-29 10:34:10,342 DEBUG: net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions msg: MailSendException: Mail server connection failed; nested exception is javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
+  nested exception is:
+	java.net.ConnectException: Connection refused: connect. Failed messages: javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
+  nested exception is:
+	java.net.ConnectException: Connection refused: connect
+2016-03-29 10:34:10,342 ERROR: net.kear.recipeorganizer.controller.ExceptionController - class org.springframework.mail.MailSendException
+*/
 
 	@ExceptionHandler(value= {
 			CannotCreateTransactionException.class,

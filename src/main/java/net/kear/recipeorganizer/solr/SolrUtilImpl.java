@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
@@ -59,10 +60,12 @@ public class SolrUtilImpl implements SolrUtil {
 		QueryResponse rsp = null;
 		String filterStr = "";
 		
+		int approved = ApprovalStatus.APPROVED.ordinal();
+		
 		if (userId > 0)
-			filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && approved:true)", userId, userId);
+			filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && status:%d)", userId, userId, approved);
 		else
-			filterStr = "allowshare:true && approved:true";
+			filterStr = String.format("allowshare:true && approved:%d", approved);
 		logger.debug("filterStr: " + filterStr);
 		
 		//Note: the default sort is by score, so no need to explicitly identify score as the sort
@@ -70,7 +73,7 @@ public class SolrUtilImpl implements SolrUtil {
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "name^2 or catname or ingredname or description^1 or background or source or notes or tag");
-		query.setParam("fl", "id, userid, name, description, photo, allowshare, approved, score, catid, srctype");
+		query.setParam("fl", "id, userid, name, description, photo, allowshare, status, score, catid, srctype");
 		query.addFilterQuery(filterStr);
 		query.setParam("start", "0");
 		query.setParam("rows", "100");
@@ -100,7 +103,7 @@ public class SolrUtilImpl implements SolrUtil {
 	    	String desc = (String)doc.getFieldValue("description");
 	    	String photo = (String)doc.getFieldValue("photo");
 	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
-	    	boolean approved = (boolean)doc.getFieldValue("approved");
+	    	int stat = (Integer)doc.getFieldValue("status");
 	    	Long catId = (Long)doc.getFieldValue("catid");
 	    	String source = (String)doc.getFieldValue("srctype");
 	    	if (source == null)
@@ -132,7 +135,8 @@ public class SolrUtilImpl implements SolrUtil {
 	        }
 	    	
 	    	if (addResult) {
-	    		SearchResultsDto rslts = new SearchResultsDto(rank++, id, uId, name, desc, photo, allowShare, approved, catId, source);
+	    		ApprovalStatus status = ApprovalStatus.values()[stat];
+	    		SearchResultsDto rslts = new SearchResultsDto(rank++, id, uId, name, desc, photo, allowShare, status, catId, source);
 	    		resultsList.add(rslts);
 	    	}
 	    }
@@ -165,7 +169,7 @@ public class SolrUtilImpl implements SolrUtil {
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "ingredid");
-		query.setParam("fl", "id, userid, name, description, allowshare, approved, score, catname, srctype");
+		query.setParam("fl", "id, userid, name, description, allowshare, status, score, catname, srctype");
 		query.setParam("start", "0");
 		query.setParam("rows", "100000");
 	    
@@ -184,13 +188,14 @@ public class SolrUtilImpl implements SolrUtil {
 	    	String name = (String)doc.getFieldValue("name");
 	    	String desc = (String)doc.getFieldValue("description");
 	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
-	    	boolean approved = (boolean)doc.getFieldValue("approved");
+	    	int stat = (Integer)doc.getFieldValue("status");
+	    	ApprovalStatus status = ApprovalStatus.values()[stat];
 	    	String catName = (String)doc.getFieldValue("catname");
 	    	String source = (String)doc.getFieldValue("srctype");
 	    	if (source == null)
 	    		source = Source.TYPE_NONE;
 	    	
-	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, source, allowShare, approved);
+	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, source, allowShare, status);
     		resultsList.add(rslts);
 	    }
 	    
@@ -208,7 +213,7 @@ public class SolrUtilImpl implements SolrUtil {
 		document.addField("catid", recipe.getCategory().getId());
 		document.addField("description", recipe.getDescription());
 		document.addField("allowshare", recipe.getAllowShare());
-		document.addField("approved", recipe.getApproved());
+		document.addField("status", recipe.getStatus());
 		if (!StringUtils.isBlank(recipe.getServings()))
 			document.addField("servings", recipe.getServings());
 		if (!StringUtils.isBlank(recipe.getNotes()))

@@ -66,53 +66,69 @@
 							</span>
 						</div>
 					</c:if>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-12">			
-					<c:if test="${not empty recipe.source}">
-						<div class="col-sm-9 spacer-vert-xs">
-						<span><strong><spring:message code="recipe.optional.source"></spring:message></strong>&nbsp;&nbsp;</span>
-						<c:choose>
-							<c:when test="${recipe.source.type == Source.TYPE_COOKBOOK}">
-								<span>${recipe.source.cookbook}<c:if test="${not empty recipe.source.cookbookPage}">&nbsp;&nbsp;&nbsp;&nbsp;
-									<strong><spring:message code="recipe.optional.source.cookbookpage"></spring:message></strong>&nbsp;${recipe.source.cookbookPage}</c:if>
-								</span>
-							</c:when>
-							<c:when test="${recipe.source.type == Source.TYPE_MAGAZINE}">
-								<span>${recipe.source.magazine}<c:if test="${not empty recipe.source.magazinePubdate}">&nbsp;&nbsp;&nbsp;&nbsp;
-									<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.magazinePubdate}</c:if>
-								</span>
-							</c:when>
-							<c:when test="${recipe.source.type == Source.TYPE_NEWSPAPER}">
-								<span>${recipe.source.newspaper}<c:if test="${not empty recipe.source.newspaperPubdate}">&nbsp;&nbsp;&nbsp;&nbsp;
-									<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.newspaperPubdate}</c:if>
-								</span>
-							</c:when>
-							<c:when test="${recipe.source.type == Source.TYPE_PERSON}">
-								<span>${recipe.source.person}</span>
-							</c:when>
-							<c:when test="${recipe.source.type == Source.TYPE_WEBSITE}">
-								<span>${recipe.source.websiteUrl}
-									<c:if test="${recipe.source.recipeUrl != 'http://'}">&nbsp;&nbsp;&nbsp;&nbsp;${recipe.source.recipeUrl}</c:if>
-								</span>
-							</c:when>
-							<c:when test="${recipe.source.type == Source.TYPE_OTHER}">
-								<span>${recipe.source.other}</span>
-							</c:when>
-						</c:choose>
+					<c:if test="${not empty recipe.tags}">
+						<div class="col-sm-4 spacer-vert-xs">
+							<span>
+								<strong><spring:message code="recipe.optional.tags"></spring:message></strong>&nbsp;&nbsp;<span id="tags">${recipe.tags}</span>
+							</span>
 						</div>
 					</c:if>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-sm-12">			
-					<c:if test="${not empty recipe.tags}">
-						<div class="col-sm-6 spacer-vert-xs">
-							<span>
-								<strong><spring:message code="recipe.optional.tags"></spring:message></strong>&nbsp;&nbsp;<span id="tags">${recipe.tags}</span>
-							</span>
+					<c:if test="${not empty recipe.source}">
+						<c:set var="colwidth" value="col-sm-4"></c:set>
+						<c:if test="${recipe.source.type == Source.TYPE_WEBSITE}"><c:set var="colwidth" value="col-sm-6"></c:set></c:if>
+						<div class="${colwidth} spacer-vert-xs">
+						<span><strong><spring:message code="recipe.optional.source"></spring:message></strong>&nbsp;&nbsp;</span>
+						<c:choose>
+							<c:when test="${recipe.source.type == Source.TYPE_COOKBOOK}">
+								<span>${recipe.source.cookbook}</span>
+							</c:when>
+							<c:when test="${recipe.source.type == Source.TYPE_MAGAZINE}">
+								<span>${recipe.source.magazine}</span>
+							</c:when>
+							<c:when test="${recipe.source.type == Source.TYPE_NEWSPAPER}">
+								<span>${recipe.source.newspaper}</span>
+							</c:when>
+							<c:when test="${recipe.source.type == Source.TYPE_PERSON}">
+								<span>${recipe.source.person}</span>
+							</c:when>
+							<c:when test="${recipe.source.type == Source.TYPE_WEBSITE}">
+								<span>${recipe.source.websiteUrl}</span>
+							</c:when>
+							<c:when test="${recipe.source.type == Source.TYPE_OTHER}">
+								<span>${recipe.source.other}</span>
+							</c:when>
+						</c:choose>
 						</div>
+						<c:if test="${not empty recipe.source.cookbookPage || not empty recipe.source.magazinePubdate || not empty recipe.source.newspaperPubdate}">
+							<div class="col-sm-8 spacer-vert-xs">
+							<c:choose>
+								<c:when test="${recipe.source.type == Source.TYPE_COOKBOOK}">
+									<span><c:if test="${not empty recipe.source.cookbookPage && recipe.source.cookbookPage > 0}">
+										<strong><spring:message code="recipe.optional.source.cookbookpage"></spring:message></strong>&nbsp;${recipe.source.cookbookPage}</c:if>
+									</span>
+								</c:when>
+								<c:when test="${recipe.source.type == Source.TYPE_MAGAZINE}">
+									<span><c:if test="${not empty recipe.source.magazinePubdate}">
+										<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.magazinePubdate}</c:if>
+									</span>
+								</c:when>
+								<c:when test="${recipe.source.type == Source.TYPE_NEWSPAPER}">
+									<span><c:if test="${not empty recipe.source.newspaperPubdate}">
+										<strong><spring:message code="recipe.optional.source.published"></spring:message></strong>&nbsp;${recipe.source.newspaperPubdate}</c:if>
+									</span>
+								</c:when>
+							</c:choose>
+							</div>
+						</c:if>
+						<c:if test="${recipe.source.type == Source.TYPE_WEBSITE && recipe.source.recipeUrl != 'http://'}">
+							<div class="col-sm-6 spacer-vert-xs">
+								<span><strong><spring:message code="recipe.optional.source.recipe"></spring:message></strong>&nbsp;${recipe.source.recipeUrl}</span>
+							</div>
+						</c:if>
 					</c:if>
 				</div>
 			</div>

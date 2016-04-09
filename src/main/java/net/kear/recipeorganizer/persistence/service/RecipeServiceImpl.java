@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
+import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
@@ -60,7 +62,7 @@ public class RecipeServiceImpl implements RecipeService {
     	
 		Recipe recipe = new Recipe();
 		recipe.setAllowShare(true);
-		recipe.setApproved(false);
+		recipe.setStatus(ApprovalStatus.NOTREVIEWED);
 		recipe.setCopyrighted(false);
 		recipe.setViews(0);
 		recipe.setPhotoName("");
@@ -97,9 +99,9 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	if (!recipe.getAllowShare())
-    		recipe.setApproved(true);
+    		recipe.setStatus(ApprovalStatus.PRIVATE);
     	else
-    		recipe.setApproved(false);
+    		recipe.setStatus(ApprovalStatus.NOTREVIEWED);
     	
     	//the NAME field in both section headers is a required field so the default value is set to "XXXX"
     	//if there is only one section, however, that name must be removed so it does not appear when
@@ -139,8 +141,8 @@ public class RecipeServiceImpl implements RecipeService {
     	recipeRepository.deleteRecipe(id);
     }
     
-    public void approveRecipe(Long id) {
-    	recipeRepository.approveRecipe(id);
+    public void approveRecipe(Long id, ApprovalAction action) {
+    	recipeRepository.approveRecipe(id, action);
     }
 
     public Recipe getRecipe(Long id) {

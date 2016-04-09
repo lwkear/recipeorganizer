@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.repository;
 
 import java.util.List;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -14,7 +15,7 @@ public interface RecipeRepository {
     public void addRecipe(Recipe recipe);
     public void updateRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
-    public void approveRecipe(Long id);
+    public void approveRecipe(Long id, ApprovalAction action);
     public Recipe getRecipe(Long id);
     public Recipe loadRecipe(Long id);
     public void addFavorite(Favorites favorite);

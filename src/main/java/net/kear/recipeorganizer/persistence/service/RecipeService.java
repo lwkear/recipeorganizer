@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.webflow.execution.RequestContext;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -19,7 +20,7 @@ public interface RecipeService {
     public void updateRecipe(Recipe recipe);
     public void saveRecipe(Recipe recipe);
     public void deleteRecipe(Long id);
-    public void approveRecipe(Long id);
+    public void approveRecipe(Long id, ApprovalAction action);
     public Recipe getRecipe(Long id);
     public Recipe loadRecipe(Long id);
     public Map<String, Object> getConstraintMap(String constraintName, String property);

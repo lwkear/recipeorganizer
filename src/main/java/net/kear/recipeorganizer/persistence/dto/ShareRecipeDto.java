@@ -2,6 +2,9 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+
 public class ShareRecipeDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
@@ -9,7 +12,10 @@ public class ShareRecipeDto implements Serializable {
 	private long userId;
 	private long recipeId;
 	private long recipientId;
+	@NotBlank
 	private String recipientName;
+	@NotBlank
+	@Email
 	private String recipientEmail;
 	private String emailMsg;
 	private String recipeName;

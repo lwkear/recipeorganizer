@@ -5,6 +5,7 @@
 	<p id="common.no"/><spring:message code="common.no"></spring:message>
 	<p id="common.cancel"/><spring:message code="common.cancel"></spring:message>
 	<p id="common.warning"/><spring:message code="common.warning"></spring:message>
+	<p id="common.none"/><spring:message code="common.none"></spring:message>
 	<p id="common.table.search"/><spring:message code="common.table.search"></spring:message>
 	<p id="common.table.paginate.first"/><spring:message code="common.table.paginate.first"></spring:message>
 	<p id="common.table.paginate.last"/><spring:message code="common.table.paginate.last"></spring:message>

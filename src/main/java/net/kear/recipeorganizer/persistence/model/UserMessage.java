@@ -22,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class UserMessage implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
-
+	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MESSAGE_SEQ")

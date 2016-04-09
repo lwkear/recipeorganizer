@@ -1,30 +1,39 @@
 package net.kear.recipeorganizer.enums;
 
-public enum UserAge  {
+import java.util.Arrays;
+import java.util.List;
 
-	UAUNDER18(0),
-	UA18TO30(1),
-	UA31TO50(2),
-	UA51TO70(3),
-	UAOVER70(4),
-	UANEVERMIND(5);
+public enum UserAge {
+	UAUNDER18(0,"< 18"),
+	UA18TO30(1,"18-30"),
+	UA31TO50(2,"31-50"),
+	UA51TO70(3,"51-70"),
+	UAOVER70(4,"> 70"),
+	UANEVERMIND(5,"");
 	
-	private final int val;
+	private int value;
+	private String description;
 	
-	UserAge(int val) {
-		this.val = val;
+	UserAge(int value, String description) {
+		this.value = value;
+		this.description = description;
 	}
-	
+
 	public int getValue() {
-		return val;
+		return value;
 	}
 	
-	public static UserAge fromInt(int i) {
-        for (UserAge ua : UserAge.values()) {
-            if (ua.getValue() == i) { 
-            	return ua; 
-            }
-        }
-        return null;
-    }
+	public void setValue(int value) {}
+
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public static List<UserAge> list() {
+		return Arrays.asList(values());
+	}
 }

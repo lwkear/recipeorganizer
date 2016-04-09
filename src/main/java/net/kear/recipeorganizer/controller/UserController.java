@@ -49,6 +49,7 @@ import org.joda.time.Days;
 import org.joda.time.Hours;
 
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.enums.UserAge;
 import net.kear.recipeorganizer.event.OnPasswordResetEvent;
 import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
 import net.kear.recipeorganizer.exception.AccessProfileException;
@@ -337,7 +338,7 @@ public class UserController {
 	
 	//resend a registration email
 	@RequestMapping(value = "/user/resendRegistrationToken", method = RequestMethod.GET)
-    public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir, Locale locale) throws VerificationResendException {
+    public ModelAndView resendRegistrationToken(@RequestParam("token") final String token, final HttpServletRequest request, RedirectAttributes redir, Locale locale)  {
 		logger.info("user/resendRegistrationToken GET");
 		
 		ModelAndView mv = new ModelAndView();
@@ -357,7 +358,11 @@ public class UserController {
         registrationEmail.init(userName, user.getEmail(), locale);
         registrationEmail.setTokenUrl(confirmationUrl);
         registrationEmail.constructEmail();
-    	emailSender.sendHtmlEmail(registrationEmail);
+    	try {
+			emailSender.sendHtmlEmail(registrationEmail);
+		} catch (Exception ex) {
+			throw new VerificationResendException(ex);
+		}
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
@@ -370,7 +375,7 @@ public class UserController {
 	/******************************************/
 	@MaintAware
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
-	public String getProfile(Model model) throws AccessUserException, AccessProfileException {
+	public String getProfile(Model model, Locale locale) throws AccessUserException, AccessProfileException {
 		logger.info("user/profile GET");
 		
 		User currentUser = (User)userInfo.getUserDetails();
@@ -395,6 +400,9 @@ public class UserController {
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserProfile.class); 
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userProfile", userProfile);
+		String rangeDescription = messages.getMessage("profile.nevermind", null, "Default", locale);
+		UserAge.UANEVERMIND.setDescription(rangeDescription);		
+		model.addAttribute("ageRanges", UserAge.values());
 		
 		return "user/profile";
 	}
@@ -459,8 +467,7 @@ public class UserController {
 					userSecurityService.reauthenticateUser(user);
 				}
 			}
-		} 
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new SaveAccountException(ex);
 		}
 		
@@ -469,7 +476,11 @@ public class UserController {
         accountChangeEmail.init(userName, user.getEmail(), locale);
 		accountChangeEmail.setChangeType(ChangeType.PROFILE);
 		accountChangeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(accountChangeEmail);
+		try {
+			emailSender.sendHtmlEmail(accountChangeEmail);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}
 		
 		return "redirect:/user/dashboard";
 	}
@@ -665,8 +676,7 @@ public class UserController {
         
 		try {		
 			userService.changePassword(changePasswordDto.getPassword(), user);
-		} 
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new SaveAccountException(ex);
 		}        
 		
@@ -675,7 +685,11 @@ public class UserController {
         accountChangeEmail.init(userName, user.getEmail(), locale);
 		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
 		accountChangeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(accountChangeEmail);
+		try {
+			emailSender.sendHtmlEmail(accountChangeEmail);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
 		
 		return "redirect:/home";
 	}
@@ -826,7 +840,11 @@ public class UserController {
         passwordEmail.init(userName, user.getEmail(), locale);
         passwordEmail.setTokenUrl(confirmationUrl);
         passwordEmail.constructEmail();
-    	emailSender.sendHtmlEmail(passwordEmail);
+		try {
+			emailSender.sendHtmlEmail(passwordEmail);
+		} catch (Exception ex) {
+	    	throw new PasswordResendException(ex);
+	    }
         
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
@@ -876,7 +894,11 @@ public class UserController {
         accountChangeEmail.init(userName, user.getEmail(), locale);
 		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
 		accountChangeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(accountChangeEmail);
+		try {
+			emailSender.sendHtmlEmail(accountChangeEmail);
+		} catch (Exception ex) {
+	    	throw new PasswordResetException(ex);
+	    }
 		
 		return "redirect:/user/login";
 	}

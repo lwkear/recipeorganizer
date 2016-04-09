@@ -44,7 +44,7 @@
 							<td>${msg.recipeName}</td>
 							<td>${msg.message}</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" id="email${msg.id}"
+								<button class="btn btn-success btn-xs <c:if test="${empty msg.recipeId}">disabled</c:if>" type="button" id="email${msg.id}"
 								onclick="emailRecipe(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', ${msg.recipeId}, '${msg.recipeName}', ${msg.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 								<span class="glyphicon glyphicon-envelope"></span></button>
@@ -82,7 +82,7 @@
 				    </div>           
 					<div class="form-group">
 			            <label class="control-label" for="emailRecipeMsg"><spring:message code="share.message.label"></spring:message></label>
-			            <textarea class="form-control maxSize" rows="5" id="emailRecipeMsg"></textarea>
+			            <textarea class="form-control" rows="5" id="emailRecipeMsg"></textarea>
 				    </div>           
 				</form>
 			</div>

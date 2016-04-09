@@ -8,6 +8,7 @@ public class ResponseObject {
 	
 	String msg;
 	int status;
+	Object result;
 	
 	public ResponseObject() {
 		this.msg = success;
@@ -33,6 +34,14 @@ public class ResponseObject {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public Object getResult() {
+		return result;
+	}
+
+	public void setResult(Object result) {
+		this.result = result;
 	}
 }
 

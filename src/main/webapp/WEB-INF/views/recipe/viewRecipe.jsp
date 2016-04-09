@@ -86,7 +86,7 @@
 					</span>
 				</h3>
 				<h5>
-					<span id="submittedBy" data-toggle="popover"><spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}</span>
+					<span class="header-blue" id="submittedBy" data-toggle="popover"><spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}</span>
 				</h5>
 				<c:if test="${privateRecipe}">
 					<h5 class="spacer-vert-xs">
@@ -237,26 +237,28 @@
 				<h4 class="modal-title">${recipe.name}</h4>
 			</div>
 			<div class="modal-body">
-				<form role="form" class="form">
+				<form:form role="form" class="form" modelAttribute="recipeShareDto"  >
 					<div class="form-group">
 			            <label class="control-label" for="recipientName"><spring:message code="share.recipient.name.label"></spring:message></label>
-			            <input class="form-control maxSize" type="text" id="recipientName"></input>
-			            <span class="text-danger" id="recipientNameErrMsg">${recipientNameErr}</span>
+			            <form:input type="text" class="form-control" path="recipientName" id="recipientName"></form:input>
+			            <span class="text-danger" id="recipientNameErrMsg"></span>
 				    </div>           
 					<div class="form-group">
 			            <label class="control-label" for="recipientEmail"><spring:message code="share.recipient.email.label"></spring:message></label>
-			            <input class="form-control maxSize" type="text" id="recipientEmail"></input>
-			            <span class="text-danger" id="recipientEmailErrMsg">${recipientEmailErr}</span>
+			            <form:input type="text" class="form-control" path="recipientEmail" id="recipientEmail"></form:input>
+			            <span class="text-danger" id="recipientEmailErrMsg"></span>
 				    </div>           
 					<div class="form-group">
 			            <label class="control-label" for="emailMsg"><spring:message code="share.message.label"></spring:message></label>
-			            <textarea class="form-control maxSize" rows="5" id="emailMsg"></textarea>
+			            <form:textarea class="form-control" path="emailMsg" rows="5" id="emailMsg"></form:textarea>
 				    </div>           
-				</form>
+				</form:form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitShare"><spring:message code="common.submit"></spring:message></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
+				<%-- <button type="button" class="btn btn-primary" data-dismiss="modal" id="submitShare"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button> --%>
+				<button type="button" class="btn btn-primary" id="submitShare"><spring:message code="common.submit"></spring:message></button>
+				<button type="button" class="btn btn-default" id="cancelShare"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>
 	</div>

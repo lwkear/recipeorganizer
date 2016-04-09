@@ -3,6 +3,8 @@ package net.kear.recipeorganizer.persistence.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import net.kear.recipeorganizer.enums.ApprovalStatus;
+
 public class RecipeListDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
@@ -17,12 +19,12 @@ public class RecipeListDto implements Serializable {
 	private String category;
 	private String sourcetype;
 	private boolean allowShare;
-	private boolean approved;
+	private ApprovalStatus status;
 
 	public RecipeListDto() {}
 	
 	public RecipeListDto(long id, long userId, String name, String description, Date submitted, String firstName, String lastName, String category, String sourcetype,
-			boolean allowShare, boolean approved) {
+			boolean allowShare, ApprovalStatus status) {
 		this.id = id;
 		this.userId = userId;
 		this.name = name;
@@ -33,7 +35,7 @@ public class RecipeListDto implements Serializable {
 		this.category = category;
 		this.sourcetype = sourcetype;
 		this.allowShare = allowShare;
-		this.approved = approved;
+		this.status = status;
 	}
 
 	public long getId() {
@@ -116,12 +118,12 @@ public class RecipeListDto implements Serializable {
 		this.allowShare = allowShare;
 	}
 	
-	public boolean getApproved() {
-		return approved;
+	public ApprovalStatus getStatus() {
+		return status;
 	}
 
-	public void setApproved(boolean approved) {
-		this.approved = approved;
+	public void setStatus(ApprovalStatus status) {
+		this.status = status;
 	}
 
 	@Override
@@ -170,6 +172,6 @@ public class RecipeListDto implements Serializable {
 				+ ", category=" + category 
 				+ ", sourcetype=" + sourcetype 
 				+ ", allowShare=" + allowShare 
-				+ ", approved=" + approved + "]";
+				+ ", status=" + status + "]";
 	}
 }

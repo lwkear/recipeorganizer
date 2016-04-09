@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="custom" prefix="custom" %>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -11,7 +12,6 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<%-- <link rel="icon" type="image/png" href="<c:url value="/resources/favicon-16x16.png"/>"/> --%>
 <link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-16x16.png"/>" sizes="16x16"/>
 <link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-32x32.png"/>" sizes="32x32"/>
 <link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-48x48.png"/>" sizes="48x48"/>
@@ -38,6 +38,7 @@
 <link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.min.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/selectize/css/selectize.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/selectize/css/selectize.bootstrap3.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/bootstrap-multiselect/css/bootstrap-multiselect.css" />" rel="stylesheet">
 
 <!-- Typeahead CSS -->	
 <link href="<c:url value="/resources/typeahead/typeahead.css" />" rel="stylesheet">

@@ -10,11 +10,17 @@
 
 <body role="document">
 
+<c:set var="returnLabel" value="${sessionScope.returnLabel}"/>
+<c:set var="returnUrl" value="${sessionScope.returnUrl}"/>
+
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">
 		<div class="col-sm-12">
 			<div class="page-header">
+				<c:if test="${not empty returnLabel}">
+					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
+				</c:if>
 				<h3><spring:message code="recipe.done.title"></spring:message></h3>
 			</div>
 		</div>
@@ -47,6 +53,13 @@
 					<spring:message code="recipe.done.copyright2"></spring:message>
 				<p class="std-maroon"><spring:message code="recipe.done.copyright3"></spring:message>
 				<p class="std-maroon"><spring:message code="recipe.done.copyright4"></spring:message>				
+			</div>
+		</c:if>
+		<c:if test="${update}">			
+			<div class="col-sm-12 spacer-vert-xs">
+				<div class="form-group col-sm-2 text-center col-sm-offset-5">
+					<a class="btn btn-default" href="../viewRecipe/${recipe.id}" role="button"><spring:message code="recipe.done.viewrecipe"></spring:message></a>
+				</div>
 			</div>
 		</c:if>
 		<c:if test="${not update}">			

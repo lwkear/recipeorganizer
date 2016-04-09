@@ -2,6 +2,8 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
+import net.kear.recipeorganizer.enums.ApprovalStatus;
+
 public class SearchResultsDto extends Object implements Serializable {
 
 	private static final long serialVersionUID = 1L;	
@@ -13,13 +15,13 @@ public class SearchResultsDto extends Object implements Serializable {
 	private String description;
 	private String photo;
 	private boolean allowShare;
-	private boolean approved;
+	private ApprovalStatus status;
 	private long catId;
 	private String source;
 	
 	public SearchResultsDto() {};
 	
-	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, boolean approved, long catId, String source) {
+	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, ApprovalStatus status, long catId, String source) {
 		this.rank = rank;
 		this.id = id;
 		this.userId = userId;
@@ -27,7 +29,7 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.description = description;
 		this.photo = photo;
 		this.allowShare = allowShare;
-		this.approved = approved;
+		this.status = status;
 		this.catId = catId;
 		this.source = source;
 	};	
@@ -88,12 +90,12 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.allowShare = allowShare;
 	}
 	
-	public boolean getApproved() {
-		return approved;
+	public ApprovalStatus getStatus() {
+		return status;
 	}
 
-	public void setApproved(boolean approved) {
-		this.approved = approved;
+	public void setStatus(ApprovalStatus status) {
+		this.status = status;
 	}
 
 	public long getCatId() {
@@ -152,7 +154,7 @@ public class SearchResultsDto extends Object implements Serializable {
 				+ ", description=" + description 
 				+ ", photo=" + photo 
 				+ ", allowShare=" + allowShare 
-				+ ", approved=" + approved 
+				+ ", status=" + status 
 				+ ", catId=" + catId 
 				+ ", source=" + source + "]";
 	}

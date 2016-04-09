@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import java.util.concurrent.TimeUnit;
+
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +32,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import net.kear.recipeorganizer.enums.ApprovalAction;
+import net.kear.recipeorganizer.enums.UserAge;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
+import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
+import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.security.AuthCookie;
@@ -81,6 +89,8 @@ public class HomeController {
 	private ServletContext servletContext;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private RecipeService recipeService;
 	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
@@ -295,15 +305,15 @@ public class HomeController {
 		accountChangeEmail.setChangeType(ChangeType.PROFILE);
 		accountChangeEmail.constructEmail();
     	emailSender.sendHtmlEmail(accountChangeEmail);*/
-
-    	reportGenerator.createRecipePDF(741L, locale);
+		
+    	/*reportGenerator.createRecipePDF(741L, locale);
     	reportGenerator.createRecipePDF(1463L, locale);
     	reportGenerator.createRecipePDF(1101L, locale);
     	reportGenerator.createRecipePDF(1522L, locale);
     	reportGenerator.createRecipePDF(1141L, locale);
     	reportGenerator.createRecipePDF(421L, locale);
-    	reportGenerator.createRecipePDF(1462L, locale);
-
+    	reportGenerator.createRecipePDF(1462L, locale);*/
+    	
     	/*
     	//shareRecipeEmail.init("Larry Kear", "kear.larry@gmail.com", locale);
     	shareRecipeEmail.init("Larry Kear", "lkear@outlook.com", locale);
@@ -317,6 +327,31 @@ public class HomeController {
     	emailSender.sendHtmlEmail(shareRecipeEmail);*/
 
 		//reportGenerator.configureReports(servletContext, env);
+
+		/*UserAge[] ages = UserAge.values();
+		for (UserAge age : ages)
+			logger.debug("ageValue:" + age);*/
+		
+		/*List<UserAge> ageList = UserAge.list();
+		for (UserAge age : ageList)
+			logger.debug("ageList:" + age);
+		
+		String age = UserAge.UA18TO30.toString();
+		logger.debug("age:" + age);
+				
+		String[] strList = UserAge.strList();
+		for (String strAge : strList)
+			logger.debug("ageStrList:" + strAge);
+		
+		age = strList[UserAge.UA31TO50.getValue()];
+		logger.debug("age:" + age);
+
+		age = strList[UserAge.UA51TO70.ordinal()];
+		logger.debug("age:" + age);*/
+
+		RecipeMessageDto recipeMessageDto = new RecipeMessageDto();
+		model.addAttribute("recipeMessageDto", recipeMessageDto);
+		model.addAttribute("approvalActions", ApprovalAction.list());
 		
 		return "test/testpage";
 	}
