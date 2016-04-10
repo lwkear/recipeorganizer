@@ -6,12 +6,12 @@
 	    <div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><spring:message code="usermessage.title"></spring:message></h4>
+				<h4 class="modal-title recipeName"><spring:message code="usermessage.title"></spring:message></h4>
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form">
 					<div><span id="messageTo"></span></div>
-					<div class="form-group">
+					<div class="form-group spacer-vert-xs">
 			            <label class="control-label" for="message"><spring:message code="usermessage.label"></spring:message></label>
 			            <textarea class="form-control maxSize" rows="5" id="message" data-max="${sizeMap['message.max']}"></textarea>
 			            <span class="text-danger" id="messageMsg">${messageErr}</span>

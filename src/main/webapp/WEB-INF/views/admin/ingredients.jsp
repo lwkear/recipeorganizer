@@ -42,28 +42,30 @@
 							<td>
 								<form:form class="searchForm" id="searchForm" action="${searchUrl}" target = "_blank" method="post">
 									<input type="text" style="display:none" name="searchTerm" id="searchTerm" value="${ingred.id}"/>
-									<button class="btn btn-info btn-xs <c:if test="${ingred.usage == 0}">disabled</c:if>" type="submit"
+									<button class="btn btn-info btn-xs <c:if test="${ingred.usage == 0}">disabled</c:if>" type="submit" id="view${ingred.id}"
 									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.viewrecipes"></spring:message>">
 									<span class="glyphicon glyphicon-list-alt"></span></button>
 								</form:form>
 							</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="updateIngredient(${ingred.id})"
+								<button class="btn btn-success btn-xs" type="button" id="update${ingred.id}" onclick="updateIngredient(${ingred.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="replaceIngredient(${ingred.id}, '${ingred.name}')"
+								<button class="btn btn-success btn-xs" type="button" id="replace${ingred.id}" onclick="replaceIngredient(${ingred.id}, 
+								'<spring:escapeBody javaScriptEscape="true">${ingred.name}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.replace"></spring:message>">
 								<span class="glyphicon glyphicon-transfer"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-success btn-xs" type="button" onclick="approveIngredient(${ingred.id})"
+								<button class="btn btn-success btn-xs" type="button" id="approve${ingred.id}" onclick="approveIngredient(${ingred.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.approve"></spring:message>">
 								<span class="glyphicon glyphicon-ok"></span></button>
 							</td>
 							<td>
-								<button class="btn btn-danger btn-xs" type="button" onclick="deleteIngredient(${ingred.id}, ${ingred.usage}, '${ingred.name}')"
+								<button class="btn btn-danger btn-xs" type="button" id="delete${ingred.id}" onclick="deleteIngredient(${ingred.id}, ${ingred.usage}, 
+								'<spring:escapeBody javaScriptEscape="true">${ingred.name}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
 								<span class="glyphicon glyphicon-remove"></span></button>
 							</td>

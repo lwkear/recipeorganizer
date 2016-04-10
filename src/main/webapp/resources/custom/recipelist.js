@@ -3,6 +3,7 @@
 /*******************************/
 //notify the user in popup modal
 function deleteRecipe(id, name) {
+	$('#delete' + id).tooltip("hide");
 	$("#messageTitle").text(name);
 	$("#messageMsg").text(getMessage('recipe.delete.areyousure'));
 	$(".msgDlgBtn").hide();
@@ -51,6 +52,7 @@ function recipeDeleted(recipeId) {
 /*********************************/
 //notify the user in popup modal
 function removeFavorite(userId, recipeId, name) {
+	$('#fav' + recipeId).tooltip("hide");
 	$("#messageTitle").text(name);
 	$("#messageMsg").text(getMessage('recipe.remove.favorite.areyousure'));
 	$(".msgDlgBtn").hide();
@@ -101,7 +103,8 @@ function removeRow(recipeId) {
 /*******************************/
 //enter a note in popup dialog
 function recipeAction(toUserId, recipeId, name) {
-	$("#recipeName").text(name);
+	$('#action' + recipeId).tooltip("hide");
+	$(".recipeName").text(name);
 	$("#action").prop('selectedIndex', 0);
 	$('#message').val("");
 	$('#reasons').multiselect('deselectAll',false);
@@ -146,7 +149,8 @@ function postActionMessage(e) {
 
 $(document).ready(function() {
 	$('#reasons').multiselect({
-		nonSelectedText: getMessage('common.none')
+		nonSelectedText: getMessage('common.none'),
+		numberDisplayed: 2,
 	});
 	
 	$('#recipeList').DataTable({

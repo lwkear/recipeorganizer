@@ -45,13 +45,15 @@
 							<td>${msg.message}</td>
 							<td>
 								<button class="btn btn-success btn-xs <c:if test="${empty msg.recipeId}">disabled</c:if>" type="button" id="email${msg.id}"
-								onclick="emailRecipe(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', ${msg.recipeId}, '${msg.recipeName}', ${msg.id})"
+								onclick="emailRecipe(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', '${msg.fromEmail}', ${msg.recipeId}, ${msg.id}, 
+								'<spring:escapeBody javaScriptEscape="true">${msg.recipeName}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 								<span class="glyphicon glyphicon-envelope"></span></button>
 							</td>
 							<td>
 								<button class="btn btn-primary btn-xs" type="button" id="respond${msg.id}" 
-								onclick="sendMessage(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', ${msg.recipeId}, ${msg.id})"
+								onclick="sendMessage(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', ${msg.recipeId}, ${msg.id},
+								'<spring:escapeBody javaScriptEscape="true">${msg.recipeName}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.respond"></spring:message>">
 								<span class="glyphicon glyphicon-user"></span></button>
 							</td>
@@ -73,7 +75,7 @@
 	    <div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title" id="emailRecipeName"></h4>
+				<h4 class="modal-title recipeName"></h4>
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form">

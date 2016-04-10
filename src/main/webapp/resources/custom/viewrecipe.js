@@ -27,6 +27,7 @@ function toggleComments() {
 //set the last made date in popup dialog
 function selectMadeDate(viewerId, recipeId) {
 	$('#madeRight').tooltip("hide");
+	$('#madeLeft').tooltip("hide");
 	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);
 	$("#madeDateDlg").on('hidden.bs.modal', function(){$("#submitMadeDate").unbind('click');})
 	$("#madeDateDlg").modal('show');
@@ -75,6 +76,7 @@ function postMadeDate(e) {
 //enter a note in popup dialog
 function addNote(recipeNote) {
 	$('#noteRight').tooltip("hide");
+	$('#noteLeft').tooltip("hide");
 	$("#submitNote").one('click', {recipeNote: recipeNote}, postNote);
 	$("#noteDlg").on('hidden.bs.modal', function(){$("#submitNote").unbind('click');})
 	$("#noteDlg").modal('show');
@@ -123,6 +125,7 @@ function postNote(e) {
 /*******************************/
 //enter a comment in popup dialog
 function addComment(viewerId, recipeId) {
+	$('#commentBtn').tooltip("hide");
 	$('#userComment').val("");
 	$('#userCommentErrMsg').html("");
 	$('#commentBtn').tooltip("hide");
@@ -194,6 +197,7 @@ function flagComment(commentId) {
 /*** add favorite function ***/
 /*****************************/
 function addFavorite(viewerId, recipeId) {
+	$('#favRight').tooltip("hide");
 	//new entry - format the json for adding it to the database
 	var data = {"id":{"userId":viewerId,"recipeId":recipeId},"dateAdded":null};
 
@@ -206,7 +210,6 @@ function addFavorite(viewerId, recipeId) {
 	})
 	.done(function(data) {
 		console.log('recipe added to favorites');
-		$('#favRight').tooltip("hide");
 		$('#favRight').hide();
 		$('#favLeft').show();
 	})
@@ -221,6 +224,7 @@ function addFavorite(viewerId, recipeId) {
 /*** remove favorite function ***/
 /********************************/
 function removeFavorite(viewerId, recipeId) {
+	$('#favLeft').tooltip("hide");
 	//new entry - format the json for adding it to the database
 	var data = {"id":{"userId":viewerId,"recipeId":recipeId},"dateAdded":null};
 
@@ -233,7 +237,6 @@ function removeFavorite(viewerId, recipeId) {
 	})
 	.done(function(data) {
 		console.log('recipe removed from favorites');
-		$('#favLeft').tooltip("hide");
 		$('#favLeft').hide();
 		$('#favRight').show();
 	})

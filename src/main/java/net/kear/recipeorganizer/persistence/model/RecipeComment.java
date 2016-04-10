@@ -38,7 +38,7 @@ public class RecipeComment implements Serializable {
 	private long recipeId;
 	
 	@Column(name = "USER_COMMENT")
-	@Size(max=10)	//500
+	@Size(max=500)	//500
 	private String userComment;
 	
 	@Column(name = "FLAG")

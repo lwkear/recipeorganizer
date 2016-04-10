@@ -64,14 +64,16 @@
 							<c:choose>
 								<c:when test="${fav}">
 									<td>
-										<button class="btn btn-danger btn-xs" type="button" onclick="removeFavorite(${userId}, ${recipe.id}, '${recipe.name}')"
-										data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
+										<button class="btn btn-danger btn-xs" type="button" id="fav${recipe.id}" onclick="removeFavorite(${userId}, ${recipe.id}, 
+										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
+										data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.remove"></spring:message>">
 										<span class="glyphicon glyphicon-remove"></span></button>
 									</td>
 								</c:when>
 								<c:otherwise>
 									<td>
-										<button class="btn btn-danger btn-xs" type="button" onclick="deleteRecipe(${recipe.id}, '${recipe.name}')"
+										<button class="btn btn-danger btn-xs" type="button" id="delete${recipe.id}" onclick="deleteRecipe(${recipe.id}, 
+										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
 										data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
 										<span class="glyphicon glyphicon-remove"></span></button>
 									</td>

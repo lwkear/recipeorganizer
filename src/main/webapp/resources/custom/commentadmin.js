@@ -2,6 +2,7 @@
 /*** delete comment functions ***/
 /********************************/
 function deleteComment(commentId) {
+	$('#delete' + commentId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
 		url: '/recipeorganizer/admin/deleteComment',
@@ -23,6 +24,7 @@ function deleteComment(commentId) {
 /*** unflag comment functions ***/
 /********************************/
 function removeCommentFlag(commentId) {
+	$('#remove' + commentId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
 		url: '/recipeorganizer/admin/removeCommentFlag',

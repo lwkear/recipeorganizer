@@ -1,9 +1,9 @@
 /*****************************/
 /*** delete user functions ***/
 /*****************************/
-
 //call function to request recipe count for the user from the server
 function checkRecipeCount(userId, userFirst, userLast) {
+	$('#delete' + userId).tooltip("hide");
 	getRecipeCount(userId, userFirst, userLast, displayCount);
 }
 
@@ -81,9 +81,9 @@ function userDeleted(userId) {
 /*****************************/
 /*** update user functions ***/
 /*****************************/
-
 //call function to request user object from server
 function updateUser(userId) {
+	$('#update' + userId).tooltip("hide");
 	getUser(userId, displayUser);	
 }
 

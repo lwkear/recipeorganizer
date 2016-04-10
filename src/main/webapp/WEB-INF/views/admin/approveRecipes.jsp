@@ -45,20 +45,17 @@
 							<td>${recipe.category}</td>
 							<td>${recipe.sourcetype}</td>
 							<td><custom:approval status="${recipe.status}"></custom:approval></td>
-							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}"
+							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}" id="view${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td><a class="btn btn-success btn-xs" href="../recipe/editRecipe/${recipe.id}"
+							<td><a class="btn btn-success btn-xs" href="../recipe/editRecipe/${recipe.id}" id="edit${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td>
-								<button class="btn btn-primary btn-xs" type="button" onclick="recipeAction(${recipe.userId}, ${recipe.id}, 
-									<%-- <spring:message text="${recipe.name}" javaScriptEscape="true"></spring:message>)" --%>
-									'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
-									<%-- ${fn:escapeXml(recipe.name)} '${recipe.name} --%>
-									<%-- '${recipe.name}')" --%>
+								<button class="btn btn-primary btn-xs" type="button" id="action${recipe.id}" onclick="recipeAction(${recipe.userId}, ${recipe.id}, 
+								'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.action"></spring:message>">
 								<span class="glyphicon glyphicon-ok"></span></button>
 							</td>
@@ -69,20 +66,20 @@
 		</div>
 	</div>	
 
-<!-- user message dialog -->
+<!-- recipe action dialog -->
 <div class="modal" id="recipeActionDlg" role="dialog">
 	<div class="modal-dialog modal-sm">
 	    <div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title" id="recipeName"></h4>
+				<h4 class="modal-title recipeName"></h4>
 			</div>
 			<div class="modal-body">
 				<form:form name="actionForm" role="form" modelAttribute="recipeMessageDto">
 					<div class="form-group">
 						<div class="row">
 							<div class="col-sm-3">
-								<label class="control-label" for="action">*<spring:message code="approvaladmin.action"></spring:message></label>
+								<label class="control-label" for="action"><spring:message code="approvaladmin.action"></spring:message></label>
 							</div>
 							<div class="col-sm-8">
 								<form:select class="form-control" name="action" path="action">
@@ -111,7 +108,7 @@
 				</form:form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitActionMessage"><spring:message code="common.send"></spring:message></button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitActionMessage"><spring:message code="common.submit"></spring:message></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
 			</div>
 		</div>

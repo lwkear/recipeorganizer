@@ -17,6 +17,7 @@ public class UserMessageDto implements Serializable {
 	private long fromUserId;
 	private String fromFirstName;
 	private String fromLastName;
+	private String fromEmail;
 	private String message;
 	private boolean viewed;
 	//Note: recipeId needs to be a Long instead of a long since some messages may not be associated with a recipe and this field may be null
@@ -28,7 +29,7 @@ public class UserMessageDto implements Serializable {
 	
 	public UserMessageDto() {}
 	
-	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String message, boolean viewed, long 
+	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String fromEmail, String message, boolean viewed, long 
 			recipeId, String recipeName, Date dateSent) {
 		super();
 		this.id = id;
@@ -36,6 +37,7 @@ public class UserMessageDto implements Serializable {
 		this.toUserId = toUserId;
 		this.fromFirstName = fromFirstName;
 		this.fromLastName = fromLastName;
+		this.fromEmail = fromEmail;
 		this.message = message;
 		this.viewed = viewed;
 		this.recipeId = recipeId;
@@ -81,6 +83,14 @@ public class UserMessageDto implements Serializable {
 
 	public void setFromLastName(String fromLastName) {
 		this.fromLastName = fromLastName;
+	}
+
+	public String getFromEmail() {
+		return fromEmail;
+	}
+
+	public void setFromEmail(String fromEmail) {
+		this.fromEmail = fromEmail;
 	}
 
 	public String getMessage() {
@@ -167,7 +177,8 @@ public class UserMessageDto implements Serializable {
 				+ ", toUserId=" + toUserId
 				+ ", fromUserId=" + fromUserId 
 				+ ", fromFirstName=" + fromFirstName 
-				+ ", fromLastName=" + fromLastName 
+				+ ", fromLastName=" + fromLastName
+				+ ", fromEmail=" + fromEmail
 				+ ", message=" + message
 				+ ", viewed=" + viewed
 				+ ", recipeId=" + recipeId

@@ -34,6 +34,7 @@ function initIngredientsTA() {
 /*** delete ingredient function ***/
 /**********************************/
 function deleteIngredient(ingredId, ingredUsage, ingredName) {
+	$('#delete' + ingredId).tooltip("hide");
 	if (ingredUsage > 0) {
 		displayOKMsg(ingredName, getMessage('exception.ingredient.cannotdelete'));
 		return;
@@ -60,6 +61,7 @@ function deleteIngredient(ingredId, ingredUsage, ingredName) {
 /*** approve ingredient function ***/
 /***********************************/
 function approveIngredient(ingredId) {
+	$('#approve' + ingredId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
 		url: '/recipeorganizer/admin/approveIngredient',
@@ -82,6 +84,7 @@ function approveIngredient(ingredId) {
 /***********************************/
 //call function to request Ingredient object from server
 function updateIngredient(ingredId) {
+	$('#update' + ingredId).tooltip("hide");
 	getIngredient(ingredId, displayIngredient);	
 }
 
@@ -147,6 +150,7 @@ function postUpdateIngredient(e) {
 /************************************/
 //replace the ingredient in popup dialog
 function replaceIngredient(ingredId, ingredName) {
+	$('#replace' + ingredId).tooltip("hide");
 	$(".replaceName").text(ingredName);
 	$("#nameTA").val("");
 	$('#ingredTAId').val(0);
@@ -200,6 +204,7 @@ function postReplaceIngredient(e) {
 /*** display recipes function ***/
 /********************************/
 function displayRecipes(ingredId) {
+	$('#view' + ingredId).tooltip("hide");
 	window.open('http://localhost:8080/recipeorganizer/recipe/viewRecipe/421');
 }
 

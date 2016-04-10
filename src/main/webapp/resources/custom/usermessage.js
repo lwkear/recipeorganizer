@@ -2,15 +2,15 @@
 /*** share recipe functions ***/
 /******************************/
 //email the recipe popup dialog
-function emailRecipe(fromUserId, toUserId, toUserFirstName, toUserLastName, recipeId, recipeName, messageId) {
+function emailRecipe(fromUserId, toUserId, toUserFirstName, toUserLastName, toUserEmail, recipeId, messageId, recipeName) {
 	$('#email' + messageId).tooltip("hide");
-	$('#emailRecipeName').html(recipeName);
+	$('.recipeName').html(recipeName);
 	var msg = getMessage('share.recipient.to.label');
 	var fmt = String.format(msg, toUserFirstName, toUserLastName);
 	$('#emailToLabel').html(fmt);
 	$('#emailMsg').val("");
 	$("#submitEmail").one('click', 
-			{fromUserId:fromUserId, recipeId:recipeId, recipeName:recipeName, toUserId:toUserId, toUserFirstName:toUserFirstName, toUserLastName:toUserLastName}, 
+			{fromUserId:fromUserId, recipeId:recipeId, recipeName:recipeName, toUserId:toUserId, toUserFirstName:toUserFirstName, toUserLastName:toUserLastName, toUserEmail:toUserEmail},
 			postEmail);
 	$("#emailRecipeDlg").on('hidden.bs.modal', function(){$("#submitEmail").unbind('click');})
 	$("#emailRecipeDlg").modal('show');
@@ -18,18 +18,18 @@ function emailRecipe(fromUserId, toUserId, toUserFirstName, toUserLastName, reci
 
 //request server to update the note
 function postEmail(e) {
-	$("#emailRecipeDlg").modal('hide');
 	console.log('postEmail: viewer=' + e.data.fromUserId + ' recipe='+ e.data.recipeId);
 
 	var userId = e.data.fromUserId;
 	var recipeId = e.data.recipeId;
 	var recipeName = e.data.recipeName;
 	var recipientName = e.data.toUserFirstName + ' ' + e.data.toUserLastName;
+	var recipientEmail = e.data.toUserEmail;
 	var recipientId = e.data.toUserId;
 	var message = $('#emailRecipeMsg').val();
 	message = $.trim(message);
 	
-	var data = {"userId":userId,"recipeId":recipeId,"recipientId":recipientId,"recipientName":recipientName,"recipientEmail":"","emailMsg":message,"recipeName":recipeName};
+	var data = {"userId":userId,"recipeId":recipeId,"recipientId":recipientId,"recipientName":recipientName,"recipientEmail":recipientEmail,"emailMsg":message,"recipeName":recipeName};
 
 	$.ajax({
 	    type: 'POST',
@@ -39,6 +39,7 @@ function postEmail(e) {
 		data: JSON.stringify(data)
 	})
 	.done(function(data) {
+		$("#emailRecipeDlg").modal('hide');
 		console.log('postShare done');
 		var msg = getMessage('email.recipe.successful');
 		var fmt = String.format(msg, recipientName);
@@ -47,6 +48,7 @@ function postEmail(e) {
 	.fail(function(jqXHR, status, error) {
 		var data = jqXHR.responseJSON;
 		console.log('fail data: '+ data);
+		$("#emailRecipeDlg").modal('hide');
 		postFailed(data.msg);
 	});
 }
@@ -85,11 +87,13 @@ function removeRow(messageId) {
 /*** send user message functions ***/
 /***********************************/
 //enter a note in popup dialog
-function sendMessage(fromUserId, toUserId, toUserFirstName, toUserLastName, recipeId, msgId) {
+function sendMessage(fromUserId, toUserId, toUserFirstName, toUserLastName, recipeId, msgId, recipeName) {
 	if (msgId > 0)
 		$('#respond' + msgId).tooltip("hide");
 	else
-		$('#userMessage').tooltip("hide");	
+		$('#userMessage').tooltip("hide");
+	if (recipeName != null)
+		$(".recipeName").html(recipeName);
 	msg = getMessage('usermessage.to');
 	msg = '<strong>' + msg + '</strong>&nbsp' + toUserFirstName + '&nbsp' + toUserLastName;
 	$("#messageTo").html(msg);

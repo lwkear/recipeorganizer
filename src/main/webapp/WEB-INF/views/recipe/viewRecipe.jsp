@@ -36,37 +36,43 @@
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
 				</c:if>
 				<h3>${recipe.name}
-					<button type="button" class="btn btn-link btn-sm" id="favLeft" onclick="removeFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none"
+					<button type="button" class="btn btn-link btn-sm" id="favLeft" onclick="removeFavorite(${viewerId}, ${recipe.id})" 
+						style="margin-left:5px;font-size:20px;display:none"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
 						<span class="glyphicon glyphicon-star"></span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" id="madeLeft" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px;display:none"
+					<button type="button" class="btn btn-link btn-sm" id="madeLeft" onclick="selectMadeDate(${viewerId}, ${recipe.id})" 
+						style="margin-left:5px;font-size:20px;display:none"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
 						<span class="glyphicon glyphicon-cutlery"></span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" id="noteLeft" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px;display:none"
+					<button type="button" class="btn btn-link btn-sm" id="noteLeft" onclick="addNote(${fn:escapeXml(jsonNote)})" 
+						style="margin-left:5px;font-size:20px;display:none"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
-					<button type="button" class="btn btn-link btn-sm" style="margin-left:5px;font-size:20px;visibility:hidden"><span class="glyphicon glyphicon-paperclip"></span></button>
 					<span class="pull-right">
 						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:30px;font-size:20px" 
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" onclick="shareRecipe(${viewerId}, ${recipe.id}, '${recipe.name}')" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" onclick="shareRecipe(${viewerId}, ${recipe.id}, 
+							'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 							<span class="glyphicon glyphicon-envelope"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm favorite <c:if test="${privateRecipe}">disabled</c:if>" id="favRight" onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm favorite <c:if test="${privateRecipe}">disabled</c:if>" id="favRight" 
+							onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
 							<span class="glyphicon glyphicon-star"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="madeRight" onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="madeRight" 
+							onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
 							<span class="glyphicon glyphicon-cutlery"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="noteRight" onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="noteRight" 
+							onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
 							<span class="glyphicon glyphicon-paperclip"></span>
 						</button>
@@ -78,7 +84,8 @@
 						</c:if>
 						<c:if test="${userId != recipe.user.id}">
 							<button type="button" class="btn btn-link btn-sm" id="userMessage" 
-								onclick="sendMessage(${viewerId}, ${recipe.user.id}, '${recipe.user.firstName}', '${recipe.user.lastName}', ${recipe.id})" 
+								onclick="sendMessage(${viewerId}, ${recipe.user.id}, '${recipe.user.firstName}', '${recipe.user.lastName}', ${recipe.id}, 0,
+								'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')" 
 								style="margin-left:5px;font-size:20px" data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.message"></spring:message>">
 								<span class="glyphicon glyphicon-user"></span>
 							</button>
@@ -86,7 +93,8 @@
 					</span>
 				</h3>
 				<h5>
-					<span class="header-blue" id="submittedBy" data-toggle="popover"><spring:message code="common.submittedby"></spring:message>&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}</span>
+					<span class="header-blue" id="submittedBy" data-toggle="popover"><spring:message code="common.submittedby"></spring:message>
+					&nbsp;${recipe.user.firstName}&nbsp;${recipe.user.lastName}</span>
 				</h5>
 				<c:if test="${privateRecipe}">
 					<h5 class="spacer-vert-xs">
@@ -159,10 +167,12 @@
 				<form role="form" class="form">
 					<c:if test="${madeCount > 0}">
 						<div class="form-group">
-							<label class="control-label" for="madeDate"><spring:message code="recipe.made.madecount"></spring:message></label>&nbsp;<span id="displayCount">${madeCount}</span>
+							<label class="control-label" for="madeDate"><spring:message code="recipe.made.madecount"></spring:message></label>&nbsp;
+							<span id="displayCount">${madeCount}</span>
 						</div>
 						<div class="form-group">
-							<label class="control-label" for="madeDate"><spring:message code="recipe.made.lastmade"></spring:message></label>&nbsp;<span id="displayDate">${lastMade}</span>
+							<label class="control-label" for="madeDate"><spring:message code="recipe.made.lastmade"></spring:message></label>&nbsp;
+							<span id="displayDate">${lastMade}</span>
 						</div>
 					</c:if>
 					<div class="form-group">
@@ -255,8 +265,6 @@
 				</form:form>
 			</div>
 			<div class="modal-footer">
-				<%-- <button type="button" class="btn btn-primary" data-dismiss="modal" id="submitShare"><spring:message code="common.submit"></spring:message></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button> --%>
 				<button type="button" class="btn btn-primary" id="submitShare"><spring:message code="common.submit"></spring:message></button>
 				<button type="button" class="btn btn-default" id="cancelShare"><spring:message code="common.cancel"></spring:message></button>
 			</div>

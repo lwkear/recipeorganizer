@@ -492,8 +492,8 @@ public class AdminController {
 				status = ApprovalStatus.PRIVATE;
 			
 			try {
-				recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());
 				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), status);
+				recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());				
 			} catch (Exception ex) {
 				throw new RestException("exception.approveRecipe", ex);
 			}
