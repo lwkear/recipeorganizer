@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
 
-import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
@@ -59,10 +58,10 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	getSession().delete(recipe);
     }
 
-	public void approveRecipe(Long id, ApprovalAction action) {
+	public void approveRecipe(Long id, ApprovalStatus status) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
 			"update recipe set status = :status where id = :id")
-			.setInteger("status", action.ordinal())
+			.setInteger("status", status.getValue())
 			.setLong("id", id);
     	query.executeUpdate();		
 	}

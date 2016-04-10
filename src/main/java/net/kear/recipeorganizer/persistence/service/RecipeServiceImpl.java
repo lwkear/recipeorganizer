@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
@@ -141,8 +140,8 @@ public class RecipeServiceImpl implements RecipeService {
     	recipeRepository.deleteRecipe(id);
     }
     
-    public void approveRecipe(Long id, ApprovalAction action) {
-    	recipeRepository.approveRecipe(id, action);
+    public void approveRecipe(Long id, ApprovalStatus status) {
+    	recipeRepository.approveRecipe(id, status);
     }
 
     public Recipe getRecipe(Long id) {

@@ -102,7 +102,7 @@ function removeRow(recipeId) {
 //enter a note in popup dialog
 function recipeAction(toUserId, recipeId, name) {
 	$("#recipeName").text(name);
-	$("#action").val([1]);
+	$("#action").prop('selectedIndex', 0);
 	$('#message').val("");
 	$('#reasons').multiselect('deselectAll',false);
 	$('#reasons').multiselect('updateButtonText');

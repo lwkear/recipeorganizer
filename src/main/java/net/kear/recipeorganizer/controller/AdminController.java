@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalReason;
+import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
@@ -480,9 +481,19 @@ public class AdminController {
 		if (recipeMessageDto.getAction() != ApprovalAction.DELETE) {
 			Recipe recipe;
 			
+			ApprovalAction action = recipeMessageDto.getAction();
+			//assume most recipes will be approved
+			ApprovalStatus status = ApprovalStatus.APPROVED;
+			
+			if (action == ApprovalAction.PENDING)
+				status = ApprovalStatus.PENDING;
+			else
+			if (action == ApprovalAction.BLOCK)
+				status = ApprovalStatus.PRIVATE;
+			
 			try {
 				recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());
-				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), recipeMessageDto.getAction());
+				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), status);
 			} catch (Exception ex) {
 				throw new RestException("exception.approveRecipe", ex);
 			}

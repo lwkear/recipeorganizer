@@ -60,7 +60,7 @@ public class SolrUtilImpl implements SolrUtil {
 		QueryResponse rsp = null;
 		String filterStr = "";
 		
-		int approved = ApprovalStatus.APPROVED.ordinal();
+		int approved = ApprovalStatus.APPROVED.getValue();
 		
 		if (userId > 0)
 			filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && status:%d)", userId, userId, approved);
@@ -213,7 +213,7 @@ public class SolrUtilImpl implements SolrUtil {
 		document.addField("catid", recipe.getCategory().getId());
 		document.addField("description", recipe.getDescription());
 		document.addField("allowshare", recipe.getAllowShare());
-		document.addField("status", recipe.getStatus());
+		document.addField("status", recipe.getStatus().getValue());
 		if (!StringUtils.isBlank(recipe.getServings()))
 			document.addField("servings", recipe.getServings());
 		if (!StringUtils.isBlank(recipe.getNotes()))

@@ -54,8 +54,12 @@
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td>
-								<button class="btn btn-primary btn-xs" type="button" onclick="recipeAction(${recipe.userId}, ${recipe.id}, '${recipe.name}')"
-								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.approve"></spring:message>">
+								<button class="btn btn-primary btn-xs" type="button" onclick="recipeAction(${recipe.userId}, ${recipe.id}, 
+									<%-- <spring:message text="${recipe.name}" javaScriptEscape="true"></spring:message>)" --%>
+									'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
+									<%-- ${fn:escapeXml(recipe.name)} '${recipe.name} --%>
+									<%-- '${recipe.name}')" --%>
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.action"></spring:message>">
 								<span class="glyphicon glyphicon-ok"></span></button>
 							</td>
 						</tr>
@@ -78,7 +82,7 @@
 					<div class="form-group">
 						<div class="row">
 							<div class="col-sm-3">
-								<label class="control-label" for="action"><spring:message code="approvaladmin.action"></spring:message></label>
+								<label class="control-label" for="action">*<spring:message code="approvaladmin.action"></spring:message></label>
 							</div>
 							<div class="col-sm-8">
 								<form:select class="form-control" name="action" path="action">
