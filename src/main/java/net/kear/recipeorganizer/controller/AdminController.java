@@ -48,6 +48,7 @@ import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.UserMessage;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
@@ -55,9 +56,11 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
+import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
+import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.maint.MaintAware;
@@ -97,7 +100,11 @@ public class AdminController {
 	@Autowired
 	MaintenanceUtil maintUtil;
 	@Autowired
-	private MaintenanceInterceptor maintInterceptor; 
+	private MaintenanceInterceptor maintInterceptor;
+	@Autowired
+	private UserInfo userInfo;	
+	@Autowired
+	private UserMessageService userMessageService;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -511,12 +518,27 @@ public class AdminController {
 			
 			solrUtil.deleteRecipe(recipeMessageDto.getRecipeId());
 		}
+
+		try {
+			sendRecipeMessage(recipeMessageDto, locale);
+		} catch (Exception ex) {
+			throw new RestException("exception.approveRecipe", ex);
+		}
 		
 		return new ResponseObject();
 	}
 	
-	private void prepareApprovalMessage(RecipeMessageDto recipeMessageDto) {
+	private void sendRecipeMessage(RecipeMessageDto recipeMessageDto, Locale locale) {
+		User user = (User)userInfo.getUserDetails();
 		
+		UserMessage msg = new UserMessage();
+		msg.setFromUserId(user.getId());
+		msg.setToUserId(recipeMessageDto.getToUserId());
+		msg.setRecipeId(recipeMessageDto.getRecipeId());
+		msg.setViewed(false);
+		msg.setMessage(recipeMessageDto.getMessage());
+
+		userMessageService.addMessage(msg);
 	}
 	
 	/**********************************/

@@ -75,6 +75,7 @@ function postRemoveFavorite(e) {
 	
 	$.ajax({
 		type: 'POST',
+		contentType: 'application/json',
 		url: '/recipeorganizer/recipe/removeFavorite',
 		dataType: 'json',
 		data: JSON.stringify(data)

@@ -152,7 +152,7 @@ function postUpdateIngredient(e) {
 function replaceIngredient(ingredId, ingredName) {
 	$('#replace' + ingredId).tooltip("hide");
 	$(".replaceName").text(ingredName);
-	$("#nameTA").val("");
+	$("#nameTA").typeahead('val',"");
 	$('#ingredTAId').val(0);
 	$('#ingredTAName').val("");
 	$("#submitReplace").one('click', {ingredId: ingredId, ingredName : ingredName}, postReplaceIngredient);
@@ -198,14 +198,6 @@ function postReplaceIngredient(e) {
 		console.log('fail data: '+ data);
 		postFailed(data.msg);
 	});
-}
-
-/********************************/
-/*** display recipes function ***/
-/********************************/
-function displayRecipes(ingredId) {
-	$('#view' + ingredId).tooltip("hide");
-	window.open('http://localhost:8080/recipeorganizer/recipe/viewRecipe/421');
 }
 
 //update the datatable

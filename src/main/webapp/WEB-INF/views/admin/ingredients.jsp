@@ -42,7 +42,7 @@
 							<td>
 								<form:form class="searchForm" id="searchForm" action="${searchUrl}" target = "_blank" method="post">
 									<input type="text" style="display:none" name="searchTerm" id="searchTerm" value="${ingred.id}"/>
-									<button class="btn btn-info btn-xs <c:if test="${ingred.usage == 0}">disabled</c:if>" type="submit" id="view${ingred.id}"
+									<button class="btn btn-info btn-xs <c:if test="${ingred.usage == 0}">disabled</c:if>" type="submit" id="view${ingred.id}" onclick="this.blur();"
 									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.viewrecipes"></spring:message>">
 									<span class="glyphicon glyphicon-list-alt"></span></button>
 								</form:form>
@@ -113,11 +113,9 @@
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form">
-				    <div class="spacer-vert-md"></div>
-				    <!-- <input type="text" style="display:none" id="ingredTAId"> -->
-				    <div><input type="text" id="ingredTAId"></div>
-				    <div><input type="text" id="ingredTAName"></div>
-					<div class="form-group">
+				    <input type="text" style="display:none" id="ingredTAId">
+				    <div><spring:message code="ingredadmin.instruct"></spring:message></div>
+					<div class="form-group spacer-vert-xs">
 			            <label class="control-label" for="name"><spring:message code="ingredadmin.replace"></spring:message></label>
 			            <input type="text" class="form-control maxSize" id="nameTA"/>
 				    </div>
