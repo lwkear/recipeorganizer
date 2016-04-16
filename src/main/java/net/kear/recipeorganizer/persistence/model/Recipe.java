@@ -87,6 +87,7 @@ public class Recipe implements Serializable {
 	@Column(name = "DESCRIPTION")
 	@NotBlank(groups=SizeGroup.class)
 	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
 	private String description;
 
 	@Column(name = "SERVINGS")
@@ -153,15 +154,18 @@ public class Recipe implements Serializable {
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
 	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
 	private String background;
 	
 	@Column(name = "NOTES")
 	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
 	private String notes;
 	
 	@Column(name = "PHOTO")
 	private String photoName;
 
+	//TODO: TAGS change for PostgreSQL
 	@Column(name = "TAGS")
 	@Type(type = "tagList") 
 	@Size(max=5, groups=SizeGroup.class)
@@ -186,13 +190,16 @@ public class Recipe implements Serializable {
 	
 	@Transient
 	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
 	private String privateNotes;
 
 	public Recipe() {}
 
+	//TODO: TAGS change for PostgreSQL
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
 				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, ApprovalStatus status, boolean copyrighted,  
 				String photoName, List<String> tags, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
+				/*String photoName, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {*/
 		super();
 		this.user = user;
 		this.name = name;
@@ -209,6 +216,7 @@ public class Recipe implements Serializable {
 		this.status = status;
 		this.copyrighted = copyrighted;
 		this.photoName = photoName;
+		//TODO: TAGS change for PostgreSQL
 		this.tags = tags;
 		this.instructSections = instructSections;
 		this.ingredSections = ingredSections;
@@ -348,6 +356,7 @@ public class Recipe implements Serializable {
 		this.photoName = photoName;
 	}
 	
+	//TODO: TAGS change for PostgreSQL
 	public List<String> getTags() {
 		return tags;
 	}
@@ -486,7 +495,6 @@ public class Recipe implements Serializable {
 		result = prime * result + ((totalHours == null) ? 0 : totalHours.hashCode());
 		result = prime * result + ((totalMinutes == null) ? 0 : totalMinutes.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
-		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
 		return result;
 	}
 
@@ -562,11 +570,6 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!servings.equals(other.servings))
 			return false;
-		if (tags == null) {
-			if (other.tags != null)
-				return false;
-		} else if (!tags.equals(other.tags))
-			return false;
 		return true;
 	}
 
@@ -586,7 +589,8 @@ public class Recipe implements Serializable {
 				+ ", allowShare=" + allowShare 
 				+ ", status=" + status
 				+ ", copyrighted=" + copyrighted 
-				+ ", photoName=" + photoName 
+				+ ", photoName=" + photoName
+				//TODO: TAGS change for PostgreSQL
 				+ ", tags=" + tags 
 				+ ", category=" + category 
 				+ ", instructSections=" + instructSections 

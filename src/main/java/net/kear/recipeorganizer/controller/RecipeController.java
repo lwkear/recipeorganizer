@@ -98,6 +98,7 @@ public class RecipeController {
 		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
 		model.addAttribute("sizeMap", sizeMap);
 
+		//TODO: TAGS change for PostgreSQL
 		List<String> tags = recipe.getTags();
 		List<String> strTags = new ArrayList<String>();
 		if (tags.size() > 0) {

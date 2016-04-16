@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import net.kear.recipeorganizer.event.PasswordResetEvent;
 import net.kear.recipeorganizer.exception.PasswordResendException;
+import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.email.EmailSender;
@@ -36,6 +37,33 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
     private void confirmPasswordReset(final PasswordResetEvent event) {
     	logger.debug("confirmPasswordReset");
         final User user = event.getUser();
+        final String oldToken = event.getToken();
+        String newToken = null;
+        
+        if (oldToken == null) {
+        	newToken = UUID.randomUUID().toString();
+        	userService.createPasswordResetTokenForUser(user, newToken);
+        }
+        else {
+        	PasswordResetToken token = null;
+        	token = userService.recreatePasswordResetTokenForUser(oldToken);
+        	newToken = token.getToken();
+        }
+
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + newToken;
+        
+        passwordEmail.init(userName, user.getEmail(), event.getLocale());
+        passwordEmail.setTokenUrl(confirmationUrl);
+        passwordEmail.constructEmail();
+        try {
+        	emailSender.sendHtmlEmail(passwordEmail);
+		} catch (Exception ex) {
+	    	throw new PasswordResendException(ex);
+	    }
+
+    	/*logger.debug("confirmPasswordReset");
+        final User user = event.getUser();
         final String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
@@ -48,6 +76,6 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
         	emailSender.sendHtmlEmail(passwordEmail);
 		} catch (Exception ex) {
 	    	throw new PasswordResendException(ex);
-	    }
+	    }*/
     }
 }

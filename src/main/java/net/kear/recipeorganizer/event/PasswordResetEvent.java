@@ -13,21 +13,24 @@ public class PasswordResetEvent extends ApplicationEvent {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
-    private final String appUrl;
+    //private final String appUrl;
     private final Locale locale;
     private final User user;
+    private final String token;
 
-    public PasswordResetEvent(final User user, final Locale locale, final String appUrl) {
+    /*public PasswordResetEvent(final User user, final Locale locale, final String appUrl) {*/
+    public PasswordResetEvent(final User user, final Locale locale, final String token) {
         super(user);
         this.user = user;
         this.locale = locale;
-        this.appUrl = appUrl;
-        logger.debug("OnPasswordResetCompleteEvent");
+        //this.appUrl = appUrl;
+        this.token = token;
+        logger.debug("PasswordResetCompleteEvent");
     }
 
-    public String getAppUrl() {
+    /*public String getAppUrl() {
         return appUrl;
-    }
+    }*/
 
     public Locale getLocale() {
         return locale;
@@ -35,5 +38,9 @@ public class PasswordResetEvent extends ApplicationEvent {
 
     public User getUser() {
         return user;
+    }
+
+    public String getToken() {
+    	return token;
     }
 }

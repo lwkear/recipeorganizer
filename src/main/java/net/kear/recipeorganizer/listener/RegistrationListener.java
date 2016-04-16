@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import net.kear.recipeorganizer.event.RegistrationCompleteEvent;
 import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
@@ -30,12 +31,38 @@ public class RegistrationListener implements ApplicationListener<RegistrationCom
     @Override
     public void onApplicationEvent(final RegistrationCompleteEvent event) {
     	logger.debug("onApplicationEvent");
-        
 		this.confirmRegistration(event);
     }
 
     private void confirmRegistration(final RegistrationCompleteEvent event) {
     	logger.debug("confirmRegistration");
+        final User user = event.getUser();
+        final String oldToken = event.getToken();
+        String newToken = null;
+        
+        if (oldToken == null) {
+        	newToken = UUID.randomUUID().toString();
+        	userService.createUserVerificationToken(user, newToken);
+        }
+        else {
+        	VerificationToken token = null;
+        	token = userService.recreateUserVerificationToken(oldToken);
+        	newToken = token.getToken();
+        }
+        
+        String userName = user.getFirstName() + " " + user.getLastName();
+        String confirmationUrl = "/confirmRegistration?token=" + newToken;
+        
+        registrationEmail.init(userName, user.getEmail(), event.getLocale());
+        registrationEmail.setTokenUrl(confirmationUrl);
+        registrationEmail.constructEmail();
+        try {
+        	emailSender.sendHtmlEmail(registrationEmail);
+		} catch (Exception ex) {
+			throw new VerificationResendException(ex);
+		}
+
+    	/*logger.debug("confirmRegistration");
         final User user = event.getUser();
         final String token = UUID.randomUUID().toString();
         userService.createUserVerificationToken(user, token);
@@ -50,6 +77,6 @@ public class RegistrationListener implements ApplicationListener<RegistrationCom
         	emailSender.sendHtmlEmail(registrationEmail);
 		} catch (Exception ex) {
 			throw new VerificationResendException(ex);
-		}
+		}*/
     }
 }

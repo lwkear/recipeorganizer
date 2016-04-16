@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name = "RECIPE_NOTES")
 public class RecipeNote implements Serializable {
@@ -19,6 +21,7 @@ public class RecipeNote implements Serializable {
 	
 	@Column(name = "NOTE")
 	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
 	private String note;
 	
 	public RecipeNote() {}

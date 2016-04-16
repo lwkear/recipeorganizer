@@ -15,12 +15,14 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
 	
     private final Locale locale;
     private final User user;
+    private final String token;
 
-    public RegistrationCompleteEvent(final User user, final Locale locale) {
+    public RegistrationCompleteEvent(final User user, final Locale locale, final String token) {
         super(user);
         this.user = user;
         this.locale = locale;
-        logger.debug("OnRegistrationCompleteEvent");
+        this.token = token;
+        logger.debug("RegistrationCompleteEvent");
     }
 
     public Locale getLocale() {
@@ -29,5 +31,9 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
 
     public User getUser() {
         return user;
+    }
+
+    public String getToken() {
+    	return token;
     }
 }

@@ -241,6 +241,7 @@ public class SolrUtilImpl implements SolrUtil {
 			document.addField("background", recipe.getBackground());
 		if (!StringUtils.isBlank(recipe.getPhotoName()))
 			document.addField("photo", recipe.getPhotoName());
+		//TODO: TAGS change for PostgreSQL
 		if (!recipe.getTags().isEmpty())
 			document.addField("tag", recipe.getTags());
 		if (recipe.getSource() != null) {

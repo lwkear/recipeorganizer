@@ -130,7 +130,7 @@ public class VerificationToken implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PasswordResetToken [id=" + id 
+		return "VerificationToken [id=" + id 
 				+ ", token=" + token 
 				+ ", expiryDate=" + expiryDate + "]";
 	}

@@ -248,7 +248,7 @@ public class UserController {
 		}
 		
        	logger.debug("user added - publishing event");
-       	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale));
+       	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale, null));
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
@@ -339,8 +339,18 @@ public class UserController {
 		logger.info("user/resendRegistrationToken GET");
 		
 		ModelAndView mv = new ModelAndView();
+
+		User user = null;
+		try {
+	        user = userService.getVerificationUser(token);
+		} catch (Exception ex) {
+        	throw new VerificationResendException(ex);
+        }
 		
-		VerificationToken newToken = null;
+       	logger.debug("new token requested - publishing event");
+       	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale, token));
+
+       	/*VerificationToken newToken = null;
 		User user = null;
 		try {
 			newToken = userService.recreateUserVerificationToken(token);
@@ -349,9 +359,9 @@ public class UserController {
         	throw new VerificationResendException(ex);
         }
 
-        String userName = user.getFirstName() + " " + user.getLastName();
+       	String userName = user.getFirstName() + " " + user.getLastName();
         String confirmationUrl = "/confirmRegistration?token=" + newToken.getToken();
-
+        
         registrationEmail.init(userName, user.getEmail(), locale);
         registrationEmail.setTokenUrl(confirmationUrl);
         registrationEmail.constructEmail();
@@ -359,7 +369,7 @@ public class UserController {
 			emailSender.sendHtmlEmail(registrationEmail);
 		} catch (Exception ex) {
 			throw new VerificationResendException(ex);
-		}
+		}*/
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
@@ -754,9 +764,12 @@ public class UserController {
 			return mv;
 		}
 		
-       	logger.debug("password reset - publishing event");
+       	/*logger.debug("password reset - publishing event");
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), appUrl));
+       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), appUrl));*/
+		
+		logger.debug("password reset - publishing event");
+       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), null));
         
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
@@ -825,7 +838,17 @@ public class UserController {
 
 		ModelAndView mv = new ModelAndView();
 		
-		PasswordResetToken newToken = null;
+		User user = null;
+		try {
+	        user = userService.getPasswordResetUser(token);
+		} catch (Exception ex) {
+        	throw new PasswordResendException(ex);
+        }
+		
+		logger.debug("new token requested - publishing event");
+       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), token));
+		
+		/*PasswordResetToken newToken = null;
 		User user = null;
 		try {
 			newToken = userService.recreatePasswordResetTokenForUser(token);
@@ -844,7 +867,7 @@ public class UserController {
 			emailSender.sendHtmlEmail(passwordEmail);
 		} catch (Exception ex) {
 	    	throw new PasswordResendException(ex);
-	    }
+	    }*/
         
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
