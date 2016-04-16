@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.model.Category;
@@ -23,7 +24,6 @@ import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
-import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.file.FileActions;
 
@@ -32,6 +32,7 @@ import org.apache.commons.lang.math.Fraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AutoPopulatingList;
@@ -51,9 +52,9 @@ public class RecipeServiceImpl implements RecipeService {
 	@Autowired
 	private FileActions fileAction;
 	@Autowired
-	private SolrUtil solrUtil;
-	@Autowired
 	private ConstraintMap constraintMap;
+	@Autowired
+    private ApplicationEventPublisher eventPublisher;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -75,10 +76,12 @@ public class RecipeServiceImpl implements RecipeService {
     
     public void addRecipe(Recipe recipe) {
     	recipeRepository.addRecipe(recipe);
+    	eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, false));
     }
     
     public void updateRecipe(Recipe recipe) {
     	recipeRepository.updateRecipe(recipe);
+    	eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, true));
     }
 
     public void saveRecipe(Recipe recipe) {
@@ -128,20 +131,31 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	//assume if the recipe has an ID then it must already exist
-    	if (recipe.getId() > 0)
+    	boolean exists = false;
+    	if (recipe.getId() > 0) {
     		recipeRepository.updateRecipe(recipe);
+    		exists = true;
+    	}
     	else
     		recipeRepository.addRecipe(recipe);
-    	
-    	solrUtil.addRecipe(recipe);
+
+    	eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, exists));
     }
     
     public void deleteRecipe(Long id) {
     	recipeRepository.deleteRecipe(id);
+    	Recipe recipe = new Recipe();
+    	recipe.setId(id);
+    	eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, false, true));
     }
     
     public void approveRecipe(Long id, ApprovalStatus status) {
+    	logger.debug("approveRecipe");
     	recipeRepository.approveRecipe(id, status);
+    	Recipe recipe = getRecipe(id);
+    	logger.debug("publishing event");
+    	eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, true));
+    	logger.debug("event published");
     }
 
     public Recipe getRecipe(Long id) {

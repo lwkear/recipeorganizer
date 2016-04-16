@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -28,7 +31,9 @@ public class SecurityService implements UserSecurityService {
 	@Autowired
 	private LoginAttemptService loginAttemptService;
 	@Autowired
-	private UserMessageService userMessageService; 
+	private UserMessageService userMessageService;
+	@Autowired
+	private SessionRegistry sessionRegistry;
 	
 	private UserService userService;	
 	
@@ -103,7 +108,47 @@ public class SecurityService implements UserSecurityService {
 		Authentication auth= new UsernamePasswordAuthenticationToken(details, user.getPassword(), details.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(auth);
     }
-	
+    
+    public UserDetails getUserDetails(User user) {
+    	return new CustomUserDetails(user);
+    }
+
+    public boolean isUserLoggedIn(User user) {
+    	
+		List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+		if (allPrincipals != null && allPrincipals.size() > 0) {
+			for (Object obj : allPrincipals) {
+				UserDetails principal = (UserDetails) obj;
+				if (principal.getUsername().equalsIgnoreCase(user.getEmail())) {
+					List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
+					for (SessionInformation sessionInfo : sessions) {
+						if (!sessionInfo.isExpired()) 
+							return true;
+					}
+				}
+			}
+		}		
+		
+		return false;
+    }
+    
+    public void expireUserSession(User user) {
+
+		List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+		if (allPrincipals != null && allPrincipals.size() > 0) {
+			for (Object obj : allPrincipals) {
+				UserDetails principal = (UserDetails) obj;
+				if (principal.getUsername().equalsIgnoreCase(user.getEmail())) {
+					List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
+					for (SessionInformation sessionInfo : sessions) {
+						if (!sessionInfo.isExpired()) 
+							sessionInfo.expireNow();
+					}
+				}
+			}
+		}
+    }
+    
 	private final static class CustomUserDetails extends User implements UserDetails, Serializable {
 
 		private static final long serialVersionUID = 1L;		

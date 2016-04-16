@@ -157,7 +157,7 @@ function replaceIngredient(ingredId, ingredName) {
 	$('#ingredTAName').val("");
 	$("#submitReplace").one('click', {ingredId: ingredId, ingredName : ingredName}, postReplaceIngredient);
 	$('#replaceIngredient').modal({backdrop: 'static', keyboard: false, show: false});
-	$("#replaceIngredient").on('hidden.bs.modal', function(){$("#submit").unbind('click');})
+	$("#replaceIngredient").on('hidden.bs.modal', function(){$("#submitReplace").unbind('click');})
 	$("#replaceIngredient").modal('show');
 } 
 
@@ -175,6 +175,11 @@ function postReplaceIngredient(e) {
 	
 	if (selName !== enterName) {
 		displayOKMsg(origName, getMessage('exception.ingredient.cannotadd'));
+		return;
+	}
+	
+	if (origName == enterName) {
+		displayOKMsg(origName, getMessage('exception.ingredient.cannotreplacesame'));
 		return;
 	}
 	

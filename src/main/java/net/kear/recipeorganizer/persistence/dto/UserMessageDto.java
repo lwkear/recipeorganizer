@@ -18,7 +18,9 @@ public class UserMessageDto implements Serializable {
 	private String fromFirstName;
 	private String fromLastName;
 	private String fromEmail;
+	private String subject;
 	private String message;
+	private String htmlMessage;
 	private boolean viewed;
 	//Note: recipeId needs to be a Long instead of a long since some messages may not be associated with a recipe and this field may be null
 	private Long recipeId;
@@ -29,8 +31,8 @@ public class UserMessageDto implements Serializable {
 	
 	public UserMessageDto() {}
 	
-	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String fromEmail, String message, boolean viewed, long 
-			recipeId, String recipeName, Date dateSent) {
+	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String fromEmail, String subject, String message,  
+			String htmlMessage, boolean viewed, long recipeId, String recipeName, Date dateSent) {
 		super();
 		this.id = id;
 		this.fromUserId = fromUserId;
@@ -38,7 +40,9 @@ public class UserMessageDto implements Serializable {
 		this.fromFirstName = fromFirstName;
 		this.fromLastName = fromLastName;
 		this.fromEmail = fromEmail;
+		this.subject = subject;
 		this.message = message;
+		this.htmlMessage = htmlMessage;
 		this.viewed = viewed;
 		this.recipeId = recipeId;
 		this.recipeName = recipeName;
@@ -93,12 +97,28 @@ public class UserMessageDto implements Serializable {
 		this.fromEmail = fromEmail;
 	}
 
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
 	public String getMessage() {
 		return message;
 	}
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getHtmlMessage() {
+		return htmlMessage;
+	}
+
+	public void setHtmlMessage(String htmlMessage) {
+		this.htmlMessage = htmlMessage;
 	}
 
 	public void setViewed(Boolean viewed) {
@@ -179,7 +199,9 @@ public class UserMessageDto implements Serializable {
 				+ ", fromFirstName=" + fromFirstName 
 				+ ", fromLastName=" + fromLastName
 				+ ", fromEmail=" + fromEmail
+				+ ", subject=" + subject
 				+ ", message=" + message
+				+ ", htmlMessage=" + htmlMessage
 				+ ", viewed=" + viewed
 				+ ", recipeId=" + recipeId
 				+ ", recipeName=" + recipeName				

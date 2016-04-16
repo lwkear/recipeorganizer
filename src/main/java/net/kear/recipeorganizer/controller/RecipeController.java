@@ -45,7 +45,6 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -77,8 +76,6 @@ public class RecipeController {
 	private FileActions fileAction;
 	@Autowired
 	private ViewReferer viewReferer;
-	@Autowired
-	private SolrUtil solrUtil;
 	@Autowired
 	private ConstraintMap constraintMap;
 	
@@ -157,14 +154,6 @@ public class RecipeController {
 			recipe.setPhotoName("");
 		}
 
-		//remove the recipe from solr; recipeService.saveRecipe will add it back
-		//this is necessary because recipeService.saveRecipe is called from webflow
-		//there looks to be an issue, though, with the saveRecipe transaction being rolled back if the solrUtil.addRecipe fails
-		//TODO: make solr.addrecipe accessible to webflow and remove the addRecipe from recipeService
-		boolean newRecipe = recipe.getId() > 0 ? true : false;
-		if (!newRecipe)
-			solrUtil.deleteRecipe(recipe.getId());
-		
 		recipeService.saveRecipe(recipe);
 		
 		String uri = (String) request.getSession().getAttribute("returnUrl");
@@ -216,9 +205,6 @@ public class RecipeController {
 			//errors are not fatal and will be logged by FileAction
 			fileAction.deleteFile(FileType.RECIPE, recipeId, fileName);
 		
-		//errors are not fatal and will be logged by SolrUtil
-		solrUtil.deleteRecipe(recipeId);
-
 		return new ResponseObject();
 	}	
 

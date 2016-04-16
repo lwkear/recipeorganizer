@@ -12,16 +12,18 @@ public class RecipeMessageDto implements Serializable {
 	
 	private long toUserId;
 	private long recipeId;
+	private String recipeName;
 	private ApprovalAction action;
 	private ApprovalReason[] reasons;
 	private String message;
 	
 	public RecipeMessageDto() {}
 
-	public RecipeMessageDto(long toUserId, long recipeId, ApprovalAction action, ApprovalReason[] reasons, String message) {
+	public RecipeMessageDto(long toUserId, long recipeId, String recipeName, ApprovalAction action, ApprovalReason[] reasons, String message) {
 		super();
 		this.toUserId = toUserId;
 		this.recipeId = recipeId;
+		this.recipeName = recipeName;
 		this.action = action;
 		this.reasons = reasons;
 		this.message = message;
@@ -41,6 +43,14 @@ public class RecipeMessageDto implements Serializable {
 
 	public void setRecipeId(long recipeId) {
 		this.recipeId = recipeId;
+	}
+
+	public String getRecipeName() {
+		return recipeName;
+	}
+
+	public void setRecipeName(String recipeName) {
+		this.recipeName = recipeName;
 	}
 
 	public ApprovalAction getAction() {
@@ -71,6 +81,7 @@ public class RecipeMessageDto implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((action == null) ? 0 : action.hashCode());
 		result = prime * result + (int) (recipeId ^ (recipeId >>> 32));
 		result = prime * result + (int) (toUserId ^ (toUserId >>> 32));
 		return result;
@@ -98,6 +109,7 @@ public class RecipeMessageDto implements Serializable {
 	public String toString() {
 		return "RecipeMessageDto [toUserId=" + toUserId 
 				+ ", recipeId=" + recipeId 
+				+ ", recipeName=" + recipeName
 				+ ", action=" + action 
 				+ ", reasons=" + Arrays.toString(reasons) 
 				+ ", message=" + message + "]";

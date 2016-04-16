@@ -69,6 +69,10 @@ public class Role implements Serializable {
 		this.description = description;
 	}
 	
+	public boolean isType(String type) {
+		return (name.equalsIgnoreCase(type) ? true : false);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

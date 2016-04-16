@@ -69,13 +69,15 @@
 	<p id="timeout.text3"/><spring:message code="timeout.text3"></spring:message>
 	<p id="exception.ingredient.cannotadd"/><spring:message code="exception.ingredient.cannotadd"></spring:message>	
 	<p id="exception.ingredient.cannotdelete"/><spring:message code="exception.ingredient.cannotdelete"></spring:message>
+	<p id="exception.ingredient.cannotreplacesame"/><spring:message code="exception.ingredient.cannotreplacesame"></spring:message>
 	<p id="ingredadmin.table.emptyTable"/><spring:message code="ingredadmin.table.emptyTable"></spring:message>
 	<p id="ingredadmin.table.info"/><spring:message code="ingredadmin.table.info"></spring:message>
 	<p id="ingredadmin.table.infoEmpty"/><spring:message code="ingredadmin.table.infoEmpty"></spring:message>
 	<p id="ingredadmin.table.infoFiltered"/><spring:message code="ingredadmin.table.infoFiltered"></spring:message>
 	<p id="ingredadmin.table.lengthMenu"/><spring:message code="ingredadmin.table.lengthMenu"></spring:message>
 	<p id="ingredadmin.table.zeroRecords"/><spring:message code="ingredadmin.table.zeroRecords"></spring:message>
-	<p id="usermessage.to"/><spring:message code="usermessage.to"></spring:message>	
+	<p id="usermessage.to"/><spring:message code="usermessage.to"></spring:message>
+	<p id="usermessage.sent"/><spring:message code="usermessage.sent"></spring:message>
 	<p id="messages.table.emptyTable"/><spring:message code="messages.table.emptyTable"></spring:message>
 	<p id="messages.table.info"/><spring:message code="messages.table.info"></spring:message>
 	<p id="messages.table.infoEmpty"/><spring:message code="messages.table.infoEmpty"></spring:message>

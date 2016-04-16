@@ -16,6 +16,10 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleRepository roleRepository;
 	
+    public Role getRole(Long id) {
+    	return roleRepository.getRole(id);
+    }
+    
     public String getRoleName(Long id) {
     	return roleRepository.getRoleName(id);    	
     }

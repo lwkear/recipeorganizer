@@ -1,5 +1,7 @@
 package net.kear.recipeorganizer.persistence.service;
  
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -176,5 +178,11 @@ public class UserServiceImpl implements UserService {
 
     public void deletePasswordResetToken(long userId) {
     	passwordResetTokenRepository.deleteToken(userId);
+    }
+
+    public void setLastLogin(User user) {
+		Calendar todaysDt = Calendar.getInstance();
+		todaysDt.setTimeInMillis(new Date().getTime());
+		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
     }
 }

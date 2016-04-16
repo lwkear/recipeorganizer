@@ -113,6 +113,7 @@
 			</div>
 			<div class="modal-body">
 				<form role="form" class="form">
+					<input type="text" style="display:none" id="ingredTAName">
 				    <input type="text" style="display:none" id="ingredTAId">
 				    <div><spring:message code="ingredadmin.instruct"></spring:message></div>
 					<div class="form-group spacer-vert-xs">

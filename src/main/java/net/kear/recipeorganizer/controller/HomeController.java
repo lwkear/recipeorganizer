@@ -37,10 +37,14 @@ import net.kear.recipeorganizer.enums.UserAge;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.UserMessage;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
+import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
@@ -91,7 +95,9 @@ public class HomeController {
 	private Environment env;
 	@Autowired
 	private RecipeService recipeService;
-	
+	@Autowired
+	private UserMessageService userMessageService;
+
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
 		logger.info("home GET");
@@ -349,9 +355,21 @@ public class HomeController {
 		age = strList[UserAge.UA51TO70.ordinal()];
 		logger.debug("age:" + age);*/
 
+		User user = userService.getUser(5L);
+		
 		RecipeMessageDto recipeMessageDto = new RecipeMessageDto();
 		model.addAttribute("recipeMessageDto", recipeMessageDto);
 		model.addAttribute("approvalActions", ApprovalAction.list());
+
+		UserMessage msg = new UserMessage();
+		msg.setFromUserId(3L);
+		msg.setToUserId(5L);
+		msg.setRecipeId(null);
+		msg.setViewed(false);
+		msg.setMessage("Some regular text, then some html");
+		msg.setHtmlMessage("<p>This is a message!</p><ul><li>Reason #1</li><li>Reason #2</li><li>Reason #3</li></ul><p>Some other message</p>");
+
+		userMessageService.addMessage(msg);
 		
 		return "test/testpage";
 	}

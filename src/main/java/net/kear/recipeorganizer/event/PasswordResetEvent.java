@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 
 @SuppressWarnings("serial")
-public class OnPasswordResetEvent extends ApplicationEvent {
+public class PasswordResetEvent extends ApplicationEvent {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -17,7 +17,7 @@ public class OnPasswordResetEvent extends ApplicationEvent {
     private final Locale locale;
     private final User user;
 
-    public OnPasswordResetEvent(final User user, final Locale locale, final String appUrl) {
+    public PasswordResetEvent(final User user, final Locale locale, final String appUrl) {
         super(user);
         this.user = user;
         this.locale = locale;

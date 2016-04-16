@@ -1,8 +1,6 @@
 package net.kear.recipeorganizer.security;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -46,10 +44,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		User user = userService.findUserByEmail(authentication.getName());
 		
 		boolean newUser = user.getLastLogin() == null ? true : false;
+		userService.setLastLogin(user);
 		
-		Calendar todaysDt = Calendar.getInstance();
-		todaysDt.setTimeInMillis(new Date().getTime());
-		user.setLastLogin(new Date(todaysDt.getTime().getTime()));
 		if (user.isLocked()) {
 			loginAttemptService.loginSucceeded(user.getEmail());
 			user.setLocked(0);

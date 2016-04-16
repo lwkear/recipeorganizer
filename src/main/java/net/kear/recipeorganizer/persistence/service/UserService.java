@@ -34,4 +34,5 @@ public interface UserService {
     public PasswordResetToken recreatePasswordResetTokenForUser(final String token);
     public PasswordResetToken getPasswordResetToken(String token);
     public void deletePasswordResetToken(long usserId);
+    public void setLastLogin(User user);
 }

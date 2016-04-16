@@ -3,6 +3,7 @@
 <head>
 
 <%@include file="../common/head.jsp" %>
+<%@ page import="net.kear.recipeorganizer.enums.ApprovalStatus"%>
 
 <title><spring:message code="approvaladmin.head"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
@@ -11,6 +12,9 @@
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
+
+	<c:set var="pendingStatus"><custom:approval status="${ApprovalStatus.PENDING}"></custom:approval></c:set>
+	<c:set var="blockedStatus"><custom:approval status="${ApprovalStatus.BLOCKED}"></custom:approval></c:set>
 
 	<div class="container container-white">	
 		<c:if test="${not empty warningMaint}">
@@ -64,6 +68,8 @@
 				</tbody>
 			</table>
 		</div>
+		<input type="hidden" id="pendingStatus" value="${pendingStatus}"/>
+		<input type="hidden" id="blockedStatus" value="${blockedStatus}"/>
 	</div>	
 
 <!-- recipe action dialog -->
@@ -91,7 +97,7 @@
 					<div class="form-group">
 						<div class="row">
 							<div class="col-sm-3">
-			            		<label class="control-label" for="reasons"><spring:message code="approvaladmin.optional"></spring:message></label>		<%--  --%>
+			            		<label class="control-label" for="reasons"><spring:message code="approvaladmin.reasons"></spring:message></label>		<%--  --%>
 			        		</div>
 					        <div class="col-sm-9">
 				                <form:select class="form-control" id="reasons" multiple="multiple" path="reasons">
@@ -103,7 +109,7 @@
 					<div class="form-group">
 			            <label class="control-label" for="message"><spring:message code="usermessage.label"></spring:message></label>
 			            <textarea class="form-control maxSize" rows="5" id="message" data-max="${sizeMap['message.max']}"></textarea>
-			            <span class="text-danger" id="messageMsg">${messageErr}</span>
+			            <span class="text-danger" id="messageErrMsg">${messageErr}</span>
 				    </div>           
 				</form:form>
 			</div>
@@ -123,55 +129,3 @@
 <script src="<c:url value="/resources/custom/recipelist.js" />"></script>
 
 </html>
-
-
-<%-- 
-<div class="modal" id="approveRecipeDlg" role="dialog">
-	<div class="modal-dialog modal-sm">
-	    <div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title" id="recipeName"></h4>
-			</div>
-			<div class="modal-body">
-				<form role="form" class="form">
-					<div class="form-group">
-						<div class="row">
-							<div class="col-sm-3">
-								<label class="control-label" for="action"><spring:message code="approvaladmin.action"></spring:message></label>
-							</div>
-							<div class="col-sm-8">
-								<label class="radio-inline"><input type="radio" name="action" value="${ApprovalAction.APPROVED}"><spring:message code="approvaladmin.approved"></spring:message></label>
-								<label class="radio-inline"><input type="radio" name="action" value="${ApprovalAction.PENDING}"><spring:message code="approvaladmin.pending"></spring:message></label>
-							</div>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="row">
-							<div class="col-sm-3">
-			            		<label class="control-label" for="editOption"><spring:message code="approvaladmin.edited"></spring:message></label>		
-			        		</div>
-					        <div class="col-sm-9">
-				                <select class="form-control" id="editOption" multiple="multiple">
-				                	<option value="0"><spring:message code="approvaladmin.misspelling"></spring:message></option>
-				                	<option value="1"><spring:message code="approvaladmin.ingredient"></spring:message></option>
-				                	<option value="2"><spring:message code="approvaladmin.other"></spring:message></option>
-				                </select>
-						    </div>
-						</div>
-					</div>           
-					<div class="form-group">
-			            <label class="control-label" for="message"><spring:message code="usermessage.label"></spring:message></label>
-			            <textarea class="form-control maxSize" rows="5" id="message" data-max="${sizeMap['message.max']}"></textarea>
-			            <span class="text-danger" id="messageMsg">${messageErr}</span>
-				    </div>           
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal" id="submitApproveMessage"><spring:message code="common.send"></spring:message></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="common.cancel"></spring:message></button>
-			</div>
-		</div>
-	</div>
-</div>
- --%>

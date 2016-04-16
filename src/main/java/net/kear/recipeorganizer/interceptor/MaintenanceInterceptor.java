@@ -328,7 +328,7 @@ public class MaintenanceInterceptor extends HandlerInterceptorAdapter {
 	}
 	
 	public String getImminentMaint(Locale locale) {
-		logger.debug("getImminentMaint");
+		//logger.debug("getImminentMaint");
 		
 		String imminentMsg = "";
 
@@ -338,7 +338,7 @@ public class MaintenanceInterceptor extends HandlerInterceptorAdapter {
 		DateTime now = new DateTime();
 		int seconds = Seconds.secondsBetween(now, startTime).getSeconds();		
 		
-		logger.debug("getImminentMaint: now/startTime= " + now.toString() + " / " + startTime.toString());
+		//logger.debug("getImminentMaint: now/startTime= " + now.toString() + " / " + startTime.toString());
 		
 		if ((seconds > DEFAULT_WARNING) || (now.isAfter(startTime)) || (seconds < 0))
 			return imminentMsg;

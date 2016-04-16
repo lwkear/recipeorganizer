@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
@@ -28,7 +29,9 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 public class SolrUtilImpl implements SolrUtil {
@@ -202,8 +205,24 @@ public class SolrUtilImpl implements SolrUtil {
 	    return resultsList;
 	}	
 
+	@Async
+	@TransactionalEventListener(fallbackExecution = true)
 	@Override
-	public void addRecipe(Recipe recipe) {
+	public void handleUpdateSolrRecipeEvent(UpdateSolrRecipeEvent event) {
+		logger.debug("handleUpdateSolrRecipeEvent");
+		
+		if (event.isDeleteOnly()) {
+			deleteRecipe(event.getRecipe().getId());
+			return;
+		}
+		
+		if (event.isDeleteFirst())
+			deleteRecipe(event.getRecipe().getId());
+		
+		addRecipe(event.getRecipe());
+	}
+	
+	private void addRecipe(Recipe recipe) {
 
 		SolrInputDocument document = new SolrInputDocument();
 		document.addField("id", recipe.getId());
@@ -262,8 +281,7 @@ public class SolrUtilImpl implements SolrUtil {
 	    }		
 	}
 	
-	@Override
-	public void deleteRecipe(Long recipeId) {
+	private void deleteRecipe(Long recipeId) {
 		
 		String idStr = recipeId.toString();
 		

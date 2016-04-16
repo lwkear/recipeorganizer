@@ -29,6 +29,7 @@ import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
 import net.kear.recipeorganizer.security.CustomAuthLoginEntryPoint;
+import net.kear.recipeorganizer.security.CustomHttpSessionSecurityContextRepository;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
 import net.kear.recipeorganizer.security.LoginSuccessHandler;
 import net.kear.recipeorganizer.security.RedirectInvalidSession;
@@ -119,6 +120,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SessionRegistry sessionRegistry() {
 		return new SessionRegistryImpl();
 	}
+	
+	@Bean
+	public CustomHttpSessionSecurityContextRepository contextRepository() {
+		return new CustomHttpSessionSecurityContextRepository();
+	}
 
 	//sets the hierarchy of roles
 	private SecurityExpressionHandler<FilterInvocation> secExpressionHandler() {
@@ -144,6 +150,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
     	http
+    	.securityContext()
+    		.securityContextRepository(contextRepository())
+    		.and()
     	.addFilterBefore(encodingFilter, CsrfFilter.class)
     	.headers()
     		.frameOptions().sameOrigin()

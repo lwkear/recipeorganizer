@@ -21,6 +21,9 @@
 <c:if test="${(userId != recipe.user.id) and (recipe.copyrighted == true)}">
 	<c:set var="privateRecipe" value="true"></c:set>
 </c:if>
+<c:if test="${isEditor}">
+	<c:set var="privateRecipe" value="false"></c:set>
+</c:if>
 <c:set var="privateNotes" value="false"></c:set>
 <c:if test="${userId == recipe.user.id}">
 	<c:set var="privateNotes" value="true"></c:set>
@@ -143,7 +146,6 @@
 		</div>
 	</div>		
 	<div class="col-sm-12" style="display:none">
-	<!-- <div class="col-sm-12"> -->
 		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=${userId}&rid=${recipe.id}"/>"></iframe>
 	</div>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>

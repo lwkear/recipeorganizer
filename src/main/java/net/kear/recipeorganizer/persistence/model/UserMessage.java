@@ -37,9 +37,17 @@ public class UserMessage implements Serializable {
 	@NotNull
 	private long toUserId;
 	
+	@Column(name = "SUBJECT")
+	@Size(max=300)	//300
+	private String subject;
+	
 	@Column(name = "MESSAGE")
 	@Size(max=1000)	//1000
 	private String message;
+
+	@Column(name = "HTML_MESSAGE")
+	@Size(max=4000)	//4000
+	private String htmlMessage;
 
 	@Column(name = "VIEWED")
 	private boolean viewed;
@@ -54,11 +62,13 @@ public class UserMessage implements Serializable {
 	
 	public UserMessage() {}
 
-	public UserMessage(long fromUserId, long toUserId, String message, boolean viewed, Long recipeId) {
+	public UserMessage(long fromUserId, long toUserId, String subject, String message, String htmlMessage, boolean viewed, Long recipeId) {
 		super();
 		this.fromUserId = fromUserId;
 		this.toUserId = toUserId;
+		this.subject = subject;
 		this.message = message;
+		this.htmlMessage = htmlMessage;
 		this.viewed = viewed;
 		this.recipeId = recipeId;
 	}
@@ -87,12 +97,28 @@ public class UserMessage implements Serializable {
 		this.toUserId = toUserId;
 	}
 
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
 	public String getMessage() {
 		return message;
 	}
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getHtmlMessage() {
+		return htmlMessage;
+	}
+
+	public void setHtmlMessage(String htmlMessage) {
+		this.htmlMessage = htmlMessage;
 	}
 
 	public boolean isViewed() {
@@ -158,7 +184,9 @@ public class UserMessage implements Serializable {
 		return "Message [id=" + id
 				+ ", fromUserId=" + fromUserId
 				+ ", toUserId=" + toUserId
+				+ ", subject=" + subject
 				+ ", message=" + message
+				+ ", htmlMessage=" + htmlMessage
 				+ ", viewed=" + viewed
 				+ ", recipeId=" + recipeId
 				+ ", dateSent=" + dateSent + "]";

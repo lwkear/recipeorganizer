@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import net.kear.recipeorganizer.event.OnPasswordResetEvent;
+import net.kear.recipeorganizer.event.PasswordResetEvent;
 import net.kear.recipeorganizer.exception.PasswordResendException;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -16,7 +16,7 @@ import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
 
 @Component
-public class PasswordResetListener implements ApplicationListener<OnPasswordResetEvent> {
+public class PasswordResetListener implements ApplicationListener<PasswordResetEvent> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -28,12 +28,12 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
 	private PasswordEmail passwordEmail; 
 	
     @Override
-    public void onApplicationEvent(final OnPasswordResetEvent event) {
+    public void onApplicationEvent(final PasswordResetEvent event) {
     	logger.debug("onApplicationEvent");
         this.confirmPasswordReset(event);
     }
 
-    private void confirmPasswordReset(final OnPasswordResetEvent event) {
+    private void confirmPasswordReset(final PasswordResetEvent event) {
     	logger.debug("confirmPasswordReset");
         final User user = event.getUser();
         final String token = UUID.randomUUID().toString();

@@ -41,14 +41,6 @@ public class LoginAttemptService {
     }
 
     public boolean isBlocked(final String key) {
-    	/*int attempts = 0;
-        try {
-        	attempts = badPasswordCache.get(key);
-        } catch (final ExecutionException e) {
-            return false;
-        }
-        return attempts >= MAX_PASSWORD_ATTEMPT;*/
-
         try {
             return badPasswordCache.get(key) >= MAX_PASSWORD_ATTEMPT;
         } catch (final ExecutionException e) {

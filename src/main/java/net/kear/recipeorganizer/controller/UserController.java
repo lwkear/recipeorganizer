@@ -22,7 +22,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
@@ -50,8 +49,8 @@ import org.joda.time.Hours;
 
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.enums.UserAge;
-import net.kear.recipeorganizer.event.OnPasswordResetEvent;
-import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
+import net.kear.recipeorganizer.event.PasswordResetEvent;
+import net.kear.recipeorganizer.event.RegistrationCompleteEvent;
 import net.kear.recipeorganizer.exception.AccessProfileException;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.AddUserException;
@@ -124,8 +123,6 @@ public class UserController {
 	private EmailSender emailSender;
 	@Autowired
 	private UserInfo userInfo;
-	@Autowired
-	private SessionRegistry sessionRegistry;
 	@Autowired
 	private FileActions fileAction;
 	@Autowired
@@ -251,7 +248,7 @@ public class UserController {
 		}
 		
        	logger.debug("user added - publishing event");
-       	eventPublisher.publishEvent(new OnRegistrationCompleteEvent(user, locale));
+       	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale));
         
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
@@ -655,6 +652,9 @@ public class UserController {
 		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
+			changePasswordDto.setCurrentPassword("");
+			changePasswordDto.setPassword("");
+			changePasswordDto.setConfirmPassword("");
 			return "user/changePassword";
 		}
 		
@@ -756,7 +756,7 @@ public class UserController {
 		
        	logger.debug("password reset - publishing event");
        	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-       	eventPublisher.publishEvent(new OnPasswordResetEvent(user, request.getLocale(), appUrl));
+       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), appUrl));
         
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
@@ -867,6 +867,8 @@ public class UserController {
 
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
+			newPasswordDto.setPassword("");
+			newPasswordDto.setConfirmPassword("");
 			return "user/newPassword";
 		}
 		
@@ -876,13 +878,14 @@ public class UserController {
 			String msg = messages.getMessage("PasswordNotDuplicate", null, "", locale);
 			FieldError fieldError = new FieldError("newPasswordDto", "password", msg);
 			result.addError(fieldError);
+			newPasswordDto.setPassword("");
+			newPasswordDto.setConfirmPassword("");
 			return "user/newPassword";
 		}
 				
 		try {
 			user.setAccountExpired(0);
-			user.setPasswordExpired(0);
-			userService.updateUser(user);
+			userService.setLastLogin(user);
 			userService.changePassword(newPasswordDto.getPassword(), user);
 			userService.deletePasswordResetToken(user.getId());
 		} catch (Exception ex) {
@@ -930,7 +933,7 @@ public class UserController {
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
 	public ResponseObject sendUserMessage(@RequestBody UserMessage userMessage) throws RestException {
-		logger.info("recipe/addFavorite POST");
+		logger.info("user/sendMessage POST");
 		
 		try {
 			userMessageService.addMessage(userMessage);

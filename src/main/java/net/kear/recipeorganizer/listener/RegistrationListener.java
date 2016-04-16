@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
-import net.kear.recipeorganizer.event.OnRegistrationCompleteEvent;
+import net.kear.recipeorganizer.event.RegistrationCompleteEvent;
 import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
@@ -16,7 +16,7 @@ import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
 
 @Component
-public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
+public class RegistrationListener implements ApplicationListener<RegistrationCompleteEvent> {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -28,13 +28,13 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 	private RegistrationEmail registrationEmail; 
 	
     @Override
-    public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
+    public void onApplicationEvent(final RegistrationCompleteEvent event) {
     	logger.debug("onApplicationEvent");
         
 		this.confirmRegistration(event);
     }
 
-    private void confirmRegistration(final OnRegistrationCompleteEvent event) {
+    private void confirmRegistration(final RegistrationCompleteEvent event) {
     	logger.debug("confirmRegistration");
         final User user = event.getUser();
         final String token = UUID.randomUUID().toString();

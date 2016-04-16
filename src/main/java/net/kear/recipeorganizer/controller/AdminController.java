@@ -1,7 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -10,15 +9,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +35,7 @@ import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalReason;
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
@@ -58,6 +59,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.RoleService;
 import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
@@ -82,6 +84,8 @@ public class AdminController {
 	@Autowired
 	private UserService userService;
 	@Autowired
+	private UserSecurityService userSecurityService;
+	@Autowired
 	private RoleService roleService;
 	@Autowired
 	private CommentService commentService;
@@ -96,8 +100,6 @@ public class AdminController {
 	@Autowired
 	private ConstraintMap constraintMap;
 	@Autowired
-	private SolrUtil solrUtil;
-	@Autowired
 	MaintenanceUtil maintUtil;
 	@Autowired
 	private MaintenanceInterceptor maintInterceptor;
@@ -105,6 +107,10 @@ public class AdminController {
 	private UserInfo userInfo;	
 	@Autowired
 	private UserMessageService userMessageService;
+	@Autowired
+	private SolrUtil solrUtil;
+	@Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -116,39 +122,12 @@ public class AdminController {
 		
 		List<Role> roles = roleService.getRoles();
 		List<User> users = userService.getUsers();
-		List<Long> userIds = new ArrayList<Long>();
+		
 		for (User u : users) {
-			logger.debug("userService: " + u);
-			userIds.add(u.getId());
+			if (userSecurityService.isUserLoggedIn(u))
+				u.setLoggedIn(true);
 		}
 		
-		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
-		
-		for (Object obj : allPrinc) {
-			List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);	//true returns expired sessions
-
-			for (SessionInformation sess : sessions) {
-				User user = (User) sess.getPrincipal();
-				String sessId = sess.getSessionId();
-				Date sessDate = sess.getLastRequest();
-				
-				logger.debug("sessReg user: " + user);
-				logger.debug("sessReg userId: " + user.getId());
-				logger.debug("sessReg sessId: " + sessId);
-				logger.debug("sessReg sessDate: " + sessDate.toString());
-				
-				if (userIds.contains(user.getId())) {
-					logger.debug("sessReg found principal in user list");
-					
-					int ndx = userIds.indexOf(user.getId());
-					if (ndx >= 0) {
-						User u = users.get(ndx);
-						u.setLoggedIn(true);	
-					}					
-				}
-			}
-		}
-
 		model.addAttribute("roles", roles);
 		model.addAttribute("users", users);
 		
@@ -208,52 +187,85 @@ public class AdminController {
 	@RequestMapping(value="admin/updateUser", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject updateUser(@RequestBody User user, HttpSession session) throws RestException {
+	public ResponseObject updateUser(@RequestBody User user, HttpSession session, Locale locale) throws RestException {
 		logger.info("admin/updateUser POST: userId=" + user.getId());
 
 		User originalUser = userService.getUser(user.getId());
-		//Role originalRole = originalUser.getRole();
+		Role originalRole = originalUser.getRole();
+
+		if (originalUser.isAccountExpired() && !user.isAccountExpired()) {
+			userService.setLastLogin(user);
+		}
+		
+		if (originalUser.isPasswordExpired() && !user.isPasswordExpired()) {
+			user.setPasswordExpiryDate();
+		}
 		
 		//update the user
 		try {
 			//fixes issue with the profile object not containing the userId
 			if (user.getUserProfile() != null)
 				user.getUserProfile().setUser(user);
+			if (originalRole.getId() != user.getRole().getId()) {
+				Role newRole = roleService.getRole(user.getRole().getId());
+				user.setRole(newRole);
+			}				
 			userService.updateUser(user);
 		} catch (Exception ex) {
 			throw new RestException("exception.updateUser", ex);
 		}
 
-		//TODO: SECURITY: sendPrivateMessage on role change
-		//if (originalRole != user.getRole())
+		if (!originalRole.equals(user.getRole())) {
+			if (((originalRole.isType(Role.TYPE_GUEST)) 	||
+				 (originalRole.isType(Role.TYPE_AUTHOR)))	&&
+				((user.getRole().isType(Role.TYPE_EDITOR)) ||
+				 (user.getRole().isType(Role.TYPE_ADMIN))))
+				sendUpdateRoleMessage(user, originalRole, locale);
+		}		
 		
 		//if the user no longer should have access then expire the user's session if present
 		if ((originalUser.isEnabled() 			&& !user.isEnabled())		||
 			(!originalUser.isLocked()			&& user.isLocked())			||
 			(!originalUser.isAccountExpired()	&& user.isAccountExpired())	||
 			(!originalUser.isPasswordExpired()	&& user.isPasswordExpired())) {
-			List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
-			if (allPrincipals != null && allPrincipals.size() > 0) {
-				for (Object obj : allPrincipals) {
-					UserDetails principal = (UserDetails) obj;
-					if (principal.getUsername().equalsIgnoreCase(user.getEmail())) {
-						List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, false);
-						for (SessionInformation sessionInfo : sessions) {
-							
-							String sessId = sessionInfo.getSessionId();
-							Object sessObj = sessionInfo.getPrincipal();
-							boolean exp = sessionInfo.isExpired();
-							logger.debug("Found sessionInfo id/obj/exp: " + sessId + " / " + sessObj.toString() + " / " + exp);
-							
-							if (!sessionInfo.isExpired()) 
-								sessionInfo.expireNow();
-						}
-					}
-				}
-			}
+			userSecurityService.expireUserSession(user);
 		}
 		
 		return new ResponseObject();
+	}
+
+	private void sendUpdateRoleMessage(User user, Role originalRole, Locale locale) {
+		User admin = (User)userInfo.getUserDetails();
+		UserMessage userMsg = new UserMessage();
+		userMsg.setFromUserId(admin.getId());
+		userMsg.setToUserId(user.getId());
+		userMsg.setRecipeId(null);
+		userMsg.setViewed(false);
+		
+		String subject = messages.getMessage("account.upgrade.title", null, "", locale);
+		userMsg.setSubject(subject);
+		
+		String htmlMsg = "";
+		String msg = messages.getMessage("common.congrats", null, "", locale);
+		htmlMsg = "<h5><strong>" + msg + "</strong></h5>";
+		Object[] obj = new String[2];
+		obj[0] = user.getRole().getDescription();
+		obj[1] = originalRole.getDescription();
+		msg = messages.getMessage("account.upgrade.congrats", obj, "", locale);
+		htmlMsg += "<p>" + msg + "</p>";
+		
+		if (user.isLoggedIn()) {
+			msg = messages.getMessage("account.upgrade.loggedin", null, "", locale);
+			htmlMsg += "<p>" + msg + "</p>";
+		}
+		
+		msg = messages.getMessage("account.upgrade.thankyou", null, "", locale);
+		htmlMsg += "<p>" + msg + "</p>";
+		
+		userMsg.setMessage(subject);
+		userMsg.setHtmlMessage(htmlMsg);
+		
+		userMessageService.addMessage(userMsg);
 	}
 
 	/************************************/
@@ -406,11 +418,24 @@ public class AdminController {
 	public IngredientReviewDto replaceIngredient(@RequestBody IngredientReviewDto ingredientReviewDto) throws RestException {
 		logger.info("admin/replaceIngredient POST: old ingredId/new ingredId " + ingredientReviewDto.getId() + " / " + ingredientReviewDto.getUsage());
 		
+		List<RecipeListDto> resultsList;
+		Long id = ingredientReviewDto.getId();
+		try {
+			resultsList = solrUtil.searchIngredients(Long.toString(id));
+		} catch (SolrServerException | IOException ex) {
+			throw new RestException("exception.replaceIngredient", ex);
+		}
+		
 		try {
 			recipeIngredientService.replaceIngredient(ingredientReviewDto);
 			ingredientService.deleteIngredient(ingredientReviewDto.getId());
 		} catch (Exception ex) {
 			throw new RestException("exception.replaceIngredient", ex);
+		}
+		
+		for (RecipeListDto recipeDto : resultsList) {
+			Recipe recipe = recipeService.getRecipe(recipeDto.getId());
+			eventPublisher.publishEvent(new UpdateSolrRecipeEvent(recipe, true));
 		}
 				
 		//return the original object so the client can remove the ingredient from the list
@@ -486,7 +511,7 @@ public class AdminController {
 		logger.info("admin/approveRecipe POST: recipeId=" + recipeMessageDto.getRecipeId());
 		
 		if (recipeMessageDto.getAction() != ApprovalAction.DELETE) {
-			Recipe recipe;
+			//Recipe recipe;
 			
 			ApprovalAction action = recipeMessageDto.getAction();
 			//assume most recipes will be approved
@@ -496,17 +521,15 @@ public class AdminController {
 				status = ApprovalStatus.PENDING;
 			else
 			if (action == ApprovalAction.BLOCK)
-				status = ApprovalStatus.PRIVATE;
-			
+				status = ApprovalStatus.BLOCKED;
+		
+			logger.info("admin/approveRecipe calling recipeService.approveRecipe"); 
 			try {
 				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), status);
-				recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());				
+				//recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());				
 			} catch (Exception ex) {
 				throw new RestException("exception.approveRecipe", ex);
 			}
-			
-			solrUtil.deleteRecipe(recipeMessageDto.getRecipeId());
-			solrUtil.addRecipe(recipe);
 		}
 		
 		if (recipeMessageDto.getAction() == ApprovalAction.DELETE) {
@@ -515,15 +538,17 @@ public class AdminController {
 			} catch (Exception ex) {
 				throw new RestException("exception.approveRecipe", ex);
 			}
-			
-			solrUtil.deleteRecipe(recipeMessageDto.getRecipeId());
 		}
 
+		logger.info("admin/approveRecipe sending message");
+		
 		try {
 			sendRecipeMessage(recipeMessageDto, locale);
 		} catch (Exception ex) {
 			throw new RestException("exception.approveRecipe", ex);
 		}
+		
+		logger.info("admin/approveRecipe done");
 		
 		return new ResponseObject();
 	}
@@ -531,14 +556,51 @@ public class AdminController {
 	private void sendRecipeMessage(RecipeMessageDto recipeMessageDto, Locale locale) {
 		User user = (User)userInfo.getUserDetails();
 		
-		UserMessage msg = new UserMessage();
-		msg.setFromUserId(user.getId());
-		msg.setToUserId(recipeMessageDto.getToUserId());
-		msg.setRecipeId(recipeMessageDto.getRecipeId());
-		msg.setViewed(false);
-		msg.setMessage(recipeMessageDto.getMessage());
+		UserMessage userMsg = new UserMessage();
+		userMsg.setFromUserId(user.getId());
+		userMsg.setToUserId(recipeMessageDto.getToUserId());
+		if (recipeMessageDto.getAction() != ApprovalAction.DELETE)
+			userMsg.setRecipeId(recipeMessageDto.getRecipeId());
+		else {
+			userMsg.setRecipeId(null);
+			userMsg.setSubject(recipeMessageDto.getRecipeName());
+		}
+		userMsg.setViewed(false);
+		
+		String msg = "";
+		String heading = "";
+		String reasonMsg = "";
+		ApprovalAction action = recipeMessageDto.getAction();
+		
+		heading = messages.getMessage("approvalmsg." + action.name().toLowerCase(), null, "", locale);
+		reasonMsg = messages.getMessage("approvalmsg."  + action.name().toLowerCase() + ".reason", null, "", locale);
+			
+		msg = "<h5><strong>" + heading + "</strong></h5>";
 
-		userMessageService.addMessage(msg);
+		if (action == ApprovalAction.APPROVE)
+			msg += "<p>" + reasonMsg + "</p>";
+		
+		String reasonList = "<ul>";
+		ApprovalReason reasons[] = recipeMessageDto.getReasons();
+		if (reasons != null) {
+			msg += "<p>" + reasonMsg + "</p>";
+			for (ApprovalReason reason : reasons) {
+				reasonList += "<li>" + messages.getMessage("approvalmsg." + reason.name().toLowerCase(), null, "", locale) + "</li>";
+			}
+			reasonList += "</ul>";
+			msg += reasonList;
+		}
+
+		String adminMsg = recipeMessageDto.getMessage();
+		if (!StringUtils.isBlank(adminMsg)) {
+			String notes = messages.getMessage("approvalmsg.editornotes", null, "", locale);
+			msg += "<p><strong>" + notes + "</strong></p><p>" + adminMsg + "</p>";
+		}
+		
+		userMsg.setMessage(heading);
+		userMsg.setHtmlMessage(msg);
+		
+		userMessageService.addMessage(userMsg);
 	}
 	
 	/**********************************/

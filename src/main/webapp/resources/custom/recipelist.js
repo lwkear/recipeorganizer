@@ -99,6 +99,17 @@ function removeRow(recipeId) {
 	table.draw();
 }
 
+function updateRow(recipeId, action) {
+	var table = $('#recipeList').DataTable();
+	var ndx = table.row('#' + recipeId).index();
+	var label;
+	if (action == 'BLOCK')
+		label = $('#blockedStatus').val();
+	if (action == 'PENDING')
+		label = $('#pendingStatus').val();
+	table.cell(ndx,6).data(label).draw();
+}
+
 /*******************************/
 /*** approve recipe function ***/
 /*******************************/
@@ -108,9 +119,10 @@ function recipeAction(toUserId, recipeId, name) {
 	$(".recipeName").text(name);
 	$("#action").prop('selectedIndex', 0);
 	$('#message').val("");
-	$('#reasons').multiselect('deselectAll',false);
+	$('#reasons').multiselect('deselectAll', false);
 	$('#reasons').multiselect('updateButtonText');
-	$("#submitActionMessage").one('click', {toUserId : toUserId, recipeId : recipeId}, postActionMessage);
+	$('#reasons').multiselect('disable');
+	$("#submitActionMessage").one('click', {toUserId : toUserId, recipeId : recipeId, name : name}, postActionMessage);
 	$("#recipeActionDlg").on('hidden.bs.modal', function(){$("#submitActionMessage").unbind('click');})
 	$("#recipeActionDlg").modal('show');
 } 
@@ -121,14 +133,13 @@ function postActionMessage(e) {
 
 	var toId = e.data.toUserId;
 	var recipeId = e.data.recipeId;
+	var recipeName = e.data.name;
 	var action = $("#action").val();
 	var reasons = $('#reasons').val();
 	var msg = $('#message').val();
 	msg = $.trim(msg);
 	
-	var data = {"toUserId":toId,"recipeId":recipeId,"action":action,"reasons":reasons,"message":msg};
-	var jsondata = JSON.stringify(data);
-	console.log('data: '+ jsondata);
+	var data = {"toUserId":toId,"recipeId":recipeId,"recipeName":recipeName,"action":action,"reasons":reasons,"message":msg};
 
 	$.ajax({
 	    type: 'POST',
@@ -139,7 +150,11 @@ function postActionMessage(e) {
 	})
 	.done(function(data) {
 		console.log('postMessage done');
-		removeRow(recipeId);
+		if (action == 'APPROVE' || action == 'DELETE')
+			removeRow(recipeId);
+		else
+			updateRow(recipeId, action);
+		displayOKMsg(recipeName, getMessage('usermessage.sent'));
 	})
 	.fail(function(jqXHR, status, error) {
 		var data = jqXHR.responseJSON;
@@ -148,10 +163,11 @@ function postActionMessage(e) {
 	});
 }
 
-$(document).ready(function() {
+$(function() {
 	$('#reasons').multiselect({
 		nonSelectedText: getMessage('common.none'),
 		numberDisplayed: 2,
+		disabledText: ''
 	});
 	
 	$('#recipeList').DataTable({
@@ -172,4 +188,16 @@ $(document).ready(function() {
 		},	
 		stateSave : true
 	});
+	
+	$(document)
+		.on ('change', '#action', function(e) {
+			var option = $(this).prop('selectedIndex');
+			if (option == 0) {
+				$('#reasons').multiselect('disable');
+				$('#reasons').multiselect('deselectAll', false);
+				$('#reasons').multiselect('updateButtonText');
+			}
+			else
+				$('#reasons').multiselect('enable');
+		})
 })

@@ -186,3 +186,11 @@ body {
 .faq_answer_container {margin: 0% 2% 0% 2%; height: 0px; overflow: hidden; padding: 0px;}
 .faq_answer p {margin: 1% 2% 1% 4%;}
 
+.text-truncate {
+	word-wrap: normal;
+	display: block;	
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	hyphens: auto;	
+}

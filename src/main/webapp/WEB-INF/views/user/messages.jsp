@@ -8,6 +8,13 @@
 
 </head>
 
+<!-- Note: required to enable the % column widths (usermessage.js) and the text truncation of the message column --> 
+<style type="text/css">
+table {
+  table-layout: fixed;
+}
+</style>
+
 <body role="document">
 
 <%@include file="../common/nav.jsp" %>
@@ -28,7 +35,7 @@
 						<th></th>
 						<th><spring:message code="messages.column.sent"></spring:message></th>
 						<th><spring:message code="messages.column.from"></spring:message></th>
-						<th><spring:message code="messages.column.recipe"></spring:message></th>
+						<th><spring:message code="messages.column.subject"></spring:message></th>
 						<th><spring:message code="messages.column.message"></spring:message></th>
 						<th data-orderable="false"></th>
 						<th data-orderable="false"></th>
@@ -38,15 +45,33 @@
 				<tbody>
 					<c:forEach var="msg" items="${messages}">
 						<tr id="${msg.id}">
+							<c:choose>
+								<c:when test="${not empty msg.htmlMessage}">
+									<c:set var="popoverMsg" value="${msg.htmlMessage}"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="popoverMsg" value="${msg.message}"/>
+								</c:otherwise>
+							</c:choose>
+							<c:choose>
+								<c:when test="${empty msg.recipeId}">
+									<c:set var="subject" value="${msg.subject}"/>
+								</c:when>
+								<c:otherwise>
+									<c:set var="subject" value="${msg.recipeName}"/>
+								</c:otherwise>
+							</c:choose>
 							<td>${msg.viewed}</td>
 							<td><fmt:formatDate type="both" timeStyle="short" value="${msg.dateSent}" /></td>
 							<td>${msg.fromFirstName} ${msg.fromLastName}</td>							
-							<td>${msg.recipeName}</td>
-							<td>${msg.message}</td>
+							<td>${subject}</td>
+							<td>
+								<span class="text-truncate show-popover" data-toggle="popover" title="<strong>${subject}</strong>" data-content="${popoverMsg}">${msg.message}</span>
+							</td>
 							<td>
 								<button class="btn btn-success btn-xs <c:if test="${empty msg.recipeId}">disabled</c:if>" type="button" id="email${msg.id}"
 								onclick="emailRecipe(${userId}, ${msg.fromUserId}, '${msg.fromFirstName}', '${msg.fromLastName}', '${msg.fromEmail}', ${msg.recipeId}, ${msg.id}, 
-								'<spring:escapeBody javaScriptEscape="true">${msg.recipeName}</spring:escapeBody>')"
+								'<spring:escapeBody javaScriptEscape="true">${subject}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 								<span class="glyphicon glyphicon-envelope"></span></button>
 							</td>

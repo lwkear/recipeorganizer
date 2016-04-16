@@ -17,6 +17,11 @@ public class RoleRepositoryImpl implements RoleRepository {
     @Autowired
     private SessionFactory sessionFactory;
 
+    public Role getRole(Long id) {
+    	Role role = (Role) getSession().get(Role.class, id);
+    	return role;
+    }
+    
     public String getRoleName(Long id) {
     	Role role = (Role) getSession().load(Role.class, id);
     	return role.getName();
