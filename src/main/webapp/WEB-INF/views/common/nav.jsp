@@ -18,7 +18,7 @@
 	<sec:authentication var="newmsgs" property="principal.newMsgCount" />
 </c:if>
 
-<nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top">		 <!-- navbar-inverse -->
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
