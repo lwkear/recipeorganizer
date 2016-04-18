@@ -11,12 +11,13 @@
 <%@include file="common/nav.jsp" %>
 
 	<div class="container container-white">
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
 			<div class="page-header">
 				<h3>${errorTitle}</h3>
-			</div>			
+			</div>
+		</div>
+		<div class="col-sm-12">			
 			<div class="col-sm-12">			
-				<!-- <div class="center alert text-danger text-center strong"> -->
 				<div class="center alert text-center strong">
 				<c:forEach var="msg" items="${errorMsgs}">
 					<div><h4>${msg}</h4></div>

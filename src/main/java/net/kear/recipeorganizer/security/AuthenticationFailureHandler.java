@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	public static final String LAST_USERNAME_KEY = "LAST_USERNAME";
 
 	@Autowired
 	private LoginAttemptService loginAttemptService;
@@ -54,8 +57,14 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 		
 		if (className.equalsIgnoreCase("BadCredentialsException")) {
 			String userName = request.getParameter("username");
-			if (userName != null)
+			if (userName != null) {
 				loginAttemptService.loginFailed(userName);
+				
+				HttpSession session = request.getSession(false);
+				if (session != null || isAllowSessionCreation()) {
+				    request.getSession().setAttribute(LAST_USERNAME_KEY, userName);
+				}
+			}
 		}
 		
 		logger.debug("onAuthenticationFailure exception class: " + ex.getClass().toString());

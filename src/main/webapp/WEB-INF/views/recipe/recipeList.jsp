@@ -33,7 +33,9 @@
 						<th><spring:message code="recipe.table.submitted"></spring:message></th>
 						<th><spring:message code="recipe.table.category"></spring:message></th>
 						<th><spring:message code="recipe.table.source"></spring:message></th>
-						<th><spring:message code="recipe.table.status"></spring:message></th>
+						<c:if test="${!fav}">
+							<th><spring:message code="recipe.table.status"></spring:message></th>
+						</c:if>
 						<th data-orderable="false"></th>
 						<c:if test="${!fav}">
 							<th data-orderable="false"></th>
@@ -52,7 +54,9 @@
 							<td><fmt:formatDate type="date" value="${recipe.submitted}" /></td>
 							<td>${recipe.category}</td>
 							<td>${recipe.sourcetype}</td>
-							<td><custom:approval status="${recipe.status}"></custom:approval></td>
+							<c:if test="${!fav}">
+								<td><custom:approval status="${recipe.status}"></custom:approval></td>
+							</c:if>	
 							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>

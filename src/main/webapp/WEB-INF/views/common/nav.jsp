@@ -18,7 +18,7 @@
 	<sec:authentication var="newmsgs" property="principal.newMsgCount" />
 </c:if>
 
-<nav class="navbar navbar-default navbar-fixed-top">		 <!-- navbar-inverse -->
+<nav class="navbar navbar-inverse navbar-fixed-top">		 <!-- navbar-inverse -->
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -28,10 +28,10 @@
 			</button>
 			<c:choose>				
 				<c:when test="${isAuth}">
-					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo4.png"/>" height=36 style="margin-top:7px"></a>
 				</c:when>
 				<c:otherwise>
-					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo4.png"/>" height=36 style="margin-top:7px"></a>
 				</c:otherwise>
 			</c:choose>			
 		</div>
@@ -74,7 +74,7 @@
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<li><a href="<c:url value="/test/testpage" />">Test</a></li>
+						<%-- <li><a href="<c:url value="/test/testpage" />">Test</a></li> --%>
 					</ul>
 				</li>
 			</ul>

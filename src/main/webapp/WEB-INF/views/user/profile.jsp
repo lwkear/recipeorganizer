@@ -20,13 +20,15 @@
 	<spring:bind path="userProfile.avatar"><c:set var="avatarError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">	
-		<c:if test="${not empty warningMaint}">
-			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
-		</c:if>
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
+			<c:if test="${not empty warningMaint}">
+				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+			</c:if>
 			<div class="page-header"> 		
 				<h3><spring:message code="profile.title"></spring:message></h3>
 			</div>
+		</div>
+		<div class="col-sm-12">
 			<div class="row">
 				<form:form name="profileForm" id="profileForm" role="form" method="post" onsubmit="return checkAvatarOptions()" modelAttribute="userProfile" enctype="multipart/form-data">
 					<input type="text" id="avatarErr" value="${avatarError}" style="display:none"></input>

@@ -23,12 +23,12 @@
 			<div class="row">
 				<div class="col-sm-6 col-sm-offset-3">
 					<br>
-					<h4><spring:message code="home.description2"></spring:message></h4>
+					<h4 style="color:white"><spring:message code="home.description2"></spring:message></h4>
 					<br>
-					<h4><spring:message code="home.description3"></spring:message>
+					<h4 style="color:white"><spring:message code="home.description3"></spring:message>
 					<spring:message code="home.description4"></spring:message></h4>
 					<br>
-					<h4><spring:message code="home.description5"></spring:message></h4>
+					<h4 style="color:white"><spring:message code="home.description5"></spring:message></h4>
 					<br>			
 				</div>
 			</div>

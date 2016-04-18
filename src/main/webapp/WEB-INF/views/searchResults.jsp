@@ -20,10 +20,10 @@
 <%@include file="common/nav.jsp" %>	
 
 	<div class="container container-white">	
-		<c:if test="${not empty warningMaint}">
-			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
-		</c:if>
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
+			<c:if test="${not empty warningMaint}">
+				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+			</c:if>
 			<div class="page-header"> 		
 				<h3><spring:message code="title.searchresultsfor"></spring:message> "${searchTerm}"</h3>
 			</div>

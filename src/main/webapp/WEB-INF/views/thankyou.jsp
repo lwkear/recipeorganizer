@@ -24,7 +24,7 @@
 					<br>
 					<h4><spring:message code="thankyou.description2"></spring:message></h4>
 					<br>
-					<h4><spring:message code="thankyou.description3"></spring:message></h4>
+					<h4><spring:message code="thankyou.description3" arguments="${properties['company.feedback.email']}"></spring:message></h4>
 					<br>			
 				</div>
 			</div>

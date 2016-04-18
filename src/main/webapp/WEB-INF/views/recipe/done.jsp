@@ -16,7 +16,7 @@
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">
-		<div class="col-sm-12">
+		<div class="col-sm-12 title-bar">
 			<div class="page-header">
 				<c:if test="${not empty returnLabel}">
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>

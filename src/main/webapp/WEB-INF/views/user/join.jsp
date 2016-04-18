@@ -13,10 +13,12 @@
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
 			<div class="page-header"> 		
 				<h3><spring:message code="account.join.title"></spring:message></h3>
-			</div>			
+			</div>
+		</div>
+		<div class="col-sm-12">
 			<div class="row">
 				<div class="form-group col-sm-6 col-sm-offset-3 text-center"><spring:message code="account.join.message1"></spring:message></div>
 				<div class="form-group col-sm-6 col-sm-offset-3 text-center"><spring:message code="account.join.message2"></spring:message></div>

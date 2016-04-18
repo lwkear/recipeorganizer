@@ -15,10 +15,12 @@
 	<spring:bind path="userEmail.email" htmlEscape="false"><c:set var="emailError">${status.errorMessage}</c:set></spring:bind>
 	
 	<div class="container container-white">	
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
 			<div class="page-header"> 		
 				<h3><spring:message code="password.title"></spring:message></h3>
-			</div>			
+			</div>
+		</div>
+		<div class="col-sm-12">			
 			<div class="row">
 				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
 					<spring:message code="user.password.resetInstructions"></spring:message>

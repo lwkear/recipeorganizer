@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.joda.time.DateTime;
@@ -81,6 +83,7 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.security.LoginAttemptService;
 import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
@@ -107,6 +110,8 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 	@Autowired
 	private UserSecurityService userSecurityService;
+	@Autowired
+	private LoginAttemptService loginAttemptService;
 	@Autowired
 	private RecipeService recipeService;
 	@Autowired
@@ -153,7 +158,7 @@ public class UserController {
 
 	@MaintAware
 	@RequestMapping(value = "user/loginError", method = RequestMethod.GET)
-	public ModelAndView handleLoginError(RedirectAttributes redir, HttpServletRequest request, Locale locale) {
+	public ModelAndView handleLoginError(RedirectAttributes redir, HttpServletRequest request, HttpSession session, Locale locale) {
 		logger.info("user/loginError GET");
 	
 		String authExClass = "";
@@ -163,6 +168,13 @@ public class UserController {
 		if (authEx != null) {
 			authExClass = authEx.getClass().getSimpleName();
 			msg = messages.getMessage("exception." + authExClass, null, "Invalid login", locale);
+			if (ExceptionUtils.indexOfThrowable(authEx, BadCredentialsException.class) != -1) {
+				String userName = (String) session.getAttribute("LAST_USERNAME");
+				if (userName != null) {
+					int attempts = loginAttemptService.getAttempts(userName);
+					redir.addFlashAttribute("attempts", attempts);
+				}
+			}
 	    }
 	    
 		ModelAndView mv = new ModelAndView("user/login");

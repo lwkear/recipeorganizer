@@ -28,13 +28,15 @@
 	</spring:bind>
 
 	<div class="container container-white">	
-		<c:if test="${not empty warningMaint}">
-			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
-		</c:if>
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
+			<c:if test="${not empty warningMaint}">
+				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+			</c:if>
 			<div class="page-header"> 		
 				<h3><spring:message code="newpswd.title"></spring:message></h3>
 			</div>
+		</div>
+		<div class="col-sm-12">
 			<div class="row">
 				<form:form name="formWithPswd" id="formWithPswd" role="form" modelAttribute="newPasswordDto" method="post">
 					<div class="col-sm-12" id="pwd-container">

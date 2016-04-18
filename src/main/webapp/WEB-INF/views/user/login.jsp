@@ -13,13 +13,15 @@
 <%@include file="../common/nav.jsp" %>
 
 	<div class="container container-white">	
-		<c:if test="${not empty warningMaint}">
-			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
-		</c:if>
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
+			<c:if test="${not empty warningMaint}">
+				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+			</c:if>
 			<div class="page-header"> 		
 				<h3><spring:message code="login.title"></spring:message></h3>
-			</div>			
+			</div>
+		</div>
+		<div class="col-sm-12">
 			<div class="row">
 				<form name="loginForm" action="<c:url value='/user/login'/>" method="post">
 					<div class="col-sm-12">
@@ -56,7 +58,15 @@
 			        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
 						<button class="btn btn-primary" type="submit" name="submit"><spring:message code="common.submit"></spring:message></button>
 	        		</div>
-			        <div class="col-sm-12 spacer-vert-lg text-center">
+	        		<c:if test="${attempts > 2}">
+	        			<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs text-center">
+	        				<div><spring:message code="login.assit" 
+	        					arguments="${properties['company.support.account.email']}, ${properties['company.phonenumber']}, ${properties['company.hours']}">
+	        					</spring:message>
+	        				</div>
+	        			</div>
+	        		</c:if>
+			        <div class="col-sm-12 spacer-vert-md text-center">
 			        	<div><spring:message code="login.notamemebr"></spring:message></div>
 			        </div>
 			        <div class="col-sm-12 spacer-vert-xs text-center">

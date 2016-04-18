@@ -17,10 +17,12 @@
 	<spring:bind path="maintenanceDto.emergencyDuration"><c:set var="emergencyDurationError">${status.errorMessage}</c:set></spring:bind>
 
 	<div class="container container-white">
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
 			<div class="page-header"> 		
 				<h3><spring:message code="maintenance.title"></spring:message></h3>
 			</div>
+		</div>
+		<div class="col-sm-12">
 			<form:form class="form-horizontal" role="form" method="post" modelAttribute="maintenanceDto">
 			<div class="col-sm-12">
 				<div class="text-center bold-maroon"><h5>${maintWindow}</h5></div>

@@ -12,7 +12,7 @@ import com.google.common.cache.LoadingCache;
 @Service
 public class LoginAttemptService {
 
-    private final int MAX_PASSWORD_ATTEMPT = 3;
+    private final int MAX_PASSWORD_ATTEMPT = 5;
     private final int PASSWORD_EXPIRATION_MINUTES = 1;
     private LoadingCache<String, Integer> badPasswordCache;
 	
@@ -46,5 +46,13 @@ public class LoginAttemptService {
         } catch (final ExecutionException e) {
             return false;
         }
+    }
+    
+    public int getAttempts(final String key) {
+    	try {
+			return badPasswordCache.get(key);
+		} catch (ExecutionException e) {
+			return 0;
+		}
     }
 }

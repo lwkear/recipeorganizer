@@ -21,20 +21,20 @@
 		<div class="col-sm-12">
 			<h4><spring:message code="contact.account"></spring:message></h4>
 			<div>
-				<spring:message code="contact.account.question"></spring:message>
+				<spring:message code="contact.account.question" arguments="${properties['company.support.account.email']}"></spring:message>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.howto"></spring:message></h4>
 			<div>
 				<spring:message code="contact.howto.readFAQ"></spring:message>
-				<spring:message code="contact.howto.question"></spring:message>
+				<spring:message code="contact.howto.question" arguments="${properties['company.support.website.email']}"></spring:message>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.technical"></spring:message></h4>
 			<div>
-				<spring:message code="contact.technical.question"></spring:message>
+				<spring:message code="contact.technical.question" arguments="${properties['company.support.technical.email']}"></spring:message>
 				<spring:message code="contact.technical.detail"></spring:message>
 			</div>
 		</div>
@@ -42,7 +42,7 @@
 			<h4><spring:message code="contact.feedback"></spring:message></h4>
 			<div>
 				<spring:message code="contact.feedback.letusknow"></spring:message>
-				<spring:message code="contact.feedback.suggestions"></spring:message>
+				<spring:message code="contact.feedback.suggestions" arguments="${properties['company.feedback.email']}"></spring:message>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-md text-center spacer-vert-md">
@@ -50,7 +50,7 @@
 				<spring:message code="contact.response"></spring:message>
 			</div>
 			<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs">
-				<spring:message code="contact.helpdesk"></spring:message>
+				<spring:message code="contact.helpdesk" arguments="${properties['company.phonenumber']}"></spring:message>
 				<spring:message code="contact.hours"></spring:message>
 			</div>
 		</div>

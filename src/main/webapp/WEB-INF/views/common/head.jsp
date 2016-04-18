@@ -30,12 +30,11 @@
 <link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.structure.min.css" />" rel="stylesheet">
 	
 <!-- Bootstrap -->	
-<%-- <link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/select2/select2.css" />" rel="stylesheet"> --%>
 
-<link href="<c:url value="/resources/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.min.css" />" rel="stylesheet">
+<%-- <link href="<c:url value="/resources/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.min.css" />" rel="stylesheet"> --%>
 <link href="<c:url value="/resources/selectize/css/selectize.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/selectize/css/selectize.bootstrap3.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/bootstrap-multiselect/css/bootstrap-multiselect.css" />" rel="stylesheet">

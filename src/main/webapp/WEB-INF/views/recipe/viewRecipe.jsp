@@ -30,10 +30,10 @@
 </c:if>
 
 	<div class="container container-white">	
-		<c:if test="${not empty warningMaint}">
-			<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
-		</c:if>
-	 	<div class="col-sm-12">
+	 	<div class="col-sm-12 title-bar">
+			<c:if test="${not empty warningMaint}">
+				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
+			</c:if>
 			<div class="page-header">
 				<c:if test="${not empty returnLabel}">
 					<h5><a class="btn btn-link btn-xs" href="${returnUrl}"><spring:message code="${returnLabel}"></spring:message></a></h5>
@@ -132,6 +132,8 @@
 					</div>
 				</c:if>				
 			</div>
+		</div>
+		<div class="col-sm-12">
 							
 			<div>
 			

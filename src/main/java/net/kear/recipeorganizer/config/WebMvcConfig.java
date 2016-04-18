@@ -20,14 +20,18 @@ import net.kear.recipeorganizer.webflow.RecipeFlowHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -66,6 +70,7 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @PropertySources(value={@PropertySource("classpath:email.properties"),
 						@PropertySource("classpath:filedir.properties"),
 						@PropertySource("classpath:solr.properties")})
+						/*@PropertySource("classpath:company.properties")})*/
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -131,6 +136,22 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 	
 	/*** view configuration ***/
+	/*@Bean
+	public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
+		PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+		Resource[] resources = new ClassPathResource[] { new ClassPathResource("company.properties") }; 
+		configurer.setLocations(resources);
+		return configurer;
+	}*/
+	
+	@Bean
+	public PropertiesFactoryBean properties() {
+		PropertiesFactoryBean bean = new PropertiesFactoryBean();
+		Resource resource = new ClassPathResource("company.properties");
+		bean.setLocation(resource);
+		return bean;
+	}
+	
 	@Bean
     public InternalResourceViewResolver viewResolver() {
 		logger.debug("InternalResourceViewResolver");
@@ -138,6 +159,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".jsp");
+        resolver.setExposeContextBeansAsAttributes(true);
+        resolver.setExposedContextBeanNames("properties");
         return resolver;
     }
 	
