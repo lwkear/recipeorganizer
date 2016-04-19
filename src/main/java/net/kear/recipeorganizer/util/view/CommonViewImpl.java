@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -27,6 +28,8 @@ public class CommonViewImpl implements CommonView {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	@Autowired
+    private Environment env;
 	@Autowired
 	private MessageSource messages;
 	@Autowired
@@ -45,8 +48,10 @@ public class CommonViewImpl implements CommonView {
 
 		//default exception
 		String msgCode = "exception." + ex.getClass().getSimpleName();
+    	Object[] obj = new Object[] {null};
+    	obj[0] = (Object) env.getProperty("company.email.support.account");
 		
-		String title = messages.getMessage("exception.title.error", null, "Error", locale);
+		String title = messages.getMessage("exception.title.error", obj, "Error", locale);
 		List<String> errorMsgs = new ArrayList<String>();
 		errorMsgs.add(messages.getMessage(msgCode, null, ex.getClass().getSimpleName(), locale));
 		
@@ -67,7 +72,9 @@ public class CommonViewImpl implements CommonView {
 			authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
 		}
 
-		String title = messages.getMessage("exception.title.systemUnavailable", null, "System not available", locale);
+		Object[] obj = new Object[] {null};
+    	obj[0] = (Object) env.getProperty("company.email.support.account");
+		String title = messages.getMessage("exception.title.systemUnavailable", obj, "System not available", locale);
 		
 		List<String> errorMsgs = new ArrayList<String>();
 		errorMsgs.add(messages.getMessage("exception.databaseDown", null, "", locale));

@@ -18,8 +18,10 @@ import javax.validation.constraints.Size;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -105,6 +107,8 @@ public class UserController {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
+    private Environment env;
+	@Autowired
 	private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -144,6 +148,8 @@ public class UserController {
 	private PasswordEmail passwordEmail; 
 	@Autowired
 	private AccountChangeEmail accountChangeEmail; 
+	@Autowired
+	PropertiesFactoryBean properties;
 	
     /*********************/
     /*** Login handler ***/
@@ -166,8 +172,13 @@ public class UserController {
 		AuthenticationException authEx = (AuthenticationException)request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 
 		if (authEx != null) {
+			//many security messages include the email.support.account argument, so just get the property and pass it to all messages 
+			Object[] obj = new Object[] {null};
+        	obj[0] = (Object) env.getProperty("company.email.support.account");
+			
 			authExClass = authEx.getClass().getSimpleName();
-			msg = messages.getMessage("exception." + authExClass, null, "Invalid login", locale);
+			msg = messages.getMessage("exception." + authExClass, obj, "Login error", locale);
+			
 			if (ExceptionUtils.indexOfThrowable(authEx, BadCredentialsException.class) != -1) {
 				String userName = (String) session.getAttribute("LAST_USERNAME");
 				if (userName != null) {
@@ -312,9 +323,11 @@ public class UserController {
 			throw new VerificationException(ex);
 		}
         
-        if (verificationToken == null) {
+		Object[] obj = new Object[] {null};
+        if (verificationToken == null) {        	
+        	obj[0] = (Object) env.getProperty("company.email.support.account");
         	String msg = messages.getMessage("user.register.invalidToken1", null, "Invalid token", locale) + 
-        				 messages.getMessage("user.register.invalidToken2", null, "Invalid token", locale);
+        				 messages.getMessage("user.register.invalidToken2", obj, "Invalid token", locale);
         	redir.addFlashAttribute("message", msg);
         	redir.addFlashAttribute("register", true);
         	mv.setViewName("redirect:/user/invalidToken");

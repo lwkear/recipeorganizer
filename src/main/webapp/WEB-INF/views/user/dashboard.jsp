@@ -52,7 +52,7 @@
 				<div class="col-sm-4">
 					<h5><strong><spring:message code="dashboard.recipessubmitted"></spring:message></strong>&nbsp;
 						<span class="bold-maroon">${recipeCount}</span></h5>
-					<h5><strong><spring:message code="dashboard.viewcount1"></spring:message></strong>&nbsp;
+					<h5><strong><spring:message code="dashboard.viewcount1" arguments=""></spring:message></strong>&nbsp;
 						<span class="bold-maroon">${viewCount}</span>&nbsp;
 						<strong><spring:message code="dashboard.viewcount2"></spring:message></strong></h5>
 				</div>

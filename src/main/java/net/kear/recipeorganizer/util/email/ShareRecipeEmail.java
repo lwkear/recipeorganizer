@@ -8,6 +8,8 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,6 +29,9 @@ public class ShareRecipeEmail extends EmailMessage {
 	private String userMessage;
 	private String userFirstName;
 
+	@Autowired
+    private Environment env;
+	
 	public ShareRecipeEmail() {
 		super();
 	}
@@ -50,7 +55,7 @@ public class ShareRecipeEmail extends EmailMessage {
 		setMsgText(textCodes);
 		setSubject(getMsgText("email.recipe.title"));
 		
-		Object[] obj = new String[1];
+		Object[] obj = new String[] {null, null};
 
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("recipeTitle", getMsgText("email.recipe.title"));		
@@ -65,12 +70,14 @@ public class ShareRecipeEmail extends EmailMessage {
 		map.put("noteLabel", getArgMessage("email.recipe.noteLabel", obj));
 		map.put("userMessage", userMessage);
 		obj[0] = getAppUrl() + "/contact";
+		obj[1] = (Object) env.getProperty("company.email.support.account");
 		map.put("problems", getArgMessage("email.recipe.problems", obj));
 		map.put("signup", getMsgText("email.recipe.signup"));
 		map.put("nocost", getMsgText("email.recipe.nocost"));
 		map.put("folks", getMsgText("email.common.folks"));
 		DateTime now = new DateTime();
 		obj[0] = now.toString("yyyy");
+		obj[1] = null;
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
 		Writer out = new StringWriter();
 		

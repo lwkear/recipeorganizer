@@ -84,7 +84,7 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 		
 		//*** see AuthenticationException javadoc
 		//AccountStatusException - Base class for authentication exceptions which are caused by a particular user account status (locked, disabled etc).
-		//	    AccountExpiredException, CredentialsExpiredException, DisabledException, LockedException
+		//	AccountExpiredException, CredentialsExpiredException, DisabledException, LockedException
 		//AuthenticationCredentialsNotFoundException -  Thrown if an authentication request is rejected because there is no Authentication object in the SecurityContext.
 		//AuthenticationServiceException - Thrown if an authentication request could not be processed due to a system problem. This might be thrown if a backend authentication repository is unavailable, for example.
 		//BadCredentialsException - Thrown if an authentication request is rejected because the credentials are invalid. For this exception to be thrown, it means the account is neither locked nor disabled.

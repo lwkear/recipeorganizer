@@ -20,11 +20,11 @@
 			<div class="row">
 				<div class="col-sm-6 col-sm-offset-3">
 					<br>
-					<h4><spring:message code="thankyou.description1"></spring:message></h4>
+					<h4 style="color:white"><spring:message code="thankyou.description1"></spring:message></h4>
 					<br>
-					<h4><spring:message code="thankyou.description2"></spring:message></h4>
+					<h4 style="color:white"><spring:message code="thankyou.description2"></spring:message></h4>
 					<br>
-					<h4><spring:message code="thankyou.description3" arguments="${properties['company.feedback.email']}"></spring:message></h4>
+					<h4 style="color:white"><spring:message code="thankyou.description3" arguments="${properties['company.email.feedback']}"></spring:message></h4>
 					<br>			
 				</div>
 			</div>

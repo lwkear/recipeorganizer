@@ -99,10 +99,10 @@ public class HomeController {
 	private UserMessageService userMessageService;
 
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
-	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
+	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("home GET");
 
-		Date createTime = new Date(session.getCreationTime());
+/*		Date createTime = new Date(session.getCreationTime());
 		Date lastAccess = new Date(session.getLastAccessedTime());
 		int maxInactive = session.getMaxInactiveInterval();
 		String sessID = session.getId();
@@ -138,6 +138,8 @@ public class HomeController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("security context auth: " + auth.toString());
 		
+		logger.debug("locale: " + locale.getDisplayLanguage()); 
+*/		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		

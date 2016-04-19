@@ -25,9 +25,9 @@
 			</div>
 		</div>
 	 	<div class="col-sm-12 text-center">
-			<h4><spring:message code="recipe.save.message1"></spring:message><em>&nbsp;${recipe.name}</em>
+			<h4><spring:message code="recipe.save.message1" arguments="${recipe.name}"></spring:message>
 				<c:choose>
-					<c:when test="${update}"><spring:message code="recipe.update.message1"></spring:message></c:when>
+					<c:when test="${update}"><spring:message code="recipe.update.message"></spring:message></c:when>
 					<c:otherwise><spring:message code="recipe.save.message2"></spring:message></c:otherwise>
 				</c:choose>
 			</h4>
@@ -49,10 +49,9 @@
 		</div>
 		<c:if test="${recipe.allowShare and recipe.copyrighted}">
 			<div class="col-sm-6 col-sm-offset-3 text-center spacer-vert-sm">
-				<p class="std-maroon"><spring:message code="recipe.done.copyright1"></spring:message>&nbsp;${recipe.source.type}
-					<spring:message code="recipe.done.copyright2"></spring:message>
-				<p class="std-maroon"><spring:message code="recipe.done.copyright3"></spring:message>
-				<p class="std-maroon"><spring:message code="recipe.done.copyright4"></spring:message>				
+				<p class="std-maroon"><spring:message code="recipe.done.copyright1" arguments="${recipe.source.type}"></spring:message>
+				<p class="std-maroon"><spring:message code="recipe.done.copyright2"></spring:message>
+				<p class="std-maroon"><spring:message code="recipe.done.copyright3"></spring:message>				
 			</div>
 		</c:if>
 		<c:if test="${update}">			

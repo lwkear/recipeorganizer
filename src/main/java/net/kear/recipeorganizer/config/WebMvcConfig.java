@@ -27,7 +27,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -69,8 +68,8 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @Configuration
 @PropertySources(value={@PropertySource("classpath:email.properties"),
 						@PropertySource("classpath:filedir.properties"),
-						@PropertySource("classpath:solr.properties")})
-						/*@PropertySource("classpath:company.properties")})*/
+						@PropertySource("classpath:solr.properties"),
+						@PropertySource("classpath:company.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -136,14 +135,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 	
 	/*** view configuration ***/
-	/*@Bean
-	public static PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
-		PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-		Resource[] resources = new ClassPathResource[] { new ClassPathResource("company.properties") }; 
-		configurer.setLocations(resources);
-		return configurer;
-	}*/
-	
+	/** load this file for access within .jsp's **/
 	@Bean
 	public PropertiesFactoryBean properties() {
 		PropertiesFactoryBean bean = new PropertiesFactoryBean();

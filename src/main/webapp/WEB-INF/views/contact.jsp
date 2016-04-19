@@ -21,20 +21,20 @@
 		<div class="col-sm-12">
 			<h4><spring:message code="contact.account"></spring:message></h4>
 			<div>
-				<spring:message code="contact.account.question" arguments="${properties['company.support.account.email']}"></spring:message>
+				<spring:message code="contact.account.question" arguments="${properties['company.email.support.account']}"></spring:message>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.howto"></spring:message></h4>
 			<div>
 				<spring:message code="contact.howto.readFAQ"></spring:message>
-				<spring:message code="contact.howto.question" arguments="${properties['company.support.website.email']}"></spring:message>
+				<spring:message code="contact.howto.question" arguments="${properties['company.email.support.website']}"></spring:message>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.technical"></spring:message></h4>
 			<div>
-				<spring:message code="contact.technical.question" arguments="${properties['company.support.technical.email']}"></spring:message>
+				<spring:message code="contact.technical.question" arguments="${properties['company.email.support.technical']}"></spring:message>
 				<spring:message code="contact.technical.detail"></spring:message>
 			</div>
 		</div>
@@ -42,15 +42,15 @@
 			<h4><spring:message code="contact.feedback"></spring:message></h4>
 			<div>
 				<spring:message code="contact.feedback.letusknow"></spring:message>
-				<spring:message code="contact.feedback.suggestions" arguments="${properties['company.feedback.email']}"></spring:message>
+				<spring:message code="contact.feedback.suggestions" arguments="${properties['company.email.feedback']}"></spring:message>
 			</div>
 		</div>
-		<div class="col-sm-12 spacer-vert-md text-center spacer-vert-md">
+		<div class="col-sm-12 spacer-vert-md spacer-vert-md text-center">
 			<div class="col-sm-6 col-sm-offset-3">
 				<spring:message code="contact.response"></spring:message>
 			</div>
-			<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs">
-				<spring:message code="contact.helpdesk" arguments="${properties['company.phonenumber']}"></spring:message>
+			<div class="col-sm-6 col-sm-offset-3 spacer-vert-sm small">
+				<spring:message code="contact.helpdesk" arguments="${properties['company.phonenumber']}"></spring:message><br>
 				<spring:message code="contact.hours"></spring:message>
 			</div>
 		</div>

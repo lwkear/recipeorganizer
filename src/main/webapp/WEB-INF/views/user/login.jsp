@@ -61,7 +61,7 @@
 	        		<c:if test="${attempts > 2}">
 	        			<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs text-center">
 	        				<div><spring:message code="login.assit" 
-	        					arguments="${properties['company.support.account.email']}, ${properties['company.phonenumber']}, ${properties['company.hours']}">
+	        					arguments="${properties['company.email.support.account']}, ${properties['company.phonenumber']}, ${properties['company.hours']}">
 	        					</spring:message>
 	        				</div>
 	        			</div>

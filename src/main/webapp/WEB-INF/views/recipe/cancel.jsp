@@ -22,7 +22,8 @@
 			<h4><spring:message code="recipe.cancel.message1"></spring:message></h4>
 		</div>
 	 	<div class="col-sm-6 col-sm-offset-3 text-center spacer-vert-sm">
-			<h5 class="text-center"><spring:message code="recipe.cancel.message2"></spring:message>&nbsp;&nbsp;<spring:message code="recipe.cancel.message3"></spring:message></h5>
+			<h5 class="text-center"><spring:message code="recipe.cancel.message2"></spring:message>&nbsp;&nbsp;
+				<spring:message code="recipe.cancel.message3" arguments="${properties['company.email.feedback']}"></spring:message></h5>
 		</div>
 	</div>
 

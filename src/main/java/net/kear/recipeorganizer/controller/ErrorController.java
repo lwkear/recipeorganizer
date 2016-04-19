@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,8 @@ public class ErrorController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());	
 
+	@Autowired
+    private Environment env;
 	@Autowired
 	private MessageSource messages;
 	@Autowired
@@ -54,8 +57,8 @@ public class ErrorController {
 	/**********************/
 	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
 	public ModelAndView accessDeniedError() {
-		
-		return commonView.getStandardErrorPage(new AccessDeniedException(null));		
+		String msg = env.getProperty("company.email.support.account");
+		return commonView.getStandardErrorPage(new AccessDeniedException(msg));		
 	}
 
 	@RequestMapping(value = "/expiredSession", method = RequestMethod.GET)
