@@ -60,6 +60,7 @@ function removeFavorite(userId, recipeId, name) {
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {userId : userId, recipeId : recipeId}, postRemoveFavorite);
 	$('#messageDlg').modal({backdrop: 'static', keyboard: true, show: false});
+	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
 	$("#messageDlg").on('hidden.bs.modal', function(){$("#yesBtn").unbind('click');})
 	$("#messageDlg").modal('show');
 } 
@@ -123,6 +124,8 @@ function recipeAction(toUserId, recipeId, name) {
 	$('#reasons').multiselect('updateButtonText');
 	$('#reasons').multiselect('disable');
 	$("#submitActionMessage").one('click', {toUserId : toUserId, recipeId : recipeId, name : name}, postActionMessage);
+	$('#recipeActionDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#recipeActionDlg').on('shown.bs.modal', function () {$(this).find('#action').focus()})
 	$("#recipeActionDlg").on('hidden.bs.modal', function(){$("#submitActionMessage").unbind('click');})
 	$("#recipeActionDlg").modal('show');
 } 
@@ -171,6 +174,9 @@ $(function() {
 	});
 	
 	$('#recipeList').DataTable({
+		searching: false,
+		lengthChange: false,
+		responsive : true,
 		language : {
 	    	emptyTable:     getMessage('recipe.table.emptyTable'),
 		    info:           getMessage('recipe.table.info'),

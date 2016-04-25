@@ -8,15 +8,17 @@ function emailRecipe(fromUserId, toUserId, toUserFirstName, toUserLastName, toUs
 	var msg = getMessage('share.recipient.to.label');
 	var fmt = String.format(msg, toUserFirstName, toUserLastName);
 	$('#emailToLabel').html(fmt);
-	$('#emailMsg').val("");
+	$('#emailRecipeMsg').val("");
 	$("#submitEmail").one('click', 
 			{fromUserId:fromUserId, recipeId:recipeId, recipeName:recipeName, toUserId:toUserId, toUserFirstName:toUserFirstName, toUserLastName:toUserLastName, toUserEmail:toUserEmail},
 			postEmail);
+	$('#emailRecipeDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#emailRecipeDlg').on('shown.bs.modal', function () {$(this).find('#emailRecipeMsg').focus()})	
 	$("#emailRecipeDlg").on('hidden.bs.modal', function(){$("#submitEmail").unbind('click');})
 	$("#emailRecipeDlg").modal('show');
 }
 
-//request server to update the note
+//request server to send the email
 function postEmail(e) {
 	console.log('postEmail: viewer=' + e.data.fromUserId + ' recipe='+ e.data.recipeId);
 
@@ -99,6 +101,8 @@ function sendMessage(fromUserId, toUserId, toUserFirstName, toUserLastName, reci
 	$("#messageTo").html(msg);
 	$('#message').val("");
 	$("#submitMessage").one('click', {fromUserId : fromUserId, toUserId : toUserId, recipeId : recipeId, subject : subject}, postMessage);
+	$('#userMessageDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#userMessageDlg').on('shown.bs.modal', function () {$(this).find('#message').focus()})
 	$("#userMessageDlg").on('hidden.bs.modal', function(){$("#submitMessage").unbind('click');})
 	$("#userMessageDlg").modal('show');
 } 
@@ -159,6 +163,8 @@ $(function() {
     		{width: "33%", targets: 4},
     		{width: "4%", targets: [5,6,7]}
     	],
+		searching: false,
+		lengthChange: false,
     	autoWidth: false,
     	responsive : true,
     	order: [1,'desc'],

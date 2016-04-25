@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
@@ -14,7 +15,6 @@ import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
-import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,13 +75,13 @@ public class SolrUtilImpl implements SolrUtil {
 		SolrQuery query = new SolrQuery();
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
-		query.setParam("qf", "name^2 or catname or ingredname or description^1 or background or source or notes or tag");
+		query.setParam("qf", "name^2 or ingredname or description^1 or background or source or notes or tag");
 		query.setParam("fl", "id, userid, name, description, photo, allowshare, status, score, catid, srctype");
 		query.addFilterQuery(filterStr);
 		query.setParam("start", "0");
 		query.setParam("rows", "100");
 		query.setHighlight(true);
-		query.addHighlightField("name or description or catname or ingredname or background or source or notes or tag");
+		query.addHighlightField("name or description or ingredname or background or source or notes or tag");
 		query.setHighlightSimplePre("<strong>");
 		query.setHighlightSimplePost("</strong>");
 		query.setFacet(true);
@@ -108,9 +108,10 @@ public class SolrUtilImpl implements SolrUtil {
 	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
 	    	int stat = (Integer)doc.getFieldValue("status");
 	    	Long catId = (Long)doc.getFieldValue("catid");
-	    	String source = (String)doc.getFieldValue("srctype");
-	    	if (source == null)
-	    		source = Source.TYPE_NONE;
+	    	String src = (String)doc.getFieldValue("srctype");
+	    	SourceType source = SourceType.NONE;
+	    	if (!StringUtils.isBlank(src))
+	    		source = SourceType.valueOf(src);
 	    	
 	    	boolean addResult = true;
 
@@ -194,9 +195,10 @@ public class SolrUtilImpl implements SolrUtil {
 	    	int stat = (Integer)doc.getFieldValue("status");
 	    	ApprovalStatus status = ApprovalStatus.values()[stat];
 	    	String catName = (String)doc.getFieldValue("catname");
-	    	String source = (String)doc.getFieldValue("srctype");
-	    	if (source == null)
-	    		source = Source.TYPE_NONE;
+	    	String src = (String)doc.getFieldValue("srctype");
+	    	SourceType source = SourceType.NONE;
+	    	if (!StringUtils.isBlank(src))
+	    		source = SourceType.valueOf(src);
 	    	
 	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, source, allowShare, status);
     		resultsList.add(rslts);

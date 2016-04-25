@@ -29,6 +29,7 @@ function selectMadeDate(viewerId, recipeId) {
 	$('#madeRight').tooltip("hide");
 	$('#madeLeft').tooltip("hide");
 	$("#submitMadeDate").one('click', {viewerId : viewerId, recipeId : recipeId}, postMadeDate);
+	$('#madeDateDlg').modal({backdrop: 'static', keyboard: false, show: false});
 	$("#madeDateDlg").on('hidden.bs.modal', function(){$("#submitMadeDate").unbind('click');})
 	$("#madeDateDlg").modal('show');
 } 
@@ -78,6 +79,8 @@ function addNote(recipeNote) {
 	$('#noteRight').tooltip("hide");
 	$('#noteLeft').tooltip("hide");
 	$("#submitNote").one('click', {recipeNote: recipeNote}, postNote);
+	$('#noteDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#noteDlg').on('shown.bs.modal', function () {$(this).find('#inputNote').focus()})
 	$("#noteDlg").on('hidden.bs.modal', function(){$("#submitNote").unbind('click');})
 	$("#noteDlg").modal('show');
 } 
@@ -130,6 +133,8 @@ function addComment(viewerId, recipeId) {
 	$('#userCommentErrMsg').html("");
 	$('#commentBtn').tooltip("hide");
 	$("#submitComment").one('click', {viewerId : viewerId, recipeId : recipeId}, postComment);
+	$('#commentDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#commentDlg').on('shown.bs.modal', function () {$(this).find('#userComment').focus()})
 	$("#commentDlg").on('hidden.bs.modal', function(){$("#submitComment").unbind('click');})
 	$("#commentDlg").modal('show');
 }
@@ -260,6 +265,8 @@ function shareRecipe(viewerId, recipeId, recipeName) {
 	$('#recipientEmailErrMsg').html("");
 	$("#submitShare").on('click', {viewerId : viewerId, recipeId : recipeId, recipeName : recipeName}, postShare);
 	$("#cancelShare").on('click', function() {$("#shareRecipeDlg").modal('hide');});
+	$('#shareRecipeDlg').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#shareRecipeDlg').on('shown.bs.modal', function () {$(this).find('#recipientName').focus()})
 	$("#shareRecipeDlg").on('hidden.bs.modal', function(){$("#submitShare").unbind('click');})
 	$("#shareRecipeDlg").modal('show');
 }
@@ -336,15 +343,19 @@ $(function() {
 		title: getTitle(),
 		content: getContent()
 	});
-	
-	$.datepicker.setDefaults({
-		dateFormat: "mm/dd/yy",
-		defaultDate: null,
-	});
+
+	var locale = $('#localeCode').val();
+	$.datepicker.setDefaults(
+		$.extend(
+			{defaultDate: null},
+			$.datepicker.regional[locale]
+		)
+	);
 	$('#madeDate').datepicker();
 
 	$(document)
 		.on('click', '#htmlPrint', function(e) {
+			$('#htmlPrint').tooltip("hide");
 			//a jasper report contains tables; if none are found then the report did not load
 			var len = $("#iframerpt").contents().find("body > table").length;
 			if (len > 0)

@@ -12,12 +12,42 @@
 	<tag>
 		<description>Custom tag for displaying an i18n name for the ApprovalStatus enum.</description>
 		<name>approval</name>
-		<tag-class>net.kear.recipeorganizer.enums.StatusEnumTag</tag-class>
+		<tag-class>net.kear.recipeorganizer.enums.ApprovalStatusTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<description>The ApprovalStatus (key) to use when looking up the message.
 			If status is not provided, the text attribute will be used.</description>
 			<name>status</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>Default text to output when a message for the given code
+			could not be found. If both text and code are not set, the tag will
+			output null.</description>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>The string to use when binding the result to the page,
+			request, session or application scope. If not specified, the result
+			gets outputted to the writer (i.e. typically directly to the JSP).</description>
+			<name>var</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>Custom tag for displaying an i18n name for the SourceType enum.</description>
+		<name>source</name>
+		<tag-class>net.kear.recipeorganizer.enums.SourceTypeTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>The SourceType (key) to use when looking up the message.
+			If type is not provided, the text attribute will be used.</description>
+			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

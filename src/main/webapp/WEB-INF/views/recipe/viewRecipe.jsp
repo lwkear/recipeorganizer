@@ -147,7 +147,8 @@
 			</div>
 		</div>
 	</div>		
-	<div class="col-sm-12" style="display:none">
+	<!-- <div class="col-sm-12" style="display:none"> -->
+	<div class="col-sm-12">
 		<iframe id="iframerpt" name="iframerpt" width="100%" height="100%" src="<c:url value="/report/getHtmlRpt?uid=${userId}&rid=${recipe.id}"/>"></iframe>
 	</div>
 	<input type="hidden" id="userId" value="${recipe.user.id}"/>
@@ -176,7 +177,7 @@
 						</div>
 						<div class="form-group">
 							<label class="control-label" for="madeDate"><spring:message code="recipe.made.lastmade"></spring:message></label>&nbsp;
-							<span id="displayDate">${lastMade}</span>
+							<span id="displayDate"><fmt:formatDate type="date" value="${lastMade}" /></span>
 						</div>
 					</c:if>
 					<div class="form-group">
@@ -194,7 +195,7 @@
 </div>
 
 <!-- enter note dialog -->
-<div class="modal fade" id="noteDlg" role="dialog">
+<div class="modal" id="noteDlg" role="dialog">
 	<div class="modal-dialog modal-sm">
 	    <div class="modal-content">
 			<div class="modal-header">

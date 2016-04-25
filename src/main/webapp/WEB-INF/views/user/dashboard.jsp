@@ -46,7 +46,7 @@
 				<h5><strong><spring:message code="dashboard.membersince"></spring:message></strong>&nbsp;
 					<span class="bold-maroon"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></h5>
 				<h5><strong><spring:message code="dashboard.memberlevel"></spring:message></strong>&nbsp;
-					<span class="bold-maroon">${role.description}</span></h5>
+					<span class="bold-maroon"><spring:message code="roles.${role.name}"></spring:message></span></h5>
 			</div>
 			<c:if test="${(isAuthor || isEditor || isAdmin)}">
 				<div class="col-sm-4">

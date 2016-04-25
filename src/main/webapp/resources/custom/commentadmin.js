@@ -57,6 +57,8 @@ $(function() {
     		targets: [-1,-2],
     		orderable: false
     	}],
+		searching: false,
+		lengthChange: false,
 		language : {
 	    	emptyTable:     getMessage('commentadmin.table.emptyTable'),
 		    info:           getMessage('commentadmin.table.info'),

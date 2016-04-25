@@ -1,19 +1,20 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page import="net.kear.recipeorganizer.persistence.model.Source"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="net.kear.recipeorganizer.enums.SourceType"%>
 
 <div class="row">
 	<div class="col-sm-12">
 		<c:set var="backgroundplaceholder"><spring:message code="recipe.optional.background.placeholder"></spring:message></c:set>
 		<c:set var="tagsplaceholder"><spring:message code="recipe.optional.tags.placeholder"></spring:message></c:set>
 		<c:set var="notesplaceholder"><spring:message code="recipe.optional.notes.placeholder"></spring:message></c:set>
-		<input type="text" id="typeCookbook" value="${Source.TYPE_COOKBOOK}" style="display:none">
-		<input type="text" id="typeMagazine" value="${Source.TYPE_MAGAZINE}" style="display:none">
-		<input type="text" id="typeNewspaper" value="${Source.TYPE_NEWSPAPER}" style="display:none">
-		<input type="text" id="typePerson" value="${Source.TYPE_PERSON}" style="display:none">
-		<input type="text" id="typeWebsite" value="${Source.TYPE_WEBSITE}" style="display:none">
-		<input type="text" id="typeOther" value="${Source.TYPE_OTHER}" style="display:none">		
+		<input type="text" id="typeCookbook" value="${SourceType.COOKBOOK}" style="display:none">
+		<input type="text" id="typeMagazine" value="${SourceType.MAGAZINE}" style="display:none">
+		<input type="text" id="typeNewspaper" value="${SourceType.NEWSPAPER}" style="display:none">
+		<input type="text" id="typePerson" value="${SourceType.PERSON}" style="display:none">
+		<input type="text" id="typeWebsite" value="${SourceType.WEBSITE}" style="display:none">
+		<input type="text" id="typeOther" value="${SourceType.OTHER}" style="display:none">		
 		<div class="form-group col-sm-12">
 			<label class="control-label" for="inputBack"><spring:message code="recipe.optional.background"></spring:message></label>
 			<form:textarea class="form-control" rows="3" id="inputBack" placeholder="${backgroundplaceholder}" path="background"></form:textarea>
@@ -54,13 +55,7 @@
 				<div class="col-sm-2">
 					<form:select class="form-control col-sm-2 select-placeholder" id="inputSource" path="source.type" >
             			<form:option style="display:none" value=""><spring:message code="recipe.optional.source.select.placeholder"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_COOKBOOK}"><spring:message code="recipe.optional.source.select.cookbook"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_MAGAZINE}"><spring:message code="recipe.optional.source.select.magazine"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_NEWSPAPER}"><spring:message code="recipe.optional.source.select.newspaper"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_PERSON}"><spring:message code="recipe.optional.source.select.person"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_WEBSITE}"><spring:message code="recipe.optional.source.select.website"></spring:message></form:option>
-            			<form:option value="${Source.TYPE_OTHER}"><spring:message code="recipe.optional.source.select.other"></spring:message></form:option>
-            			<form:option value="None"><spring:message code="recipe.optional.source.select.none"></spring:message></form:option>
+            			<form:options items="${typeList}" itemValue="type" itemLabel="displayName" />
 					</form:select>
 				</div>
 				<div class="col-sm-5 srcGroup bookGroup <c:if test="${not empty cookbookError}">has-error</c:if>" style="display:none">
@@ -69,7 +64,7 @@
 					<span class="text-danger" id="cookbookErrMsg">${cookbookError}</span>
 				</div>
 				<div class="col-sm-1 srcGroup bookGroup <c:if test="${not empty cookbookPageError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup maxSize" id="cookbookPage" style="display:none" path="source.cookbookPage" value="0" 
+					<form:input type="text" class="form-control col-sm-1 srcGroup bookGroup maxSize" id="cookbookPage" style="display:none" path="source.cookbookPage" 
 						data-max="${sizeMap['Source.cookbookPage.max']}"/>
 					<span class="text-danger" id="cookbookPageErrMsg">${cookbookPageError}</span>
 				</div>
@@ -79,7 +74,9 @@
 					<span class="text-danger" id="magazineErrMsg">${magazineError}</span>
 				</div>
 				<div class="col-sm-3 srcGroup magGroup <c:if test="${not empty magazinePubdateError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-2 srcGroup magGroup" id="inputMagDate" style="display:none" path="source.magazinePubdate"/>
+					<form:input type="text" id="magDate" style="display:none" path="source.magazinePubdate"/>
+					<input type="text" id="altMagDate" style="display:none" />
+					<input type="text" class="form-control col-sm-2 srcGroup magGroup" id="magazineDate" style="display:none"/>
 					<span class="text-danger">${magazinePubdateError}</span>
 				</div>
 				<div class="col-sm-5 srcGroup newsGroup <c:if test="${not empty newspaperError}">has-error</c:if>" style="display:none">
@@ -88,7 +85,9 @@
 					<span class="text-danger" id="newspaperErrMsg">${newspaperError}</span>
 				</div>
 				<div class="col-sm-3 srcGroup newsGroup <c:if test="${not empty newspaperPubdateError}">has-error</c:if>" style="display:none">
-					<form:input type="text" class="form-control col-sm-2 srcGroup newsGroup" id="inputNewsDate" style="display:none" path="source.newspaperPubdate"/>
+					<form:input type="text" id="newsDate" style="display:none"  path="source.newspaperPubdate"/>
+					<input type="text" id="altNewsDate" style="display:none"/>
+					<input type="text" class="form-control col-sm-2 srcGroup newsGroup" id="newspaperDate" style="display:none"/>
 					<span class="text-danger">${newspaperPubdateError}</span>
 				</div>
 				<div class="col-sm-4 srcGroup personGroup <c:if test="${not empty personError}">has-error</c:if>" style="display:none">

@@ -20,13 +20,18 @@ function ingredRemoteFilter(data) {
     });
 };
 
-//no longer using the .json file of ingredients
-//var prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/ingredients.json', ingredPrefetchFilter);
+function measuresFile() {
+	var locale = $('#localeCode').val();
+	var jsonFile = '/recipeorganizer/resources/measures_' + locale.toUpperCase() + '.json';
+	return jsonFile;
+}
+
 var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
 var bhOpts = setBHOptions(20, ingredDatumToken, null, null, remoteOpts);
 var ingredBH = new Bloodhound(bhOpts);
 
-prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/measures.json', null);
+/*prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/measures.json', null);*/
+prefetchOpts = setBHPrefetchOpts(false, measuresFile(), null);
 bhOpts = setBHOptions(20, null, null, prefetchOpts, null);
 var measureBH = new Bloodhound(bhOpts);
 
@@ -222,8 +227,8 @@ $(function() {
 			    return letter.toUpperCase();
 			});
 		
-			//new entry - format the json for adding it to the database
-			var data = {"id":"0","name":desc,"reviewed":0};
+			//new entry - format the json for adding it to the database; default to english
+			var data = {"id":"0","name":desc,"reviewed":0,"lang":"en"};
 		
 			$.ajax({
 			    contentType: 'application/json',
@@ -249,3 +254,6 @@ $(function() {
 			})
 		})
 })
+
+
+/*["Cuiller à café","Cuillers à café","Cuiller à soupe","Cuillers à soupe""Milligram","Milligrams","Gram","Grams","Kilogram","Kilograms","Milliliter","Milliliters","Liter","Liters"]*/

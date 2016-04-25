@@ -13,23 +13,23 @@ import org.springframework.web.util.TagUtils;
 
 //NOTE: much of this was lifted from Spring's MessageTag implementation
 
-public class StatusEnumTag extends RequestContextAwareTag {
+public class SourceTypeTag extends RequestContextAwareTag {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String text;
 	private String var;
 	private String scope = TagUtils.SCOPE_PAGE;
-	private ApprovalStatus status;
+	private SourceType type;
 	
-	public StatusEnumTag() {}
+	public SourceTypeTag() {}
 	
-	public ApprovalStatus getStatus() {
-		return status;
+	public SourceType getType() {
+		return type;
 	}
 
-	public void setStatus(ApprovalStatus approvalStatus) {
-		this.status = approvalStatus;
+	public void setType(SourceType sourceType) {
+		this.type = sourceType;
 	}
 	
 	public void setText(String text) {
@@ -76,9 +76,9 @@ public class StatusEnumTag extends RequestContextAwareTag {
 			throw new JspTagException("No corresponding MessageSource found");
 		}
 
-		if (this.status != null || this.text != null) {
+		if (this.type != null || this.text != null) {
 
-			String code = "approvalstatus." + status.name().toLowerCase();
+			String code = "sourcetype." + type.name();
 			
 			if (this.text != null) {
 				// We have a fallback text to consider.

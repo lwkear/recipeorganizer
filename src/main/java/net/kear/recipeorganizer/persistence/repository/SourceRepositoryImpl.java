@@ -12,6 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.repository.SourceRepository;
 
@@ -26,29 +27,32 @@ public class SourceRepositoryImpl implements SourceRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<String> getSources(String searchStr, String type) {
+    public List<String> getSources(String searchStr, SourceType type) {
     	String field = "";
-    	if (type.equals(Source.TYPE_COOKBOOK))
+    	if (type == SourceType.COOKBOOK)
     		field = "cookbook";
     	else
-    	if (type.equals(Source.TYPE_MAGAZINE))
+    	if (type == SourceType.MAGAZINE)
     		field = "magazine";
     	else
-    	if (type.equals(Source.TYPE_NEWSPAPER))
+    	if (type == SourceType.NEWSPAPER)
     		field = "newspaper";
     	else
-    	if (type.equals(Source.TYPE_PERSON))
+    	if (type == SourceType.PERSON)
     		field = "person";
     	else
-    	if (type.equals(Source.TYPE_WEBSITE))
+    	if (type == SourceType.WEBSITE)
     		field = "websiteUrl";
     	else
+    	if (type == SourceType.OTHER)
+    		field = "other";
+    	else
     		return null;
-    		
+
     	Criteria criteria = getSession().createCriteria(Source.class)
-    		.add(Restrictions.ilike(field, searchStr, MatchMode.ANYWHERE))
-    		.setProjection(Projections.distinct(Projections.property(field).as("source")))
-    		.addOrder(Order.asc("source"));
+        		.add(Restrictions.ilike(field, searchStr, MatchMode.ANYWHERE))
+        		.setProjection(Projections.distinct(Projections.property(field).as("source")))
+        		.addOrder(Order.asc("source"));
     	
     	List<String> result = criteria.list();
     	return result;

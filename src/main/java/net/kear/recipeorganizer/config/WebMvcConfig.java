@@ -1,7 +1,6 @@
 package net.kear.recipeorganizer.config;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -10,6 +9,7 @@ import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
 import net.kear.recipeorganizer.enums.ApprovalReasonFormatter;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.report.ReportGenerator;
+import net.kear.recipeorganizer.resolver.CustomCookieLocaleResolver;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -46,7 +46,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -135,10 +134,10 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 	
 	/*** view configuration ***/
-	/** load this file for access within .jsp's **/
 	@Bean
 	public PropertiesFactoryBean properties() {
 		PropertiesFactoryBean bean = new PropertiesFactoryBean();
+		//make this file accessible in a jsp
 		Resource resource = new ClassPathResource("company.properties");
 		bean.setLocation(resource);
 		return bean;
@@ -151,8 +150,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         resolver.setViewClass(JstlView.class);
         resolver.setPrefix("/WEB-INF/views/");
         resolver.setSuffix(".jsp");
+        //required to access company.properties in a jsp
         resolver.setExposeContextBeansAsAttributes(true);
         resolver.setExposedContextBeanNames("properties");
+        //this allows webflow jsp's to access the request locale
+        resolver.setRequestContextAttribute("requestContext");
         return resolver;
     }
 	
@@ -198,6 +200,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		);
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(0);	//TODO: PRODUCTION: be sure to change this value in production
+        source.setFallbackToSystemLocale(false);
         return source;
     }
 
@@ -218,10 +221,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     }
 	
 	@Bean
-    public CookieLocaleResolver localeResolver() {
-		logger.debug("CookieLocaleResolver");
-		CookieLocaleResolver resolver = new CookieLocaleResolver();
-		resolver.setDefaultLocale(new Locale("en"));
+    public CustomCookieLocaleResolver localeResolver() {
+		logger.debug("CustomCookieLocaleResolver");
+		CustomCookieLocaleResolver resolver = new CustomCookieLocaleResolver();
 		return resolver;
 	}
 	
@@ -298,7 +300,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return generator;
 	}
 	
-	//TODO: GUI: create favicon
 	/*@Controller
     static class FaviconController {
         @RequestMapping("favicon.ico")

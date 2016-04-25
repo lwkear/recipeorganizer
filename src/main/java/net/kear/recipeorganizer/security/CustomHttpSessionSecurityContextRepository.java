@@ -39,12 +39,12 @@ public class CustomHttpSessionSecurityContextRepository extends HttpSessionSecur
 		
 		long count = userMessageService.getNotViewedCount(user.getId());
 		if (count == 0) {
-			//logger.debug("No new messages found");
+			logger.debug("No new messages found");
 			return context;
 		}
 		
 		if (count == user.getNewMsgCount()) {
-			//logger.debug("Message count matches principal count: " + count);
+			logger.debug("Message count matches principal count: " + count);
 			return context;
 		}			
 		

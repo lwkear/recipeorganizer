@@ -3,6 +3,7 @@
 
 <script src="<c:url value="/resources/js/jquery-2.1.3.js"/>"></script>
 <script src="<c:url value="/resources/jqueryui-notheme/jquery-ui.js"/>"></script>
+<script src="<c:url value="/resources/js/datepicker-fr.js"/>"></script>
 <script src="<c:url value="/resources/bootstrap/js/bootstrap.js"/>"></script>
 <script src="<c:url value="/resources/selectize/js/standalone/selectize.js"/>"></script>
 <script src="<c:url value="/resources/bootstrap-multiselect/js/bootstrap-multiselect.js"/>"></script>

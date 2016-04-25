@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.apache.commons.dbcp2.DelegatingConnection;
 
-public class TagList implements UserType {
+public class OracleTagList implements UserType {
 
 	@Override
 	public int[] sqlTypes() {

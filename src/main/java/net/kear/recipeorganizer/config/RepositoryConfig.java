@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableTransactionManagement
-@PropertySource("classpath:database.oracle.properties")
-//@PropertySource("classpath:database.postgres.properties")
+//@PropertySource("classpath:database.oracle.properties")
+@PropertySource("classpath:database.postgres.properties")
 @ComponentScan("net.kear.recipeorganizer.persistence")
 public class RepositoryConfig {
 
@@ -63,7 +63,7 @@ public class RepositoryConfig {
 	private Properties getHibernateProperties() {
 	    Properties properties = new Properties();
 	    //NOTE: enabling this option causes havoc with the Oracle database
-	    //properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+	    properties.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
 	    properties.put("hibernate.dialect", env.getProperty("hibernate.dialect"));
 	    properties.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 	    properties.put("hibernate.format_sql", env.getProperty("hibernate.format_sql"));
@@ -76,7 +76,8 @@ public class RepositoryConfig {
 	    properties.put("hibernate.c3p0.min_size", env.getProperty("hibernate.c3p0.min_size"));
 	    properties.put("hibernate.c3p0.timeout", env.getProperty("hibernate.c3p0.timeout"));
 	    properties.put("hibernate.c3p0.testOnBorrow", env.getProperty("hibernate.c3p0.testOnBorrow"));
-	    properties.put("hibernate.c3p0.validationQuery", env.getProperty("hibernate.c3p0.validationQuery"));
+	    //TODO: fix for PostgreSQL
+	    //properties.put("hibernate.c3p0.validationQuery", env.getProperty("hibernate.c3p0.validationQuery"));
 	    return properties;
 	}
 }

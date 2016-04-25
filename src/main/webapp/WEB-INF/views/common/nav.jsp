@@ -18,6 +18,9 @@
 	<sec:authentication var="newmsgs" property="principal.newMsgCount" />
 </c:if>
 
+<c:set var="localeCode" value="${requestContext.locale.language}"/>
+<input type="text" id="localeCode" style="display:none" value="${localeCode}"/>
+
 <nav class="navbar navbar-inverse navbar-fixed-top">		 <!-- navbar-inverse -->
 	<div class="container">
 		<div class="navbar-header">
@@ -28,10 +31,10 @@
 			</button>
 			<c:choose>				
 				<c:when test="${isAuth}">
-					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo4.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
 				</c:when>
 				<c:otherwise>
-					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo4.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
 				</c:otherwise>
 			</c:choose>			
 		</div>
@@ -83,9 +86,12 @@
 					<c:url var="logoutUrl" value="/logout"/>
 					<form:form id="logoutForm" action="${logoutUrl}" method="post">
 						<ul class="nav navbar-nav navbar-right">
-							<li><a href="<c:url value="/user/messages" />"><span class="glyphicon glyphicon-inbox"></span>
+							<li><a href="<c:url value="/user/messages" />"
+									data-toggle="tooltip" data-placement="bottom" title="<spring:message code="menu.messages"></spring:message>">
+									<span class="glyphicon glyphicon-inbox"></span>
 									<c:if test="${newmsgs > 0}"><span class="badge" style="background-color:red;margin-bottom:5px;position:relative">${newmsgs}</span></c:if>
-								</a></li>
+								</a>
+							</li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 									<span class="glyphicon glyphicon-edit"></span>&nbsp;&nbsp;${firstname}<span class="caret"></span></a>

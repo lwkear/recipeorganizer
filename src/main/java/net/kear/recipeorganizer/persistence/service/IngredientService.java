@@ -12,8 +12,8 @@ public interface IngredientService {
     public void deleteIngredient(Long id);
     public Ingredient getIngredient(Long id);
     public void setReviewed(long id, int reviewed);
-    public List<Ingredient> listIngredient();
-    public List<Ingredient> getIngredients(String searchStr);
+    public List<Ingredient> listIngredients();
+    public List<Ingredient> getIngredients(String searchStr, String lang);
     public long getNotReviewedCount();
     public List<IngredientReviewDto> listNotReviewed();
 }

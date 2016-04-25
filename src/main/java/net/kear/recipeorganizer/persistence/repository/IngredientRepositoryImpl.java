@@ -63,16 +63,17 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<Ingredient> listIngredient() {
+    public List<Ingredient> listIngredients() {
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
     		.addOrder(Order.asc("name"));
     	return criteria.list();
     }
 
     @SuppressWarnings("unchecked")
-    public List<Ingredient> getIngredients(String searchStr) {
+    public List<Ingredient> getIngredients(String searchStr, String lang) {
     	Criteria criteria = getSession().createCriteria(Ingredient.class)
     		.add(Restrictions.ilike("name", searchStr, MatchMode.ANYWHERE))
+    		.add(Restrictions.eq("lang", lang))
     		.addOrder(Order.asc("name"));
     	List<Ingredient> ingredList = criteria.list();
     	List<Ingredient> ingredResults = new AutoPopulatingList<Ingredient>(Ingredient.class);
@@ -122,14 +123,16 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     @SuppressWarnings("unchecked")
     public List<IngredientReviewDto> listNotReviewed() {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-    			"select i.id, i.name, (select count(ri.id) from recipe_ingredients ri where ri.ingredient_id = i.id) as usage from ingredient i"
+    			"select i.id, i.name, i.lang, (select count(ri.id) from recipe_ingredients ri where ri.ingredient_id = i.id) as usage from ingredient i"
     			+ " where i.reviewed = 0")
     			.addScalar("id",StandardBasicTypes.LONG)
     			.addScalar("name",StandardBasicTypes.STRING)
+    			.addScalar("lang",StandardBasicTypes.STRING)
     			.addScalar("usage",StandardBasicTypes.LONG)
     			.setResultTransformer(Transformers.aliasToBean(IngredientReviewDto.class));
     	
     	List<IngredientReviewDto> ingredList = (List<IngredientReviewDto>) query.list();
+    	
     	return ingredList;
     }
 	

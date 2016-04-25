@@ -52,8 +52,8 @@
 								<td>${recipe.firstName} ${recipe.lastName}</td>
 							</c:if>
 							<td><fmt:formatDate type="date" value="${recipe.submitted}" /></td>
-							<td>${recipe.category}</td>
-							<td>${recipe.sourcetype}</td>
+							<td><spring:message code="category.${recipe.category}"></spring:message></td>
+							<td><c:if test="${not empty recipe.sourcetype}"><custom:source type="${recipe.sourcetype}"></custom:source></c:if></td>
 							<c:if test="${!fav}">
 								<td><custom:approval status="${recipe.status}"></custom:approval></td>
 							</c:if>	

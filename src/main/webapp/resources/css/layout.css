@@ -252,3 +252,19 @@ h4 {
 .navbar-inner {
     background:transparent;
 }
+
+/* replace the glyphicons used by the DataTable bootstrap styling */ 
+ table.dataTable thead .sorting:after {
+  opacity: 0.2;
+  content: "\e252";
+  sort
+}
+table.dataTable thead .sorting_asc:after {
+  content: "\e252";
+  sort-by-attributes
+}
+table.dataTable thead .sorting_desc:after {
+  content: "\e253";
+  sort-by-attributes-alt
+}
+ 

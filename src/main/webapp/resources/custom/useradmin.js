@@ -119,6 +119,7 @@ function displayUser(user) {
 	$(".userName").text(user.firstName + " " + user.lastName);
 	$("#submit").one('click', {user : user}, postUser);
 	$('#updateUser').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#updateUser').on('shown.bs.modal', function () {$(this).find('#inputRole').focus()})
 	$("#updateUser").on('hidden.bs.modal', function(){$("#submit").unbind('click');})
 	$("#updateUser").modal('show');
 } 
@@ -171,6 +172,8 @@ $(function() {
     		targets: [-1,-2],
     		orderable: false
     	}],
+		searching: false,
+		lengthChange: false,
 		language : {
 	    	emptyTable:     getMessage('useradmin.table.emptyTable'),
 		    info:           getMessage('useradmin.table.info'),

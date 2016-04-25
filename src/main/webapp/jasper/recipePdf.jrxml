@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
-<!-- 2016-04-03T09:38:11 -->
+<!-- 2016-04-24T09:40:25 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipe" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c4c18e8f-2ff4-480a-a1fc-ba136e77a047">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="logoPath" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="ingredTitle" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[$R{report.ingredients}]]></defaultValueExpression>
 	</parameter>
@@ -26,7 +27,7 @@
 	<field name="user.lastName" class="java.lang.String"/>
 	<field name="ingredSections" class="java.util.List"/>
 	<field name="instructSections" class="java.util.List"/>
-	<field name="source.type" class="java.lang.String"/>
+	<field name="source.type" class="java.lang.Enum"/>
 	<field name="source.cookbook" class="java.lang.String"/>
 	<field name="source.websiteUrl" class="java.lang.String"/>
 	<field name="source.newspaper" class="java.lang.String"/>
@@ -52,7 +53,7 @@
 		<variableExpression><![CDATA[($F{totalHours} > 0 ? $F{totalHours} + " " + $R{report.hour} : "") + "  " + ($F{totalMinutes} > 0 ? $F{totalMinutes} + " " + $R{report.minute} : "")]]></variableExpression>
 	</variable>
 	<variable name="SourceLabel" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.type} == null ? "" :  $R{report.source} + " "]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.type}.name() == null ? "" :  $R{report.source} + " "]]></variableExpression>
 	</variable>
 	<variable name="SourceCookbook" class="java.lang.String">
 		<variableExpression><![CDATA[$F{source.cookbook} == null ? "" : $F{source.cookbook}]]></variableExpression>
@@ -100,14 +101,12 @@
 			<line>
 				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="0" y="60" width="572" height="1" isPrintWhenDetailOverflows="true" uuid="40a213b4-a049-40b1-ad5e-d3b8a80cf2ce"/>
 			</line>
-			<image>
-				<reportElement x="0" y="0" width="76" height="28" isPrintInFirstWholeBand="true" uuid="3ec1e3f6-dd42-4a5c-89d5-ec36fb62bb51">
-					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+			<image isLazy="true" evaluationTime="Report">
+				<reportElement x="0" y="0" width="76" height="28" uuid="3ec1e3f6-dd42-4a5c-89d5-ec36fb62bb51">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
-				<imageExpression><![CDATA["logo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
 			</image>
 		</band>
 	</pageHeader>
@@ -224,12 +223,12 @@
 		</band>
 		<band height="30" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<printWhenExpression><![CDATA[$F{source.type} != null]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$F{source.type}.name() != null]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="10" width="300" height="20" uuid="9b0fbcfc-52d6-46fc-853b-7d9440699f56">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-					<printWhenExpression><![CDATA[$F{source.type} != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{source.type}.name() != null]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled"/>
 				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{SourceLabel} + "</style>" + $V{SourceCookbook} + $V{SourceWebsite} + $V{SourceNewspaper} + $V{SourceMagazine} + $V{SourceOther} + $V{SourcePerson}]]></textFieldExpression>
@@ -261,7 +260,9 @@
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 			<printWhenExpression><![CDATA[$F{notes} != null ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement isPrintRepeatedValues="false" x="0" y="10" width="110" height="20" isPrintInFirstWholeBand="true" uuid="2be883d0-fea8-422d-a122-567e06225619"/>
+				<reportElement isPrintRepeatedValues="false" x="0" y="10" width="200" height="20" isPrintInFirstWholeBand="true" uuid="2be883d0-fea8-422d-a122-567e06225619">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
 				<textElement textAlignment="Left">
 					<font size="10" isBold="true"/>
 				</textElement>

@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.persistence.dto;
 import java.io.Serializable;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.enums.SourceType;
 
 public class SearchResultsDto extends Object implements Serializable {
 
@@ -17,11 +18,12 @@ public class SearchResultsDto extends Object implements Serializable {
 	private boolean allowShare;
 	private ApprovalStatus status;
 	private long catId;
-	private String source;
+	private SourceType source;
 	
 	public SearchResultsDto() {};
 	
-	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, ApprovalStatus status, long catId, String source) {
+	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, 
+			ApprovalStatus status, long catId, SourceType source) {
 		this.rank = rank;
 		this.id = id;
 		this.userId = userId;
@@ -106,11 +108,11 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.catId = catId;
 	}
 
-	public String getSource() {
+	public SourceType getSource() {
 		return source;
 	}
 
-	public void setSource(String source) {
+	public void setSource(SourceType source) {
 		this.source = source;
 	}	
 

@@ -1,6 +1,8 @@
 package net.kear.recipeorganizer.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,9 +36,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.exception.RestException;
-import net.kear.recipeorganizer.persistence.model.Category;
+import net.kear.recipeorganizer.persistence.dto.CategoryDto;
+import net.kear.recipeorganizer.persistence.dto.SourceTypeDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
@@ -84,7 +88,7 @@ public class RecipeController {
 	/***************************/
 	@MaintAware
 	@RequestMapping(value = "recipe/editRecipe/{recipeId}", method = RequestMethod.GET)
-	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, HttpServletRequest request) throws RecipeNotFound {
+	public String editRecipe(Model model, @RequestHeader("referer") String refer, @PathVariable Long recipeId, HttpServletRequest request, Locale locale) throws RecipeNotFound {
 		logger.info("recipe/editRecipe GET: recipeId=" + recipeId);
 
 		Recipe recipe;
@@ -109,6 +113,15 @@ public class RecipeController {
 		}
 		recipe.setTags(strTags);		
 		model.addAttribute("recipe", recipe);
+		
+		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale);
+    	Collections.sort(typeList, new Comparator<SourceTypeDto>() {
+			@Override
+			public int compare(SourceTypeDto o1, SourceTypeDto o2) {
+				return o1.getDisplayName().compareTo(o2.getDisplayName());
+			}
+    	});
+    	model.addAttribute("typeList", typeList);
 
 		if (refer != null && !refer.contains("view"))
 			viewReferer.setReferer(refer, request);
@@ -216,21 +229,56 @@ public class RecipeController {
 	@RequestMapping(value = "recipe/getCategories", method = RequestMethod.GET)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public List<Category> getCategories() {
+	public List<CategoryDto> getCategories(Locale locale) {
 		logger.info("recipe/categories GET");
 		
-		return categoryService.listCategory();
-	}
+		List<CategoryDto> catList = categoryService.listCategoryDto(); 
 
+    	for (CategoryDto cat: catList) {
+    		String display = messages.getMessage("category." + cat.getName(), null, cat.getName(), locale);
+    		cat.setDisplayName(display);
+    	}
+    	
+    	Collections.sort(catList, new Comparator<CategoryDto>() {
+			@Override
+			public int compare(CategoryDto o1, CategoryDto o2) {
+				return o1.getDisplayName().compareTo(o2.getDisplayName());
+			}
+    	});
+		
+		return catList;
+	}
+	
+	//get list of source types
+	@RequestMapping(value = "recipe/getSourceTypes", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public List<SourceTypeDto> getSourceTypes(Locale locale) {
+		logger.info("recipe/sourceTypes GET");
+		
+		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale); 
+
+    	Collections.sort(typeList, new Comparator<SourceTypeDto>() {
+			@Override
+			public int compare(SourceTypeDto o1, SourceTypeDto o2) {
+				return o1.getDisplayName().compareTo(o2.getDisplayName());
+			}
+    	});
+		
+		return typeList;
+	}
+	
 	//post a new ingredient
 	@RequestMapping(value = "recipe/addIngredient", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public Ingredient addIngredient(@RequestBody @Valid Ingredient ingredient) throws RestException {
+	public Ingredient addIngredient(@RequestBody @Valid Ingredient ingredient, Locale locale) throws RestException {
 		logger.info("recipe/addingredient POST: name=" + ingredient.getName());
 		
 		if (ingredient.getName() == null)
 			return ingredient;
+		
+		ingredient.setLang(locale.getLanguage());
 		
 		//add the ingredient to the DB
 		try {
@@ -249,11 +297,11 @@ public class RecipeController {
 	@RequestMapping(value = "recipe/getIngredients", method = RequestMethod.GET)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public List<Ingredient> getIngredients(@RequestParam("searchStr") String searchStr) {
+	public List<Ingredient> getIngredients(@RequestParam("searchStr") String searchStr, Locale locale) {
 		logger.info("recipe/getingredients GET");
-		logger.debug("searchStr = " + searchStr); 
-		
-		List<Ingredient> ingreds = ingredientService.getIngredients(searchStr);
+		logger.debug("searchStr=" + searchStr + " language=" + locale.getLanguage()); 
+
+		List<Ingredient> ingreds = ingredientService.getIngredients(searchStr, locale.getLanguage());
 		
 		return ingreds;
 	}
@@ -279,7 +327,8 @@ public class RecipeController {
 		logger.info("recipe/getsources GET");
 		logger.debug("searchStr=" + searchStr + "; type=" + type); 
 		
-		List<String> sources = sourceService.getSources(searchStr, type);
+		SourceType sourceType = SourceType.valueOf(type);
+		List<String> sources = sourceService.getSources(searchStr, sourceType);
 		
 		return sources;
 	}

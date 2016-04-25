@@ -33,16 +33,11 @@ public class Role implements Serializable {
 	@Size(max=10)
 	private String name;
 
-	@Column(name = "DESCRIPTION")
-	@Size(max=20)
-	private String description;
-	
 	public Role() {};
 	
-	public Role(String name, String description) {
+	public Role(String name) {
 		super();
 		this.name = name;
-		this.description = description;
 	}
 
 	public long getId() {
@@ -61,14 +56,6 @@ public class Role implements Serializable {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 	public boolean isType(String type) {
 		return (name.equalsIgnoreCase(type) ? true : false);
 	}
@@ -105,6 +92,6 @@ public class Role implements Serializable {
 	public String toString() {
 		return "Role [id=" + id 
 				+ ", name=" + name 
-				+ ", description=" + description + "]";
+				+ "]";
 	}   
 }

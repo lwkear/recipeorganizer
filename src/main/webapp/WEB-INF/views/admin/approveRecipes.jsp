@@ -48,8 +48,8 @@
 							<td>${recipe.description}</td>
 							<td>${recipe.firstName} ${recipe.lastName}</td>
 							<td><fmt:formatDate type="date" value="${recipe.submitted}" /></td>
-							<td>${recipe.category}</td>
-							<td>${recipe.sourcetype}</td>
+							<td><spring:message code="category.${recipe.category}"></spring:message></td>
+							<td><c:if test="${not empty recipe.sourcetype}"><custom:source type="${recipe.sourcetype}"></custom:source></c:if></td>
 							<td><custom:approval status="${recipe.status}"></custom:approval></td>
 							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}" id="view${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">

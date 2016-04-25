@@ -36,9 +36,11 @@
 			<div class="page-header"> 		
 				<h3><spring:message code="recipe.basics.title"></spring:message></h3>
 			</div>
-		</div>
+		</div>		
+		
 		<div class="col-sm-12">
 			<form:form class="form-horizontal" name="basicsForm" role="form" modelAttribute="recipe" autocomplete="off">
+				<form:input type="text" style="display:none" path="lang" value="${localeCode}"/>
 				<div class="row">
 					<div class="col-sm-12">
 					

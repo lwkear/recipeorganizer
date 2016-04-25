@@ -8,11 +8,11 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.SearchResultsDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
-import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -33,6 +33,7 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +66,8 @@ public class SearchController {
 	private SolrUtil solrUtil;
 	@Autowired
 	private UserInfo userInfo;
+	@Autowired
+	private MessageSource messages;
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/submitSearch", method = RequestMethod.POST)
@@ -91,7 +94,7 @@ public class SearchController {
 			//the second list is the facets results (category & source)
 			objList = results.get(1);
 			ArrayList<FacetField> facets = (ArrayList<FacetField>)(List<?>)objList;
-			catFacets = getCategories(facets);
+			catFacets = getCategories(facets, locale);
 			srcFacets = getSources(facets, numFound, locale);
 		}
 		
@@ -145,7 +148,7 @@ public class SearchController {
 				//the second list is the category facets results
 				objList = results.get(1);
 				ArrayList<FacetField> facets = (ArrayList<FacetField>)(List<?>)objList;
-				catFacets = getCategories(facets);
+				catFacets = getCategories(facets, locale);
 				srcFacets = getSources(facets, numFound, locale);
 			}
 			
@@ -234,7 +237,7 @@ public class SearchController {
 		return "admin/ingredientRecipes";
 	}
 	
-	private List<CategoryFacet> getCategories(ArrayList<FacetField> facets) {
+	private List<CategoryFacet> getCategories(ArrayList<FacetField> facets, Locale locale) {
 		
 		ArrayList<CategoryFacet> cats = new ArrayList<CategoryFacet>();
 		
@@ -248,7 +251,8 @@ public class SearchController {
 					if (cCount > 0) {
 						long id = Long.parseLong(cName);
 						Category cat = categoryService.getCategory(id);
-						CategoryFacet catFacet = new CategoryFacet(cat.getId(), cat.getName(), cCount);
+						String catName = messages.getMessage("category."+cat.getName(), null, null, locale);
+						CategoryFacet catFacet = new CategoryFacet(id, catName, cCount);
 						cats.add(catFacet);
 					}
 				}
@@ -273,20 +277,20 @@ public class SearchController {
 					long cCount = count.getCount();
 					facetCount += cCount;
 					if (cCount > 0) {
-						String sourceName = sourceService.getSourceDisplayName(cName, locale);
+						String sourceName = messages.getMessage("sourcetype."+cName, null, null, locale);
 						if (sourceName != null) {
 							SourceFacet srcFacet = new SourceFacet(cName, sourceName, cCount);
 							srcs.add(srcFacet);
-						}
+						}						
 					}
 				}
 			}
 		}
 		
 		if (numFound > facetCount) {
-			String sourceName = sourceService.getSourceDisplayName(Source.TYPE_NONE, locale);
+			String sourceName = messages.getMessage("sourcetype."+SourceType.NONE.name(), null, null, locale);
 			if (sourceName != null) {
-				SourceFacet srcFacet = new SourceFacet(Source.TYPE_NONE, sourceName, numFound - facetCount);
+				SourceFacet srcFacet = new SourceFacet(SourceType.NONE.name(), sourceName, numFound - facetCount);
 				srcs.add(srcFacet);
 			}
 		}

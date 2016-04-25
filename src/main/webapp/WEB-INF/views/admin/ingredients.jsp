@@ -28,6 +28,7 @@
 				<thead>
 					<tr>
 						<th><spring:message code="ingredadmin.column.name"></spring:message></th>
+						<th><spring:message code="ingredadmin.column.lang"></spring:message></th>
 						<th><spring:message code="ingredadmin.column.usage"></spring:message></th>
 						<th data-orderable="false"></th>
 						<th data-orderable="false"></th>
@@ -40,6 +41,7 @@
 					<c:forEach var="ingred" items="${ingredients}">
 						<tr id="${ingred.id}">
 							<td>${ingred.name}</td>
+							<td>${ingred.displayLang}</td>
 							<td>${ingred.usage}</td>
 							<td>
 								<form:form class="searchForm" id="searchForm" action="${searchUrl}" target = "_blank" method="post">
@@ -120,7 +122,7 @@
 				    <div><spring:message code="ingredadmin.instruct"></spring:message></div>
 					<div class="form-group spacer-vert-xs">
 			            <label class="control-label" for="name"><spring:message code="ingredadmin.replace"></spring:message></label>
-			            <input type="text" class="form-control maxSize" id="nameTA"/>
+			            <input type="text" class="form-control" id="nameTA"/>
 				    </div>
 				</form>
 			</div>

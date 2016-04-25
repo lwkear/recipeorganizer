@@ -218,7 +218,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("s.type").as("sourcetype")))
+    			.add(Projections.property("s.type").as("sourceType")))
     		.addOrder(Order.asc("name"))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
@@ -244,7 +244,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("s.type").as("sourcetype")))
+    			.add(Projections.property("s.type").as("sourceType")))
     		.addOrder(Order.asc("name"))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
@@ -320,7 +320,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("u.firstName").as("firstName"))
     			.add(Projections.property("u.lastName").as("lastName"))
     			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("s.type").as("sourcetype")))
+    			.add(Projections.property("s.type").as("sourceType")))
     		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
 
     	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();

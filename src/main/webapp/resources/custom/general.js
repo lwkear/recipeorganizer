@@ -42,18 +42,39 @@ function convertFractions(element) {
 }
 
 function setMessageMap() {
+	var locale = $('#localeCode').val();
+	var load = false;
+
 	if (typeof(Storage) !== "undefined") {
-		var len = sessionStorage.length;  
-		if (len === 0) {
+		var len = sessionStorage.length;
+		if (len === 0)
+			load = true;
+		else {
+			var lang = sessionStorage.getItem('language');
+			if (locale != lang) 
+				load = true;
+		}
+		if (load === true) {
+			sessionStorage.setItem('language',locale);
 			$('.spring-messages > p').each(function(index) {
 				sessionStorage.setItem($(this).attr('id'), $(this).text());
 			});
 			console.log('messages stored in sessionStorage');
-		} else
+		} else {
 			console.log('messages available from sessionStorage');
+		}
+		
 		return null;
+		
 	} else {
-		if (messageMap === null) {
+		if (messageMap === null)
+			load = true;
+		else {
+			var lang = messageMap.get('language');
+			if (locale != lang) 
+				load = true;
+		}
+		if (load === true) {
 			map = new Map();
 			$('.spring-messages > p').each(function(index) {
 				map.set($(this).attr('id'), $(this).text());

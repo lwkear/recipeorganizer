@@ -26,6 +26,8 @@ $(function() {
 				setCheckmarks(searchStr);
 		})
 		.DataTable({
+			searching: false,
+			lengthChange: false,
 			language : {
 		    	emptyTable:     getMessage('recipe.table.emptyTable'),
 			    info:           getMessage('recipe.table.info'),

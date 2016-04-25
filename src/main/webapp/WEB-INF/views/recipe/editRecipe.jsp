@@ -53,6 +53,7 @@
 		
 			<form:hidden id="userID" path="user.id"/>
 			<form:input type="text" style="display:none" path="views"/>
+			<form:input type="text" style="display:none" path="lang"/>
 			<form:hidden id="ingredSections" path="numIngredSections"/>
 			<form:hidden id="currIngredSect" path="currIngredSection"/>
 			<form:hidden id="instructSections" path="numInstructSections"/>
@@ -60,6 +61,18 @@
 			<input type="text" id="photoErr" value="${photoError}" style="display:none"></input>
 			<input type="text" id="recipeName" value="${recipe.name}" style="display:none"></input>
 
+
+	<spring:hasBindErrors name="recipe">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors>
+	
+	
 			<div class="row">
 				<div class="col-sm-12">
 				    <div class="panel-group" id="accordion">
@@ -158,10 +171,12 @@
 				</div>
 			</div>
 			<div class="form-group col-sm-12 spacer-vert-md">
-				<div class="col-sm-offset-5 col-sm-2 text-center">
-					<button type="submit" class="btn btn-primary pull-left" id="save"><spring:message code="common.save"></spring:message></button>
-					<button class="btn btn-default pull-right" id="fakeEditCancel"><spring:message code="common.cancel"></spring:message></button>
-					<a id="cancelEditBtn" style="display:none" href="${returnUrl}"></a>
+				<div class="col-sm-offset-4 col-sm-4 text-center">
+					<div class="col-sm-offset-2 col-sm-8 text-center">
+						<button type="submit" class="btn btn-primary pull-left" id="save"><spring:message code="common.save"></spring:message></button>
+						<button class="btn btn-default pull-right" id="fakeEditCancel"><spring:message code="common.cancel"></spring:message></button>
+						<a id="cancelEditBtn" style="display:none" href="${returnUrl}"></a>
+					</div>
 				</div>
 			</div>
 			<input type="text" id="removePrefix" style="display:none" value="${FileConstant.REMOVE_PHOTO_PREFIX}"/>

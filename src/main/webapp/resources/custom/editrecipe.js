@@ -109,14 +109,9 @@ $(function() {
 	    	fixInstructArrayIndexes(panel + ' .instructSeq', true);
 	    }
 	    
-		var ndx = $('#inputSource option:selected').index();
-		if (ndx == 0 || ndx == 7) {
-			$('#inputSource').val("");
-		}
-		var page = $('#inputBookPage').val();
-		if (page == null)
-			$('#inputBookPage').val(0);
-		
+	    //adjust source fields as necessary
+	    adjustSourceFields();
+	    		
 		var option = $('input[name="photoOpts"]:checked').val();
 		if (option == 'change') {
 			var filename = $('#photoname').val();

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -18,6 +20,7 @@ import javax.persistence.TemporalType;
 import javax.validation.GroupSequence;
 import javax.validation.constraints.*;
 
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 
 import org.hibernate.validator.constraints.*;
@@ -29,13 +32,13 @@ public class Source implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String TYPE_COOKBOOK = "Cookbook";
+	/*public static final String TYPE_COOKBOOK = "Cookbook";
 	public static final String TYPE_MAGAZINE = "Magazine";
 	public static final String TYPE_NEWSPAPER = "Newspaper";
 	public static final String TYPE_PERSON = "Person";
 	public static final String TYPE_WEBSITE = "Website";
 	public static final String TYPE_OTHER = "Other";
-	public static final String TYPE_NONE = "None";
+	public static final String TYPE_NONE = "None";*/
 	
 	//Hibernate validation groups
 	public interface SizeGroup {}
@@ -50,8 +53,9 @@ public class Source implements Serializable {
 	@SequenceGenerator(name = "SOURCE_SEQ", sequenceName = "SOURCE_SEQ", allocationSize = 1)
 	private long id;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "TYPE", nullable = false)
-	private String type;
+	private SourceType type;
 
 	@Column(name = "COOKBOOK")
 	@Size(max=250, groups=SizeGroup.class)	//250
@@ -66,6 +70,7 @@ public class Source implements Serializable {
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="MM/dd/yyyy")
+	//@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
 	@Column(name = "MAGAZINE_PUBDATE")
 	@Past(groups=OtherGroup.class)
 	private Date magazinePubdate;
@@ -76,6 +81,7 @@ public class Source implements Serializable {
 	
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern="MM/dd/yyyy")
+	//@DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
 	@Column(name = "NEWSPAPER_PUBDATE")
 	@Past(groups=OtherGroup.class)
 	private Date newspaperPubdate;
@@ -102,7 +108,7 @@ public class Source implements Serializable {
 
 	public Source() {}
 	
-	public Source(String type, String cookbook, Integer cookbookPage, String magazine, Date magazinePubdate, String newspaper, Date newspaperPubdate, String person,
+	public Source(SourceType type, String cookbook, Integer cookbookPage, String magazine, Date magazinePubdate, String newspaper, Date newspaperPubdate, String person,
 			String websiteUrl, String recipeUrl, String other) {
 		super();
 		this.type = type;
@@ -126,11 +132,11 @@ public class Source implements Serializable {
 		this.id = id;
 	}
 
-	public String getType() {
+	public SourceType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(SourceType type) {
 		this.type = type;
 	}
 

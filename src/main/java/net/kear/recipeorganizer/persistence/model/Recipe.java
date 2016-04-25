@@ -32,7 +32,8 @@ import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.IngredientSection;
 import net.kear.recipeorganizer.persistence.model.Source;
-import net.kear.recipeorganizer.util.db.TagList;
+//import net.kear.recipeorganizer.util.db.OracleTagList;
+import net.kear.recipeorganizer.util.db.PostgresTagList;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -43,8 +44,11 @@ import org.springframework.util.AutoPopulatingList;
 
 @Entity
 @Table(name = "RECIPE")
+/*@TypeDefs({
+	@TypeDef(name = "tagList", typeClass = OracleTagList.class)
+})*/
 @TypeDefs({
-	@TypeDef(name = "tagList", typeClass = TagList.class)
+	@TypeDef(name = "tagList", typeClass = PostgresTagList.class)
 })
 public class Recipe implements Serializable {
 
@@ -165,7 +169,6 @@ public class Recipe implements Serializable {
 	@Column(name = "PHOTO")
 	private String photoName;
 
-	//TODO: TAGS change for PostgreSQL
 	@Column(name = "TAGS")
 	@Type(type = "tagList") 
 	@Size(max=5, groups=SizeGroup.class)
@@ -178,6 +181,11 @@ public class Recipe implements Serializable {
 	@Valid
 	private Source source;
 	
+	@Transient
+	@Lob
+	@Type(type="org.hibernate.type.MaterializedClobType")
+	private String privateNotes;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@Column(name = "DATE_ADDED", insertable=false, updatable=false)
@@ -187,19 +195,16 @@ public class Recipe implements Serializable {
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@Column(name = "DATE_UPDATED", insertable=false, updatable=false)
 	private Date dateUpdated;
-	
-	@Transient
-	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
-	private String privateNotes;
 
+	@Column(name = "LANG", nullable = false)
+	@NotBlank
+	private String lang;
+	
 	public Recipe() {}
 
-	//TODO: TAGS change for PostgreSQL
-	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, 
+	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, String lang,
 				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, ApprovalStatus status, boolean copyrighted,  
 				String photoName, List<String> tags, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
-				/*String photoName, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {*/
 		super();
 		this.user = user;
 		this.name = name;
@@ -216,7 +221,6 @@ public class Recipe implements Serializable {
 		this.status = status;
 		this.copyrighted = copyrighted;
 		this.photoName = photoName;
-		//TODO: TAGS change for PostgreSQL
 		this.tags = tags;
 		this.instructSections = instructSections;
 		this.ingredSections = ingredSections;
@@ -356,7 +360,6 @@ public class Recipe implements Serializable {
 		this.photoName = photoName;
 	}
 	
-	//TODO: TAGS change for PostgreSQL
 	public List<String> getTags() {
 		return tags;
 	}
@@ -444,6 +447,14 @@ public class Recipe implements Serializable {
 	public void setSource(Source source) {
 		this.source = source;
 	}
+
+	public String getPrivateNotes() {
+		return privateNotes;
+	}
+
+	public void setPrivateNotes(String privateNotes) {
+		this.privateNotes = privateNotes;
+	}
 	
 	public Date getDateAdded() {
 		return dateAdded;
@@ -461,20 +472,20 @@ public class Recipe implements Serializable {
 		this.dateUpdated = dateUpdated;
 	}
 
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
 	public Integer getViews() {
 		return views;
 	}
 
 	public void setViews(Integer views) {
 		this.views = views;
-	}
-
-	public String getPrivateNotes() {
-		return privateNotes;
-	}
-
-	public void setPrivateNotes(String privateNotes) {
-		this.privateNotes = privateNotes;
 	}
 
 	@Override
@@ -495,6 +506,7 @@ public class Recipe implements Serializable {
 		result = prime * result + ((totalHours == null) ? 0 : totalHours.hashCode());
 		result = prime * result + ((totalMinutes == null) ? 0 : totalMinutes.hashCode());
 		result = prime * result + ((servings == null) ? 0 : servings.hashCode());
+		result = prime * result + ((lang == null) ? 0 : lang.hashCode());
 		return result;
 	}
 
@@ -570,6 +582,11 @@ public class Recipe implements Serializable {
 				return false;
 		} else if (!servings.equals(other.servings))
 			return false;
+		if (lang == null) {
+			if (other.lang != null)
+				return false;
+		} else if (!lang.equals(other.lang))
+			return false;
 		return true;
 	}
 
@@ -590,13 +607,13 @@ public class Recipe implements Serializable {
 				+ ", status=" + status
 				+ ", copyrighted=" + copyrighted 
 				+ ", photoName=" + photoName
-				//TODO: TAGS change for PostgreSQL
 				+ ", tags=" + tags 
 				+ ", category=" + category 
 				+ ", instructSections=" + instructSections 
 				+ ", ingredSections=" + ingredSections 
 				+ ", source=" + source 
 				+ ", views=" + views
+				+ ", lang=" + lang
 				+ "]";
 	}
 }

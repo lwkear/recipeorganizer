@@ -28,6 +28,7 @@
 			<binding property="category.id"/>
 			<binding property="category.name"/>
 			<binding property="views"/>
+			<binding property="lang"/>
 		</binder>
 		<transition on="proceed" to="ingredients" validation-hints="'recipeBasicGroup'">
 			<set name="flowScope.instructCount" value="recipe.numInstructSections"/>

@@ -38,12 +38,12 @@ public class IngredientServiceImpl implements IngredientService {
     	ingredientRepository.setReviewed(id, reviewed);
     }
 
-    public List<Ingredient> listIngredient() {
-    	return ingredientRepository.listIngredient();
+    public List<Ingredient> listIngredients() {
+    	return ingredientRepository.listIngredients();
     }
  
-    public List<Ingredient> getIngredients(String searchStr) {
-    	return ingredientRepository.getIngredients(searchStr);
+    public List<Ingredient> getIngredients(String searchStr, String lang) {
+    	return ingredientRepository.getIngredients(searchStr, lang);
     }
 
     public long getNotReviewedCount() {

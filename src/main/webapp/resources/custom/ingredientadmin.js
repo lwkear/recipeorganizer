@@ -116,7 +116,8 @@ function displayIngredient(ingredient) {
 	$(".updateName").text(ingredient.name);
 	$("#submitUpdate").one('click', {ingredient : ingredient}, postUpdateIngredient);
 	$('#updateIngredient').modal({backdrop: 'static', keyboard: false, show: false});
-	$("#updateIngredient").on('hidden.bs.modal', function(){$("#submit").unbind('click');})
+	$('#updateIngredient').on('shown.bs.modal', function () {$(this).find('#name').focus()})
+	$("#updateIngredient").on('hidden.bs.modal', function(){$("#submitUpdate").unbind('click');})
 	$("#updateIngredient").modal('show');
 } 
 
@@ -157,6 +158,7 @@ function replaceIngredient(ingredId, ingredName) {
 	$('#ingredTAName').val("");
 	$("#submitReplace").one('click', {ingredId: ingredId, ingredName : ingredName}, postReplaceIngredient);
 	$('#replaceIngredient').modal({backdrop: 'static', keyboard: false, show: false});
+	$('#replaceIngredient').on('shown.bs.modal', function () {$(this).find('#nameTA').focus()})
 	$("#replaceIngredient").on('hidden.bs.modal', function(){$("#submitReplace").unbind('click');})
 	$("#replaceIngredient").modal('show');
 } 
@@ -229,6 +231,8 @@ $(function() {
     		targets: [-1,-2,-3,-4,-5],
     		orderable: false
     	}],
+		searching: false,
+		lengthChange: false,
 		language : {
 	    	emptyTable:     getMessage('ingredadmin.table.emptyTable'),
 		    info:           getMessage('ingredadmin.table.info'),

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
@@ -86,17 +87,17 @@ public class RecipeServiceImpl implements RecipeService {
 
     public void saveRecipe(Recipe recipe) {
 	
-    	String type = recipe.getSource().getType();
-    	if (StringUtils.isBlank(type)) {
+    	SourceType type = recipe.getSource().getType();
+    	if (type == null) {
 			recipe.setSource(null);
 		}
     	else {
     		recipe.getSource().setRecipe(recipe);
-    		adjustSourceFields(recipe);
-    		if (type.equals(Source.TYPE_COOKBOOK) || 
-    			type.equals(Source.TYPE_MAGAZINE) ||
-    			type.equals(Source.TYPE_NEWSPAPER) ||
-    			type.equals(Source.TYPE_WEBSITE))
+    		//adjustSourceFields(recipe);
+    		if (type == SourceType.COOKBOOK 	||
+    			type == SourceType.MAGAZINE 	||
+    			type == SourceType.NEWSPAPER	||
+    			type == SourceType.WEBSITE)
     			recipe.setCopyrighted(true);
     	}
     	
@@ -455,8 +456,8 @@ public class RecipeServiceImpl implements RecipeService {
     	}
 	}
 	
-	private void adjustSourceFields(Recipe recipe) {
-		String type = recipe.getSource().getType();
+	/*private void adjustSourceFields(Recipe recipe) {
+		SourceType type = recipe.getSource().getType();
 		
 		if (type.equals(Source.TYPE_COOKBOOK)) {
 			recipe.getSource().setMagazine("");
@@ -520,5 +521,5 @@ public class RecipeServiceImpl implements RecipeService {
 			recipe.getSource().setWebsiteUrl("");
 			recipe.getSource().setRecipeUrl("");			
 		}
-	}
+	}*/
 }

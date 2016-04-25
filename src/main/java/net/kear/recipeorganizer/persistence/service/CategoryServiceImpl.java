@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.CategoryDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.repository.CategoryRepository;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
@@ -31,6 +32,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     public List<Category> listCategory() {
     	return categoryRepository.listCategory();
+    }
+    
+    public List<CategoryDto> listCategoryDto() {
+    	return categoryRepository.listCategoryDto();
     }
 
     public String getCategoryName(Long id) {

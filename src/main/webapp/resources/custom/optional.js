@@ -24,24 +24,25 @@ function initSourceTA() {
 };
 
 function initSource() {
-	$('#inputBookName').val('');
-	$('#inputBookPage').val('');
-	$('#inputMagName').val('');
-	$('#inputMagDate').val(null);
-	$('#inputNewsName').val('');
-	$('#inputNewsDate').val(null);
-	$('#inputPersonName').val('');
-	$('#inputWebURL').val('');
-	$('#inputRecipeURL').val('');
-	$('#inputOtherDetails').val('');
-}
+	$('#coookbook').val('');
+	$('#cookbookPage').val('');
+	$('#magazine').val('');
+	$('#magazineDate').val(null);
+	$('#altMagDate').val(null);
+	$('#newspaper').val('');
+	$('#newspaperDate').val(null);
+	$('#altNewsDate').val(null);
+	$('#person').val('');
+	$('#websiteUrl').val('');
+	$('#recipeUrl').val('');
+	$('#other').val('');
+};
 
 //if the form is returned with an error show the appropriate inputs
 function setSource() {
 	var ndx = $('#inputSource option:selected').index();
 	//the first option is the placeholder
 	if (ndx > 0) {
-		var today = new Date();
 		var option = $('#inputSource').val();
 		if (option.length > 0) {
 			$('.srcGroup').hide(); 
@@ -72,22 +73,93 @@ function setSource() {
 	}				
 };
 
+function adjustSourceFields() {
+	var ndx = $('#inputSource option:selected').index();
+	var option = "";
+	if (ndx == 0 || ndx == 7)
+		$('#inputSource').val("");
+	else
+		option = $('#inputSource').val();
+	
+	if (option !== typeCookbook) {
+		$('#coookbook').val('');			
+		$('#cookbookPage').val(0);
+	}
+	else {
+		var page = $('#cookbookPage').val();
+		if (!page)
+			$('#cookbookPage').val(0);
+	}
+	if (option !== typeMagazine) {
+		$('#magazine').val('');
+		$('#magDate').val('');
+		$('#magazineDate').val(null);
+		$('#altMagDate').val(null);
+	}
+	else {
+		var selDate = $('#altMagDate').val();
+		$('#magDate').val(selDate);
+	}
+	if (option !== typeNewspaper) {
+		$('#newspaper').val('');
+		$('#newsDate').val('');
+		$('#newspaperDate').val(null);
+		$('#altNewsDate').val(null);
+	}
+	else {
+		var selDate = $('#altNewsDate').val();
+		$('#newsDate').val(selDate);
+	}
+	if (option !== typePerson) {
+		$('#person').val('');
+	}
+	if (option !== typeWebsite) {
+		$('#websiteUrl').val('');
+		$('#recipeUrl').val('');
+	}
+	if (option !== typeOther) {
+		$('#other').val('');			
+	}
+}
+
+function getDateFormat() {
+	var locale = $('#localeCode').val();
+	if (locale == 'en')
+		return "mm/dd/yy";
+	if (locale == 'fr')
+		return "dd/mm/yy";
+};
+
 //shorthand for document.ready
 $(function() {
-	
-	//TODO: GUI: try to get the calendar icon to appear
-	$.datepicker.setDefaults({
-		dateFormat: "mm/dd/yy",
-		defaultDate: null,
-		//buttonImage: "/recipeorganizer/resources/jqueryui-smoothness/images/calendar-icon.png",
-		//showOn: "both",
-	    beforeShow: function() {
-	    	$(this).css("z-index", 999);	//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
-	    }
+
+	var locale = $('#localeCode').val();
+	$('#magazineDate').datepicker($.datepicker.regional[locale])
+		.datepicker("option", {
+			defaultDate: null,
+			dateFormat: getDateFormat(),
+			altFormat: "mm/dd/yy",
+			altField: '#altMagDate',
+			//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
+			beforeShow: function() {$(this).css("z-index", 999);}
+	});
+
+	$('#newspaperDate').datepicker($.datepicker.regional[locale])
+		.datepicker("option", {
+			defaultDate: null,
+			dateFormat: getDateFormat(),
+			altFormat: "mm/dd/yy",
+			altField: '#altNewsDate',
+			//bootstrap assigns a z-index of 2 to a form-control which hides the datepicker
+			beforeShow: function() {$(this).css("z-index", 999);}
 	});
 	
-	$('#inputNewsDate').datepicker();
-	$('#inputMagDate').datepicker();
+	var magDate = $('#magDate').val();
+	if (magDate.length > 0)
+		$('#magazineDate').datepicker('setDate', new Date(magDate));
+	var newsDate = $('#newsDate').val();
+	if (newsDate.length > 0)
+		$('#newspaperDate').datepicker('setDate', new Date(newsDate));
 	
 	var $select = $('#inputTags').selectize({
 		delimiter: ',',
@@ -133,13 +205,8 @@ $(function() {
 	$(document)
 		.on('click', '#review', function(e)
 		{
-			var ndx = $('#inputSource option:selected').index();
-			if (ndx == 0 || ndx == 7) {
-				$('#inputSource').val("");
-			}
-			var page = $('#inputBookPage').val();
-			if (page == null)
-				$('#inputBookPage').val(0);
+			//adjust source fields as necessary
+			adjustSourceFields();
 			
 			var option = $('input[name="photoOpts"]:checked').val();
 			if (option == 'change') {
@@ -204,20 +271,23 @@ $(function() {
 				url.val(webURL);
 			}
 		}
-	})	
+	});	
 	
 	$('#inputSource').change(function() {
-	
+
 		//prepare a date in the correct format
 		var d = new Date();
 		var day = d.getDate();
 		day = (day < 10) ? '0' + day : day;
 		var mon = d.getMonth() + 1;
 		mon = (mon < 10) ? '0' + mon : mon;
-		var dateStr = mon + '/' + day + '/' + d.getFullYear();
+		
+		var locale = $('#localeCode').val();
+		if (locale == 'en')
+			var dateStr = mon + '/' + day + '/' + d.getFullYear();
+		if (locale == 'fr')
+			var dateStr = day + '/' + mon + '/' + d.getFullYear();
 	
-		initSource();
-
 		var option = $(this).val();
 		$('.srcGroup').hide(); 
 		if (option === typeCookbook) {
@@ -226,12 +296,20 @@ $(function() {
 		}		
 		if (option === typeMagazine) {
 			$('.magGroup').show();
-			$( '#inputMagDate' ).val(dateStr);
+			var currDate = $('#magDate').val();
+			if (!currDate) {
+				$('#magazineDate' ).val(dateStr);
+				$('#altMagDate').val(dateStr);
+			}
 			$("#magazine").focus();
 		}		
 		if (option === typeNewspaper) {
 			$('.newsGroup').show();
-			$( '#inputNewsDate' ).val(dateStr);
+			var currDate = $('#newsDate').val();
+			if (!currDate) {
+				$('#newspaperDate' ).val(dateStr);
+				$('#altNewsDate').val(dateStr);
+			}
 			$("#newspaper").focus();
 		}		
 		if (option === typePerson) {
@@ -247,5 +325,5 @@ $(function() {
 			$("#other").focus();
 		}
 		$(this).removeClass('select-placeholder');				
-		});
+	});
 })

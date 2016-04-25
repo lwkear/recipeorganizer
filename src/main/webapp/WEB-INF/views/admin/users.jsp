@@ -54,7 +54,7 @@
 							<td><c:out value="${user.locked ? yesLabel : noLabel}"/></td>
 							<td><c:out value="${user.passwordExpired ? yesLabel : noLabel}"/></td>
 							<td><c:out value="${user.accountExpired ? yesLabel : noLabel}"/></td>
-							<td>${user.role.name}</td>
+							<td><spring:message code="roles.${user.role.name}"></spring:message></td>
 							<td>
 								<button class="btn btn-success btn-xs" type="button" id="update${user.id}" onclick="updateUser(${user.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
@@ -87,18 +87,18 @@
 					<div class="form-group">
 			            <label class="control-label" for="inputRole"><spring:message code="useradmin.common.role"></spring:message>:</label>
 		                <select class="form-control" id="inputRole">
-		                	<option data-id="0"><c:out value="NONE" /></option>
+		                	<option data-id="0"><spring:message code="roles.NONE"></spring:message></option>
 		                	<c:forEach items="${roles}" var="role">
-		                		<option data-id="${role.id}"><c:out value="${role.name}" /></option>
+		                		<option data-id="${role.id}"><spring:message code="roles.${role.name}"></spring:message></option>
 		                	</c:forEach>
 		                </select>
 				    </div>           
 					<div class="form-group">
 						<div class="row">
-							<div class="col-sm-7">
+							<div class="col-sm-6">
 								<label class="control-label" for="enabled"><spring:message code="useradmin.common.enabled"></spring:message>:</label>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-6">
 								<label class="radio-inline"><input type="radio" name="enabled" value="1"><spring:message code="common.yes"></spring:message></label>
 								<label class="radio-inline"><input type="radio" name="enabled" value="0"><spring:message code="common.no"></spring:message></label>
 							</div>
@@ -106,10 +106,10 @@
 					</div>
 					<div class="form-group">
 						<div class="row">
-							<div class="col-sm-7">
+							<div class="col-sm-6">
 								<label class="control-label" for="locked"><spring:message code="useradmin.common.locked"></spring:message>:</label>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-6">
 								<label class="radio-inline"><input type="radio" name="locked" value="1"><spring:message code="common.yes"></spring:message></label>
 								<label class="radio-inline"><input type="radio" name="locked" value="0"><spring:message code="common.no"></spring:message></label>
 							</div>
@@ -117,10 +117,10 @@
 					</div>
 					<div class="form-group">
 						<div class="row">
-							<div class="col-sm-7">
+							<div class="col-sm-6">
 								<label class="control-label" for="pswdExpired"><spring:message code="useradmin.common.passwordExpired"></spring:message>:</label>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-6">
 								<label class="radio-inline"><input type="radio" name="pswdExpired" value="1"><spring:message code="common.yes"></spring:message></label>
 								<label class="radio-inline"><input type="radio" name="pswdExpired" value="0"><spring:message code="common.no"></spring:message></label>
 							</div>
@@ -128,10 +128,10 @@
 					</div>
 					<div class="form-group">
 						<div class="row">
-							<div class="col-sm-7">
+							<div class="col-sm-6">
 								<label class="control-label" for="pswdExpired"><spring:message code="useradmin.common.accountExpired"></spring:message>:</label>
 							</div>
-							<div class="col-sm-5">
+							<div class="col-sm-6">
 								<label class="radio-inline"><input type="radio" name="acctExpired" value="1"><spring:message code="common.yes"></spring:message></label>
 								<label class="radio-inline"><input type="radio" name="acctExpired" value="0"><spring:message code="common.no"></spring:message></label>
 							</div>

@@ -38,7 +38,7 @@ $(function() {
 		    	$('#inputCategory').append(
 		        	$('<option>')
 		        		.val(item.name)
-		        		.html(item.name)
+		        		.html(item.displayName)
 		        		.attr('data-id',item.id)
 				);
 			});

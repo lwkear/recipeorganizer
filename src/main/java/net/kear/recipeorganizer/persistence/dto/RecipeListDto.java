@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import net.kear.recipeorganizer.enums.ApprovalStatus;
+import net.kear.recipeorganizer.enums.SourceType;
 
 public class RecipeListDto implements Serializable {
 
@@ -17,13 +18,13 @@ public class RecipeListDto implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String category;
-	private String sourcetype;
+	private SourceType sourceType;
 	private boolean allowShare;
 	private ApprovalStatus status;
 
 	public RecipeListDto() {}
 	
-	public RecipeListDto(long id, long userId, String name, String description, Date submitted, String firstName, String lastName, String category, String sourcetype,
+	public RecipeListDto(long id, long userId, String name, String description, Date submitted, String firstName, String lastName, String category, SourceType sourceType,
 			boolean allowShare, ApprovalStatus status) {
 		this.id = id;
 		this.userId = userId;
@@ -33,7 +34,7 @@ public class RecipeListDto implements Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.category = category;
-		this.sourcetype = sourcetype;
+		this.sourceType = sourceType;
 		this.allowShare = allowShare;
 		this.status = status;
 	}
@@ -78,12 +79,12 @@ public class RecipeListDto implements Serializable {
 		this.description = description;
 	}
 
-	public String getSourcetype() {
-		return sourcetype;
+	public SourceType getSourcetype() {
+		return sourceType;
 	}
 
-	public void setSourcetype(String sourcetype) {
-		this.sourcetype = sourcetype;
+	public void setSourcetype(SourceType sourceType) {
+		this.sourceType = sourceType;
 	}
 
 	public Date getSubmitted() {
@@ -170,7 +171,7 @@ public class RecipeListDto implements Serializable {
 				+ ", firstName=" + firstName 
 				+ ", lastName=" + lastName 
 				+ ", category=" + category 
-				+ ", sourcetype=" + sourcetype 
+				+ ", sourceType=" + sourceType 
 				+ ", allowShare=" + allowShare 
 				+ ", status=" + status + "]";
 	}

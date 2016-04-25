@@ -33,7 +33,7 @@
 				<div class="col-sm-2">
 					<div class="col-sm-12">
 						<form>
-							<h5><spring:message code="recipe.table.category"></spring:message></h5>
+							<h5><strong><spring:message code="recipe.table.category"></spring:message></strong></h5>
 							<div class="form-group">
 								<c:forEach var="cat" items="${categories}">
 									<div class="checkbox">
@@ -47,7 +47,7 @@
 					</div>
 					<div class="col-sm-12">
 						<form>
-							<h5><spring:message code="recipe.table.source"></spring:message></h5>
+							<h5><strong><spring:message code="recipe.table.source"></spring:message></strong></h5>
 							<div class="form-group">
 								<c:forEach var="src" items="${sources}">
 									<div class="checkbox">

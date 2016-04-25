@@ -40,11 +40,15 @@ public class Ingredient implements Serializable {
 	
 	@Column(name = "REVIEWED")
 	private boolean reviewed;
+
+	@Column(name = "LANG", nullable = false)
+	private String lang;
 	
 	public Ingredient() {}
 	
-	public Ingredient(String name) {
+	public Ingredient(String name, String lang) {
 		this.name = name;
+		this.lang = lang;
 	}
 	
 	public long getId() {
@@ -71,12 +75,21 @@ public class Ingredient implements Serializable {
 		this.reviewed = reviewed;
 	}
 	
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((lang == null) ? 0 : lang.hashCode());
 		return result;
 	}
 
@@ -96,6 +109,11 @@ public class Ingredient implements Serializable {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
+		if (lang == null) {
+			if (other.lang != null)
+				return false;
+		} else if (!lang.equals(other.lang))
+			return false;
 		return true;
 	}
 
@@ -103,6 +121,7 @@ public class Ingredient implements Serializable {
 	public String toString() {
 		return "Ingredient [id=" + id 
 				+ ", name=" + name 
-				+ ", reviewed=" + reviewed + "]"; 
+				+ ", reviewed=" + reviewed 
+				+ ", lang=" + lang + "]"; 
 	}
 }

@@ -249,8 +249,8 @@ public class AdminController {
 		String msg = messages.getMessage("common.congrats", null, "", locale);
 		htmlMsg = "<h5><strong>" + msg + "</strong></h5>";
 		Object[] obj = new String[2];
-		obj[0] = user.getRole().getDescription();
-		obj[1] = originalRole.getDescription();
+		obj[0] = messages.getMessage("roles." + user.getRole().getName(), null, "", locale);
+		obj[1] = messages.getMessage("roles." + originalRole.getName(), null, "", locale);
 		msg = messages.getMessage("account.upgrade.congrats", obj, "", locale);
 		htmlMsg += "<p>" + msg + "</p>";
 		
@@ -271,6 +271,16 @@ public class AdminController {
 	/************************************/
 	/*** Category maintenance handler ***/
 	/************************************/
+	//get list of categories
+	@RequestMapping(value = "admin/getCategories", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public List<Category> getCategories(Locale locale) {
+		logger.info("recipe/categories GET");
+		
+		return categoryService.listCategory();
+	}
+
 	@MaintAware
 	@RequestMapping(value = "/admin/category", method = RequestMethod.GET)
 	public String getCategory(Model model) {
@@ -336,10 +346,16 @@ public class AdminController {
 	/**********************************/
 	@MaintAware
 	@RequestMapping(value = "/admin/ingredients", method = RequestMethod.GET)
-	public String getIngredientReviewList(Model model) {
+	public String getIngredientReviewList(Model model, Locale locale) {
 		logger.info("admin/ingredients GET");
 
 		List<IngredientReviewDto> ingredients = ingredientService.listNotReviewed(); 
+		
+    	for (IngredientReviewDto ingred : ingredients) {
+    		Locale ingredLocale = new Locale(ingred.getLang());
+    		String language = ingredLocale.getDisplayLanguage(locale); 
+    		ingred.setDisplayLang(language);
+    	}		
 		
 		model.addAttribute("ingredients", ingredients);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Ingredient.class); 

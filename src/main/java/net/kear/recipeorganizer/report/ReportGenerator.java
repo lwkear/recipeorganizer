@@ -51,6 +51,7 @@ public class ReportGenerator {
 	private String recipeHtmlReportFilePath = "";
 	private String recipePdfReportFilePath = "";
 	private String logoHtmlImagePath = "";
+	private String logoPdfImagePath = "";
 	private String jasperReportDirPath = "";
 	private String pdfReportDirPath = "";
 	private File recipeHtmlFile = null;
@@ -74,6 +75,7 @@ public class ReportGenerator {
 		this.recipeHtmlReportFilePath = servletContext.getRealPath("/jasper/recipeHtml.jasper");
 		this.recipePdfReportFilePath = servletContext.getRealPath("/jasper/recipePdf.jasper");
 		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/logo.png";
+		this.logoPdfImagePath = servletContext.getRealPath("/resources/logo.png");
 		this.jasperReportDirPath = servletContext.getRealPath("/jasper/");
 		this.pdfReportDirPath = env.getProperty("file.directory.pdfs"); 
 		recipeHtmlFile = new File(this.recipeHtmlReportFilePath);
@@ -181,6 +183,7 @@ public class ReportGenerator {
     	}
 		
     	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
+    	params.put("logoPath", logoPdfImagePath);
     	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
     	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
     	JasperPrint jasperPrint = JasperFillManager.fillReport(recipePdfReport, params, src);

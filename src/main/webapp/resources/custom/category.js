@@ -10,7 +10,7 @@ function setCategory() {
 $(function() {
 
 	//get categories and set the options
-	$.getJSON("/recipeorganizer/recipe/getCategories")
+	$.getJSON("/recipeorganizer/admin/getCategories")
 		.done(function (data) {
 			$.each(data, function (index, item) {
 		    	$('#inputCategory').append(

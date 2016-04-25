@@ -8,14 +8,18 @@ public class IngredientReviewDto implements Serializable {
 	
 	private long id;
 	private String name;
+	private String lang;
+	private String displayLang;
 	private long usage;
 	
 	public IngredientReviewDto() {}
 
-	public IngredientReviewDto(long id, String name, long usage) {
+	public IngredientReviewDto(long id, String name, String lang, String displayLang, long usage) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.lang = lang;
+		this.displayLang = displayLang;
 		this.usage = usage;
 	}
 
@@ -33,6 +37,22 @@ public class IngredientReviewDto implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
+	}
+
+	public String getDisplayLang() {
+		return displayLang;
+	}
+
+	public void setDisplayLang(String displayLang) {
+		this.displayLang = displayLang;
 	}
 
 	public long getUsage() {
@@ -67,8 +87,11 @@ public class IngredientReviewDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "IngredientReviewDto [id=" + id + ", "
-				+ "name=" + name 
-				+ ", usage=" + usage + "]";
+		return "IngredientReviewDto [id=" + id
+				+ ", name=" + name
+				+ ", lang=" + lang
+				+ ", displayLang=" + displayLang 
+				+ ", usage=" + usage 
+				+ "]";
 	}
 }
