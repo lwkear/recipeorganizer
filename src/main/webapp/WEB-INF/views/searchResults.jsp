@@ -30,7 +30,7 @@
 		</div>
 		<div class="col-sm-12">
 			<div class="row">
-				<div class="col-sm-2">
+				<div class="col-sm-3">
 					<div class="col-sm-12">
 						<form>
 							<h5><strong><spring:message code="recipe.table.category"></spring:message></strong></h5>
@@ -60,7 +60,7 @@
 						</form>
 					</div>
 				</div>
-				<div class="col-sm-10">
+				<div class="col-sm-9">
 					<table class="table" id="recipeList">
 						<thead>
 							<tr>
@@ -85,7 +85,7 @@
 										</a>									
 									</td>
 									<td>cat${recipe.catId}</td>
-									<td>src${recipe.source}</td>
+									<td>src${recipe.sourceType}</td>
 								</tr>
 							</c:forEach>
 						</tbody>

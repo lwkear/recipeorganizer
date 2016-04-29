@@ -1,6 +1,8 @@
 package net.kear.recipeorganizer.persistence.repository;
  
-import java.math.BigDecimal;
+//import java.math.BigDecimal;
+
+import java.math.BigInteger;
 
 import net.kear.recipeorganizer.persistence.model.ExceptionLog;
 
@@ -21,12 +23,17 @@ public class ExceptionLogRepositoryImpl implements ExceptionLogRepository {
     }
 
     public Long getEventId() {
-    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    	//ORACLE v. POSTGRESQL
+    	/*SQLQuery query = (SQLQuery) getSession().createSQLQuery(
     			"select EXCEPTION_EVENTID_SEQ.nextval from dual");
-    	
     	BigDecimal id = (BigDecimal)query.uniqueResult(); 
+    	return id.longValue();*/
+
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    			"select nextval('EXCEPTION_EVENTID_SEQ')");
+    	BigInteger id = (BigInteger)query.uniqueResult();
     	return id.longValue();
-    }
+}
     
     private Session getSession() {
 		Session sess = sessionFactory.getCurrentSession();

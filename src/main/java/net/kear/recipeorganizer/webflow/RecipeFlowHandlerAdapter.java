@@ -26,13 +26,6 @@ public class RecipeFlowHandlerAdapter extends FlowHandlerAdapter {
 
 		Locale locale = request.getLocale();
 
-		/*ServletContext context = request.getSession().getServletContext();
-		if (maintInterceptor.isMaintenanceWindowSet() && !maintInterceptor.isMaintenanceInEffect()) {
-			String msg = maintInterceptor.getImminentMaint(locale);
-			if (!msg.isEmpty())
-				context.setAttribute("warningMaint", msg);
-		}*/
-
 		if (maintInterceptor.isMaintenanceWindowSet() && !maintInterceptor.isMaintenanceInEffect()) {
 			String msg = maintInterceptor.getImminentMaint(locale);
 			if (!msg.isEmpty())

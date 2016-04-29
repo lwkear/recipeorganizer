@@ -40,6 +40,7 @@ import org.springframework.util.AutoPopulatingList;
 import org.springframework.webflow.core.collection.ParameterMap;
 import org.springframework.webflow.execution.RequestContext;
  
+//NOTE: webflow requires a service identifier
 @Service("recipeService")
 @Transactional
 public class RecipeServiceImpl implements RecipeService {

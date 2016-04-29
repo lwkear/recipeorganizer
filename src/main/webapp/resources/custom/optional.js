@@ -23,7 +23,7 @@ function initSourceTA() {
 	$('.srcTA').typeahead(options,dataset);
 };
 
-function initSource() {
+/*function initSource() {
 	$('#coookbook').val('');
 	$('#cookbookPage').val('');
 	$('#magazine').val('');
@@ -36,6 +36,21 @@ function initSource() {
 	$('#websiteUrl').val('');
 	$('#recipeUrl').val('');
 	$('#other').val('');
+};*/
+
+function initSource() {
+	$('#coookbook').val(null);
+	$('#cookbookPage').val('');
+	$('#magazine').val(null);
+	$('#magazineDate').val(null);
+	$('#altMagDate').val(null);
+	$('#newspaper').val(null);
+	$('#newspaperDate').val(null);
+	$('#altNewsDate').val(null);
+	$('#person').val(null);
+	$('#websiteUrl').val(null);
+	$('#recipeUrl').val(null);
+	$('#other').val(null);
 };
 
 //if the form is returned with an error show the appropriate inputs
@@ -77,12 +92,12 @@ function adjustSourceFields() {
 	var ndx = $('#inputSource option:selected').index();
 	var option = "";
 	if (ndx == 0 || ndx == 7)
-		$('#inputSource').val("");
+		$('#inputSource').val(null);
 	else
 		option = $('#inputSource').val();
 	
 	if (option !== typeCookbook) {
-		$('#coookbook').val('');			
+		$('#coookbook').val(null);			
 		$('#cookbookPage').val(0);
 	}
 	else {
@@ -91,8 +106,8 @@ function adjustSourceFields() {
 			$('#cookbookPage').val(0);
 	}
 	if (option !== typeMagazine) {
-		$('#magazine').val('');
-		$('#magDate').val('');
+		$('#magazine').val(null);
+		$('#magDate').val(null);
 		$('#magazineDate').val(null);
 		$('#altMagDate').val(null);
 	}
@@ -101,8 +116,8 @@ function adjustSourceFields() {
 		$('#magDate').val(selDate);
 	}
 	if (option !== typeNewspaper) {
-		$('#newspaper').val('');
-		$('#newsDate').val('');
+		$('#newspaper').val(null);
+		$('#newsDate').val(null);
 		$('#newspaperDate').val(null);
 		$('#altNewsDate').val(null);
 	}
@@ -111,14 +126,14 @@ function adjustSourceFields() {
 		$('#newsDate').val(selDate);
 	}
 	if (option !== typePerson) {
-		$('#person').val('');
+		$('#person').val(null);
 	}
 	if (option !== typeWebsite) {
-		$('#websiteUrl').val('');
-		$('#recipeUrl').val('');
+		$('#websiteUrl').val(null);
+		$('#recipeUrl').val(null);
 	}
 	if (option !== typeOther) {
-		$('#other').val('');			
+		$('#other').val(null);			
 	}
 }
 

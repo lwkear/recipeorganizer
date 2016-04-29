@@ -194,13 +194,20 @@ public class HomeController {
 		return "policies";
 	}
 
+	@RequestMapping(value = "/betatest", method = RequestMethod.GET)
+	public String getBetaTest(Model model, Locale locale) {
+		logger.info("betatest GET");
+
+		return "betatest";
+	}
+	
 	@RequestMapping(value = "/sysmaint", method = RequestMethod.GET)
 	public ModelAndView getMaintenance(Model model, Locale locale) {
 		logger.info("sysmaint GET");
 
 		return commonView.getMaintenancePage(locale);
 	}
-	
+
 	//AJAX/JSON request for getting the timeout interval for the current user
 	@RequestMapping(value="/getSessionTimeout")
 	@ResponseBody 

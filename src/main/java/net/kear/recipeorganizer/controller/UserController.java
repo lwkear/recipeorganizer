@@ -222,14 +222,15 @@ public class UserController {
 	public String getSignup(Model model) {
 		logger.info("user/signup GET");
 		
-		UserDto user = new UserDto();
+		/*UserDto user = new UserDto();
 		//default to AUTHOR
 		user.setSubmitRecipes(true);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
-		model.addAttribute("userDto", user);		
+		model.addAttribute("userDto", user);*/		
 		
-		return "user/signup";
+		//return "user/signup";
+		return "betatest";
 	}
 	
 	@MaintAware

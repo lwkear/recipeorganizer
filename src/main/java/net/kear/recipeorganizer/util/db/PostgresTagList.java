@@ -14,7 +14,7 @@ public class PostgresTagList implements UserType {
 
 	@Override
 	public int[] sqlTypes() {
-	    return new int[]{Types.VARCHAR};
+	    return new int[]{Types.ARRAY};
 	}
 	
 	@Override
@@ -50,27 +50,18 @@ public class PostgresTagList implements UserType {
 		return strList;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
 
-    	/*Connection conn = st.getConnection();
-    	Connection oConn = ((DelegatingConnection)conn).getInnermostDelegate();
-    	ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor("TAGLIST", oConn);*/
-	
-		/*ARRAY array = null;
 	    if (value != null) {
-	        array = new ARRAY(descriptor, oConn, ((List<String>) value).toArray(new String[]{}));
+	    	List<String> str = (List<String>) value;
+	    	Array array = session.connection().createArrayOf("varchar", str.toArray());
+	        st.setObject(index, array);
 	    }
 	    else {
-	    	array = new ARRAY(descriptor, oConn, new String[]{});
+	    	st.setNull(index, sqlTypes()[0]);
 	    }
-	    
-        st.setObject(index, array);*/
-		
-		if (value == null)
-			st.setNull(index, 0);
-		else
-			st.setArray(index, (Array)value);
 	}
 	
 	@SuppressWarnings("unchecked")

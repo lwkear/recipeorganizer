@@ -290,8 +290,8 @@ function postFailed(error) {
 
 function fixTags() {
 	var tags = $("#tags").html();
-	console.log(tags);
 	if (tags) {
+		console.log(tags);		
 		var newtags = tags.substr(1,tags.length-2);
 		$("#tags").html(newtags);
 		console.log(newtags);

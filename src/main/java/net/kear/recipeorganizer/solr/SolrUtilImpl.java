@@ -75,18 +75,18 @@ public class SolrUtilImpl implements SolrUtil {
 		SolrQuery query = new SolrQuery();
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
-		query.setParam("qf", "name^2 or ingredname or description^1 or background or source or notes or tag");
-		query.setParam("fl", "id, userid, name, description, photo, allowshare, status, score, catid, srctype");
+		query.setParam("qf", "name^2 or ingredname or description^1 or background or source or notes or tags");
+		query.setParam("fl", "id, userid, name, description, photo, allowshare, status, score, catid, source, sourcetype");
 		query.addFilterQuery(filterStr);
 		query.setParam("start", "0");
 		query.setParam("rows", "100");
 		query.setHighlight(true);
-		query.addHighlightField("name or description or ingredname or background or source or notes or tag");
+		query.addHighlightField("name or description or ingredname or background or source or notes or tags");
 		query.setHighlightSimplePre("<strong>");
 		query.setHighlightSimplePost("</strong>");
 		query.setFacet(true);
 		query.addFacetField("catid");
-		query.addFacetField("srctype");
+		query.addFacetField("sourcetype");
 	    
 	    rsp = solrCore.query(query);
 
@@ -108,10 +108,11 @@ public class SolrUtilImpl implements SolrUtil {
 	    	boolean allowShare = (boolean)doc.getFieldValue("allowshare");
 	    	int stat = (Integer)doc.getFieldValue("status");
 	    	Long catId = (Long)doc.getFieldValue("catid");
-	    	String src = (String)doc.getFieldValue("srctype");
-	    	SourceType source = SourceType.NONE;
-	    	if (!StringUtils.isBlank(src))
-	    		source = SourceType.valueOf(src);
+	    	String source = (String)doc.getFieldValue("source");
+	    	String srcType = (String)doc.getFieldValue("sourcetype");
+	    	SourceType sourceType = SourceType.NONE;
+	    	if (!StringUtils.isBlank(srcType))
+	    		sourceType = SourceType.valueOf(srcType);
 	    	
 	    	boolean addResult = true;
 
@@ -131,7 +132,7 @@ public class SolrUtilImpl implements SolrUtil {
 		        		desc = highStr;
 		        	}
 	        	}
-	        	if (highMap.containsKey("tag")) {
+	        	if (highMap.containsKey("tags")) {
 	        		//if the only match was a tag but the recipe doesn't belong to the user, don't add it to the results
 	        		if (highMap.size() == 1 && uId != userId)
 	        			addResult = false;
@@ -140,7 +141,7 @@ public class SolrUtilImpl implements SolrUtil {
 	    	
 	    	if (addResult) {
 	    		ApprovalStatus status = ApprovalStatus.values()[stat];
-	    		SearchResultsDto rslts = new SearchResultsDto(rank++, id, uId, name, desc, photo, allowShare, status, catId, source);
+	    		SearchResultsDto rslts = new SearchResultsDto(rank++, id, uId, name, desc, photo, allowShare, status, catId, source, sourceType);
 	    		resultsList.add(rslts);
 	    	}
 	    }
@@ -173,7 +174,7 @@ public class SolrUtilImpl implements SolrUtil {
 		query.setQuery(searchTerm);
 		query.setParam("defType","edismax");
 		query.setParam("qf", "ingredid");
-		query.setParam("fl", "id, userid, name, description, allowshare, status, score, catname, srctype");
+		query.setParam("fl", "id, userid, name, description, photo, allowshare, status, score, catid, source, sourcetype");
 		query.setParam("start", "0");
 		query.setParam("rows", "100000");
 	    
@@ -195,12 +196,12 @@ public class SolrUtilImpl implements SolrUtil {
 	    	int stat = (Integer)doc.getFieldValue("status");
 	    	ApprovalStatus status = ApprovalStatus.values()[stat];
 	    	String catName = (String)doc.getFieldValue("catname");
-	    	String src = (String)doc.getFieldValue("srctype");
-	    	SourceType source = SourceType.NONE;
-	    	if (!StringUtils.isBlank(src))
-	    		source = SourceType.valueOf(src);
+	    	String srcType = (String)doc.getFieldValue("sourcetype");
+	    	SourceType sourceType = SourceType.NONE;
+	    	if (!StringUtils.isBlank(srcType))
+	    		sourceType = SourceType.valueOf(srcType);
 	    	
-	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, source, allowShare, status);
+	    	RecipeListDto rslts = new RecipeListDto(id, uId, name, desc, null, null, null, catName, sourceType, allowShare, status);
     		resultsList.add(rslts);
 	    }
 	    
@@ -231,21 +232,18 @@ public class SolrUtilImpl implements SolrUtil {
 		document.addField("userid", recipe.getUser().getId());
 		document.addField("name", recipe.getName());
 		document.addField("catname", recipe.getCategory().getName());
-		document.addField("catid", recipe.getCategory().getId());
+		document.addField("category_id", recipe.getCategory().getId());
 		document.addField("description", recipe.getDescription());
 		document.addField("allowshare", recipe.getAllowShare());
 		document.addField("status", recipe.getStatus().getValue());
-		if (!StringUtils.isBlank(recipe.getServings()))
-			document.addField("servings", recipe.getServings());
 		if (!StringUtils.isBlank(recipe.getNotes()))
 			document.addField("notes", recipe.getNotes());
 		if (!StringUtils.isBlank(recipe.getBackground()))
 			document.addField("background", recipe.getBackground());
 		if (!StringUtils.isBlank(recipe.getPhotoName()))
 			document.addField("photo", recipe.getPhotoName());
-		//TODO: TAGS change for PostgreSQL
 		if (!recipe.getTags().isEmpty())
-			document.addField("tag", recipe.getTags());
+			document.addField("tags", recipe.getTags());
 		if (recipe.getSource() != null) {
 			document.addField("sourcetype", recipe.getSource().getType());
 			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))

@@ -270,16 +270,16 @@ public class SearchController {
 		
 		for (FacetField facet : facets) {
 			String fName = facet.getName();
-			if (fName.equalsIgnoreCase("srctype")) {
+			if (fName.equalsIgnoreCase("sourcetype")) {
 				List<Count> counts = facet.getValues();
 				for (Count count : counts) {
-					String cName = count.getName();
-					long cCount = count.getCount();
-					facetCount += cCount;
-					if (cCount > 0) {
-						String sourceName = messages.getMessage("sourcetype."+cName, null, null, locale);
+					String sName = count.getName().toUpperCase();
+					long sCount = count.getCount();
+					facetCount += sCount;
+					if (sCount > 0) {
+						String sourceName = messages.getMessage("sourcetype."+sName, null, null, locale);
 						if (sourceName != null) {
-							SourceFacet srcFacet = new SourceFacet(cName, sourceName, cCount);
+							SourceFacet srcFacet = new SourceFacet(sName, sourceName, sCount);
 							srcs.add(srcFacet);
 						}						
 					}

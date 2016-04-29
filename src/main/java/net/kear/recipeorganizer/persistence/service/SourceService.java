@@ -12,4 +12,5 @@ public interface SourceService {
 	public void addSource(Source source);
 	public List<String> getSources(String searchStr, SourceType type);
 	public List<SourceTypeDto> getSourceTypes(Locale locale);
+	public List<SourceTypeDto> getSourceTypes();
 }

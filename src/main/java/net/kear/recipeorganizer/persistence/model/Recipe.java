@@ -44,6 +44,7 @@ import org.springframework.util.AutoPopulatingList;
 
 @Entity
 @Table(name = "RECIPE")
+//ORACLE v. POSTGRESQL
 /*@TypeDefs({
 	@TypeDef(name = "tagList", typeClass = OracleTagList.class)
 })*/
@@ -91,7 +92,8 @@ public class Recipe implements Serializable {
 	@Column(name = "DESCRIPTION")
 	@NotBlank(groups=SizeGroup.class)
 	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
+	//ORACLE v. POSTGRESQL
+	@Type(type="org.hibernate.type.TextType")
 	private String description;
 
 	@Column(name = "SERVINGS")
@@ -158,12 +160,16 @@ public class Recipe implements Serializable {
 	/*** optional page ***/
 	@Column(name = "BACKGROUND")
 	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
+	//ORACLE v. POSTGRESQL
+	@Type(type="org.hibernate.type.TextType")
+
 	private String background;
 	
 	@Column(name = "NOTES")
 	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
+	//ORACLE v. POSTGRESQL
+	@Type(type="org.hibernate.type.TextType")
+
 	private String notes;
 	
 	@Column(name = "PHOTO")
@@ -183,7 +189,9 @@ public class Recipe implements Serializable {
 	
 	@Transient
 	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
+	//ORACLE v. POSTGRESQL
+	@Type(type="org.hibernate.type.TextType")
+
 	private String privateNotes;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -204,7 +212,8 @@ public class Recipe implements Serializable {
 
 	public Recipe(User user, String name, String background, String description, Category category, String servings, Integer prepHours, String lang,
 				Integer prepMinutes, Integer totalHours, Integer totalMinutes, String notes, boolean allowShare, ApprovalStatus status, boolean copyrighted,  
-				String photoName, List<String> tags, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views) {
+				String photoName, List<InstructionSection> instructSections, List<IngredientSection> ingredSections, Source source, Integer views,
+				List<String> tags) {
 		super();
 		this.user = user;
 		this.name = name;

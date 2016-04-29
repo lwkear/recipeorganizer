@@ -9,6 +9,7 @@
 	<on-start>
     	<evaluate expression="recipeService.createRecipe(currentUser.name)" result="flowScope.recipe" />
     	<evaluate expression="recipeService.getConstraintMap('Size', 'max')" result="flowScope.sizeMap" />
+    	<evaluate expression="sourceService.getSourceTypes()" result="flowScope.typeList" />
 	</on-start>
 	
 	<view-state id="basics" view="recipe/basics" model="recipe">

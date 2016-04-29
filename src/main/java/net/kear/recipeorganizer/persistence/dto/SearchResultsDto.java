@@ -18,12 +18,13 @@ public class SearchResultsDto extends Object implements Serializable {
 	private boolean allowShare;
 	private ApprovalStatus status;
 	private long catId;
-	private SourceType source;
+	private String source;
+	private SourceType sourceType;
 	
 	public SearchResultsDto() {};
 	
 	public SearchResultsDto(int rank, Long id, Long userId, String name, String description, String photo, boolean allowShare, 
-			ApprovalStatus status, long catId, SourceType source) {
+			ApprovalStatus status, long catId, String source, SourceType sourceType) {
 		this.rank = rank;
 		this.id = id;
 		this.userId = userId;
@@ -34,6 +35,7 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.status = status;
 		this.catId = catId;
 		this.source = source;
+		this.sourceType = sourceType;
 	};	
 
 	public int getRank() {
@@ -108,12 +110,20 @@ public class SearchResultsDto extends Object implements Serializable {
 		this.catId = catId;
 	}
 
-	public SourceType getSource() {
+	public String getSource() {
 		return source;
 	}
 
-	public void setSource(SourceType source) {
+	public void setSource(String source) {
 		this.source = source;
+	}	
+
+	public SourceType getSourceType() {
+		return sourceType;
+	}
+
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
 	}	
 
 	@Override
@@ -158,6 +168,7 @@ public class SearchResultsDto extends Object implements Serializable {
 				+ ", allowShare=" + allowShare 
 				+ ", status=" + status 
 				+ ", catId=" + catId 
-				+ ", source=" + source + "]";
+				+ ", source=" + source
+				+ ", sourceType=" + sourceType + "]";
 	}
 }

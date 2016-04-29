@@ -32,14 +32,6 @@ public class Source implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/*public static final String TYPE_COOKBOOK = "Cookbook";
-	public static final String TYPE_MAGAZINE = "Magazine";
-	public static final String TYPE_NEWSPAPER = "Newspaper";
-	public static final String TYPE_PERSON = "Person";
-	public static final String TYPE_WEBSITE = "Website";
-	public static final String TYPE_OTHER = "Other";
-	public static final String TYPE_NONE = "None";*/
-	
 	//Hibernate validation groups
 	public interface SizeGroup {}
 	public interface OtherGroup {}
@@ -99,7 +91,7 @@ public class Source implements Serializable {
 	private String recipeUrl;
 
 	@Column(name = "OTHER")
-	@Size(max=500, groups=SizeGroup.class)	//500
+	@Size(max=250, groups=SizeGroup.class)	//250
 	private String other;
 
     @OneToOne(fetch = FetchType.LAZY)

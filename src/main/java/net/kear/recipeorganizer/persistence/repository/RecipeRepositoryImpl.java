@@ -338,10 +338,16 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     
     @SuppressWarnings("unchecked")
     public List<String> getTags(Long userId) {
-    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    	//ORACLE v. POSTGRESQL
+    	/*SQLQuery query = (SQLQuery) getSession().createSQLQuery(
 			"select distinct t.column_value as tag from recipe r, table(r.tags) t where r.user_id = :id")
 			.addScalar("tag", StringType.INSTANCE)
-			.setLong("id", userId);
+			.setLong("id", userId);*/
+    	
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    		"with u as (select user_id, unnest(tags) as t from recipe) select distinct t tag from u where user_id = :id")
+    		.addScalar("tag", StringType.INSTANCE)
+    		.setLong("id", userId);    	
     	
     	List<String> result = query.list();
     	return result;

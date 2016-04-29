@@ -1,8 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -115,12 +113,6 @@ public class RecipeController {
 		model.addAttribute("recipe", recipe);
 		
 		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale);
-    	Collections.sort(typeList, new Comparator<SourceTypeDto>() {
-			@Override
-			public int compare(SourceTypeDto o1, SourceTypeDto o2) {
-				return o1.getDisplayName().compareTo(o2.getDisplayName());
-			}
-    	});
     	model.addAttribute("typeList", typeList);
 
 		if (refer != null && !refer.contains("view"))
@@ -232,20 +224,7 @@ public class RecipeController {
 	public List<CategoryDto> getCategories(Locale locale) {
 		logger.info("recipe/categories GET");
 		
-		List<CategoryDto> catList = categoryService.listCategoryDto(); 
-
-    	for (CategoryDto cat: catList) {
-    		String display = messages.getMessage("category." + cat.getName(), null, cat.getName(), locale);
-    		cat.setDisplayName(display);
-    	}
-    	
-    	Collections.sort(catList, new Comparator<CategoryDto>() {
-			@Override
-			public int compare(CategoryDto o1, CategoryDto o2) {
-				return o1.getDisplayName().compareTo(o2.getDisplayName());
-			}
-    	});
-		
+		List<CategoryDto> catList = categoryService.listCategoryDto(locale); 
 		return catList;
 	}
 	
@@ -256,15 +235,7 @@ public class RecipeController {
 	public List<SourceTypeDto> getSourceTypes(Locale locale) {
 		logger.info("recipe/sourceTypes GET");
 		
-		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale); 
-
-    	Collections.sort(typeList, new Comparator<SourceTypeDto>() {
-			@Override
-			public int compare(SourceTypeDto o1, SourceTypeDto o2) {
-				return o1.getDisplayName().compareTo(o2.getDisplayName());
-			}
-    	});
-		
+		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale); 		
 		return typeList;
 	}
 	

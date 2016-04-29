@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
-<!-- 2016-04-02T07:55:52 -->
+<!-- 2016-04-28T10:03:07 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="instructions" pageWidth="612" pageHeight="792" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="0" uuid="c4c18e8f-2ff4-480a-a1fc-ba136e77a047">
 	<parameter name="instructTitle" class="java.lang.String" isForPrompting="false"/>
 	<field name="sequenceNo" class="java.lang.Integer"/>
@@ -18,7 +18,7 @@
 					<textElement>
 						<font size="14" isBold="true"/>
 					</textElement>
-					<textFieldExpression><![CDATA[$F{name} != null ? $F{name} : $P{instructTitle}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$F{name} != null && $F{name}.length() > 0 ? $F{name} : $P{instructTitle}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>

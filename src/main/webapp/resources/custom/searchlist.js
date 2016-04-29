@@ -19,14 +19,13 @@ $(function() {
 		.on('stateLoaded.dt', function(e, settings, data) {
 			console.log("stateLoaded.dt: " + data.columns[2].search.search);
 			var searchStr = data.columns[2].search.search;
-			if (!searchStr && searchStr.length > 0)
+			if (searchStr.length > 0)
 				setCheckmarks(searchStr);
 			var searchStr = data.columns[3].search.search;
-			if (!searchStr && searchStr.length > 0)
+			if (searchStr.length > 0)
 				setCheckmarks(searchStr);
 		})
 		.DataTable({
-			searching: false,
 			lengthChange: false,
 			language : {
 		    	emptyTable:     getMessage('recipe.table.emptyTable'),
@@ -57,15 +56,18 @@ $(function() {
 			    {	targets: [0,2,3],
 			    	visible: false
 				},
-				{	targets: [0],
+				{	targets: [0,1],
 					searchable: false
+				},
+				{	targets: [2,3],
+					searchable: true
 				}			
 			]
 		});
 	
 	$('.category').on('click', function() {
-		map = new Array();
-		//go throught the categories and build an array of id's for those that are checked
+		var map = new Array();
+		//go through the categories and build an array of id's for those that are checked
 		$('.category').each(function() {
 			var checked = $(this).is(':checked');
 			if (checked == true) {
@@ -81,8 +83,8 @@ $(function() {
 	});
 
 	$('.source').on('click', function() {
-		map = new Array();
-		//go throught the categories and build an array of id's for those that are checked
+		var map = new Array();
+		//go through the categories and build an array of id's for those that are checked
 		$('.source').each(function() {
 			var checked = $(this).is(':checked');
 			if (checked == true) {

@@ -23,6 +23,17 @@
 				<h3><spring:message code="category.title"></spring:message></h3>
 			</div>
 		</div>
+
+	<spring:hasBindErrors name="category">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors>
+
 		<div class="col-sm-12">
 			<div class="row">			
 		    <form:form class="form-horizontal" role="form" action="category" method="post" modelAttribute="category">
@@ -30,7 +41,7 @@
 				<div class="form-group">
 		        	<label class="control-label col-sm-4" for="inputCategory"><spring:message code="category.list"></spring:message>:</label>
 		            <div class="col-sm-3">
-		                <select class="form-control select-placeholder" id="inputCategory">
+		                <select data-id=0 class="form-control select-placeholder" id="inputCategory">
 		                	<option value="" style="display:none"><spring:message code="recipe.basics.selectcat"></spring:message></option>
 						</select>
 					</div>

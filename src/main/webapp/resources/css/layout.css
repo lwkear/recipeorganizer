@@ -268,3 +268,6 @@ table.dataTable thead .sorting_desc:after {
   sort-by-attributes-alt
 }
  
+.dataTables_filter {
+	display: none
+}

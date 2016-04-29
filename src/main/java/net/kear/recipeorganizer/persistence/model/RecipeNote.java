@@ -21,7 +21,8 @@ public class RecipeNote implements Serializable {
 	
 	@Column(name = "NOTE")
 	@Lob
-	@Type(type="org.hibernate.type.MaterializedClobType")
+	//ORACLE v. POSTGRESQL
+	@Type(type="org.hibernate.type.TextType")
 	private String note;
 	
 	public RecipeNote() {}
