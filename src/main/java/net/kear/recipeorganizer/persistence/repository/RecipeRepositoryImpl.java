@@ -12,7 +12,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
-import org.hibernate.type.StringType;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
@@ -346,7 +346,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
     		"with u as (select user_id, unnest(tags) as t from recipe) select distinct t tag from u where user_id = :id")
-    		.addScalar("tag", StringType.INSTANCE)
+    		.addScalar("tag", StandardBasicTypes.STRING)
     		.setLong("id", userId);    	
     	
     	List<String> result = query.list();

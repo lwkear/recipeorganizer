@@ -222,6 +222,7 @@ public class UserController {
 	public String getSignup(Model model) {
 		logger.info("user/signup GET");
 		
+		//TODO: restore this after beta testing is completed
 		/*UserDto user = new UserDto();
 		//default to AUTHOR
 		user.setSubmitRecipes(true);
@@ -230,6 +231,7 @@ public class UserController {
 		model.addAttribute("userDto", user);*/		
 		
 		//return "user/signup";
+		
 		return "betatest";
 	}
 	
@@ -240,6 +242,10 @@ public class UserController {
 		logger.info("user/signup POST: email=" + userDto.getEmail());
 
 		ModelAndView mv = new ModelAndView("user/signup");
+		
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
+		mv.addObject("sizeMap", sizeMap);
 		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
@@ -376,27 +382,6 @@ public class UserController {
        	logger.debug("new token requested - publishing event");
        	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale, token));
 
-       	/*VerificationToken newToken = null;
-		User user = null;
-		try {
-			newToken = userService.recreateUserVerificationToken(token);
-	        user = userService.getVerificationUser(newToken.getToken());
-		} catch (Exception ex) {
-        	throw new VerificationResendException(ex);
-        }
-
-       	String userName = user.getFirstName() + " " + user.getLastName();
-        String confirmationUrl = "/confirmRegistration?token=" + newToken.getToken();
-        
-        registrationEmail.init(userName, user.getEmail(), locale);
-        registrationEmail.setTokenUrl(confirmationUrl);
-        registrationEmail.constructEmail();
-    	try {
-			emailSender.sendHtmlEmail(registrationEmail);
-		} catch (Exception ex) {
-			throw new VerificationResendException(ex);
-		}*/
-        
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
@@ -442,9 +427,13 @@ public class UserController {
 
 	@MaintAware
 	@RequestMapping(value = "user/profile", method = RequestMethod.POST)
-	public String postProfile(@ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
+	public String postProfile(Model model, @ModelAttribute @Valid UserProfile userProfile, BindingResult result, Locale locale,
 			@RequestParam(value = "file", required = false) MultipartFile file, HttpSession session) throws AccessUserException, SaveAccountException {
 		logger.info("user/profile POST: user=" + userProfile.getUser().getId());
+
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserProfile.class); 
+		model.addAttribute("sizeMap", sizeMap);
 
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
@@ -680,10 +669,14 @@ public class UserController {
 
 	@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
-	public String postPassword(@ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
+	public String postPassword(Model model, @ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
 			throws SaveAccountException, AccessUserException {
 		logger.info("user/changePassword POST");
 
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
 		User currentUser = (User)userInfo.getUserDetails();
 		
 		if (result.hasErrors()) {
@@ -790,10 +783,6 @@ public class UserController {
 			return mv;
 		}
 		
-       	/*logger.debug("password reset - publishing event");
-       	final String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-       	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), appUrl));*/
-		
 		logger.debug("password reset - publishing event");
        	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), null));
         
@@ -874,27 +863,6 @@ public class UserController {
 		logger.debug("new token requested - publishing event");
        	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), token));
 		
-		/*PasswordResetToken newToken = null;
-		User user = null;
-		try {
-			newToken = userService.recreatePasswordResetTokenForUser(token);
-	        user = userService.getPasswordResetUser(newToken.getToken());
-		} catch (Exception ex) {
-        	throw new PasswordResendException(ex);
-        }
-        
-        String userName = user.getFirstName() + " " + user.getLastName();
-        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + newToken.getToken();
-        
-        passwordEmail.init(userName, user.getEmail(), locale);
-        passwordEmail.setTokenUrl(confirmationUrl);
-        passwordEmail.constructEmail();
-		try {
-			emailSender.sendHtmlEmail(passwordEmail);
-		} catch (Exception ex) {
-	    	throw new PasswordResendException(ex);
-	    }*/
-        
         redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
@@ -906,6 +874,9 @@ public class UserController {
 	public String getNewPassword(Model model) {
 		logger.info("user/newPassword GET");
 				
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", NewPasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
 		return "user/newPassword";
 	}
 	
@@ -914,6 +885,10 @@ public class UserController {
 	public String postNewPassword(Model model, @ModelAttribute @Validated(NewPasswordDtoSequence.class) NewPasswordDto newPasswordDto, BindingResult result, Locale locale) throws PasswordResetException {
 		logger.info("user/newPassword POST");
 
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", NewPasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
 			newPasswordDto.setPassword("");

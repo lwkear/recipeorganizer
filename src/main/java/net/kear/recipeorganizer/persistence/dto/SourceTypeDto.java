@@ -59,7 +59,7 @@ public class SourceTypeDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "IngredientReviewDto [type=" + type
+		return "SourceTypeDto [type=" + type
 				+ ", displayName=" + displayName 
 				+ "]";
 	}

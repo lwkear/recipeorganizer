@@ -13,30 +13,41 @@ import javax.validation.Valid;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.AutoPopulatingList;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.UserAge;
+import net.kear.recipeorganizer.exception.RestException;
+import net.kear.recipeorganizer.persistence.dto.CommentDto;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
+import net.kear.recipeorganizer.persistence.dto.QuestionDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
+import net.kear.recipeorganizer.persistence.dto.TopicDto;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeComment;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserMessage;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
@@ -98,48 +109,13 @@ public class HomeController {
 	@Autowired
 	private UserMessageService userMessageService;
 
+	private static final int MAX_TOPICS = 25;
+	private static final int MAX_QUESTIONS = 100;
+	
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("home GET");
 
-/*		Date createTime = new Date(session.getCreationTime());
-		Date lastAccess = new Date(session.getLastAccessedTime());
-		int maxInactive = session.getMaxInactiveInterval();
-		String sessID = session.getId();
-
-		logger.debug("Session created on: " + createTime);
-		logger.debug("Session last accessed on: " + lastAccess);
-		logger.debug("Session expires after: " + maxInactive + " seconds");
-		logger.debug("Session ID: " + sessID);
-
-		List<Object> allPrinc = sessionRegistry.getAllPrincipals();
-		for (Object obj : allPrinc) {
-			final List<SessionInformation> sessions = sessionRegistry.getAllSessions(obj, true);
-
-			for (SessionInformation sess : sessions) {
-				Object princ = sess.getPrincipal();
-				String sessId = sess.getSessionId();
-				Date sessDate = sess.getLastRequest();
-				
-				logger.debug("sessionRegistry.princ: " + princ);
-				logger.debug("sessionRegistry.sessId: " + sessId);
-				logger.debug("sessionRegistry.sessDate: " + sessDate.toString());
-			}
-		}
-
-		Enumeration<String> attrNames = session.getAttributeNames();
-		while (attrNames.hasMoreElements())
-			logger.debug("getHome: attrNames " + attrNames.nextElement());
-		
-		Object token = session.getAttribute("org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN");
-		if (token != null)
-			logger.debug("getHome: csrf token: " + token.toString());
-		
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		logger.debug("security context auth: " + auth.toString());
-		
-		logger.debug("locale: " + locale.getDisplayLanguage()); 
-*/		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		
@@ -167,10 +143,110 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/faq", method = RequestMethod.GET)
-	public String getFaq(Model model) {
+	public String getFaq(Model model, Locale locale) {
 		logger.info("FAQ GET");
+
+		List<TopicDto> topics = new AutoPopulatingList<TopicDto>(TopicDto.class);
+		List<QuestionDto> questions = new AutoPopulatingList<QuestionDto>(QuestionDto.class);
 		
+		String totalTopics = messages.getMessage("faq.topic.total", null, "0", locale);
+		int totTopics = Integer.parseInt(totalTopics);
+		
+		int tNdx = 1;
+		for (int ndx=1;;ndx++) {
+			if ((tNdx > totTopics) || (tNdx > MAX_TOPICS))
+				break;
+			
+			String currTopic = "faq.topic." + ndx + ".";
+			String topicTotal = messages.getMessage(currTopic + "count", null, "", locale);
+			if (StringUtils.isBlank(topicTotal))
+				continue;
+				
+			int topicTot = Integer.parseInt(topicTotal);
+			if (topicTot > 0) {
+				TopicDto topic = new TopicDto();
+				topic.setId(ndx);
+				topic.setDescription(messages.getMessage(currTopic + "description", null, "", locale));
+				topics.add(topic);
+				tNdx++;
+			}
+		}
+
+		if (!topics.isEmpty()) {
+			TopicDto topic = topics.get(0); 
+			int topicOne = topic.getId();
+			String topicStr = "faq.topic." + topicOne + ".";
+			String topicTotal = messages.getMessage(topicStr + "count", null, "0", locale);
+			int topicTot = Integer.parseInt(topicTotal);
+	
+			int qNdx = 1;
+			for (int ndx=1;;ndx++) {
+				if ((qNdx > topicTot) || (qNdx > MAX_QUESTIONS))
+					break;
+				
+				String question = messages.getMessage(topicStr + "question." + ndx, null, "", locale);
+				if (StringUtils.isBlank(question))
+					continue;
+				String answer = messages.getMessage(topicStr + "answer." + ndx, null, "", locale);
+				if (StringUtils.isBlank(answer))
+					continue;
+				
+				QuestionDto questDto = new QuestionDto();
+				questDto.setId(ndx);
+				questDto.setQuestion(question);
+				questDto.setAnswer(answer);
+				questions.add(questDto);
+				qNdx++;
+			}
+		}
+
+		model.addAttribute("topics", topics);
+		model.addAttribute("questions", questions);
+				
 		return "faq";
+	}
+	
+	//NOTE: do NOT add @ResponseBody to this method since that will return a string instead of HTML
+	@RequestMapping(value = "/questions/{topicId}", method = RequestMethod.GET)
+	@ResponseStatus(value=HttpStatus.OK)
+	public String getQuestions(Model model, @PathVariable Integer topicId, Locale locale, HttpServletResponse response) throws RestException {
+		logger.info("questions/topic GET: topicId=" + topicId);
+
+		List<QuestionDto> questions = new AutoPopulatingList<QuestionDto>(QuestionDto.class);
+		
+		String currTopic = "faq.topic." + topicId + ".";
+		String topicTotal = messages.getMessage(currTopic + "count", null, "", locale);
+		if (StringUtils.isBlank(topicTotal))
+			return "questions";
+		
+		int topicTot = Integer.parseInt(topicTotal);
+		String topicStr = "faq.topic." + topicId + ".";
+		
+		int qNdx = 1;
+		for (int ndx=1;;ndx++) {
+			if ((qNdx > topicTot) || (qNdx > MAX_QUESTIONS))
+				break;
+			
+			String question = messages.getMessage(topicStr + "question." + ndx, null, "", locale);
+			if (StringUtils.isBlank(question))
+				continue;
+			String answer = messages.getMessage(topicStr + "answer." + ndx, null, "", locale);
+			if (StringUtils.isBlank(answer))
+				continue;
+			
+			QuestionDto questDto = new QuestionDto();
+			questDto.setId(ndx);
+			questDto.setQuestion(question);
+			questDto.setAnswer(answer);
+			questions.add(questDto);
+			qNdx++;
+		}
+		
+		response.setContentType("text/html");
+		response.setCharacterEncoding("utf-8");
+		model.addAttribute("questions", questions);
+		
+		return "questions";
 	}
 	
 	@RequestMapping(value = "/technical", method = RequestMethod.GET)
@@ -364,7 +440,7 @@ public class HomeController {
 		age = strList[UserAge.UA51TO70.ordinal()];
 		logger.debug("age:" + age);*/
 
-		User user = userService.getUser(5L);
+		/*User user = userService.getUser(5L);
 		
 		RecipeMessageDto recipeMessageDto = new RecipeMessageDto();
 		model.addAttribute("recipeMessageDto", recipeMessageDto);
@@ -378,7 +454,7 @@ public class HomeController {
 		msg.setMessage("Some regular text, then some html");
 		msg.setHtmlMessage("<p>This is a message!</p><ul><li>Reason #1</li><li>Reason #2</li><li>Reason #3</li></ul><p>Some other message</p>");
 
-		userMessageService.addMessage(msg);
+		userMessageService.addMessage(msg);*/
 		
 		return "test/testpage";
 	}

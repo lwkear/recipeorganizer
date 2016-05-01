@@ -41,16 +41,16 @@ public class UserMessageRepositoryImpl implements UserMessageRepository {
 	@Override
 	public void setViewed(long id) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"update message set viewed = 1 where id = :id")
+			"update message set viewed = true where id = :id")
 			.setLong("id", id);
    	
-    	query.executeUpdate();		
+    	query.executeUpdate();
 	}
 	
 	@Override
 	public void setUserViewed(long userId) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"update message set viewed = 1 where to_user_id = :id")
+			"update message set viewed = true where to_user_id = :id")
 			.setLong("id", userId);
    	
     	query.executeUpdate();		

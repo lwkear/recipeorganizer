@@ -28,7 +28,7 @@
 				<div class="text-center bold-maroon"><h5>${maintWindow}</h5></div>
 				<div class="row col-sm-offset-4 spacer-vert-xs">				
 					<div class="row">
-						<div class="col-sm-4">
+						<div class="col-sm-5">
 		            		<label class="control-label" for="maintenanceEnabled"><spring:message code="maintenance.enablemaintenance"></spring:message></label>
 		            	</div>
 						<div class="radio-inline">

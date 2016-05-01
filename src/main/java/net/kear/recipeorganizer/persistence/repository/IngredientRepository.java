@@ -11,7 +11,7 @@ public interface IngredientRepository {
     public void updateIngredient(Ingredient ingredient);
     public void deleteIngredient(Long id);
     public Ingredient getIngredient(Long id);
-    public void setReviewed(long id, int reviewed);
+    public void setReviewed(long id, boolean reviewed);
     public List<Ingredient> listIngredients();
     public List<Ingredient> getIngredients(String searchStr, String lang);
     public long getNotReviewedCount();

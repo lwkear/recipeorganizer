@@ -298,6 +298,10 @@ public class AdminController {
 	public String saveCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
 		logger.info("admin/category POST save: id/name=" + category.getId() + "/" + category.getName());
 
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Category.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
 			return "admin/category";
@@ -323,6 +327,10 @@ public class AdminController {
 	public String deleteCategory(Model model, @ModelAttribute @Valid Category category, BindingResult result, Locale locale) {
 		logger.info("admin/category POST delete: catId/name=" + category.getId() + "/" + category.getName());
 
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", Category.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
 			return "admin/category";
@@ -385,7 +393,7 @@ public class AdminController {
 		logger.info("admin/approveIngredient POST: ingredId=" + ingredId);
 		
 		try {
-			ingredientService.setReviewed(ingredId, 1);
+			ingredientService.setReviewed(ingredId, true);
 		} catch (Exception ex) {
 			throw new RestException("exception.approveIngredient", ex);
 		}
@@ -645,6 +653,7 @@ public class AdminController {
 		logger.info("admin/maintenance POST");
 		logger.debug("MaintenanceDto: " + maintenanceDto);
 		
+		//must re-add attribute(s) in case of an error
 		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
 		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));
 

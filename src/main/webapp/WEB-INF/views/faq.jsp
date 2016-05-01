@@ -8,8 +8,6 @@
 
 </head>
 
-<!-- http://getbootstrap.com/examples/dashboard/dashboard.css -->
-
 <body role="document">
 
 <%@include file="common/nav.jsp" %>
@@ -24,32 +22,17 @@
 			<div class="row">
 				<div class="col-sm-2">
 					<ul class="nav">
-						<li><a href="#">Reports</a></li>
-						<li><a href="#">Reports</a></li>
-						<li><a href="#">Reports</a></li>
-						<li><a href="#">Reports</a></li>
+						<c:forEach var="topic" items="${topics}" varStatus="loop">
+							<li><button class="btn btn-link" type="button" id="${topic.id}" onclick="getQuestions(${topic.id})">${topic.description}</button></li>
+						</c:forEach>
 					</ul>
 				</div>
-				<div class="col-sm-10"  style="border-left: 1px solid #000">
-		            <div class="panel-heading">
-		                <h5 class="panel-title">
-		                	<a data-toggle="collapse" data-parent="#accordion" href="#panel1"><spring:message code="recipe.basics.title"></spring:message></a>
-		                </h5>
-		            </div>
-		            <div id="panel1" class="panel-collapse collapse">
-		            	<div class="panel-body">
-		            		<span>Some content #1</span>
-						</div>
-					</div>
-		            <div class="panel-heading">
-		                <h5 class="panel-title">
-		                	<a data-toggle="collapse" data-parent="#accordion" href="#panel2"><spring:message code="recipe.basics.title"></spring:message></a>
-		                </h5>
-		            </div>
-		            <div id="panel2" class="panel-collapse collapse">
-		            	<div class="panel-body">
-		            		<span>Some content #2</span>
-						</div>
+
+				<div class="col-sm-10" style="border-left: 1px solid #000">
+					<div id="questionsSection">
+				
+						<%@include file="questions.jsp" %>
+						
 					</div>
 				</div>
 			</div>
@@ -60,4 +43,8 @@
 <%@include file="common/footer.jsp" %>	
 	
 </body>
+
+<!-- include specific routines -->
+<script src="<c:url value="/resources/custom/faq.js" />"></script>
+
 </html>

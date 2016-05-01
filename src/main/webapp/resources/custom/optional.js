@@ -23,7 +23,7 @@ function initSourceTA() {
 	$('.srcTA').typeahead(options,dataset);
 };
 
-/*function initSource() {
+function initSource() {
 	$('#coookbook').val('');
 	$('#cookbookPage').val('');
 	$('#magazine').val('');
@@ -36,21 +36,6 @@ function initSourceTA() {
 	$('#websiteUrl').val('');
 	$('#recipeUrl').val('');
 	$('#other').val('');
-};*/
-
-function initSource() {
-	$('#coookbook').val(null);
-	$('#cookbookPage').val('');
-	$('#magazine').val(null);
-	$('#magazineDate').val(null);
-	$('#altMagDate').val(null);
-	$('#newspaper').val(null);
-	$('#newspaperDate').val(null);
-	$('#altNewsDate').val(null);
-	$('#person').val(null);
-	$('#websiteUrl').val(null);
-	$('#recipeUrl').val(null);
-	$('#other').val(null);
 };
 
 //if the form is returned with an error show the appropriate inputs

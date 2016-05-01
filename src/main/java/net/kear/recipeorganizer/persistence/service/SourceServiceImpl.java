@@ -11,8 +11,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AutoPopulatingList;
-import org.springframework.webflow.context.servlet.ServletExternalContext;
-import org.springframework.webflow.execution.RequestContext;
 
 import net.kear.recipeorganizer.enums.SourceType;
 import net.kear.recipeorganizer.persistence.dto.SourceTypeDto;
@@ -57,13 +55,8 @@ public class SourceServiceImpl implements SourceService {
     	return list;
     }
 
-    public List<SourceTypeDto> getSourceTypes() {		//RequestContext requestContext) {
-    
-    	//ServletExternalContext context = (ServletExternalContext) requestContext.getExternalContext();
-    	//Locale locale = context.getLocale();
-    	
+    public List<SourceTypeDto> getSourceTypes() {
     	Locale locale = LocaleContextHolder.getLocale();
-    	
     	List<SourceTypeDto> list = new AutoPopulatingList<SourceTypeDto>(SourceTypeDto.class);
     	for (SourceType type : SourceType.values()) {
     		SourceTypeDto dto = new SourceTypeDto();

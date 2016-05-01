@@ -31,10 +31,10 @@
 			</button>
 			<c:choose>				
 				<c:when test="${isAuth}">
-					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a>
 				</c:when>
 				<c:otherwise>
-					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a>
 				</c:otherwise>
 			</c:choose>			
 		</div>

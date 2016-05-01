@@ -67,11 +67,20 @@ public class Recipe implements Serializable {
 	@GroupSequence({MinSizeGroup1.class, IngredientSection.IngredSectGroup.class})
 	public interface RecipeIngredGroup {}
 
-	@GroupSequence({MinSizeGroup2.class, InstructionSection.InstructSectGroup.class,})
+	@GroupSequence({MinSizeGroup2.class, InstructionSection.InstructSectGroup.class})
 	public interface RecipeInstructGroup {}
 	
 	@GroupSequence({SizeGroup.class, Source.SourceGroup.class})
 	public interface RecipeOptionalGroup {}
+	
+	@GroupSequence({NotBlankGroup.class,
+					SizeGroup.class,
+					MinSizeGroup1.class,
+					MinSizeGroup2.class,
+					IngredientSection.IngredSectGroup.class,
+					InstructionSection.InstructSectGroup.class, 
+					Source.SourceGroup.class})
+	public interface RecipeAllGroup {}
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)

@@ -35,6 +35,8 @@
 		<Logger name="net.kear.recipeorganizer.security" level="warn"/>
 		<Logger name="org.springframework" level="warn"/>
 		<logger name="org.springframework.web" level="warn"/>
+		<logger name="org.springframework.web.context" level="warn"/>
+		<logger name="org.springframework.web.servlet" level="warn"/>
 		<Logger name="org.springframework.webflow" level="warn"/>
 		<logger name="org.springframework.security" level="warn"/>
 		<logger name="org.hibernate" level="warn"/>
@@ -42,6 +44,7 @@
 		<logger name="net.sf.jasperreports.engine" level="warn"/>
 		<logger name="org.apache.logging" level="warn"/>		
 		<logger name="java.util" level="warn"/>
+		<logger name="javax.servlet" level="debug"/>
 	</Loggers>
 </Configuration>
 

@@ -50,14 +50,14 @@ public class EmailSender {
         MimeBodyPart imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "<rologo>");
         imagePart.setDisposition(MimeBodyPart.INLINE);
-        String imageFilePath = servletContext.getRealPath("/resources/logo.png");
+        String imageFilePath = servletContext.getRealPath("/resources/images/logo.png");
        	imagePart.attachFile(imageFilePath);
         multipart.addBodyPart(imagePart);
 
         imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "<cleargif>");
         imagePart.setDisposition(MimeBodyPart.INLINE);
-        imageFilePath = servletContext.getRealPath("/resources/clear.png");
+        imageFilePath = servletContext.getRealPath("/resources/images/clear.png");
        	imagePart.attachFile(imageFilePath);
         multipart.addBodyPart(imagePart);
 

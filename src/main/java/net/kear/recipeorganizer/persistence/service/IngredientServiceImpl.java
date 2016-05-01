@@ -34,7 +34,7 @@ public class IngredientServiceImpl implements IngredientService {
     	return ingredientRepository.getIngredient(id);
     }
     
-    public void setReviewed(long id, int reviewed) {
+    public void setReviewed(long id, boolean reviewed) {
     	ingredientRepository.setReviewed(id, reviewed);
     }
 

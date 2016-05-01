@@ -59,7 +59,6 @@ function removeFavorite(userId, recipeId, name) {
 	$("#yesBtn").show();
 	$("#noBtn").show();
 	$("#yesBtn").one('click', {userId : userId, recipeId : recipeId}, postRemoveFavorite);
-	$('#messageDlg').modal({backdrop: 'static', keyboard: true, show: false});
 	$('#messageDlg').modal({backdrop: 'static', keyboard: false, show: false});
 	$("#messageDlg").on('hidden.bs.modal', function(){$("#yesBtn").unbind('click');})
 	$("#messageDlg").modal('show');

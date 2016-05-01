@@ -101,7 +101,14 @@
 							<div class="panel panel-default" id="${panelsection}">
 					            <div class="panel-heading">
 					                <h4 class="panel-title">
-					                	<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.ingredients.title"></spring:message>: ${ingred.name}</a>
+					                	<c:choose>
+						                	<c:when test="${empty ingred.name || ingred.name == 'XXXX'}">
+						                		<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.ingredients.title"></spring:message></a>
+						                	</c:when>
+						                	<c:otherwise>
+						                		<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.ingredients.title"></spring:message>: ${ingred.name}</a>
+						                	</c:otherwise>
+					                	</c:choose>
 					                </h4>
 					            </div>
 					            <div id="${panelnum}" class="panel-collapse collapse">
@@ -128,7 +135,15 @@
 					        <div class="panel panel-default" id="${panelsection}">
 					            <div class="panel-heading">
 					                <h4 class="panel-title">
-					                    <a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.instructions.title"></spring:message>: ${instruct.name}</a>
+					                	<c:choose>
+						                	<c:when test="${empty instruct.name || instruct.name == 'XXXX'}">
+						                		<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.instructions.title"></spring:message></a>
+						                	</c:when>
+						                	<c:otherwise>
+						                		<a data-toggle="collapse" href="#${panelnum}"><spring:message code="recipe.instructions.title"></spring:message>: ${instruct.name}</a>
+						                	</c:otherwise>
+					                	</c:choose>
+					                    
 					                </h4>
 					            </div>
 					            <div id="${panelnum}" class="panel-collapse collapse">

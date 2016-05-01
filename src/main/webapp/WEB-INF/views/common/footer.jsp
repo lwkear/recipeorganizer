@@ -12,8 +12,8 @@
 	    		<spring:message code="footer.rights"></spring:message></p>
 		    <div class="navbar-collapse collapse">
 	    	<ul class="nav navbar-nav navbar-right">
-		        <li><a href="?lang=en"><img src=<c:url value="/resources/us.png" /> class="img-responsive"></a></li>
-		        <li><a href="?lang=fr"><img src=<c:url value="/resources/fr.png" /> class="img-responsive"></a></li>
+		        <li><a href="?language=en"><img src=<c:url value="/resources/images/us.png" /> class="img-responsive"></a></li>
+		        <li><a href="?language=fr"><img src=<c:url value="/resources/images/fr.png" /> class="img-responsive"></a></li>
 		    </ul>
 	    </div>
 	</nav>

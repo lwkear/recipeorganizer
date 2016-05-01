@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -41,6 +42,7 @@ import net.kear.recipeorganizer.persistence.dto.CategoryDto;
 import net.kear.recipeorganizer.persistence.dto.SourceTypeDto;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.Recipe.RecipeAllGroup;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.IngredientService;
@@ -100,7 +102,6 @@ public class RecipeController {
 		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
 		model.addAttribute("sizeMap", sizeMap);
 
-		//TODO: TAGS change for PostgreSQL
 		List<String> tags = recipe.getTags();
 		List<String> strTags = new ArrayList<String>();
 		if (tags.size() > 0) {
@@ -121,13 +122,21 @@ public class RecipeController {
 		return "recipe/editRecipe";
 	}
 
+	//Note: user Validated instead of Valid to include custom constraint validation, e.g., QuantityValidator
 	@RequestMapping(value="recipe/editRecipe/{id}", method = RequestMethod.POST)
-	public String updateRecipe(Model model, @ModelAttribute @Valid Recipe recipe, BindingResult result, Locale locale, HttpServletRequest request,
+	public String updateRecipe(Model model, @ModelAttribute @Validated(RecipeAllGroup.class) Recipe recipe, BindingResult result, Locale locale, HttpServletRequest request,
 			@RequestParam(value = "file", required = false) MultipartFile file) {		
 		logger.info("recipe/editRecipe POST: recipeId=" + recipe.getId());
 	
+		//must re-add attribute(s) in case of an error
+		Map<String, Object> sizeMap = recipeService.getConstraintMap("Size", "max");
+		model.addAttribute("sizeMap", sizeMap);
+
+		List<SourceTypeDto> typeList = sourceService.getSourceTypes(locale);
+    	model.addAttribute("typeList", typeList);
+		
 		if (result.hasErrors()) {
-			logger.debug("Validation errors");
+			logger.debug("Validation errors");			
 			return "recipe/editRecipe";
 		}
 
@@ -170,7 +179,7 @@ public class RecipeController {
 	}
 
 	@RequestMapping(value = "recipe/done/{recipeId}", method = RequestMethod.GET)
-	public String getDone(Model model, @PathVariable Long recipeId, HttpServletRequest request) throws RecipeNotFound {
+	public String getDone(Model model, @PathVariable Long recipeId, HttpServletRequest request, Locale locale) throws RecipeNotFound {
 		logger.info("recipe/done GET: recipeId=" + recipeId);
 	
 		Recipe recipe;

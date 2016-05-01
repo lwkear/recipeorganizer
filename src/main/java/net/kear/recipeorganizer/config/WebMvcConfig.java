@@ -196,7 +196,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/content",
     		"WEB-INF/messages/messages",
     		"WEB-INF/messages/labels",
-    		"WEB-INF/messages/validation"
+    		"WEB-INF/messages/validation",
+    		"WEB-INF/messages/faq"
     		);
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(0);	//TODO: PRODUCTION: be sure to change this value in production
@@ -226,12 +227,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		CustomCookieLocaleResolver resolver = new CustomCookieLocaleResolver();
 		return resolver;
 	}
-	
+    
 	@Bean
 	public LocaleChangeInterceptor localeInterceptor() {
 		logger.debug("LocaleChangeInterceptor");
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-		interceptor.setParamName("lang");
+		interceptor.setParamName("language");
 		return interceptor;
 	}
 	

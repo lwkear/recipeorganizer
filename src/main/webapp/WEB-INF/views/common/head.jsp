@@ -12,9 +12,9 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-16x16.png"/>" sizes="16x16"/>
-<link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-32x32.png"/>" sizes="32x32"/>
-<link rel="icon" type="image/png" href="<c:url value="/resources/favicon2-48x48.png"/>" sizes="48x48"/>
+<link rel="icon" type="image/png" href="<c:url value="/resources/images/favicon2-16x16.png"/>" sizes="16x16"/>
+<link rel="icon" type="image/png" href="<c:url value="/resources/images/favicon2-32x32.png"/>" sizes="32x32"/>
+<link rel="icon" type="image/png" href="<c:url value="/resources/images/favicon2-48x48.png"/>" sizes="48x48"/>
 
 <!-- JQueryUI core CSS -->	
 <%-- <link href="<c:url value="/resources/jqueryui-smoothness/jquery-ui.css" />" rel="stylesheet">

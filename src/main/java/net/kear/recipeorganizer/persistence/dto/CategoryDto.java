@@ -67,7 +67,7 @@ public class CategoryDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "IngredientReviewDto [id=" + id
+		return "CategoryDto [id=" + id
 				+ ", name=" + name
 				+ ", displayName=" + displayName 
 				+ "]";

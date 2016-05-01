@@ -53,10 +53,10 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     	return ingredient;
     }
 
-    public void setReviewed(long id, int reviewed) {
+    public void setReviewed(long id, boolean reviewed) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
 			"update ingredient set reviewed = :reviewed where id = :id")
-			.setInteger("reviewed", reviewed)
+			.setBoolean("reviewed", reviewed)
 			.setLong("id", id);
    	
     	query.executeUpdate();		
@@ -124,7 +124,7 @@ public class IngredientRepositoryImpl implements IngredientRepository {
     public List<IngredientReviewDto> listNotReviewed() {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
     			"select i.id, i.name, i.lang, (select count(ri.id) from recipe_ingredients ri where ri.ingredient_id = i.id) as usage from ingredient i"
-    			+ " where i.reviewed = 0")
+    			+ " where i.reviewed = false")
     			.addScalar("id",StandardBasicTypes.LONG)
     			.addScalar("name",StandardBasicTypes.STRING)
     			.addScalar("lang",StandardBasicTypes.STRING)

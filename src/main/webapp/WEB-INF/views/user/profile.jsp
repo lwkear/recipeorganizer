@@ -146,9 +146,11 @@
 						</c:choose>
 					</div>
 					<div class="form-group col-sm-12 spacer-vert-sm">
-						<div class="col-sm-offset-5 col-sm-2 text-center">
-							<button type="submit" class="btn btn-primary pull-left" id="btnSubmit" name="btnSubmit"><spring:message code="common.save"></spring:message></button>
-							<a class="btn btn-default pull-right" href="<c:url value="/user/dashboard"></c:url>" role="button"><spring:message code="common.cancel"></spring:message></a>
+						<div class="col-sm-offset-4 col-sm-4 text-center">
+							<div class="col-sm-offset-2 col-sm-8 text-center">
+								<button type="submit" class="btn btn-primary pull-left" id="btnSubmit" name="btnSubmit"><spring:message code="common.save"></spring:message></button>
+								<a class="btn btn-default pull-right" href="<c:url value="/user/dashboard"></c:url>" role="button"><spring:message code="common.cancel"></spring:message></a>
+							</div>
 						</div>
 					</div>
 	        		<form:hidden path="id" />

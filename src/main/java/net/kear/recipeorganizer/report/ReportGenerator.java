@@ -74,8 +74,8 @@ public class ReportGenerator {
 	public boolean configureReports(ServletContext servletContext, Environment env) {
 		this.recipeHtmlReportFilePath = servletContext.getRealPath("/jasper/recipeHtml.jasper");
 		this.recipePdfReportFilePath = servletContext.getRealPath("/jasper/recipePdf.jasper");
-		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/logo.png";
-		this.logoPdfImagePath = servletContext.getRealPath("/resources/logo.png");
+		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/images/logo.png";
+		this.logoPdfImagePath = servletContext.getRealPath("/resources/images/logo.png");
 		this.jasperReportDirPath = servletContext.getRealPath("/jasper/");
 		this.pdfReportDirPath = env.getProperty("file.directory.pdfs"); 
 		recipeHtmlFile = new File(this.recipeHtmlReportFilePath);
@@ -83,8 +83,8 @@ public class ReportGenerator {
 		reportsDir = new File(this.jasperReportDirPath);
 
     	try {
-        	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
-        	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
+        	recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
         	recipePdfReport = (JasperReport)JRLoader.loadObjectFromFile(recipePdfFile.getPath());
         	recipePdfReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
         } catch (JRException ex) {
@@ -113,8 +113,8 @@ public class ReportGenerator {
 
     	try {
     		//TODO: JASPER: REMOVE THESE TWO LINES when jasper report work is done
-        	recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
-        	recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
+        	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
+        	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
 
         	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale); 
         	params.put("logoPath", logoHtmlImagePath);
