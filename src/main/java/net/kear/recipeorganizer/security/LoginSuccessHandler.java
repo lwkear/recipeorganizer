@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.CookieUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private AuthCookie authCookie;
+	private CookieUtil cookieUtil;
 	@Autowired
 	private UserService userService;	
 	@Autowired
@@ -39,7 +40,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		logger.info("onAuthenticationSuccess: name=" + authentication.getName());
 		
-		authCookie.setCookie(request, response, authentication.getName());
+		cookieUtil.setAuthCookie(request, response, authentication.getName());
 
 		User user = userService.findUserByEmail(authentication.getName());
 		

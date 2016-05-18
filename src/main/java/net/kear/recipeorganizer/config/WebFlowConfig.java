@@ -40,7 +40,7 @@ public class WebFlowConfig extends AbstractFlowConfiguration {
 		return getFlowBuilderServicesBuilder()
 				.setViewFactoryCreator(mvcViewFactoryCreator())
 				.setValidator(validator())
-				.setDevelopmentMode(true)	//TODO: PRODUCTION: turn this off
+				.setDevelopmentMode(false)	//TODO: PRODUCTION: turn this off
 				.build();
 	}
 

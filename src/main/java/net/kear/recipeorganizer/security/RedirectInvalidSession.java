@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.util.CookieUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -22,7 +24,8 @@ public class RedirectInvalidSession implements InvalidSessionStrategy {
 	private final String destinationUrl;
 	private DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 	private boolean createNewSession = true;
-	private static final AuthCookie authCookie = new AuthCookie();
+	//Note: autowire does not work because this bean is loaded in BeanPostProcessor for session management (see SecurityConfig.java)
+	private static final CookieUtil cookieUtil = new CookieUtil();
 	
 	public RedirectInvalidSession() {
 		this.destinationUrl = "";
@@ -42,14 +45,14 @@ public class RedirectInvalidSession implements InvalidSessionStrategy {
 		//reset context default value
 		redirectStrategy.setContextRelative(false);
 		
-		if (authCookie.isCurrentCookieAnonymous(request)) {
+		if (cookieUtil.isCookieAnonymous(request)) {
 			url = request.getRequestURI();
 			//the URL needs to have the context removed
 			redirectStrategy.setContextRelative(true);
 		}
 
 		//always revert to anonymous user
-		authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
+		cookieUtil.setAuthCookie(request, response, CookieUtil.ANNON_USER);
 		
 		logger.debug("Starting new session (if required) and redirecting to '" + url + "'");
 		

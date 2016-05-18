@@ -30,7 +30,7 @@ $(function() {
 	checkSections();
 	
 	//get categories and set the options
-	$.getJSON("/recipeorganizer/recipe/getCategories")
+	$.getJSON(appContextPath + "/recipe/getCategories")
 		.done(function (data) {
 			console.log(data);
 			$.each(data, function (index, item) {
@@ -64,7 +64,7 @@ $(function() {
 		//allow jquery to create the query string from the data parameters to handle special characters
 		$.ajax({
 			type: 'GET',
-			url: '/recipeorganizer/recipe/lookupRecipeName',
+			url: appContextPath + '/recipe/lookupRecipeName',
 			dataType: 'json',
 			data: {
 				"name" : nameStr,

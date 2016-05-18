@@ -55,7 +55,7 @@ function postMadeDate(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/recipe/recipeMade',
+	    url: appContextPath + '/recipe/recipeMade',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})
@@ -100,7 +100,7 @@ function postNote(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/recipe/recipeNote',
+	    url: appContextPath + '/recipe/recipeNote',
 		dataType: 'html',
 		data: JSON.stringify(data)
 	})
@@ -162,7 +162,7 @@ function postComment(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/recipe/recipeComment',
+	    url: appContextPath + '/recipe/recipeComment',
 		dataType: 'html',
 		data: JSON.stringify(data)
 	})
@@ -182,7 +182,7 @@ function flagComment(commentId) {
 	var id = commentId;
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/recipe/flagComment',
+		url: appContextPath + '/recipe/flagComment',
 		dataType: 'json',
 		data : {"commentId" : commentId}
 	})
@@ -209,7 +209,7 @@ function addFavorite(viewerId, recipeId) {
 	$.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: '/recipeorganizer/recipe/addFavorite',
+		url: appContextPath + '/recipe/addFavorite',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})
@@ -236,7 +236,7 @@ function removeFavorite(viewerId, recipeId) {
 	$.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: '/recipeorganizer/recipe/removeFavorite',
+		url: appContextPath + '/recipe/removeFavorite',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})
@@ -291,7 +291,7 @@ function postShare(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/recipe/shareRecipe',
+	    url: appContextPath + '/recipe/shareRecipe',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})

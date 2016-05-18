@@ -1,9 +1,13 @@
 package net.kear.recipeorganizer.util;
 
+import java.io.Serializable;
+
 import javax.servlet.http.HttpServletResponse;
 
-public class ResponseObject {
+public class ResponseObject implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	final static String success = "Success";
 	
 	String msg;

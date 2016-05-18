@@ -4,7 +4,7 @@
 
 <%@include file="../common/head.jsp" %>
 
-<title><spring:message code="menu.about"></spring:message> - <spring:message code="menu.product"></spring:message></title>
+<title><spring:message code="newmember.title"></spring:message> - <spring:message code="menu.product"></spring:message></title>
 
 </head>
 
@@ -19,14 +19,64 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<h4><spring:message code="newmember.title1"></spring:message></h4>
+			<h4><spring:message code="newmember.welcome"></spring:message></h4>
 			<div>
-				<spring:message code="newmember.description1"></spring:message>
+				<spring:message code="newmember.welcome.message" arguments="${contextPath}"></spring:message>
+				<c:if test="${user.invited}">
+					<br><br>
+					<em><spring:message code="newmember.welcome.resetpassword" arguments="${contextPath}"></spring:message></em>
+				</c:if>
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
+			<h4><spring:message code="newmember.accounts"></spring:message></h4>
+			<div>
+				<spring:message code="newmember.accounts.levels"></spring:message>
+				<ul><li><spring:message code="newmember.accounts.guest"></spring:message></li>
+				<li><spring:message code="newmember.accounts.author"></spring:message></li>
+				<li><spring:message code="newmember.accounts.editor"></spring:message></li></ul>
+				<c:set var="roleName"><spring:message code='roles.${user.role.name}'></spring:message></c:set>
+				<spring:message code="newmember.accounts.currentlevel" arguments="${roleName}"></spring:message>
+				<c:if test="${isGuest and (not (isAuthor || isEditor || isAdmin))}">
+					<br><br>
+					<spring:message code="newmember.accounts.guestupgrade" arguments="${contextPath},${contextPath}"></spring:message>
+				</c:if>
+				<c:if test="${isAuthor and (not (isEditor || isAdmin))}">
+					<br><br>
+					<spring:message code="newmember.accounts.authorupgrade"></spring:message>
+				</c:if>
+			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-xs">
+			<h4><spring:message code="newmember.recipes"></spring:message></h4>
+			<div>
+				<spring:message code="newmember.recipes.description1" arguments="${contextPath}"></spring:message>
+				<spring:message code="newmember.recipes.description2"></spring:message>
+				<spring:message code="newmember.recipes.description3"></spring:message>
+				<spring:message code="newmember.recipes.description4"></spring:message>
+				<spring:message code="newmember.recipes.description5"></spring:message>
+				<spring:message code="newmember.recipes.description6"></spring:message>
+				<spring:message code="newmember.recipes.description7"></spring:message>
+				<spring:message code="newmember.recipes.description8"></spring:message>
+			</div>
+		</div>
+		<div class="col-sm-12 spacer-vert-xs">
+			<h4><spring:message code="newmember.features"></spring:message></h4>
+			<div>
+				<spring:message code="newmember.features.description"></spring:message>
+				<ul><li><spring:message code="email.invitation.feature2"></spring:message></li>
+				<li><spring:message code="email.invitation.feature3"></spring:message></li>
+				<li><spring:message code="email.invitation.feature4"></spring:message></li>
+				<ul><li><spring:message code="email.invitation.feature5"></spring:message></li>
+				<li><spring:message code="email.invitation.feature6"></spring:message></li>
+				<li><spring:message code="email.invitation.feature7"></spring:message></li>
+				<li><spring:message code="email.invitation.feature8"></spring:message></li>
+				<li><spring:message code="email.invitation.feature9"></spring:message></li></ul></ul>
+			</div>
+		</div>
+		<div class="col-sm-12 spacer-vert-xs">
+			<strong><spring:message code="thankyou.description3"></spring:message>
+			<spring:message code="email.common.enjoy"></spring:message></strong>
 		</div>
 	</div>
     

@@ -138,8 +138,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	{
 		web
 		.ignoring()
-			//.antMatchers("/resources/**", "/expiredSession")
-			.antMatchers("/resources/**")
+			.antMatchers("/resources/**", "/robots.txt")
 		;
 	}
 
@@ -163,7 +162,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
     		.antMatchers("/user/fatalError", "/user/expiredToken", "/user/invalidToken", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
-    		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*").permitAll()
+    		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/account", "user/newMember", "/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)

@@ -64,14 +64,17 @@ public class AuthCookie implements Serializable {
 	private void setCookie() {
 		
 		logger.debug("Setting cookie to " + value);
+		logger.debug("contextPath: " + request.getContextPath());
 
 		if (cookie != null) {
 			cookie.setValue(value);
 			cookie.setPath(request.getContextPath());
+			logger.debug("Cookie != null");
 		}
 		else {
 			cookie = new Cookie(authCookieName, value);
 			cookie.setPath(request.getContextPath());
+			logger.debug("Cookie is null");
 		}
 		
 		response.addCookie(cookie);

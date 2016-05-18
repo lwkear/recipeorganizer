@@ -5,7 +5,7 @@ function deleteComment(commentId) {
 	$('#delete' + commentId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/admin/deleteComment',
+		url: appContextPath + '/admin/deleteComment',
 		dataType: 'json',
 		data: {commentId:commentId}
 	})
@@ -27,7 +27,7 @@ function removeCommentFlag(commentId) {
 	$('#remove' + commentId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/admin/removeCommentFlag',
+		url: appContextPath + '/admin/removeCommentFlag',
 		dataType: 'json',
 		data : {commentId:commentId}
 	})

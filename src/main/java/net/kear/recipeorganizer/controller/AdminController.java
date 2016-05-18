@@ -1,11 +1,15 @@
 package net.kear.recipeorganizer.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -16,8 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import freemarker.template.Configuration;
 import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalReason;
 import net.kear.recipeorganizer.enums.ApprovalStatus;
@@ -41,9 +48,11 @@ import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
+import net.kear.recipeorganizer.persistence.dto.InvitationDto;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
+import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.model.Category;
 import net.kear.recipeorganizer.persistence.model.Ingredient;
 import net.kear.recipeorganizer.persistence.model.Recipe;
@@ -64,6 +73,9 @@ import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.EmailDetail;
+import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.InvitationEmail;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.maint.MaintAware;
 import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
@@ -111,6 +123,15 @@ public class AdminController {
 	private SolrUtil solrUtil;
 	@Autowired
     private ApplicationEventPublisher eventPublisher;
+	@Autowired
+	private EmailSender emailSender;
+	@Autowired
+	private InvitationEmail invitationEmail; 
+
+	@Autowired
+    public Environment env;
+	@Autowired
+	private Configuration freemarkerConfig;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -667,5 +688,120 @@ public class AdminController {
 		
 		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));
 		return "admin/maintenance";
+	}
+
+	/*******************************/
+	/*** User invitation handler ***/
+	/*******************************/
+	@RequestMapping(value = "/admin/invitation", method = RequestMethod.GET)
+	public String getInvitation(Model model) {
+		logger.info("admin/invitation GET");
+
+		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", InvitationDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
+		return "admin/invitation";
+	}
+
+	//Note: this is an example of using validation with AJAX
+	//Two aspects of normal validation do not appear to work:
+	//	- the .jsp doesn't recognize the binding errors, because Spring attaches errors to the model/view which doesn't apply in this case
+	//	- the i18n error messages must be inserted manually
+	@RequestMapping(value="admin/sendInvitation", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject sendInvitation(@RequestBody @Valid InvitationDto invitationDto, BindingResult result, HttpServletResponse response, Locale locale) throws RestException {
+		logger.info("admin/sendInvitation POST");
+
+		boolean exists = false;
+		if (!result.hasErrors()) {
+			//double-check the email isn't in use in case user ignored the AJAX error
+			try {
+				exists = userService.doesUserEmailExist(invitationDto.getEmail());
+			} catch (Exception ex) {
+				//do nothing - if there is a problem with the database the user will be notifed when they submit the form
+				logService.addException(ex);
+			}
+		}
+		
+		if (result.hasErrors() || exists) {
+			logger.debug("Validation errors");
+			
+			ResponseObject obj = new ResponseObject("Validation errors", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			List<FieldError> fieldErrors = new ArrayList<FieldError>();
+			
+			if (exists) {
+				logger.debug("Email exists error");
+				String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
+				FieldError err = new FieldError("invitationDto","email", msg);
+				fieldErrors.add(err);
+			}
+			else {
+				List<FieldError> errors = result.getFieldErrors();
+				for (FieldError error : errors) {
+					String[] codes = error.getCodes();
+					String defaultMsg = error.getDefaultMessage();
+					String msg = messages.getMessage(codes[0], null, defaultMsg, locale);
+					String field = error.getField();
+					FieldError err = new FieldError("invitationDto", field, msg);
+					fieldErrors.add(err);
+				}
+			}
+			
+			obj.setResult(fieldErrors);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+			return obj;
+		}
+
+		User user = null;
+		String password = messages.getMessage("invite.temppassword", null, "recipe", locale);
+		
+		UserDto userDto = new UserDto();
+		userDto.setFirstName(invitationDto.getFirstName());
+		userDto.setLastName(invitationDto.getLastName());
+		userDto.setEmail(invitationDto.getEmail());
+		userDto.setPassword(password);
+		userDto.setSubmitRecipes(false);
+		userDto.setInvited(true);
+		
+		logger.debug("adding user: " + invitationDto.getEmail());
+		
+		try {
+			user = userService.addUser(userDto);
+		} catch (Exception ex) {
+			logService.addException(ex);
+	        String msg = messages.getMessage("invite.usererror", null, "Create user failed", locale);
+	        ResponseObject obj = new ResponseObject(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        return obj;
+		}
+
+		logger.debug("sending email: " + invitationDto.getEmail());
+		
+        String newToken = UUID.randomUUID().toString();
+    	userService.createUserVerificationToken(user, newToken);
+        
+    	String userName = user.getFirstName() + " " + user.getLastName();        
+    	String confirmationUrl = "/confirmRegistration?token=" + newToken;
+    	
+    	EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+    	emailDetail.setTokenUrl(confirmationUrl);
+
+        try {
+        	invitationEmail.constructEmail(emailDetail);
+        	emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			logService.addException(ex);
+	        String msg = messages.getMessage("invite.emailerror", null, "Send email failed", locale);
+	        ResponseObject obj = new ResponseObject(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	        return obj;
+		}
+		
+        String msg = messages.getMessage("invite.msgsent", null, "Email sent", locale);
+        ResponseObject obj = new ResponseObject(msg, HttpServletResponse.SC_OK);
+        response.setStatus(HttpServletResponse.SC_OK);
+		return obj;
 	}
 }

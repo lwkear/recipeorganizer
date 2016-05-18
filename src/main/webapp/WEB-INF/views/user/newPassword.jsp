@@ -15,18 +15,6 @@
 	<spring:bind path="newPasswordDto.password"><c:set var="passwordError">${status.errorMessage}</c:set></spring:bind>
 	<spring:bind path="newPasswordDto.confirmPassword"><c:set var="confirmPasswordError">${status.errorMessage}</c:set></spring:bind>
 
-	<spring:bind path="newPasswordDto">
-		<c:if test="${status.error}">
-			<c:forEach var="code" varStatus="loop" items="${status.errorCodes}">
-				<c:if test="${fn:containsIgnoreCase(code, 'PasswordMatch')}">
-					<c:forEach var="error" begin="${loop.index}" end="${loop.index}" items="${status.errorMessages}" >
-						<c:set var="confirmPasswordError">${error}</c:set>
-					</c:forEach>
-				</c:if>
-			</c:forEach>
-		</c:if>
-	</spring:bind>
-
 	<div class="container container-white">	
 	 	<div class="col-sm-12 title-bar">
 			<c:if test="${not empty warningMaint}">

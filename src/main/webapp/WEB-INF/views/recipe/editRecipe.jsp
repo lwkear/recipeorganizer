@@ -61,18 +61,6 @@
 			<input type="text" id="photoErr" value="${photoError}" style="display:none"></input>
 			<input type="text" id="recipeName" value="${recipe.name}" style="display:none"></input>
 
-
-	<spring:hasBindErrors name="recipe">
-    <c:set var="errorCnt">${errors.errorCount}</c:set>
-    <p><b># of Errors:${errorCnt}</b></p>
-    <p></p>
-	<c:forEach var="error" items="${errors.allErrors}">
-		<b><c:out value="${error}" /></b>
-		<p></p>
-	</c:forEach>
-	</spring:hasBindErrors>
-	
-	
 			<div class="row">
 				<div class="col-sm-12">
 				    <div class="panel-group" id="accordion">

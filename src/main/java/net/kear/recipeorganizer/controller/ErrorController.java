@@ -5,8 +5,6 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.kear.recipeorganizer.security.AuthCookie;
-import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.view.CommonView;
 
 import org.slf4j.Logger;
@@ -33,10 +31,6 @@ public class ErrorController {
 	private MessageSource messages;
 	@Autowired
 	private CommonView commonView;
-	@Autowired
-	private AuthCookie authCookie;
-	@Autowired
-	private CookieUtil cookieUtil;
 	
 	@RequestMapping(value = "/systemError", method = RequestMethod.GET)
 	public ModelAndView getSystemError(HttpServletRequest request, HttpServletResponse response, Locale locale) {

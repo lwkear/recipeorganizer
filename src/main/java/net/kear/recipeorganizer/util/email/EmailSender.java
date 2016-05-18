@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.util.email;
 
 import java.io.IOException;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -29,24 +30,28 @@ public class EmailSender {
 	private ServletContext servletContext;
 
 	public EmailSender() {}
-
-	public void sendHtmlEmail(EmailMessage emailMessage) throws AddressException, MessagingException, IOException {
-		logger.debug("sendHtmlEmail");
+	
+	public void sendHtmlEmail(EmailDetail emailDetail) throws AddressException, MessagingException, IOException {
+		logger.debug("start sendHtmlEmail to: " + emailDetail.getRecipientEmail());
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-		mimeMessage.setFrom(new InternetAddress(emailMessage.getSenderEmail()));
-		mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(emailMessage.getRecipientEmail()));
-		mimeMessage.setSubject(emailMessage.getSubject());
+		mimeMessage.setFrom(new InternetAddress(emailDetail.getSenderEmail()));
+		Address address = new InternetAddress(emailDetail.getRecipientEmail(), emailDetail.getRecipientName());
+		((InternetAddress)address).validate();
+		logger.debug("address.validate() w/ personal passed");
+		
+		mimeMessage.setRecipient(Message.RecipientType.TO, address);
+		mimeMessage.setSubject(emailDetail.getSubject());
 
 		MimeBodyPart messageBodyPart = new MimeBodyPart();
-		messageBodyPart.setContent(emailMessage.getBody(), "text/html");
+		messageBodyPart.setContent(emailDetail.getBody(), "text/html");
 
         // creates multi-part
-	        Multipart multipart = new MimeMultipart();
-	        multipart.addBodyPart(messageBodyPart);
+		Multipart multipart = new MimeMultipart();
+		multipart.addBodyPart(messageBodyPart);
  
-	        // adds inline image attachments
+		// adds inline image attachments
         MimeBodyPart imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "<rologo>");
         imagePart.setDisposition(MimeBodyPart.INLINE);
@@ -61,14 +66,40 @@ public class EmailSender {
        	imagePart.attachFile(imageFilePath);
         multipart.addBodyPart(imagePart);
 
-        if (emailMessage.isPdfAttached()) {
+        if (emailDetail.isPdfAttached()) {
 	        MimeBodyPart pdfPart = new MimeBodyPart();
 	        pdfPart.setDisposition(MimeBodyPart.ATTACHMENT);
-        	pdfPart.attachFile(emailMessage.getPdfFileName());
+        	pdfPart.attachFile(emailDetail.getPdfFileName());
 	        multipart.addBodyPart(pdfPart);
         }
         
         mimeMessage.setContent(multipart);
+        
+        //InternetAddress[] addresses = (InternetAddress[]) mimeMessage.getRecipients(Message.RecipientType.TO);
+        //logger.debug("end sendHtmlEmail to: " + addresses[0].getAddress());
+        
+        /*Properties javaMailProps = ((JavaMailSenderImpl) mailSender).getJavaMailProperties();
+        final String userName = ((JavaMailSenderImpl) mailSender).getUsername();
+        final String password = ((JavaMailSenderImpl) mailSender).getPassword();
+        final String host = ((JavaMailSenderImpl) mailSender).getHost();
+        
+        Session session = Session.getInstance(javaMailProps,
+      		  new javax.mail.Authenticator() {
+      			protected PasswordAuthentication getPasswordAuthentication() {
+      				return new PasswordAuthentication(userName, password);
+      			}
+      		  });
+        session.setDebug(true);
+        
+        //Address[] addresses = new Address[] {address};
+        Transport transport = session.getTransport("smtp");
+        transport.connect(host, userName, password);
+        mimeMessage.saveChanges();
+        transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+        transport.close();*/
+        
         mailSender.send(mimeMessage);
+        
+        logger.debug("end sendHtmlEmail to: " + emailDetail.getRecipientEmail());
 	}
 }

@@ -21,6 +21,10 @@
 <c:set var="localeCode" value="${requestContext.locale.language}"/>
 <input type="text" id="localeCode" style="display:none" value="${localeCode}"/>
 
+<!-- Note: path is required for AJAX url's -->
+<script>var appContextPath = "${pageContext.request.contextPath}"</script>
+<c:set var = "contextPath" value="${pageContext.request.contextPath}"/>
+
 <nav class="navbar navbar-inverse navbar-fixed-top">		 <!-- navbar-inverse -->
 	<div class="container">
 		<div class="navbar-header">
@@ -64,6 +68,8 @@
 								<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>							
 								<li role="separator" class="divider"></li>
 								<li><a href="<c:url value="/admin/users" />"><spring:message code="menu.users"></spring:message></a></li>
+								<li><a href="<c:url value="/admin/invitation" />"><spring:message code="menu.invite"></spring:message></a></li>
+								<li role="separator" class="divider"></li>
 								<li><a href="<c:url value="/admin/maintenance" />"><spring:message code="menu.maintenance"></spring:message></a></li>
 							</c:if>
 						</ul>
@@ -77,7 +83,9 @@
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<%-- <li><a href="<c:url value="/test/testpage" />">Test</a></li> --%>
+						<c:if test="${isAdmin}">
+							<li><a href="<c:url value="/test/testpage" />">Test</a></li>
+						</c:if>
 					</ul>
 				</li>
 			</ul>

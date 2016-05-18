@@ -3,6 +3,7 @@ package net.kear.recipeorganizer.config;
 import java.util.List;
 import java.util.Properties;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 
 import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
@@ -45,6 +46,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -62,6 +64,7 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 	"net.kear.recipeorganizer.controller",
 	"net.kear.recipeorganizer.listener",
 	"net.kear.recipeorganizer.util",
+	"net.kear.recipeorganizer.util.email",
 	"net.kear.recipeorganizer.enums"
 	})
 @Configuration
@@ -90,7 +93,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
     }
-
+	
 	/*** JSON configuration ***/
 	//required in order to return a String as a JSON response to an AJAX method;
 	//by default the first converter in the array returns the String as text/javascript, not JSON, so removing
@@ -168,6 +171,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return solr;
 	}	
 	
+    //This is an easy way to avoid creating a .GET method for every single page;
+	//works best if there is little content on the page, e.g., error pages
+	/*@Override
+    public void addViewControllers(final ViewControllerRegistry registry) {
+		logger.debug("addViewControllers");
+        super.addViewControllers(registry);
+        registry.addViewController("/robots.txt");        
+    }*/
+
 	/*** webflow configuration ***/
 	@Bean
 	public FlowHandlerMapping flowHandlerMapping() {
@@ -200,7 +212,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/faq"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(0);	//TODO: PRODUCTION: be sure to change this value in production
+        source.setCacheSeconds(5);	//TODO: PRODUCTION: be sure to change this value in production
         source.setFallbackToSystemLocale(false);
         return source;
     }
@@ -269,7 +281,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		
     /*** email configuration ***/
 	@Bean
-    public JavaMailSenderImpl javaMailSenderImpl() {
+    public JavaMailSenderImpl javaMailSender() {
 		logger.debug("JavaMailSenderImpl");
         final JavaMailSenderImpl mailSenderImpl = new JavaMailSenderImpl();
         mailSenderImpl.setHost(env.getProperty("smtp.host"));
@@ -278,9 +290,24 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setUsername(env.getProperty("smtp.username"));
         mailSenderImpl.setPassword(env.getProperty("smtp.password"));
         final Properties javaMailProps = new Properties();
-        javaMailProps.put("mail.smtp.auth", true);
-        javaMailProps.put("mail.smtp.starttls.enable", true);
+        javaMailProps.put("mail.debug", "true");
+        javaMailProps.put("mail.smtp.elho", "false");
+        javaMailProps.put("mail.smtp.host", env.getProperty("smtp.host"));
+        javaMailProps.put("mail.smtp.port", env.getProperty("smtp.port"));
+        javaMailProps.put("mail.smtp.auth", env.getProperty("mail.smtp.auth"));
+        javaMailProps.put("mail.smtp.localhost", "recipeorganizer.net");
+        javaMailProps.put("mail.smtp.starttls.enable", env.getProperty("smtp.starttls.enable"));
+        
         mailSenderImpl.setJavaMailProperties(javaMailProps);
+        mailSenderImpl.getSession().setDebug(true);
+        
+        try {
+			mailSenderImpl.testConnection();
+		} catch (MessagingException ex) {
+			logger.debug("test mail connection failed");
+			logger.error(ex.getClass().toString(), ex);
+		}
+        
         return mailSenderImpl;
     }
 	

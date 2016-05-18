@@ -15,12 +15,12 @@
 	<div class="container container-white">
 	 	<div class="col-sm-12">
 			<div class="page-header"> 		
-				<h3><spring:message code="profile.title"></spring:message></h3>
+				<h3>Test Page</h3>
 			</div>
-			<div class="col-sm-12">
-			<div class="row">
+			<%-- <div class="col-sm-12">
+			<<div class="row">
 				<form:form name="approvalForm" role="form" method="post" modelAttribute="recipeMessageDto">
-					<%-- <div class="form-group">
+					<div class="form-group">
 						<c:forEach var="aaction" items="${approvalActions}">
 							<div class="radio-inline">
 								<form:radiobutton path="action" value="${aaction}" label="${aaction}"/>								
@@ -30,7 +30,7 @@
 					
 					<div class="form-group">
 						<form:radiobuttons element="div class='radio-inline'" cssStyle="'font-weight:400'" path="action" items="${approvalActions}"/>
-					</div> --%>
+					</div>
 				
 					<div class="form-group">
 						<form:select path="action">
@@ -41,7 +41,7 @@
 				
 				</form:form>
 			</div>
-			</div>
+			</div> --%>
 
 
 			<%-- <div class="col-sm-12">
@@ -290,7 +290,7 @@ $V{SourcePerson} + $V{SourceOther} + $V{SourceMagazine} + $V{SourceNewspaper}
 
 </body>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 
 function viewtext() {
 	var text = $('#inputTags option:selected').map(function () {
@@ -312,6 +312,6 @@ $(function() {
 	});
 })
 
-</script>
+</script> -->
 
 </html>

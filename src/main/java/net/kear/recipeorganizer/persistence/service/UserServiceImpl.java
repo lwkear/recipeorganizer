@@ -48,13 +48,19 @@ public class UserServiceImpl implements UserService {
     	user.setPassword(encodedPsswd);
     	user.setFirstName(userDto.getFirstName());
     	user.setLastName(userDto.getLastName());
+    	user.setInvited(userDto.isInvited());
     	user.setEnabled(0);
     	user.setTokenExpired(0);
     	user.setLocked(0);
     	user.setAccountExpired(0);
     	user.setPasswordExpired(0);
-    	user.setPasswordExpiryDate();
-    	if (userDto.getSubmitRecipes()) {
+    	if (!userDto.isInvited())
+    		user.setPasswordExpiryDate();
+    	else {
+    		Date expireDate = user.calculateExpiryDate(60*24);
+    		user.setPasswordExpiryDate(expireDate);
+    	}
+    	if (userDto.isSubmitRecipes()) {
     		Role role = roleRepository.getRole(Role.TYPE_AUTHOR);
     		if (role != null)
     			user.setRole(role);

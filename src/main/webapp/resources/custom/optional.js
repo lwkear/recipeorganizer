@@ -12,7 +12,7 @@ function setSourceUrl(url, query) {
 	return newurl;
 };
 
-remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getSources', null);
+remoteOpts = setBHRemoteOpts(false, '%QUERY', appContextPath + '/recipe/getSources', null);
 remoteOpts['replace'] = function(url, query) {return setSourceUrl(url, query);}; 
 bhOpts = setBHOptions(50, null, null, null, remoteOpts);
 var sourceBH = new Bloodhound(bhOpts);
@@ -186,7 +186,7 @@ $(function() {
 	var selectize = $("#inputTags")[0].selectize;
 	selectize.load(function(callback) {
 		var userId = $('#userID').val();
-		var url = '/recipeorganizer/recipe/getTags' + '?userId=' + userId;
+		var url = appContextPath + '/recipe/getTags' + '?userId=' + userId;
 		var tags = null;
 		$.getJSON(url)
 			.done(function (data) {

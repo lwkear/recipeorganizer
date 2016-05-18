@@ -112,8 +112,7 @@ function displayLoginMsg() {
 	
 function redirectLogin() {
 	$("#messageDlg").modal('hide');
-	
-	var loginUrl = "/recipeorganizer/user/login";
+	var loginUrl = appContextPath + "/user/login";
 	window.location.href = loginUrl;
 }
 
@@ -125,7 +124,7 @@ function closeTimeout() {
 	//a session in another tab; this prevents a CSRF error
 	var user = Cookies.get('authUser');
 	if (user === 'anonymousUser') {
-		var thankyouUrl = "/recipeorganizer/thankyou";
+		var thankyouUrl = appContextPath + "/thankyou";
 		window.location.href = thankyouUrl;
 	}
 	else	
@@ -155,7 +154,7 @@ function setSessionTimeout() {
 	
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/setSessionTimeout',
+		url: appContextPath + '/setSessionTimeout'
 	})
 	.done(function(data) {
 		console.log('setSessionTimeout() done');
@@ -169,13 +168,19 @@ function setSessionTimeout() {
 }
 
 function getSessionTimeout() {
+	var uri = document.documentURI;
+	console.log('document.documentURI: ' + uri);
+	var url = document.URL;
+	console.log('document.URL: ' + url);
+	console.log('appContextPath: ' + appContextPath);
+	
 	var user = Cookies.get('authUser');
 	if (user === 'anonymousUser')
 		return;
-	
+
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/getSessionTimeout',
+		url: appContextPath + '/getSessionTimeout',
 		dataType: 'json'
 	})
 	.done(function(data) {

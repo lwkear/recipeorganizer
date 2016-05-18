@@ -22,20 +22,19 @@ function ingredRemoteFilter(data) {
 
 function measuresFile() {
 	var locale = $('#localeCode').val();
-	var jsonFile = '/recipeorganizer/resources/measures_' + locale.toUpperCase() + '.json';
+	var jsonFile = appContextPath + '/resources/measures_' + locale.toUpperCase() + '.json';
 	return jsonFile;
 }
 
-var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
+var remoteOpts = setBHRemoteOpts(false, '%QUERY', appContextPath + '/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
 var bhOpts = setBHOptions(20, ingredDatumToken, null, null, remoteOpts);
 var ingredBH = new Bloodhound(bhOpts);
 
-/*prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/measures.json', null);*/
 prefetchOpts = setBHPrefetchOpts(false, measuresFile(), null);
 bhOpts = setBHOptions(20, null, null, prefetchOpts, null);
 var measureBH = new Bloodhound(bhOpts);
 
-remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getQualifiers?searchStr=%QUERY', null);
+remoteOpts = setBHRemoteOpts(false, '%QUERY', appContextPath + '/recipe/getQualifiers?searchStr=%QUERY', null);
 bhOpts = setBHOptions(20, null, null, null, remoteOpts);
 var qualifierBH = new Bloodhound(bhOpts);
 
@@ -233,7 +232,7 @@ $(function() {
 			$.ajax({
 			    contentType: 'application/json',
 				type: 'POST',
-				url: '/recipeorganizer/recipe/addIngredient',
+				url: appContextPath + '/recipe/addIngredient',
 				dataType: 'json',
 				data: JSON.stringify(data)
 			})

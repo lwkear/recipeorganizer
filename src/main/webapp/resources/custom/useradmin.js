@@ -11,7 +11,7 @@ function checkRecipeCount(userId, userFirst, userLast) {
 function getRecipeCount(userId, userFirst, userLast, callback) {
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/recipe/userRecipeCount',
+		url: appContextPath + '/recipe/userRecipeCount',
 		dataType: 'json',
 		data: {"userId":userId}
 	})
@@ -55,7 +55,7 @@ function deleteUser(e) {
 	
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/admin/deleteUser',
+		url: appContextPath + '/admin/deleteUser',
 		dataType: 'json',
 		data: {"userId":userId}
 	})
@@ -93,7 +93,7 @@ function getUser(userId, callback) {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/admin/getUser',
+		url: appContextPath + '/admin/getUser',
 		dataType: 'json',
 		data: {"userId":userId}
 	})
@@ -137,7 +137,7 @@ function postUser(e) {
 
 	$.ajax({
 	    type: 'POST',
-		url: '/recipeorganizer/admin/updateUser',
+		url: appContextPath + '/admin/updateUser',
 		dataType: 'json',
 		data: JSON.stringify(user),
 		contentType: 'application/json'

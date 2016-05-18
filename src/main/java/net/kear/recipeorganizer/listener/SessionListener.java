@@ -52,7 +52,7 @@ public class SessionListener implements HttpSessionListener {
 			if (auth != null) {
 				Object principal = auth.getPrincipal();
 				if (principal != null) {
-					if (principal.toString().equals(AuthCookie.ANNON_USER)) {
+					if (principal.toString().equals(CookieUtil.ANNON_USER)) {
 						logger.debug("sessionCreated: bypassing " + principal);
 						return;
 					}

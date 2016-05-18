@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.CookieUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	@Autowired
-	private AuthCookie authCookie;
+	private CookieUtil cookieUtil;
 	@Autowired
 	private SessionRegistry sessionRegistry;
 	@Autowired
@@ -42,7 +43,7 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		logger.info("onAuthenticationSuccess: name=" + authentication.getName());
 		
-		authCookie.setCookie(request, response, authentication.getName());
+		cookieUtil.setAuthCookie(request, response, authentication.getName());
 		
 		User user = userService.findUserByEmail(authentication.getName());
 		userService.setLastLogin(user);

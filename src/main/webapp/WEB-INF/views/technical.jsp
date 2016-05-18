@@ -58,6 +58,7 @@
 			<div>
 				<ul>
 					<li>Spring STS v3.6.4 - <a href="https://spring.io/tools/sts">spring.io/tools/sts</a></li>
+					<li>Subversion v1.8.10 - <a href="https://subversion.apache.org/">subversion.apache.org/</a></li>
 					<li>Firebug v2.0.16 - <a href="https://getfirebug.com/">getfirebug.com/</a></li>
 					<li>Papercut v4.5.0 - <a href="http://papercut.codeplex.com/">papercut.codeplex.com</a></li>
 					<li>GIMP v2.8.14 - <a href="http://www.gimp.org">www.gimp.org</a></li>

@@ -188,7 +188,8 @@ h4 {
 
 /* override of page-header bottom border */
 .page-header {
-	border-bottom: 2px solid #990000;
+	/* border-bottom: 2px solid #990000; */
+	border-bottom: 2px solid #cbd8e6;
 	color:#990000;
 	margin: 0;
 }
@@ -224,6 +225,8 @@ h4 {
 	padding-right: 30px;
 	padding-left: 30px;
 	width: 1170px;
+	border-bottom: 3px solid #990000;
+	/* color:#990000; */
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */

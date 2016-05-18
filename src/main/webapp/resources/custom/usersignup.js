@@ -122,7 +122,7 @@ $(function() {
 		//allow jquery to create the query string from the data parameters to handle special characters
 		$.ajax({
 			type: 'GET',
-			url: '/recipeorganizer/lookupUser',
+			url: appContextPath + '/lookupUser',
 			dataType: 'json',
 			data: {"email" : emailStr}
 		})

@@ -54,12 +54,15 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
-import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.security.UserSecurityService;
+import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
+import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
+import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
+import net.kear.recipeorganizer.util.email.InvitationEmail;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
 import net.kear.recipeorganizer.util.email.ShareRecipeEmail;
@@ -72,7 +75,7 @@ public class HomeController {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private AuthCookie authCookie;
+	private CookieUtil cookieUtil;
 	@Autowired
 	private UserInfo userInfo;
 	@Autowired
@@ -101,6 +104,8 @@ public class HomeController {
 	@Autowired
 	private ShareRecipeEmail shareRecipeEmail;
 	@Autowired
+	private InvitationEmail invitationEmail;
+	@Autowired
 	private ServletContext servletContext;
 	@Autowired
 	private Environment env;
@@ -116,11 +121,14 @@ public class HomeController {
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("home GET");
 
+		String account = env.getProperty("company.email.support.account");
+		logger.info("home account: " + account);
+		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		
-		if (!authCookie.cookieExists(request))
-			authCookie.setCookie(request, response, userInfo.getName());
+		if (!cookieUtil.authCookieExists(request))
+			cookieUtil.setAuthCookie(request, response, userInfo.getName());
 		
 		return "home";
 	}
@@ -318,7 +326,7 @@ public class HomeController {
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model, HttpServletRequest request, Locale locale) {
 		logger.debug("getTestpage");
-
+		
 		/*String text = "celery, and ½ teaspoon salt";
 		model.addAttribute("text", text);
 		
@@ -376,27 +384,43 @@ public class HomeController {
 			e.printStackTrace();
 		}*/
 		
-		/*registrationEmail.init("Gene Kear", "kear.larry@gmail.com", locale);
-		registrationEmail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
-        registrationEmail.constructEmail();
-    	emailSender.sendHtmlEmail(registrationEmail);
+		/*EmailDetail emailDetail = new EmailDetail("Gene Kear", "kear.larry@gmail.com", locale);
+		emailDetail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
+        try {
+        	registrationEmail.constructEmail(emailDetail);
+        	emailSender.sendHtmlEmail(emailDetail);
+        } catch (Exception ex) {}
 
-		passwordEmail.init("Larry Kear", "kear.larry@gmail.com", locale);
+        emailDetail = new EmailDetail("Larry Kear", "kear.larry@gmail.com", locale);
         String confirmationUrl = "/confirmPassword?id=131&token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920";
-		passwordEmail.setTokenUrl(confirmationUrl);
-		passwordEmail.constructEmail();
-    	emailSender.sendHtmlEmail(passwordEmail);
+		emailDetail.setTokenUrl(confirmationUrl);
+		try {
+			passwordEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {}*/
 		
-		accountChangeEmail.init("William Kear", "kear.larry@gmail.com", locale);
-		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
-		accountChangeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(accountChangeEmail);
+		EmailDetail emailDetail = new EmailDetail("Larry Kear", "lkear@outlook.com", locale);
+    	emailDetail.setChangeType(ChangeType.PASSWORD);
+    	try {
+    		accountChangeEmail.constructEmail(emailDetail);
+    		emailSender.sendHtmlEmail(emailDetail);
+    	} catch (Exception ex) {}
 
-		accountChangeEmail.init("Peggy McKinney", "kear.larry@gmail.com", locale);
-		accountChangeEmail.setChangeType(ChangeType.PROFILE);
-		accountChangeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(accountChangeEmail);*/
+    	/*emailDetail = new EmailDetail("Peggy McKinney", "kear.larry@gmail.com", locale);
+    	emailDetail.setChangeType(ChangeType.PROFILE);
+    	try {
+    		accountChangeEmail.constructEmail(emailDetail);
+    		emailSender.sendHtmlEmail(emailDetail);
+    	} catch (Exception ex) {}
 		
+
+    	emailDetail = new EmailDetail("Ilsa Kear", "kear.larry@gmail.com", locale);
+    	emailDetail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
+    	try {
+    		invitationEmail.constructEmail(emailDetail);
+    		emailSender.sendHtmlEmail(emailDetail);
+    	} catch (Exception ex) {}*/
+
     	/*reportGenerator.createRecipePDF(741L, locale);
     	reportGenerator.createRecipePDF(1463L, locale);
     	reportGenerator.createRecipePDF(1101L, locale);

@@ -13,6 +13,7 @@ import net.kear.recipeorganizer.exception.PasswordResendException;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
 
@@ -53,29 +54,13 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
         String userName = user.getFirstName() + " " + user.getLastName();
         String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + newToken;
         
-        passwordEmail.init(userName, user.getEmail(), event.getLocale());
-        passwordEmail.setTokenUrl(confirmationUrl);
-        passwordEmail.constructEmail();
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), event.getLocale());
+        emailDetail.setTokenUrl(confirmationUrl);
         try {
-        	emailSender.sendHtmlEmail(passwordEmail);
+            passwordEmail.constructEmail(emailDetail);        	
+        	emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 	    	throw new PasswordResendException(ex);
 	    }
-
-    	/*logger.debug("confirmPasswordReset");
-        final User user = event.getUser();
-        final String token = UUID.randomUUID().toString();
-        userService.createPasswordResetTokenForUser(user, token);
-
-        String userName = user.getFirstName() + " " + user.getLastName();
-        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + token;
-        passwordEmail.init(userName, user.getEmail(), event.getLocale());
-        passwordEmail.setTokenUrl(confirmationUrl);
-        passwordEmail.constructEmail();
-        try {
-        	emailSender.sendHtmlEmail(passwordEmail);
-		} catch (Exception ex) {
-	    	throw new PasswordResendException(ex);
-	    }*/
     }
 }

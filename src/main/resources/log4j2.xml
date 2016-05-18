@@ -31,8 +31,6 @@
 			<AppenderRef ref="errLog"/>
 		</Root>
 		<Logger name="net.kear.recipeorganizer" level="debug"/>
-		<Logger name="net.kear.recipeorganizer.resolver" level="warn"/>
-		<Logger name="net.kear.recipeorganizer.security" level="warn"/>
 		<Logger name="org.springframework" level="warn"/>
 		<logger name="org.springframework.web" level="warn"/>
 		<logger name="org.springframework.web.context" level="warn"/>
@@ -44,7 +42,9 @@
 		<logger name="net.sf.jasperreports.engine" level="warn"/>
 		<logger name="org.apache.logging" level="warn"/>		
 		<logger name="java.util" level="warn"/>
-		<logger name="javax.servlet" level="debug"/>
+		<logger name="javax.servlet" level="warn"/>
+		<logger name="javax.mail" level="warn"/>
+		<logger name="com.sun.mail.smtp" level="warn"/>
 	</Loggers>
 </Configuration>
 

@@ -20,7 +20,7 @@ function ingredRemoteFilter(data) {
     });
 };
 
-var remoteOpts = setBHRemoteOpts(false, '%QUERY', '/recipeorganizer/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
+var remoteOpts = setBHRemoteOpts(false, '%QUERY', appContextPath + '/recipe/getIngredients?searchStr=%QUERY', ingredRemoteFilter);
 var bhOpts = setBHOptions(20, ingredDatumToken, null, null, remoteOpts);
 var ingredBH = new Bloodhound(bhOpts);
 
@@ -42,7 +42,7 @@ function deleteIngredient(ingredId, ingredUsage, ingredName) {
 	
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/admin/deleteIngredient',
+		url: appContextPath + '/admin/deleteIngredient',
 		dataType: 'json',
 		data: {ingredId:ingredId}
 	})
@@ -64,7 +64,7 @@ function approveIngredient(ingredId) {
 	$('#approve' + ingredId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/admin/approveIngredient',
+		url: appContextPath + '/admin/approveIngredient',
 		dataType: 'json',
 		data : {ingredId:ingredId}
 	})
@@ -94,7 +94,7 @@ function getIngredient(ingredId, callback) {
 	
 	$.ajax({
 		type: 'GET',
-		url: '/recipeorganizer/admin/getIngredient',
+		url: appContextPath + '/admin/getIngredient',
 		dataType: 'json',
 		data: {"ingredId":ingredId}
 	})
@@ -129,7 +129,7 @@ function postUpdateIngredient(e) {
 
 	$.ajax({
 	    type: 'POST',
-		url: '/recipeorganizer/admin/updateIngredient',
+		url: appContextPath + '/admin/updateIngredient',
 		dataType: 'json',
 		data: JSON.stringify(ingredient),
 		contentType: 'application/json'
@@ -190,7 +190,7 @@ function postReplaceIngredient(e) {
 	
 	$.ajax({
 	    type: 'POST',
-		url: '/recipeorganizer/admin/replaceIngredient',
+		url: appContextPath + '/admin/replaceIngredient',
 		dataType: 'json',
 		data: JSON.stringify(data),
 		contentType: 'application/json'

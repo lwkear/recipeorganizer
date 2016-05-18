@@ -59,6 +59,7 @@ import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.ShareRecipeEmail;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -365,7 +366,7 @@ public class DisplayController {
 	/***************************/
 	//Note: this is an example of using validation with AJAX in a Bootstrap modal dialog
 	//Two aspects of normal validation do not appear to work:
-	//	- the .jsp doesn't recognize the binding errors, probably because the ShareRecipeDto is not the main model for the page (Recipe is)
+	//	- the .jsp doesn't recognize the binding errors, because Spring attaches errors to the model/view which doesn't apply in this case
 	//	- the i18n error messages must be inserted manually
 	@RequestMapping(value = "/recipe/shareRecipe", method = RequestMethod.POST)
 	@ResponseBody
@@ -433,16 +434,16 @@ public class DisplayController {
     	
     	String userName = user.getFirstName() + " " + user.getLastName();
     	
-    	shareRecipeEmail.init(recipientName, recipientEmail, locale);
-		shareRecipeEmail.setSenderName(userName);
-		shareRecipeEmail.setUserFirstName(user.getFirstName());
-		shareRecipeEmail.setUserMessage(shareRecipeDto.getEmailMsg());
-		shareRecipeEmail.setRecipeName(shareRecipeDto.getRecipeName());
-		shareRecipeEmail.setPdfAttached(true);
-		shareRecipeEmail.setPdfFileName(pdfFileName);
-		shareRecipeEmail.constructEmail();
+    	EmailDetail emailDetail = new EmailDetail(recipientName, recipientEmail, locale);
+		emailDetail.setSenderName(userName);
+		emailDetail.setUserFirstName(user.getFirstName());
+		emailDetail.setUserMessage(shareRecipeDto.getEmailMsg());
+		emailDetail.setRecipeName(shareRecipeDto.getRecipeName());
+		emailDetail.setPdfAttached(true);
+		emailDetail.setPdfFileName(pdfFileName);
     	try {
-			emailSender.sendHtmlEmail(shareRecipeEmail);
+    		shareRecipeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 			throw new RestException("exception.sendEmail", ex);
 		}

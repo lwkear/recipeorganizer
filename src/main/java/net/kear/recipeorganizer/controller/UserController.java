@@ -92,9 +92,8 @@ import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
+import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
-import net.kear.recipeorganizer.util.email.PasswordEmail;
-import net.kear.recipeorganizer.util.email.RegistrationEmail;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileConstant;
@@ -143,10 +142,6 @@ public class UserController {
 	@Autowired
 	private MaintenanceInterceptor maintInterceptor; 
 	@Autowired
-	private RegistrationEmail registrationEmail; 
-	@Autowired
-	private PasswordEmail passwordEmail; 
-	@Autowired
 	private AccountChangeEmail accountChangeEmail; 
 	@Autowired
 	PropertiesFactoryBean properties;
@@ -173,10 +168,18 @@ public class UserController {
 
 		if (authEx != null) {
 			//many security messages include the email.support.account argument, so just get the property and pass it to all messages 
-			Object[] obj = new Object[] {null};
-        	obj[0] = (Object) env.getProperty("company.email.support.account");
-			
+			Object[] obj = new Object[] {null,null};
+        				
+			//two messages also require the site context
 			authExClass = authEx.getClass().getSimpleName();
+			if ((StringUtils.equals(authExClass, "AccountExpiredException")) ||
+				(StringUtils.equals(authExClass, "CredentialsExpiredException"))) {
+				obj[0] = request.getServletPath();
+				obj[1] = (Object) env.getProperty("company.email.support.account");
+			}
+			else
+				obj[0] = (Object) env.getProperty("company.email.support.account");
+			
 			msg = messages.getMessage("exception." + authExClass, obj, "Login error", locale);
 			
 			if (ExceptionUtils.indexOfThrowable(authEx, BadCredentialsException.class) != -1) {
@@ -223,16 +226,16 @@ public class UserController {
 		logger.info("user/signup GET");
 		
 		//TODO: restore this after beta testing is completed
-		/*UserDto user = new UserDto();
+		UserDto user = new UserDto();
 		//default to AUTHOR
 		user.setSubmitRecipes(true);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
-		model.addAttribute("userDto", user);*/		
+		model.addAttribute("userDto", user);		
 		
-		//return "user/signup";
+		return "user/signup";
 		
-		return "betatest";
+		//return "betatest";
 	}
 	
 	@MaintAware
@@ -245,9 +248,9 @@ public class UserController {
 		
 		//must re-add attribute(s) in case of an error
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
-		mv.addObject("sizeMap", sizeMap);
 		
 		if (result.hasErrors()) {
+			mv.addObject("sizeMap", sizeMap);
 			logger.debug("Validation errors");
 			return mv;
 		}
@@ -266,6 +269,7 @@ public class UserController {
 			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
 			FieldError err = new FieldError("userDto","email", msg);
 			result.addError(err);
+			mv.addObject("sizeMap", sizeMap);
 			return mv;
 		}
 
@@ -495,11 +499,11 @@ public class UserController {
 		
         String userName = user.getFirstName() + " " + user.getLastName();
 
-        accountChangeEmail.init(userName, user.getEmail(), locale);
-		accountChangeEmail.setChangeType(ChangeType.PROFILE);
-		accountChangeEmail.constructEmail();
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+		emailDetail.setChangeType(ChangeType.PROFILE);
 		try {
-			emailSender.sendHtmlEmail(accountChangeEmail);
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 			throw new SaveAccountException(ex);
 		}
@@ -711,11 +715,11 @@ public class UserController {
 		
         String userName = user.getFirstName() + " " + user.getLastName();
 
-        accountChangeEmail.init(userName, user.getEmail(), locale);
-		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
-		accountChangeEmail.constructEmail();
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+		emailDetail.setChangeType(ChangeType.PASSWORD);
 		try {
-			emailSender.sendHtmlEmail(accountChangeEmail);
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 			throw new SaveAccountException(ex);
 		}        
@@ -918,11 +922,11 @@ public class UserController {
         
 		String userName = user.getFirstName() + " " + user.getLastName();
 		
-        accountChangeEmail.init(userName, user.getEmail(), locale);
-		accountChangeEmail.setChangeType(ChangeType.PASSWORD);
-		accountChangeEmail.constructEmail();
+		EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+		emailDetail.setChangeType(ChangeType.PASSWORD);
 		try {
-			emailSender.sendHtmlEmail(accountChangeEmail);
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 	    	throw new PasswordResetException(ex);
 	    }

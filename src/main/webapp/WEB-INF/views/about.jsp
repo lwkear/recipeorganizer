@@ -41,7 +41,7 @@
 			<h4><spring:message code="about.technical.title"></spring:message></h4>
 			<div>
 				<spring:message code="about.technical.description1"></spring:message>
-				<spring:message code="about.technical.description2"></spring:message>
+				<spring:message code="about.technical.description2" arguments="${contextPath}"></spring:message>
 				<spring:message code="about.technical.description3"></spring:message>
 			</div>
 		</div>

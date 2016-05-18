@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
@@ -18,39 +22,36 @@ import freemarker.template.TemplateNotFoundException;
 @Component
 public abstract class EmailMessage {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
-    private Environment env;
+    public Environment env;
     @Autowired
-    private MessageSource messages;
+    public MessageSource messages;
 	@Autowired
-	private Configuration freemarkerConfig;
+	public Configuration freemarkerConfig;
 
 	private String senderName = "";
 	private String senderEmail = "";
-	private String recipientName = "";
-	private String recipientEmail = "";
-	private String subject = "";
-	private String body = "";
 	private HashMap<String, String> msgText;
 	private String appUrl = "";
-	private String tokenUrl = "";
-	private Locale locale = null;
+	private Locale locale;
 	private Template template = null;
-	private boolean pdfAttached = false;
-	private String pdfFileName = "";
 	
 	public EmailMessage() {}
-
-	public void init(String recipientName, String recipientEmail, Locale locale) {
-		this.senderName = env.getProperty("support.name");
-		this.senderEmail = env.getProperty("support.email");
-		this.appUrl = env.getProperty("support.baseurl");
-		this.recipientName = recipientName;
-		this.recipientEmail = recipientEmail;
-		this.locale = locale;
+	
+	@PostConstruct
+	public void getProperties() {
+		logger.debug("email getProperties()");
+		this.senderName = env.getProperty("company.support.name");
+		this.senderEmail = env.getProperty("company.support.email");
+		this.appUrl = env.getProperty("company.support.baseurl");
 	}
 	
-	public void constructEmail() {}
+	public void constructEmail(EmailDetail emailDetail) {
+		setLocale(emailDetail.getLocale());
+    	emailDetail.setSenderEmail(getSenderEmail());
+	}
 
 	public String getSenderName() {
 		return senderName;
@@ -63,61 +64,21 @@ public abstract class EmailMessage {
 	public String getSenderEmail() {
 		return senderEmail;
 	}
-	
-	public String getRecipientName() {
-		return recipientName;
-	}
-	
-	public String getRecipientEmail() {
-		return recipientEmail;
-	}
-	
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	public String getSubject() {
-		return subject;
-	}
-	
-	public String getBody() {
-		return body;
-	}
-	
-	public void setBody(String body) {
-		this.body = body;
-	}
-
+		
 	public String getAppUrl() {
 		return appUrl;
 	}
 
-	public String getTokenUrl() {
-		return this.tokenUrl;
-	}
-	
-	public void setTokenUrl(String tokenUrl) {
-		this.tokenUrl = appUrl + tokenUrl;
-	}
-	
-	public boolean isPdfAttached() {
-		return pdfAttached;
-	}
-
-	public void setPdfAttached(boolean pdfAttached) {
-		this.pdfAttached = pdfAttached;
-	}
-
-	public String getPdfFileName() {
-		return pdfFileName;
-	}
-
-	public void setPdfFileName(String pdfFileName) {
-		this.pdfFileName = pdfFileName;
-	}
-
 	public Template getTemplate() {
 		return template;
+	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 
 	public void setTemplate(String template) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
@@ -128,7 +89,7 @@ public abstract class EmailMessage {
 		return messages.getMessage(code, args, "", locale);
 	}
 	
-	public void setMsgText(String bodyCodes[]) {
+	public void setMsgText(String[] bodyCodes) {
 		msgText = new HashMap<String, String>();
 		
 		if (bodyCodes != null) {

@@ -19,7 +19,6 @@ import net.kear.recipeorganizer.persistence.service.IngredientService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.SourceService;
 import net.kear.recipeorganizer.persistence.service.UserService;
-import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.solr.CategoryFacet;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SourceFacet;
@@ -48,7 +47,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SearchController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private static final AuthCookie authCookie = new AuthCookie();
+	//private static final AuthCookie authCookie = new AuthCookie();
 	
 	@Autowired
 	private UserService userService;
@@ -60,6 +59,7 @@ public class SearchController {
 	private CategoryService categoryService;
 	@Autowired
 	private SourceService sourceService;
+	//TODO: double-check that CookieUtil works - see above private static...
 	@Autowired
 	private CookieUtil cookieUtil;
 	@Autowired
@@ -75,7 +75,7 @@ public class SearchController {
 		logger.info("submitSearch POST: searchTerm=" + searchTerm);
 
 		long userId = 0L;
-		if (!authCookie.isCurrentCookieAnonymous(request)) {
+		if (!cookieUtil.isCookieAnonymous(request)) {
 			User user = (User)userInfo.getUserDetails();
 			userId = user.getId();
 		}
@@ -129,7 +129,7 @@ public class SearchController {
 		logger.debug("modelMap searchTerm: " + searchTerm);
 
 		long userId = 0L;
-		if (!authCookie.isCurrentCookieAnonymous(request)) {
+		if (!cookieUtil.isCookieAnonymous(request)) {
 			User user = (User)userInfo.getUserDetails();
 			userId = user.getId();
 		}

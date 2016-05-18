@@ -85,6 +85,9 @@ public class User implements Serializable {
 	@Column(name = "PASSWORD_EXPIRY_DATE")
 	private Date passwordExpiryDate;
 	
+	@Column(name = "INVITED")
+	private boolean invited;
+	
 	@Transient
 	private boolean loggedIn = false;
 	
@@ -105,7 +108,7 @@ public class User implements Serializable {
 	public User() {}
 	
 	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, Date dateAdded, 
-				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean loggedIn, long numRecipes, long newMsgCount, Role role, UserProfile userProfile) {
+				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean invited, boolean loggedIn, long numRecipes, long newMsgCount, Role role, UserProfile userProfile) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -119,6 +122,7 @@ public class User implements Serializable {
 		this.dateAdded = dateAdded;
 		this.lastLogin = lastLogin;
 		this.passwordExpired = passwordExpired;
+		this.invited = invited;
 		this.loggedIn = loggedIn;
 		this.numRecipes = numRecipes;
 		this.newMsgCount = newMsgCount;
@@ -141,6 +145,7 @@ public class User implements Serializable {
 		this.lastLogin = user.lastLogin;
 		this.passwordExpired = user.passwordExpired;
 		this.passwordExpiryDate = user.passwordExpiryDate;
+		this.invited = user.invited;
 		this.loggedIn = user.loggedIn;
 		this.numRecipes = user.numRecipes;
 		this.newMsgCount = user.newMsgCount;
@@ -240,8 +245,20 @@ public class User implements Serializable {
 		return passwordExpiryDate;
 	}
 
+	public void setPasswordExpiryDate(Date passwordExpiryDate) {
+		this.passwordExpiryDate = passwordExpiryDate;
+	}
+
 	public void setPasswordExpiryDate() {
 		this.passwordExpiryDate = calculateExpiryDate(PASSWORD_EXPIRATION);
+	}
+
+	public boolean isInvited() {
+		return invited;
+	}
+
+	public void setInvited(boolean invited) {
+		this.invited = invited;
 	}
 
 	public Date getDateUpdated() {
@@ -324,7 +341,7 @@ public class User implements Serializable {
     	this.userProfile = userProfile;
     }
  
-    private Date calculateExpiryDate(final int expiryTimeInMinutes) {
+    public Date calculateExpiryDate(final int expiryTimeInMinutes) {
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(new Date().getTime());
         cal.add(Calendar.MINUTE, expiryTimeInMinutes);
@@ -369,6 +386,7 @@ public class User implements Serializable {
 				+ ", lastLogin=" + lastLogin 
 				+ ", passwordExpired=" + passwordExpired
 				+ ", passwordExpiryDate=" +  passwordExpiryDate
+				+ ", invited=" + invited
 				+ ", loggedIn=" + loggedIn 
 				+ ", numRecipes=" + numRecipes 
 				+ ", role=" + role 

@@ -11,7 +11,7 @@ function statePrefetchFilter(data) {
     });
 };
 
-var prefetchOpts = setBHPrefetchOpts(false, '/recipeorganizer/resources/states.json', statePrefetchFilter);
+var prefetchOpts = setBHPrefetchOpts(false, appContextPath + '/resources/states.json', statePrefetchFilter);
 var bhOpts = setBHOptions(50, stateDatumToken, null, prefetchOpts, null);
 var statesBH = new Bloodhound(bhOpts);
 

@@ -36,7 +36,7 @@ function postEmail(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/recipe/shareRecipe',
+	    url: appContextPath + '/recipe/shareRecipe',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})
@@ -62,7 +62,7 @@ function deleteMessage(messageId) {
 	$('#delete' + messageId).tooltip("hide");
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/user/deleteMessage',
+		url: appContextPath + '/user/deleteMessage',
 		dataType: 'json',
 		data: {messageId:messageId}
 	})
@@ -127,7 +127,7 @@ function postMessage(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/user/sendMessage',
+	    url: appContextPath + '/user/sendMessage',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})

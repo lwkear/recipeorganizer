@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body role="document" onload="blurInputFocus()">
 
 <%@include file="common/nav.jsp" %>
 
@@ -23,7 +23,7 @@
 				<div class="col-sm-2">
 					<ul class="nav">
 						<c:forEach var="topic" items="${topics}" varStatus="loop">
-							<li><button class="btn btn-link" type="button" id="${topic.id}" onclick="getQuestions(${topic.id})">${topic.description}</button></li>
+							<li><a id="${topic.id}" onclick="getQuestions(${topic.id})">${topic.description}</a></li>
 						</c:forEach>
 					</ul>
 				</div>

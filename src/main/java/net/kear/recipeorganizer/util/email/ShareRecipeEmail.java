@@ -8,8 +8,6 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +15,7 @@ public class ShareRecipeEmail extends EmailMessage {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private String[] textCodes = {
+	public String[] textCodes = {
 			"email.recipe.title",
 			"email.recipe.problems",
 			"email.recipe.signup",
@@ -25,35 +23,17 @@ public class ShareRecipeEmail extends EmailMessage {
 			"email.recipe.senderShare",
 			"email.common.tagline",
 			"email.common.folks"};
-	private String recipeName;
-	private String userMessage;
-	private String userFirstName;
 
-	@Autowired
-    private Environment env;
-	
-	public ShareRecipeEmail() {
-		super();
-	}
-	
-	public void setRecipeName(String recipeName) {
-		this.recipeName = recipeName;
-	}
-
-	public void setUserFirstName(String userFirstName) {
-		this.userFirstName = userFirstName;
-	}
-	
-	public void setUserMessage(String userMessage) {
-		this.userMessage = userMessage;
-	}
+	public ShareRecipeEmail() {}
 	
 	@Override
-	public void constructEmail() {
-		logger.debug("construct ShareRecipeEmail");
+	public void constructEmail(EmailDetail emailDetail) {
+		logger.debug("construct ShareRecipeEmail for: " + emailDetail.getRecipientEmail());
 
+		super.constructEmail(emailDetail);
 		setMsgText(textCodes);
-		setSubject(getMsgText("email.recipe.title"));
+		
+		emailDetail.setSubject(getMsgText("email.recipe.title"));
 		
 		Object[] obj = new String[] {null, null};
 
@@ -61,14 +41,14 @@ public class ShareRecipeEmail extends EmailMessage {
 		map.put("recipeTitle", getMsgText("email.recipe.title"));		
 		map.put("tagline", getMsgText("email.common.tagline"));
 		map.put("recipeOrganizerUrl", getAppUrl());
-		obj[0] = getRecipientName();
+		obj[0] = emailDetail.getRecipientName();
 		map.put("dearUser", getArgMessage("email.common.dearUser", obj));
 		map.put("senderName", getSenderName());
 		map.put("senderShare", getMsgText("email.recipe.senderShare"));
-		map.put("recipeName", recipeName);
-		obj[0] = userFirstName;
+		map.put("recipeName", emailDetail.getRecipeName());
+		obj[0] = emailDetail.getUserFirstName();
 		map.put("noteLabel", getArgMessage("email.recipe.noteLabel", obj));
-		map.put("userMessage", userMessage);
+		map.put("userMessage", emailDetail.getUserMessage());
 		obj[0] = getAppUrl() + "/contact";
 		obj[1] = (Object) env.getProperty("company.email.support.account");
 		map.put("problems", getArgMessage("email.recipe.problems", obj));
@@ -88,6 +68,6 @@ public class ShareRecipeEmail extends EmailMessage {
 			ex.printStackTrace();
 		}
 		
-		setBody(out.toString());
+		emailDetail.setBody(out.toString());
 	}
 }

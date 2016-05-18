@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
-import net.kear.recipeorganizer.security.AuthCookie;
 import net.kear.recipeorganizer.util.CookieUtil;
 
 import org.slf4j.Logger;
@@ -32,8 +31,6 @@ public class CommonViewImpl implements CommonView {
     private Environment env;
 	@Autowired
 	private MessageSource messages;
-	@Autowired
-	private AuthCookie authCookie;
 	@Autowired
 	private CookieUtil cookieUtil;
 	@Autowired
@@ -69,7 +66,7 @@ public class CommonViewImpl implements CommonView {
 		if (auth != null) {
 			new SecurityContextLogoutHandler().logout(request, response, auth);
 			cookieUtil.deleteRememberMe(request, response);
-			authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
+			cookieUtil.setAuthCookie(request, response, CookieUtil.ANNON_USER);
 		}
 
 		Object[] obj = new Object[] {null};

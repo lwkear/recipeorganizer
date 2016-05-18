@@ -81,6 +81,7 @@ $(function() {
 		    fixIngredArrayIndexes(panel + ' .ingredID', false);
 			fixIngredArrayIndexes(panel + ' .ingredQty', false);
 			fixIngredArrayIndexes(panel + ' .ingredQtyType', false);
+			fixIngredArrayIndexes(panel + ' .ingredDesc', false);
 			fixIngredArrayIndexes(panel + ' .ingredQual', false);
 			fixIngredArrayIndexes(panel + ' .ingredSeq', true);
 	    }

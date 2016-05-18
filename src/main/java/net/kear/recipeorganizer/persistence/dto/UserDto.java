@@ -53,6 +53,7 @@ public class UserDto implements Serializable {
 	private String confirmPassword;
 	
 	private boolean submitRecipes;
+	private boolean invited = false;
 	
 	public UserDto() {}
 	
@@ -62,14 +63,16 @@ public class UserDto implements Serializable {
 		this.email = user.email;
 		this.password = user.password;
 		this.submitRecipes = user.submitRecipes;
+		this.invited = user.invited;
 	}
 	
-	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes) {
+	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes, boolean invited) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.submitRecipes = submitRecipes;
+		this.invited = invited;
 	}
 
 	public String getFirstName() {
@@ -120,7 +123,7 @@ public class UserDto implements Serializable {
 		this.confirmPassword = confirmPassword;
 	}
 
-	public boolean getSubmitRecipes() {
+	public boolean isSubmitRecipes() {
 		return submitRecipes;
 	}
 
@@ -128,7 +131,15 @@ public class UserDto implements Serializable {
 		this.submitRecipes = submitRecipes;
 	}
 	
-    @Override
+    public boolean isInvited() {
+		return invited;
+	}
+
+	public void setInvited(boolean invited) {
+		this.invited = invited;
+	}
+
+	@Override
     public int hashCode() {
         return email.hashCode();
     }	
@@ -157,6 +168,8 @@ public class UserDto implements Serializable {
 				+ ", lastName=" + lastName 
 				+ ", email=" + email 
 				+ ", password=" + password 
-				+ ", submitRecipes=" + submitRecipes + "]";
+				+ ", submitRecipes=" + submitRecipes 
+				+ ", invited=" + invited
+				+ "]";
 	}
 }

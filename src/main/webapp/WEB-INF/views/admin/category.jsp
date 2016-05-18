@@ -23,17 +23,6 @@
 				<h3><spring:message code="category.title"></spring:message></h3>
 			</div>
 		</div>
-
-	<spring:hasBindErrors name="category">
-    <c:set var="errorCnt">${errors.errorCount}</c:set>
-    <p><b># of Errors:${errorCnt}</b></p>
-    <p></p>
-	<c:forEach var="error" items="${errors.allErrors}">
-		<b><c:out value="${error}" /></b>
-		<p></p>
-	</c:forEach>
-	</spring:hasBindErrors>
-
 		<div class="col-sm-12">
 			<div class="row">			
 		    <form:form class="form-horizontal" role="form" action="category" method="post" modelAttribute="category">
@@ -57,7 +46,7 @@
 		            <div class="col-sm-offset-4 col-sm-3 text-center">
 		                <form:button type="submit" class="btn btn-primary pull-left" name="save"><spring:message code="common.save"></spring:message></form:button>
 		                <form:button type="submit" class="btn btn-primary" name="delete"><spring:message code="common.delete"></spring:message></form:button>
-		                <input type="reset" class="btn btn-default pull-right" value="Reset">
+		                <input type="reset" class="btn btn-default pull-right" value="<spring:message code="common.reset"></spring:message>">
 		            </div>
 		        </div>
 			</form:form>
@@ -73,3 +62,15 @@
 <script src="<c:url value="/resources/custom/category.js" />"></script>
 
 </html>
+<%-- 
+	<spring:hasBindErrors name="category">
+    <c:set var="errorCnt">${errors.errorCount}</c:set>
+    <p><b># of Errors:${errorCnt}</b></p>
+    <p></p>
+	<c:forEach var="error" items="${errors.allErrors}">
+		<b><c:out value="${error}" /></b>
+		<p></p>
+	</c:forEach>
+	</spring:hasBindErrors>
+
+ --%>

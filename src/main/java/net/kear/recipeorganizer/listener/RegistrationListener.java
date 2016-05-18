@@ -13,6 +13,7 @@ import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
 
@@ -53,30 +54,13 @@ public class RegistrationListener implements ApplicationListener<RegistrationCom
         String userName = user.getFirstName() + " " + user.getLastName();
         String confirmationUrl = "/confirmRegistration?token=" + newToken;
         
-        registrationEmail.init(userName, user.getEmail(), event.getLocale());
-        registrationEmail.setTokenUrl(confirmationUrl);
-        registrationEmail.constructEmail();
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), event.getLocale());
+        emailDetail.setTokenUrl(confirmationUrl);
         try {
-        	emailSender.sendHtmlEmail(registrationEmail);
+        	registrationEmail.constructEmail(emailDetail);
+        	emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {
 			throw new VerificationResendException(ex);
 		}
-
-    	/*logger.debug("confirmRegistration");
-        final User user = event.getUser();
-        final String token = UUID.randomUUID().toString();
-        userService.createUserVerificationToken(user, token);
-
-        String userName = user.getFirstName() + " " + user.getLastName();
-        String confirmationUrl = "/confirmRegistration?token=" + token;
-        
-        registrationEmail.init(userName, user.getEmail(), event.getLocale());
-        registrationEmail.setTokenUrl(confirmationUrl);
-        registrationEmail.constructEmail();
-        try {
-        	emailSender.sendHtmlEmail(registrationEmail);
-		} catch (Exception ex) {
-			throw new VerificationResendException(ex);
-		}*/
     }
 }

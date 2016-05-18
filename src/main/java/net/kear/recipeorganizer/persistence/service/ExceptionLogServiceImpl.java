@@ -4,7 +4,7 @@ import java.util.Date;
 
 import net.kear.recipeorganizer.persistence.model.ExceptionLog;
 import net.kear.recipeorganizer.persistence.repository.ExceptionLogRepository;
-import net.kear.recipeorganizer.security.AuthCookie;
+import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.UserInfo;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -28,7 +28,7 @@ public class ExceptionLogServiceImpl implements ExceptionLogService {
 		long eventId = exceptionLogRepository.getEventId();
 		String userName;
 		if (userInfo.isUserAnonymous())
-			userName = AuthCookie.ANNON_USER;
+			userName = CookieUtil.ANNON_USER;
 		else
 			userName = userInfo.getUserDetails().getUsername();
 

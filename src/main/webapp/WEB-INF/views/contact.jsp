@@ -27,7 +27,7 @@
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.howto"></spring:message></h4>
 			<div>
-				<spring:message code="contact.howto.readFAQ"></spring:message>
+				<spring:message code="contact.howto.readFAQ" arguments="${contextPath}"></spring:message>
 				<spring:message code="contact.howto.question" arguments="${properties['company.email.support.website']}"></spring:message>
 			</div>
 		</div>

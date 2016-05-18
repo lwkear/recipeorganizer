@@ -24,7 +24,7 @@ function postDeleteRecipe(e) {
 	
 	$.ajax({
 		type: 'POST',
-		url: '/recipeorganizer/recipe/deleteRecipe',
+		url: appContextPath + '/recipe/deleteRecipe',
 		dataType: 'json',
 		data: {"recipeId":recipeId}
 	})
@@ -76,7 +76,7 @@ function postRemoveFavorite(e) {
 	$.ajax({
 		type: 'POST',
 		contentType: 'application/json',
-		url: '/recipeorganizer/recipe/removeFavorite',
+		url: appContextPath + '/recipe/removeFavorite',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})
@@ -146,7 +146,7 @@ function postActionMessage(e) {
 	$.ajax({
 	    type: 'POST',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/admin/approveRecipe',
+	    url: appContextPath + '/admin/approveRecipe',
 		dataType: 'json',
 		data: JSON.stringify(data)
 	})

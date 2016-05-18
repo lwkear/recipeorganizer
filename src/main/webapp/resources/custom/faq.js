@@ -2,7 +2,7 @@ function getQuestions(topicId) {
 	$.ajax({
 	    type: 'GET',
 		contentType: 'application/json',
-	    url: '/recipeorganizer/questions/' + topicId,
+	    url: appContextPath + '/questions/' + topicId,
 		dataType: 'html',
 	})
 	.done(function(data) {

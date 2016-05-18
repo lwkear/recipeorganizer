@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>${registrationConfirm}</title>
+<title>${invitationSubject}</title>
 </head>
 <body bgcolor="#FFFFFF">
 <table width="100%" border="0" bgcolor="#e6e6e6">
@@ -44,7 +44,7 @@
 							<td width="16" height="28"><img src="cid:cleargif" border="0" style="display:block" width="16" height="53"/></td>
 							<td width="11" bgcolor="#336699"></td>
 							<td width="558" align="left" valign="middle" bgcolor="#336699">
-								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${registrationConfirm}</font></td>
+								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${invitationSubject}</font></td>
 							<td width="11" align="right" valign="top" bgcolor="#336699">&nbsp;</td>
 							<td width="18" align="right" valign="top"><img src="cid:cleargif" border="0" style="display:block" width="16" height="20"/></td>
 						</tr>
@@ -58,14 +58,31 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td><font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${welcomeUser}</font>
-							<br><br><br>
-							<font face="Arial, Helvetica, sans-serif" color="#333333" style="font-size: 13px; line-height: 19px">
-							${signupThankyou}
+							<td><font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${dearMember},</font>
 							<br><br>
-							${completeProcess}
+							<font face="Arial, Helvetica, sans-serif" color="#333333" style="font-size: 13px; line-height: 19px">
+							${inviteMsg1}
+							<br>
+							${inviteMsg2}
+							<br><br>
+							${inviteMsg3}
+							<ul><li>${feature1}</li>
+							<li>${feature2}</li>
+							<li>${feature3}</li>
+							<li>${feature4}</li>
+							<ul><li>${feature5}</li>
+									<li>${feature6}</li>
+									<li>${feature7}</li>
+									<li>${feature8}</li>
+									<li>${feature9}</li>
+							</ul></ul>
+							${tryit}
+							<br><br>
+							${convenience}
 							<br>
 							<a href=${tokenUrl}>${tokenUrl}</a>
+							<br>
+							${login}
 							<br><br>
 							${pasteLink}
 							${expire}

@@ -68,7 +68,7 @@ public class SolrUtilImpl implements SolrUtil {
 		if (userId > 0)
 			filterStr = String.format("userid:%d || (*:* && !userid:%d && allowshare:true && status:%d)", userId, userId, approved);
 		else
-			filterStr = String.format("allowshare:true && approved:%d", approved);
+			filterStr = String.format("allowshare:true && status:%d", approved);
 		logger.debug("filterStr: " + filterStr);
 		
 		//Note: the default sort is by score, so no need to explicitly identify score as the sort
@@ -245,7 +245,7 @@ public class SolrUtilImpl implements SolrUtil {
 		if (!recipe.getTags().isEmpty())
 			document.addField("tags", recipe.getTags());
 		if (recipe.getSource() != null) {
-			document.addField("sourcetype", recipe.getSource().getType());
+			document.addField("sourcetype", recipe.getSource().getType().name());
 			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))
 				document.addField("cookbook", recipe.getSource().getCookbook());
 			if (!StringUtils.isBlank(recipe.getSource().getCookbook()))

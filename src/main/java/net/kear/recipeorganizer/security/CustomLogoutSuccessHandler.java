@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.kear.recipeorganizer.util.CookieUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +22,13 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
-	private AuthCookie authCookie;
+	private CookieUtil cookieUtil;
 	
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		logger.info("onLogoutSuccess: " + authentication.getName());
 		
-		authCookie.setCookie(request, response, AuthCookie.ANNON_USER);
+		cookieUtil.setAuthCookie(request, response, CookieUtil.ANNON_USER);
 		setDefaultTargetUrl("/thankyou");
 		super.onLogoutSuccess(request, response, authentication);
 	}
