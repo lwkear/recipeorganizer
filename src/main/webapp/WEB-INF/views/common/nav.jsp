@@ -23,7 +23,6 @@
 
 <!-- Note: path is required for AJAX url's -->
 <script>var appContextPath = "${pageContext.request.contextPath}"</script>
-<c:set var = "contextPath" value="${pageContext.request.contextPath}"/>
 
 <nav class="navbar navbar-inverse navbar-fixed-top">		 <!-- navbar-inverse -->
 	<div class="container">

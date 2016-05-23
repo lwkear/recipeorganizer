@@ -3,8 +3,8 @@
 <!-- <Configuration status="debug"> -->
 <Configuration>
 	<Properties>
-		<Property name="stdfilename">${bundle:filedir:file.directory.logs}standard.log</Property>
-		<Property name="errfilename">${bundle:filedir:file.directory.logs}error.log</Property>
+		<Property name="stdfilename">standard.log</Property>
+		<Property name="errfilename">error.log</Property>
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">

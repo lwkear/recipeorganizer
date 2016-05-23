@@ -226,16 +226,16 @@ public class UserController {
 		logger.info("user/signup GET");
 		
 		//TODO: restore this after beta testing is completed
-		UserDto user = new UserDto();
+		/*UserDto user = new UserDto();
 		//default to AUTHOR
 		user.setSubmitRecipes(true);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userDto", user);		
 		
-		return "user/signup";
+		return "user/signup";*/
 		
-		//return "betatest";
+		return "betatest";
 	}
 	
 	@MaintAware
@@ -724,7 +724,7 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}        
 		
-		return "redirect:/home";
+		return "redirect:/user/dashboard";
 	}
 
 	/***********************************************/

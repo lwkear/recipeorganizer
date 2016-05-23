@@ -36,7 +36,7 @@ public class EmailSender {
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-		mimeMessage.setFrom(new InternetAddress(emailDetail.getSenderEmail()));
+		mimeMessage.setFrom(new InternetAddress(emailDetail.getSenderEmail(), emailDetail.getSenderName()));
 		Address address = new InternetAddress(emailDetail.getRecipientEmail(), emailDetail.getRecipientName());
 		((InternetAddress)address).validate();
 		logger.debug("address.validate() w/ personal passed");

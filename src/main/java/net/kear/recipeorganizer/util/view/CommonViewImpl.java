@@ -50,7 +50,7 @@ public class CommonViewImpl implements CommonView {
 		
 		String title = messages.getMessage("exception.title.error", obj, "Error", locale);
 		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage(msgCode, null, ex.getClass().getSimpleName(), locale));
+		errorMsgs.add(messages.getMessage(msgCode, obj, ex.getClass().getSimpleName(), locale));
 		
 		ModelAndView mv = new ModelAndView("/error");
 		mv.addObject("errorTitle", title);

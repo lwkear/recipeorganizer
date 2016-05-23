@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 
 import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
 import net.kear.recipeorganizer.enums.ApprovalReasonFormatter;
+import net.kear.recipeorganizer.interceptor.HttpHeadFilter;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.resolver.CustomCookieLocaleResolver;
@@ -46,7 +47,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -68,10 +68,10 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 	"net.kear.recipeorganizer.enums"
 	})
 @Configuration
-@PropertySources(value={@PropertySource("classpath:email.properties"),
-						@PropertySource("classpath:filedir.properties"),
-						@PropertySource("classpath:solr.properties"),
-						@PropertySource("classpath:company.properties")})
+@PropertySources(value={@PropertySource("classpath:email.${spring.profiles.active}.properties"),
+						@PropertySource("classpath:filedir.${spring.profiles.active}.properties"),
+						@PropertySource("classpath:solr.${spring.profiles.active}.properties"),
+						@PropertySource("classpath:company.${spring.profiles.active}.properties")})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -92,6 +92,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
+        registry.addResourceHandler("/robots.txt").addResourceLocations("/");
     }
 	
 	/*** JSON configuration ***/
@@ -141,7 +142,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	public PropertiesFactoryBean properties() {
 		PropertiesFactoryBean bean = new PropertiesFactoryBean();
 		//make this file accessible in a jsp
-		Resource resource = new ClassPathResource("company.properties");
+		String path = "company." + env.getActiveProfiles()[0] + ".properties";
+		Resource resource = new ClassPathResource(path);
 		bean.setLocation(resource);
 		return bean;
 	}
@@ -171,15 +173,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return solr;
 	}	
 	
-    //This is an easy way to avoid creating a .GET method for every single page;
-	//works best if there is little content on the page, e.g., error pages
-	/*@Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-		logger.debug("addViewControllers");
-        super.addViewControllers(registry);
-        registry.addViewController("/robots.txt");        
-    }*/
-
 	/*** webflow configuration ***/
 	@Bean
 	public FlowHandlerMapping flowHandlerMapping() {
@@ -212,7 +205,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/faq"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(5);	//TODO: PRODUCTION: be sure to change this value in production
+        source.setCacheSeconds(5);
         source.setFallbackToSystemLocale(false);
         return source;
     }
@@ -278,7 +271,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     	registry.addInterceptor(localeInterceptor());
     	registry.addInterceptor(maintenanceInterceptor());
     }
-		
+	
+	/*** filters ***/
+	@Bean
+	public HttpHeadFilter httpHeadFilter() {
+    	logger.debug("HttpHeadFilter");
+		return new HttpHeadFilter();
+	}
+			
     /*** email configuration ***/
 	@Bean
     public JavaMailSenderImpl javaMailSender() {
@@ -295,7 +295,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         javaMailProps.put("mail.smtp.host", env.getProperty("smtp.host"));
         javaMailProps.put("mail.smtp.port", env.getProperty("smtp.port"));
         javaMailProps.put("mail.smtp.auth", env.getProperty("mail.smtp.auth"));
-        javaMailProps.put("mail.smtp.localhost", "recipeorganizer.net");
+        javaMailProps.put("mail.smtp.localhost", env.getProperty("smtp.host"));
         javaMailProps.put("mail.smtp.starttls.enable", env.getProperty("smtp.starttls.enable"));
         
         mailSenderImpl.setJavaMailProperties(javaMailProps);
@@ -316,7 +316,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		FreeMarkerConfigurationFactoryBean config = new FreeMarkerConfigurationFactoryBean();
 		config.setTemplateLoaderPath("WEB-INF/emails");
 		config.setDefaultEncoding("UTF-8");
-		config.setPreferFileSystemAccess(false);	//TODO: EMAIL: turn this on for production?
+		config.setPreferFileSystemAccess(false);
 		return config;
 	}
 	
@@ -324,7 +324,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public ReportGenerator reportGenerator() {
 		ReportGenerator generator = new ReportGenerator();
-		generator.configureReports(servletContext, env);
+		generator.configureReports(servletContext, env.getProperty("file.directory.pdfs"));
 		return generator;
 	}
 	

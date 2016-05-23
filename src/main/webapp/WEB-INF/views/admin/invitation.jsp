@@ -63,7 +63,7 @@
 				</div>
 			</form>
 			<div class="col-sm-12">
-		        <div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-sm">
+		        <div class="form-group col-sm-3 col-sm-offset-4 text-center spacer-vert-sm">
 					<button class="btn btn-primary" type="submit" id="btnSubmit" name="btnSubmit"><spring:message code="common.submit"></spring:message></button>
 					<input class="btn btn-default pull-right" type="button" id="btnReset" value="<spring:message code="common.reset"></spring:message>">
 		   		</div>

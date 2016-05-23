@@ -41,11 +41,11 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 		if (auth != null && auth.isAuthenticated() && !StringUtils.isEmpty(uri)) {
 			if (!userInfo.isUserAnonymous() && 
 				role.equalsIgnoreCase(Role.TYPE_GUEST) && 
-				(uri.equals("/recipeorganizer/recipe/recipeList") || uri.equals("/recipeorganizer/recipe"))) { 
+				(StringUtils.endsWith(uri, "/recipe/recipeList") || StringUtils.endsWith(uri, "/recipe"))) { 
 					setErrorPage("/user/changeAccount");
 			}
 			if (userInfo.isUserAnonymous() &&
-				uri.equals("/recipeorganizer/recipe")) {
+				(StringUtils.endsWith(uri, "/recipe/recipeList") || StringUtils.endsWith(uri, "/recipe"))) {
 					setErrorPage("/user/join");
 			}
 		}

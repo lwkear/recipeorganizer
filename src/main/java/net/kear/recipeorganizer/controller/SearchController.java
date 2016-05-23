@@ -47,7 +47,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class SearchController {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	//private static final AuthCookie authCookie = new AuthCookie();
+	private static final CookieUtil cookieUtil = new CookieUtil();
 	
 	@Autowired
 	private UserService userService;
@@ -59,9 +59,6 @@ public class SearchController {
 	private CategoryService categoryService;
 	@Autowired
 	private SourceService sourceService;
-	//TODO: double-check that CookieUtil works - see above private static...
-	@Autowired
-	private CookieUtil cookieUtil;
 	@Autowired
 	private SolrUtil solrUtil;
 	@Autowired

@@ -318,7 +318,20 @@ public class HomeController {
 		
 		return "{}";
 	}
-	
+
+	/******************/
+	/*** robots.txt ***/
+	/******************/
+	/*@RequestMapping(value="/robots.txt", method = RequestMethod.GET)
+	@ResponseBody
+	public String getRobots(HttpServletResponse response) {
+		response.setContentType("text/plain");
+		response.setCharacterEncoding("UTF-8");
+
+		//return (Arrays.asList("mysite.com", "www.mysite.com").contains(request.getServerName())) ?
+        //        "robotsAllowed" : "robotsDisallowed";
+		return "";
+	}*/	
 	
 	/*****************/
 	/*** test page ***/
@@ -399,12 +412,12 @@ public class HomeController {
 			emailSender.sendHtmlEmail(emailDetail);
 		} catch (Exception ex) {}*/
 		
-		EmailDetail emailDetail = new EmailDetail("Larry Kear", "lkear@outlook.com", locale);
+		/*EmailDetail emailDetail = new EmailDetail("Larry Kear", "lkear@outlook.com", locale);
     	emailDetail.setChangeType(ChangeType.PASSWORD);
     	try {
     		accountChangeEmail.constructEmail(emailDetail);
     		emailSender.sendHtmlEmail(emailDetail);
-    	} catch (Exception ex) {}
+    	} catch (Exception ex) {}*/
 
     	/*emailDetail = new EmailDetail("Peggy McKinney", "kear.larry@gmail.com", locale);
     	emailDetail.setChangeType(ChangeType.PROFILE);

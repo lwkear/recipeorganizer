@@ -12,6 +12,8 @@
 
 <%@include file="common/nav.jsp" %>
 
+	<c:url var="faqUrl" value="${pageContext.servletContext.contextPath}/faq"></c:url>
+
 	<div class="container container-white">
 		<div class="col-sm-12 title-bar">
 			<div class="page-header">
@@ -27,7 +29,7 @@
 		<div class="col-sm-12 spacer-vert-xs">
 			<h4><spring:message code="contact.howto"></spring:message></h4>
 			<div>
-				<spring:message code="contact.howto.readFAQ" arguments="${contextPath}"></spring:message>
+				<spring:message code="contact.howto.readFAQ" arguments="${faqUrl}"></spring:message>
 				<spring:message code="contact.howto.question" arguments="${properties['company.email.support.website']}"></spring:message>
 			</div>
 		</div>

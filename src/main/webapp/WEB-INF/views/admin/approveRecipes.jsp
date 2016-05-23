@@ -60,7 +60,7 @@
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>
 							<td>
-								<button class="btn btn-primary btn-xs" type="button" id="action${recipe.id}" onclick="recipeAction(${recipe.userId}, ${recipe.id}, 
+								<button class="btn btn-success btn-xs" type="button" id="action${recipe.id}" onclick="recipeAction(${recipe.userId}, ${recipe.id}, 
 								'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.action"></spring:message>">
 								<span class="glyphicon glyphicon-ok"></span></button>

@@ -94,6 +94,9 @@ table {
 				</tbody>
 			</table>
 		</div>
+		<div class="col-sm-12">
+			<small>*<spring:message code="messages.hover"></spring:message></small>
+		</div>
 	</div>	
 
 <!-- share recipe dialog -->

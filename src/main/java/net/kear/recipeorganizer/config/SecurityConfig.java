@@ -21,10 +21,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import net.kear.recipeorganizer.interceptor.HttpHeadFilter;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
@@ -46,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	DataSource dataSource;
 	@Autowired 
 	CharacterEncodingFilter encodingFilter;
+	@Autowired 
+	HttpHeadFilter httpHeadFilter;
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth, UserSecurityService userSecurityService) throws Exception {
@@ -58,6 +62,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
+	
+	@Bean
+	public HttpHeadFilter httpHeadFilter() {
+		return new HttpHeadFilter();
+	}	
 	
 	@Bean
 	public RoleHierarchy roleHierarchy() {
@@ -153,6 +162,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.securityContextRepository(contextRepository())
     		.and()
     	.addFilterBefore(encodingFilter, CsrfFilter.class)
+    	.addFilterAfter(httpHeadFilter, FilterSecurityInterceptor.class)
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()

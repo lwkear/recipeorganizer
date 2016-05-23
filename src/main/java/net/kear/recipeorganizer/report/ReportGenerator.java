@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceResourceBundle;
-import org.springframework.core.env.Environment;
 
 public class ReportGenerator {
 
@@ -71,16 +70,23 @@ public class ReportGenerator {
 		logger.debug("ReportGenerator");
 	}
 
-	public boolean configureReports(ServletContext servletContext, Environment env) {
+	public boolean configureReports(ServletContext servletContext, String pdfDir) {
 		this.recipeHtmlReportFilePath = servletContext.getRealPath("/jasper/recipeHtml.jasper");
 		this.recipePdfReportFilePath = servletContext.getRealPath("/jasper/recipePdf.jasper");
 		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/images/logo.png";
 		this.logoPdfImagePath = servletContext.getRealPath("/resources/images/logo.png");
 		this.jasperReportDirPath = servletContext.getRealPath("/jasper/");
-		this.pdfReportDirPath = env.getProperty("file.directory.pdfs"); 
+		this.pdfReportDirPath = pdfDir; 
 		recipeHtmlFile = new File(this.recipeHtmlReportFilePath);
 		recipePdfFile = new File(this.recipePdfReportFilePath);
 		reportsDir = new File(this.jasperReportDirPath);
+		
+		logger.debug("recipeHtmlReportFilePath: " + this.recipeHtmlReportFilePath);
+		logger.debug("recipePdfReportFilePath: " + this.recipePdfReportFilePath);
+		logger.debug("logoHtmlImagePath: " + this.logoHtmlImagePath);
+		logger.debug("logoPdfImagePath: " + this.logoPdfImagePath);
+		logger.debug("jasperReportDirPath: " + this.jasperReportDirPath);
+		logger.debug("pdfReportDirPath: " + this.pdfReportDirPath);
 
     	try {
         	recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
@@ -112,7 +118,6 @@ public class ReportGenerator {
     	JRDataSource src = new JRBeanCollectionDataSource(list);
 
     	try {
-    		//TODO: JASPER: REMOVE THESE TWO LINES when jasper report work is done
         	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
         	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
 

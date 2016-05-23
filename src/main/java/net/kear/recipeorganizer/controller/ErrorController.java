@@ -51,13 +51,11 @@ public class ErrorController {
 	/**********************/
 	@RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
 	public ModelAndView accessDeniedError() {
-		String msg = env.getProperty("company.email.support.account");
-		return commonView.getStandardErrorPage(new AccessDeniedException(msg));		
+		return commonView.getStandardErrorPage(new AccessDeniedException(null));		
 	}
 
 	@RequestMapping(value = "/expiredSession", method = RequestMethod.GET)
 	public ModelAndView expiredSessionError() {
-		
 		return commonView.getStandardErrorPage(new SessionAuthenticationException(null));		
 	}
 }
