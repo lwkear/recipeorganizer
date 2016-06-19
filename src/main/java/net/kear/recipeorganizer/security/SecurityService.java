@@ -42,9 +42,12 @@ public class SecurityService implements UserSecurityService {
 		this.userService = userService;
 	}
     
+    @Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		User user = userService.findUserByEmail(username);
+		User user = null;
+		user = userService.findUserByEmail(username);
+		
 		if (user == null) {
 			throw new UsernameNotFoundException("Could not find user " + username);
 		}

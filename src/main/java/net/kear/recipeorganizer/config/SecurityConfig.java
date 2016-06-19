@@ -1,6 +1,6 @@
 package net.kear.recipeorganizer.config;
 
-import javax.sql.DataSource;
+//import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -26,13 +26,16 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-import net.kear.recipeorganizer.interceptor.HttpHeadFilter;
 import net.kear.recipeorganizer.persistence.model.Role;
+import net.kear.recipeorganizer.persistence.service.DatabaseStatusService;
 import net.kear.recipeorganizer.security.AccessDeniedErrorHandler;
 import net.kear.recipeorganizer.security.AuthenticationFailureHandler;
 import net.kear.recipeorganizer.security.CustomAuthLoginEntryPoint;
 import net.kear.recipeorganizer.security.CustomHttpSessionSecurityContextRepository;
 import net.kear.recipeorganizer.security.CustomLogoutSuccessHandler;
+import net.kear.recipeorganizer.security.DatabaseConnectionConfigurer;
+import net.kear.recipeorganizer.security.DatabaseConnectionFilter;
+import net.kear.recipeorganizer.security.HttpHeadFilter;
 import net.kear.recipeorganizer.security.LoginSuccessHandler;
 import net.kear.recipeorganizer.security.RedirectInvalidSession;
 import net.kear.recipeorganizer.security.RememberMeSuccessHandler;
@@ -44,12 +47,13 @@ import net.kear.recipeorganizer.security.UserSecurityService;
 @EnableGlobalMethodSecurity( prePostEnabled = true )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	DataSource dataSource;
+	//used for persistent rememberMe token
+	//@Autowired
+	//DataSource dataSource;
 	@Autowired 
 	CharacterEncodingFilter encodingFilter;
-	@Autowired 
-	HttpHeadFilter httpHeadFilter;
+	@Autowired
+	private DatabaseStatusService databaseStatusService;	
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth, UserSecurityService userSecurityService) throws Exception {
@@ -66,7 +70,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public HttpHeadFilter httpHeadFilter() {
 		return new HttpHeadFilter();
-	}	
+	}
+	
+	@Bean
+	DatabaseConnectionFilter dbConnectionFilter() throws Exception {
+		DatabaseConnectionFilter filter = new DatabaseConnectionFilter(databaseStatusService);
+		filter.setTargetUrl("/systemError");
+		return filter;
+	}
 	
 	@Bean
 	public RoleHierarchy roleHierarchy() {
@@ -87,7 +98,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public SessionManagementBeanPostProcessor sessionManagementBeanPostProcessor() {
 		return new SessionManagementBeanPostProcessor();
 	}
-	
+
 	@Bean
 	public AuthenticationFailureHandler authenticationFailureHandler() {
 		return new AuthenticationFailureHandler();
@@ -147,7 +158,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	{
 		web
 		.ignoring()
-			.antMatchers("/resources/**", "/robots.txt")
+			.antMatchers("/resources/**", "/robots.txt", "/favicon.ico")
 		;
 	}
 
@@ -161,14 +172,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	.securityContext()
     		.securityContextRepository(contextRepository())
     		.and()
-    	.addFilterBefore(encodingFilter, CsrfFilter.class)
-    	.addFilterAfter(httpHeadFilter, FilterSecurityInterceptor.class)
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
+    	.addFilterBefore(encodingFilter, CsrfFilter.class)
+    	.addFilterAfter(httpHeadFilter(), FilterSecurityInterceptor.class)
     	.authorizeRequests()
 			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/betatest", "/technical", "/policies", "/sysmaint", "/test/testpage").permitAll()
-			.antMatchers("/submitsearch", "/searchresults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
+			.antMatchers("/submitSearch", "/searchResults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
     		.antMatchers("/user/fatalError", "/user/expiredToken", "/user/invalidToken", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
@@ -179,7 +190,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.antMatchers("/admin/approval", "/admin/approveRecipe", "/admin/comments", "/admin/ingredients").hasAuthority(Role.TYPE_EDITOR)
     		.antMatchers("/admin/**").hasAuthority(Role.TYPE_ADMIN)
     		.anyRequest().authenticated()
-			//.anyRequest().permitAll()	//comment out to test if above configs are causing a problem
 			.expressionHandler(secExpressionHandler())
 			.and()
 		.formLogin()
@@ -212,6 +222,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.expiredUrl("/expiredSession")
     		//.maxSessionsPreventsLogin(false)	//when enabled it prevents a user from logging in before the session expires
     	;
+    	
+    	http.apply(new DatabaseConnectionConfigurer<HttpSecurity>(dbConnectionFilter()));
     }
 	
 	//replaces the default SimpleRedirectInvalidSessionStrategy and allows for anonymous users to browse w/o getting an invalid session error 
@@ -225,7 +237,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	        }
 	        return bean;
 	    }
-
+	    
 	    @Override
 	    public Object postProcessAfterInitialization(Object bean, String beanName) {
 	        return bean;

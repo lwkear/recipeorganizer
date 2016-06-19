@@ -80,7 +80,7 @@
 							<span class="glyphicon glyphicon-paperclip"></span>
 						</button>
 						<c:if test="${isAuth && (userId == recipe.user.id)}">
-							<a class="btn btn-link btn-sm" id="edit" style="margin-left:5px;font-size:20px" href="../editRecipe/${recipe.id}"
+							<a class="btn btn-link btn-sm" id="edit" style="margin-left:5px;font-size:20px" href="<c:url value='/recipe/editRecipe/${recipe.id}'/>"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span>
 							</a>

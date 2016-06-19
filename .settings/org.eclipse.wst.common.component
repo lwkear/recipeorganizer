@@ -6,5 +6,6 @@
 		<wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
 		<property name="java-output-path" value="target/classes"/>
         <property name="context-root" value="recipeorganizer"/>
+        <property name="component.exclusion.patterns" value="WEB-INF/maintenance.properties,WEB-INF/classes/*.dev.properties,WEB-INF/classes/*.oracle.properties,WEB-INF/classes/*oracle.xml"/>
 	</wb-module>
 </project-modules>

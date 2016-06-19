@@ -43,7 +43,7 @@ public class ShareRecipeEmail extends EmailMessage {
 		map.put("recipeOrganizerUrl", getAppUrl());
 		obj[0] = emailDetail.getRecipientName();
 		map.put("dearUser", getArgMessage("email.common.dearUser", obj));
-		map.put("senderName", getSenderName());
+		map.put("senderName", emailDetail.getUserName());
 		map.put("senderShare", getMsgText("email.recipe.senderShare"));
 		map.put("recipeName", emailDetail.getRecipeName());
 		obj[0] = emailDetail.getUserFirstName();

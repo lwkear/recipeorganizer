@@ -90,7 +90,6 @@ public class FileActionsImpl implements FileActions {
 	    		return FileResult.NO_FILE;
 	    	if (!originalName.isEmpty())
 	    		return returnErrorMsg(FileResult.EMPTY_FILE, requestContext);
-	    		//return FileResult.EMPTY_FILE;
 	    }
 	    
     	String filePath = recipeDir + recipe.getId() + "." + file.getOriginalFilename();
@@ -106,20 +105,17 @@ public class FileActionsImpl implements FileActions {
 	    	BufferedImage img = ImageIO.read(file.getInputStream());
 	    	if (img == null)
 	    		return returnErrorMsg(FileResult.NOT_IMAGE, requestContext);
-	    		//return FileResult.NOT_IMAGE;
 	    	
 	    	List<String> nameParts = Arrays.asList(originalName.split("[.]"));
 	    	int size = nameParts.size();
 	    	if (size <= 1)
 	    		return returnErrorMsg(FileResult.NO_EXTENSION, requestContext);
-	    		//return FileResult.NO_EXTENSION;
 	    	
 	    	String ext = nameParts.get(size-1);
 	    	logger.debug("extension = " + ext);
 	    	ext = ext.toLowerCase();
 	    	if (!ext.equals("png") && !ext.equals("jpg") && !ext.equals("jpeg") && !ext.equals("gif"))
 	    		return returnErrorMsg(FileResult.INVALID_TYPE, requestContext);
-	    		//return FileResult.INVALID_TYPE;
 
 	    	BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
 	    	ImageIO.write(img, ext, stream);
@@ -130,7 +126,6 @@ public class FileActionsImpl implements FileActions {
         } catch (IOException ex) {
         	logService.addException(ex);
         	return returnErrorMsg(FileResult.EXCEPTION_ERROR, requestContext);
-        	//return FileResult.EXCEPTION_ERROR;
         }
 
 		return FileResult.SUCCESS;

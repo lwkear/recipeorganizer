@@ -87,9 +87,9 @@ public class UserRepositoryImpl implements UserRepository {
     	Hibernate.initialize(user.getUserProfile());
     	return user;
     }
-    
+ 
     private Session getSession() {
-		Session sess = sessionFactory.getCurrentSession();
+    	Session sess = sessionFactory.getCurrentSession();
 		if (sess == null) {
 			sess = sessionFactory.openSession();
 		}

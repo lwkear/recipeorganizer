@@ -174,7 +174,7 @@ public class UserController {
 			authExClass = authEx.getClass().getSimpleName();
 			if ((StringUtils.equals(authExClass, "AccountExpiredException")) ||
 				(StringUtils.equals(authExClass, "CredentialsExpiredException"))) {
-				obj[0] = request.getServletPath();
+				obj[0] = request.getContextPath();	//getServletPath();
 				obj[1] = (Object) env.getProperty("company.email.support.account");
 			}
 			else
@@ -274,7 +274,6 @@ public class UserController {
 		}
 
 		User user = null;
-	
 		try {
 			user = userService.addUser(userDto);
 		} catch (Exception ex) {
@@ -287,6 +286,7 @@ public class UserController {
         redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
         redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
         mv.setViewName("redirect:/message");
+        
         return mv;
 	}
 
@@ -301,7 +301,7 @@ public class UserController {
 		try {
 			result = userService.doesUserEmailExist(lookupEmail);
 		} catch (Exception ex) {
-			throw new RestException("exception.default", ex);
+			throw new RestException("exception.restDefault", ex);
 		}
 		
 		logger.debug("lookupEmail result=" + result);

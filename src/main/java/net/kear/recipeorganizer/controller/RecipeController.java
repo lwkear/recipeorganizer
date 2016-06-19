@@ -337,7 +337,7 @@ public class RecipeController {
 		try {
 			result = recipeService.lookupName(lookupName, userId);
 		} catch (Exception ex) {
-			throw new RestException("exception.default", ex);
+			throw new RestException("exception.restDefault", ex);
 		}
 
 		logger.debug("lookupName result=" + result);

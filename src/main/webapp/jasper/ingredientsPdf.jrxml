@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
-<!-- 2016-04-02T08:46:49 -->
+<!-- 2016-05-23T16:23:58 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ingredients" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="c4c18e8f-2ff4-480a-a1fc-ba136e77a047">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<field name="sequenceNo" class="java.lang.Integer"/>
@@ -8,6 +8,9 @@
 	<field name="qtyType" class="java.lang.String"/>
 	<field name="ingredient.name" class="java.lang.String"/>
 	<field name="qualifier" class="java.lang.String"/>
+	<variable name="Qualifier" class="java.lang.String">
+		<variableExpression><![CDATA[$F{qualifier} == null || $F{qualifier}.length() == 0 ? "" : " (" + $F{qualifier} + ")"]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -32,7 +35,7 @@
 				<textElement>
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{ingredient.name}+($F{qualifier} == null ? "" : " (" + $F{qualifier} + ")")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ingredient.name}+$V{Qualifier}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

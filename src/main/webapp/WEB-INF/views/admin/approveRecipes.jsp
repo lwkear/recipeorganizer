@@ -51,11 +51,11 @@
 							<td><spring:message code="category.${recipe.category}"></spring:message></td>
 							<td><c:if test="${not empty recipe.sourcetype}"><custom:source type="${recipe.sourcetype}"></custom:source></c:if></td>
 							<td><custom:approval status="${recipe.status}"></custom:approval></td>
-							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}" id="view${recipe.id}"
+							<td><a class="btn btn-info btn-xs" href="<c:url value='/recipe/viewRecipe/${recipe.id}'/>" id="view${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td><a class="btn btn-success btn-xs" href="../recipe/editRecipe/${recipe.id}" id="edit${recipe.id}"
+							<td><a class="btn btn-success btn-xs" href="<c:url value='/recipe/editRecipe/${recipe.id}'/>" id="edit${recipe.id}"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>

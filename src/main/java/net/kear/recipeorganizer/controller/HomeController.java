@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import java.util.concurrent.TimeUnit;
@@ -113,6 +115,8 @@ public class HomeController {
 	private RecipeService recipeService;
 	@Autowired
 	private UserMessageService userMessageService;
+	@Autowired
+	DataSource dataSource;
 
 	private static final int MAX_TOPICS = 25;
 	private static final int MAX_QUESTIONS = 100;
@@ -121,9 +125,6 @@ public class HomeController {
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("home GET");
 
-		String account = env.getProperty("company.email.support.account");
-		logger.info("home account: " + account);
-		
 		//tell the page to not include the white vertical filler
 		model.addAttribute("vertFiller", "1");
 		
@@ -339,6 +340,13 @@ public class HomeController {
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model, HttpServletRequest request, Locale locale) {
 		logger.debug("getTestpage");
+
+		try {
+			dataSource.getConnection();
+		} catch (SQLException ex) {
+			logger.debug("dataSource connection error");
+			logger.error(ex.getClass().toString(), ex);
+		}
 		
 		/*String text = "celery, and ½ teaspoon salt";
 		model.addAttribute("text", text);
@@ -404,36 +412,47 @@ public class HomeController {
         	emailSender.sendHtmlEmail(emailDetail);
         } catch (Exception ex) {}
 
-        emailDetail = new EmailDetail("Larry Kear", "kear.larry@gmail.com", locale);
+        emailDetail = new EmailDetail("William Kear", "kear.larry@gmail.com", locale);
         String confirmationUrl = "/confirmPassword?id=131&token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920";
 		emailDetail.setTokenUrl(confirmationUrl);
 		try {
 			passwordEmail.constructEmail(emailDetail);
 			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {}*/
+		} catch (Exception ex) {}
 		
-		/*EmailDetail emailDetail = new EmailDetail("Larry Kear", "lkear@outlook.com", locale);
+		emailDetail = new EmailDetail("Larry Kear", "lkear@outlook.com", locale);
     	emailDetail.setChangeType(ChangeType.PASSWORD);
     	try {
     		accountChangeEmail.constructEmail(emailDetail);
     		emailSender.sendHtmlEmail(emailDetail);
-    	} catch (Exception ex) {}*/
+    	} catch (Exception ex) {}
 
-    	/*emailDetail = new EmailDetail("Peggy McKinney", "kear.larry@gmail.com", locale);
+    	emailDetail = new EmailDetail("Peggy McKinney", "kear.larry@gmail.com", locale);
     	emailDetail.setChangeType(ChangeType.PROFILE);
     	try {
     		accountChangeEmail.constructEmail(emailDetail);
     		emailSender.sendHtmlEmail(emailDetail);
     	} catch (Exception ex) {}
 		
-
     	emailDetail = new EmailDetail("Ilsa Kear", "kear.larry@gmail.com", locale);
     	emailDetail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
     	try {
     		invitationEmail.constructEmail(emailDetail);
     		emailSender.sendHtmlEmail(emailDetail);
-    	} catch (Exception ex) {}*/
+    	} catch (Exception ex) {}
 
+    	emailDetail = new EmailDetail("Hans Kear", "hans@gmail.com", locale);
+		emailDetail.setUserName("Peggy McKinney");
+		emailDetail.setUserFirstName("Peggy");
+		emailDetail.setUserMessage("This is a test.");
+		emailDetail.setRecipeName("Test with sections");
+		emailDetail.setPdfAttached(true);
+		emailDetail.setPdfFileName("G:/recipeorganizer/pdfs/recipe11.pdf");
+    	try {
+    		shareRecipeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {}*/
+    	
     	/*reportGenerator.createRecipePDF(741L, locale);
     	reportGenerator.createRecipePDF(1463L, locale);
     	reportGenerator.createRecipePDF(1101L, locale);
@@ -441,18 +460,6 @@ public class HomeController {
     	reportGenerator.createRecipePDF(1141L, locale);
     	reportGenerator.createRecipePDF(421L, locale);
     	reportGenerator.createRecipePDF(1462L, locale);*/
-    	
-    	/*
-    	//shareRecipeEmail.init("Larry Kear", "kear.larry@gmail.com", locale);
-    	shareRecipeEmail.init("Larry Kear", "lkear@outlook.com", locale);
-		shareRecipeEmail.setSenderName("Larry Kear");
-		shareRecipeEmail.setUserFirstName("Larry");
-		shareRecipeEmail.setUserMessage("Hope you enjoy this recipe!");
-		shareRecipeEmail.setRecipeName("Chicken Pot Pie for Two");
-		shareRecipeEmail.setPdfAttached(true);
-		shareRecipeEmail.setPdfFileName(pdfFileName);
-		shareRecipeEmail.constructEmail();
-    	emailSender.sendHtmlEmail(shareRecipeEmail);*/
 
 		//reportGenerator.configureReports(servletContext, env);
 

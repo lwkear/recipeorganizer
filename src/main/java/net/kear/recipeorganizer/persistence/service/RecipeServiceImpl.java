@@ -57,6 +57,8 @@ public class RecipeServiceImpl implements RecipeService {
 	private ConstraintMap constraintMap;
 	@Autowired
     private ApplicationEventPublisher eventPublisher;
+	@Autowired
+	private ExceptionLogService logService;
     
     //called by webflow to initialize the recipe object
 	public Recipe createRecipe(String userName) {
@@ -120,8 +122,13 @@ public class RecipeServiceImpl implements RecipeService {
     			String value = ingred.getQuantity();
     			float amt = ingred.getQtyAmt();
     			if (!StringUtils.isBlank(value) && amt == 0) {
-    				Fraction fract = Fraction.getFraction(value);
-    				float qty = fract.floatValue();
+					float qty = 0;
+					try {
+						Fraction fract = Fraction.getFraction(value);
+						qty = fract.floatValue();
+					} catch (Exception ex) {
+						logService.addException(ex);
+					}
     				ingred.setQtyAmt(qty);
     			}    			
     		}
@@ -409,8 +416,13 @@ public class RecipeServiceImpl implements RecipeService {
 				if (key.contains("quantity")) {
 					recipeIngred.setQuantity(value);
 					if (!StringUtils.isBlank(value)) {
-						Fraction fract = Fraction.getFraction(recipeIngred.getQuantity());
-						float qty = fract.floatValue();
+						float qty = 0;
+						try {
+							Fraction fract = Fraction.getFraction(recipeIngred.getQuantity());
+							qty = fract.floatValue();
+						} catch (Exception ex) {
+							logService.addException(ex);
+						}
 						recipeIngred.setQtyAmt(qty);
 						hasQty = true;
 					}
@@ -456,71 +468,4 @@ public class RecipeServiceImpl implements RecipeService {
     		}
     	}
 	}
-	
-	/*private void adjustSourceFields(Recipe recipe) {
-		SourceType type = recipe.getSource().getType();
-		
-		if (type.equals(Source.TYPE_COOKBOOK)) {
-			recipe.getSource().setMagazine("");
-			recipe.getSource().setMagazinePubdate(null);
-			recipe.getSource().setNewspaper("");
-			recipe.getSource().setNewspaperPubdate(null);
-			recipe.getSource().setOther("");
-			recipe.getSource().setPerson("");
-			recipe.getSource().setWebsiteUrl("");
-			recipe.getSource().setRecipeUrl("");			
-		}
-		if (type.equals(Source.TYPE_MAGAZINE)) {
-			recipe.getSource().setCookbook("");
-			recipe.getSource().setCookbookPage(null);
-			recipe.getSource().setNewspaper("");
-			recipe.getSource().setNewspaperPubdate(null);
-			recipe.getSource().setOther("");
-			recipe.getSource().setPerson("");
-			recipe.getSource().setWebsiteUrl("");
-			recipe.getSource().setRecipeUrl("");			
-		}
-		if (type.equals(Source.TYPE_NEWSPAPER)) {
-			recipe.getSource().setCookbook("");
-			recipe.getSource().setCookbookPage(null);
-			recipe.getSource().setMagazine("");
-			recipe.getSource().setMagazinePubdate(null);
-			recipe.getSource().setOther("");
-			recipe.getSource().setPerson("");
-			recipe.getSource().setWebsiteUrl("");
-			recipe.getSource().setRecipeUrl("");			
-		}
-		if (type.equals(Source.TYPE_PERSON)) {
-			recipe.getSource().setCookbook("");
-			recipe.getSource().setCookbookPage(null);
-			recipe.getSource().setMagazine("");
-			recipe.getSource().setMagazinePubdate(null);
-			recipe.getSource().setNewspaper("");
-			recipe.getSource().setNewspaperPubdate(null);
-			recipe.getSource().setOther("");
-			recipe.getSource().setWebsiteUrl("");
-			recipe.getSource().setRecipeUrl("");			
-		}
-		if (type.equals(Source.TYPE_WEBSITE)) {
-			recipe.getSource().setCookbook("");
-			recipe.getSource().setCookbookPage(null);
-			recipe.getSource().setMagazine("");
-			recipe.getSource().setMagazinePubdate(null);
-			recipe.getSource().setNewspaper("");
-			recipe.getSource().setNewspaperPubdate(null);
-			recipe.getSource().setOther("");
-			recipe.getSource().setPerson("");
-		}
-		if (type.equals(Source.TYPE_OTHER)) {
-			recipe.getSource().setCookbook("");
-			recipe.getSource().setCookbookPage(null);
-			recipe.getSource().setMagazine("");
-			recipe.getSource().setMagazinePubdate(null);
-			recipe.getSource().setNewspaper("");
-			recipe.getSource().setNewspaperPubdate(null);
-			recipe.getSource().setPerson("");
-			recipe.getSource().setWebsiteUrl("");
-			recipe.getSource().setRecipeUrl("");			
-		}
-	}*/
 }

@@ -40,6 +40,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
     
+    private static final int INVITATION_EXPIRATION = 60 * 24 * 5;    
+    
     public User addUser(UserDto userDto) {
     	User user = new User();
     	
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
     	if (!userDto.isInvited())
     		user.setPasswordExpiryDate();
     	else {
-    		Date expireDate = user.calculateExpiryDate(60*24);
+    		Date expireDate = user.calculateExpiryDate(INVITATION_EXPIRATION);
     		user.setPasswordExpiryDate(expireDate);
     	}
     	if (userDto.isSubmitRecipes()) {
@@ -148,6 +150,10 @@ public class UserServiceImpl implements UserService {
     
     public void createUserVerificationToken(final User user, final String token) {
         final VerificationToken newToken = new VerificationToken(token, user);
+        if (!user.isInvited()) {
+        	Date expireDate = user.calculateExpiryDate(INVITATION_EXPIRATION);
+        	newToken.setExpiryDate(expireDate);
+        }
         verificationTokenRepository.saveToken(newToken);
     }
     

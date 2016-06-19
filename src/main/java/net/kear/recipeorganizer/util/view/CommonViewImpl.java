@@ -48,12 +48,17 @@ public class CommonViewImpl implements CommonView {
     	Object[] obj = new Object[] {null};
     	obj[0] = (Object) env.getProperty("company.email.support.account");
 		
-		String title = messages.getMessage("exception.title.error", obj, "Error", locale);
+    	ModelAndView mv = new ModelAndView("/error");
+    	mv.setViewName("/error");
+    	
 		List<String> errorMsgs = new ArrayList<String>();
-		errorMsgs.add(messages.getMessage(msgCode, obj, ex.getClass().getSimpleName(), locale));
-		
-		ModelAndView mv = new ModelAndView("/error");
-		mv.addObject("errorTitle", title);
+		String msg = messages.getMessage(msgCode, obj, null, locale);
+		if (msg == null) {
+			//use the generic "testers missed something" message - display system instead of error page
+			msg = messages.getMessage("exception.500", obj, null, locale);
+			mv.setViewName("/system");
+		}
+		errorMsgs.add(msg);		
 		mv.addObject("errorMsgs", errorMsgs);
 		
 		return mv;
@@ -69,16 +74,12 @@ public class CommonViewImpl implements CommonView {
 			cookieUtil.setAuthCookie(request, response, CookieUtil.ANNON_USER);
 		}
 
-		Object[] obj = new Object[] {null};
-    	obj[0] = (Object) env.getProperty("company.email.support.account");
-		String title = messages.getMessage("exception.title.systemUnavailable", obj, "System not available", locale);
-		
 		List<String> errorMsgs = new ArrayList<String>();
 		errorMsgs.add(messages.getMessage("exception.databaseDown", null, "", locale));
-		errorMsgs.add(messages.getMessage("exception.apologize", null, "", locale));		
+		errorMsgs.add(messages.getMessage("exception.common.apologize", null, "", locale));		
+		errorMsgs.add(messages.getMessage("exception.common.comebacklater", null, "", locale));
 		
 		ModelAndView mv = new ModelAndView();
-		mv.addObject("errorTitle", title);
 		mv.addObject("errorMsgs", errorMsgs);
         mv.setViewName("/system");
 		

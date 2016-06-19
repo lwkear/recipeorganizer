@@ -43,11 +43,11 @@
 							<td>${recipe.firstName}</td>
 							<td>${recipe.category}</td>
 							<td>${recipe.sourcetype}</td>
-							<td><a class="btn btn-info btn-xs" href="../recipe/viewRecipe/${recipe.id}"
+							<td><a class="btn btn-info btn-xs" href="<c:url value='/recipe/viewRecipe/${recipe.id}'/>" 
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
-							<td><a class="btn btn-success btn-xs" href="../recipe/editRecipe/${recipe.id}"
+							<td><a class="btn btn-success btn-xs" href="<c:url value='/recipe/editRecipe/${recipe.id}'/>"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 								<span class="glyphicon glyphicon-pencil"></span></a>
 							</td>

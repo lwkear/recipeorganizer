@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.2.0.final using JasperReports Library version 6.2.0  -->
-<!-- 2016-04-28T10:28:09 -->
+<!-- 2016-05-25T14:13:55 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="recipe" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="c4c18e8f-2ff4-480a-a1fc-ba136e77a047">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -36,43 +36,58 @@
 	<field name="source.person" class="java.lang.String"/>
 	<field name="privateNotes" class="java.lang.String"/>
 	<variable name="ServingsLabel" class="java.lang.String">
-		<variableExpression><![CDATA[$F{servings} == null || $F{servings}.length() == 0 ? "" : $R{report.servings} + " "]]></variableExpression>
+		<variableExpression><![CDATA[$F{servings}.length() == 0 ? "" : "<style isBold=\"true\">" + $R{report.servings} + " " + "</style>"]]></variableExpression>
 	</variable>
 	<variable name="Servings" class="java.lang.String">
-		<variableExpression><![CDATA[$F{servings} == null || $F{servings}.length() == 0 ? "" : $F{servings}]]></variableExpression>
+		<variableExpression><![CDATA[$F{servings}.length() == 0 ? "" : $F{servings}]]></variableExpression>
 	</variable>
 	<variable name="PrepLabel" class="java.lang.String">
-		<variableExpression><![CDATA[($F{prepHours} > 0 || $F{prepMinutes} > 0) ? $R{report.prep} + " " : ""]]></variableExpression>
+		<variableExpression><![CDATA[($F{prepHours} > 0 || $F{prepMinutes} > 0) ? "<style isBold=\"true\">" + $R{report.prep} + " " + "</style>" : ""]]></variableExpression>
 	</variable>
-	<variable name="Prep" class="java.lang.String">
-		<variableExpression><![CDATA[($F{prepHours} > 0 ? $F{prepHours} + " " + $R{report.hour} : "") + "  " + ($F{prepMinutes} > 0 ? $F{prepMinutes} + " " + $R{report.minute} : "")]]></variableExpression>
+	<variable name="PrepHours" class="java.lang.String">
+		<variableExpression><![CDATA[$F{prepHours} > 0 ? $F{prepHours} + " " + $R{report.hour} : ""]]></variableExpression>
+	</variable>
+	<variable name="PrepMinutes" class="java.lang.String">
+		<variableExpression><![CDATA[$F{prepMinutes} > 0 ? $F{prepMinutes} + " " + $R{report.minute} : ""]]></variableExpression>
 	</variable>
 	<variable name="TotalLabel" class="java.lang.String">
-		<variableExpression><![CDATA[($F{totalHours} > 0 || $F{totalMinutes} > 0) ? $R{report.total} + " " : ""]]></variableExpression>
+		<variableExpression><![CDATA[($F{totalHours} > 0 || $F{totalMinutes} > 0) ? "<style isBold=\"true\">" + $R{report.total} + " " + "</style>" : ""]]></variableExpression>
 	</variable>
-	<variable name="Total" class="java.lang.String">
-		<variableExpression><![CDATA[($F{totalHours} > 0 ? $F{totalHours} + " " + $R{report.hour} : "") + "  " + ($F{totalMinutes} > 0 ? $F{totalMinutes} + " " + $R{report.minute} : "")]]></variableExpression>
+	<variable name="TotalHours" class="java.lang.String">
+		<variableExpression><![CDATA[$F{totalHours} > 0 ? $F{totalHours} + " " + $R{report.hour} : ""]]></variableExpression>
+	</variable>
+	<variable name="TotalMinutes" class="java.lang.String">
+		<variableExpression><![CDATA[$F{totalMinutes} > 0 ? $F{totalMinutes} + " " + $R{report.minute} : ""]]></variableExpression>
 	</variable>
 	<variable name="SourceLabel" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.type}.name() == null ? "" :  $R{report.source} + " "]]></variableExpression>
+		<variableExpression><![CDATA["<style isBold=\"true\">" + $R{report.source} + " " + "</style>"]]></variableExpression>
 	</variable>
 	<variable name="SourceCookbook" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.cookbook} == null ? "" : $F{source.cookbook}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.cookbook}]]></variableExpression>
 	</variable>
 	<variable name="SourceWebsite" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.websiteUrl} == null ? "" : $F{source.websiteUrl}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.websiteUrl}]]></variableExpression>
 	</variable>
 	<variable name="SourceNewspaper" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.newspaper} == null ? "" : $F{source.newspaper}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.newspaper}]]></variableExpression>
 	</variable>
 	<variable name="SourceMagazine" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.magazine} == null ? "" : $F{source.magazine}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.magazine}]]></variableExpression>
 	</variable>
 	<variable name="SourceOther" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.other} == null ? "" : $F{source.other}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.other}]]></variableExpression>
 	</variable>
 	<variable name="SourcePerson" class="java.lang.String">
-		<variableExpression><![CDATA[$F{source.person} == null ? "" : $F{source.person}]]></variableExpression>
+		<variableExpression><![CDATA[$F{source.person}]]></variableExpression>
+	</variable>
+	<variable name="PrintServings" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{servings}.length() > 0 ? new Boolean(true) : new Boolean(false)]]></variableExpression>
+	</variable>
+	<variable name="PrintPrep" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{prepHours} > 0 || $F{prepMinutes} > 0 ? new Boolean(true) : new Boolean(false)]]></variableExpression>
+	</variable>
+	<variable name="PrintTotal" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{totalHours} > 0 || $F{totalMinutes} > 0 ? new Boolean(true) : new Boolean(false)]]></variableExpression>
 	</variable>
 	<pageHeader>
 		<band height="72" splitType="Stretch">
@@ -116,7 +131,7 @@
 		<band height="20" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
-			<printWhenExpression><![CDATA[($F{description} != null && $F{description}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<printWhenExpression><![CDATA[($F{description}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" stretchType="RelativeToBandHeight" x="0" y="0" width="572" height="14" isRemoveLineWhenBlank="true" uuid="e8217b8e-3741-4e9c-a2a7-ccedba220639">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
@@ -130,120 +145,120 @@
 		</band>
 		<band height="39" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<printWhenExpression><![CDATA[(($F{servings} != null && $F{servings}.length() > 0) || ($F{prepHours} > 0 || $F{prepMinutes} > 0) || ($F{totalHours} > 0 || $F{totalMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<printWhenExpression><![CDATA[$V{PrintServings} || $V{PrintPrep} || $V{PrintTotal}]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="10" width="200" height="20" uuid="af0e7fb8-784b-45ee-abce-cfe1823bb41c">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[($F{servings} != null && $F{servings}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{ServingsLabel} + "</style>" + $V{Servings}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{ServingsLabel} + $V{Servings}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="200" y="10" width="150" height="20" uuid="4f56c17e-f01f-4ca1-9e6a-e89c39a93cee">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} != null && $F{servings}.length() > 0) && ($F{prepHours} > 0 || $F{prepMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings} && $V{PrintPrep}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{PrepLabel} + "</style>" + $V{Prep}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{PrepLabel} + $V{PrepHours} + " " + $V{PrepMinutes}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="10" width="150" height="20" uuid="5f1d5c6b-5429-465f-8e8f-01a7c6ca8ea2">
-					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} == null || $F{servings}.length() == 0) && ($F{prepHours} > 0 || $F{prepMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
-				</reportElement>
-				<textElement markup="styled">
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{PrepLabel} + "</style>" + $V{Prep}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="350" y="10" width="150" height="20" uuid="e610b0c1-330e-4376-8f9f-9b01e5736f19">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} != null && $F{servings}.length() > 0) && ($F{prepHours} > 0 || $F{prepMinutes} > 0) && ($F{totalHours} > 0 || $F{totalMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings} && $V{PrintPrep} && $V{PrintTotal}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{TotalLabel} + "</style>" + $V{Total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{TotalLabel} + $V{TotalHours} + " " + $V{TotalMinutes}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="10" width="150" height="20" uuid="765b8272-598b-4ea8-a365-01f1a6d31ede">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="200" y="10" width="150" height="20" uuid="765b8272-598b-4ea8-a365-01f1a6d31ede">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} == null || $F{servings}.length() == 0) && ($F{prepHours} == 0 && $F{prepMinutes} == 0) && ($F{totalHours} > 0 || $F{totalMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings} && $V{PrintPrep}.equals(false) && $V{PrintTotal}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{TotalLabel} + "</style>" + $V{Total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{TotalLabel} + $V{TotalHours} + " " + $V{TotalMinutes}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="150" y="10" width="150" height="20" uuid="00b1682a-32dd-48f3-87f4-850866ca4d11">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="10" width="150" height="20" uuid="5f1d5c6b-5429-465f-8e8f-01a7c6ca8ea2">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} == null || $F{servings}.length() == 0) && ($F{prepHours} > 0 || $F{prepMinutes} > 0) && ($F{totalHours} > 0 || $F{totalMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings}.equals(false)  && $V{PrintPrep}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{TotalLabel} + "</style>" + $V{Total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{PrepLabel} + $V{PrepHours} + " " + $V{PrepMinutes}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="200" y="10" width="150" height="20" uuid="4c8d34ce-f3ef-4945-a02b-c0bb29e0a8a5">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="150" y="10" width="150" height="20" uuid="4c8d34ce-f3ef-4945-a02b-c0bb29e0a8a5">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[(($F{servings} != null && $F{servings}.length() > 0) && ($F{prepHours} == 0 && $F{prepMinutes} == 0) && ($F{totalHours} > 0 || $F{totalMinutes} > 0)) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{PrintServings}.equals(false) && $V{PrintPrep} && $V{PrintTotal}]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{TotalLabel} + "</style>" + $V{Total}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{TotalLabel} + $V{TotalHours} + " " + $V{TotalMinutes}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="10" width="150" height="20" uuid="00b1682a-32dd-48f3-87f4-850866ca4d11">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$V{PrintServings}.equals(false) && $V{PrintPrep}.equals(false) && $V{PrintTotal}]]></printWhenExpression>
+				</reportElement>
+				<textElement markup="styled">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TotalLabel} + $V{TotalHours} + " " + $V{TotalMinutes}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="39" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<printWhenExpression><![CDATA[$F{source.type}.name() != null ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
-			<textField isBlankWhenNull="true">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<printWhenExpression><![CDATA[($F{source.type}.name().length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="10" width="300" height="20" uuid="9b0fbcfc-52d6-46fc-853b-7d9440699f56">
 					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<printWhenExpression><![CDATA[$F{source.type}.name() != null]]></printWhenExpression>
 				</reportElement>
 				<textElement markup="styled">
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["<style isBold=\"true\">" + $V{SourceLabel} + "</style>" + $V{SourceCookbook} + $V{SourceWebsite} + $V{SourceNewspaper} + $V{SourceMagazine} + $V{SourceOther} + $V{SourcePerson}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$V{SourceLabel} + $V{SourceCookbook} + $V{SourceWebsite} + $V{SourceNewspaper} + $V{SourceMagazine} + $V{SourceOther} + $V{SourcePerson}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="61" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
-			<printWhenExpression><![CDATA[($F{background} != null && $F{background}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<printWhenExpression><![CDATA[($F{background}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement isPrintRepeatedValues="false" x="0" y="10" width="110" height="20" isPrintInFirstWholeBand="true" uuid="2dc331cb-89bf-4ce4-9257-fd25e8751430"/>
 				<textElement textAlignment="Left">
@@ -264,7 +279,7 @@
 		<band height="61" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
-			<printWhenExpression><![CDATA[($F{notes} != null && $F{notes}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<printWhenExpression><![CDATA[($F{notes}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement isPrintRepeatedValues="false" x="0" y="10" width="110" height="20" isPrintInFirstWholeBand="true" uuid="2be883d0-fea8-422d-a122-567e06225619"/>
 				<textElement textAlignment="Left">
@@ -284,7 +299,7 @@
 		</band>
 		<band height="61" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-			<printWhenExpression><![CDATA[($F{privateNotes} != null && $F{privateNotes}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
+			<printWhenExpression><![CDATA[($F{privateNotes}.length() > 0) ? new Boolean(true) : new Boolean(false)]]></printWhenExpression>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" x="0" y="30" width="572" height="30" isRemoveLineWhenBlank="true" uuid="5b94aa1c-e874-4ba7-a77c-b3eb51deb634">
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>

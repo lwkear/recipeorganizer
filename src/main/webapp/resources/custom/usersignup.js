@@ -11,8 +11,10 @@ function checkPasswordScore() {
 	}
 	
 	var score = $('#pswdScore').val();
-	if (score >= 38)
-		submitSignup();
+	if (score >= 38) {
+		document.forms["formWithPswd"].submit();
+		return;
+	}
 	
 	$("#messageTitle").text(getMessage('common.warning'));
 	$("#messageMsg").text(getMessage('pswd.score.risky'));

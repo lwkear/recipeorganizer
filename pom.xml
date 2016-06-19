@@ -9,9 +9,10 @@
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 
 	<properties>
-		<webflow-version>2.4.2.RELEASE</webflow-version>
 		<spring-framework-version>4.2.5.RELEASE</spring-framework-version>
-		<springsecurity-version>4.0.4.RELEASE</springsecurity-version>
+		<webflow-version>2.4.2.RELEASE</webflow-version>		
+		<springsecurity-version>4.1.0.RELEASE</springsecurity-version>
+		<!-- <aspectj-version>1.8.9</aspectj-version> -->
 		<slf4j-version>1.7.18</slf4j-version>
 		<log4j-version>2.5</log4j-version>
 		<hibernate-version>5.1.0.Final</hibernate-version>
@@ -78,6 +79,10 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-webflow</artifactId>
@@ -100,6 +105,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${springsecurity-version}</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
@@ -115,6 +125,11 @@
 			<artifactId>spring-security-config</artifactId>
 			<version>${springsecurity-version}</version>					
         </dependency>	
+		<!-- <dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj-version}</version>					
+        </dependency> -->	
 
 		<!-- Logging -->
 		<dependency>
@@ -169,11 +184,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.2.4.Final</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.4</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
@@ -311,18 +326,9 @@
      <build>
         <plugins>
             <plugin>
-            	<groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <downloadJavadocs>true</downloadJavadocs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -334,11 +340,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.6</version>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
+					<packagingExcludes>
+						WEB-INF/maintenance.properties,
+						WEB-INF/classes/*.dev.properties,
+						WEB-INF/classes/*.oracle.properties,
+						WEB-INF/classes/*oracle.xml						
+					</packagingExcludes>
+				</configuration>				
 			</plugin>
         </plugins>
     </build>
 </project>
+ 

@@ -41,7 +41,7 @@
 			<h4><spring:message code="about.technical.title"></spring:message></h4>
 			<div>
 				<spring:message code="about.technical.description1"></spring:message>
-				<c:url var="technicalUrl" value="${pageContext.servletContext.contextPath}/technical"></c:url>
+				<c:url var="technicalUrl" value="/technical"></c:url>
 				<spring:message code="about.technical.description2" arguments="${technicalUrl}"></spring:message>
 				<spring:message code="about.technical.description3"></spring:message>
 			</div>

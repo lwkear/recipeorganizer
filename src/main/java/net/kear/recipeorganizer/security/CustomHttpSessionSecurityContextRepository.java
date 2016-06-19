@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.security;
 
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.service.DatabaseStatusService;
 import net.kear.recipeorganizer.persistence.service.UserMessageService;
 
 import org.slf4j.Logger;
@@ -23,11 +24,16 @@ public class CustomHttpSessionSecurityContextRepository extends HttpSessionSecur
 	private UserSecurityService securityService;
 	@Autowired
 	private UserMessageService userMessageService;
+	@Autowired
+	private DatabaseStatusService databaseStatusService;	
 	
 	@Override
-	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
-	
+	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {		
+		
 		SecurityContext context = super.loadContext(requestResponseHolder);
+		
+		if (!databaseStatusService.isDatabaseAccessible())
+			return context;
 		
 		Authentication auth = context.getAuthentication();
 		if (auth == null)

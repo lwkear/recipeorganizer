@@ -50,6 +50,7 @@ public abstract class EmailMessage {
 	
 	public void constructEmail(EmailDetail emailDetail) {
 		setLocale(emailDetail.getLocale());
+		emailDetail.setSenderName(getSenderName());
     	emailDetail.setSenderEmail(getSenderEmail());
 	}
 

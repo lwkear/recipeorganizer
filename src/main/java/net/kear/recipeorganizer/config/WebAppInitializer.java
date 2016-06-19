@@ -31,12 +31,10 @@ public class WebAppInitializer implements WebApplicationInitializer {
     	AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
     	
     	String profile = "dev";
-    	ConfigurableEnvironment env = rootContext.getEnvironment();   	
+    	ConfigurableEnvironment env = rootContext.getEnvironment();
     	//get the active profile; default to dev
     	Resource resource = rootContext.getResource("classpath:profile.properties");
     	if (resource.exists()) {
-    		logger.debug("found profile.properties");
-    		
 	    	Properties prop = new Properties();
 	    	try {
 				prop.load(resource.getInputStream());
@@ -46,6 +44,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 			}
 	    	env.setActiveProfiles(prop.getProperty("spring.profiles.active", "prod"));
 	    	profile = prop.getProperty("spring.profiles.active", "prod");
+	    	logger.debug("found profile.properties: " + profile);
     	}
     	else {
     		logger.debug("profile.properties not found: defaulting to dev profile");

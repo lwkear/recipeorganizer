@@ -19,9 +19,9 @@ public class RegistrationEmail extends EmailMessage {
 			"email.registration.subject",
 			"email.registration.signupThankyou",
 			"email.registration.completeProcess",
+			"email.common.expire",
 			"email.common.nextSteps",
 			"email.common.pastelink",
-			"email.common.expire",
 			"email.common.enjoy",
 			"email.common.tagline",
 			"email.common.folks"};

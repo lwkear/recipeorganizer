@@ -45,7 +45,7 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 			case "CredentialsExpiredException":
 			case "DisabledException":
 			case "LockedException":
-			case "RememberMeAuthenticationException":
+			case "RememberMeAuthenticationException":	//NOTE: this gets swallowed by AccountStatusUserDetailsChecker
 			case "SessionAuthenticationException":
 			case "UsernameNotFoundException":				
 				setDefaultFailureUrl("/user/loginError");
@@ -81,17 +81,18 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 		}
 				
 		super.onAuthenticationFailure(request, response, ex);
-		
-		//*** see AuthenticationException javadoc
-		//AccountStatusException - Base class for authentication exceptions which are caused by a particular user account status (locked, disabled etc).
-		//	AccountExpiredException, CredentialsExpiredException, DisabledException, LockedException
-		//AuthenticationCredentialsNotFoundException -  Thrown if an authentication request is rejected because there is no Authentication object in the SecurityContext.
-		//AuthenticationServiceException - Thrown if an authentication request could not be processed due to a system problem. This might be thrown if a backend authentication repository is unavailable, for example.
-		//BadCredentialsException - Thrown if an authentication request is rejected because the credentials are invalid. For this exception to be thrown, it means the account is neither locked nor disabled.
-		//InsufficientAuthenticationException - Thrown if an authentication request is rejected because the credentials are not sufficiently trusted.
-		//ProviderNotFoundException - Thrown by ProviderManager if no AuthenticationProvider could be found that supports the presented Authentication object.
-		//RememberMeAuthenticationException - This exception is thrown when an Authentication exception occurs while using the remember-me authentication.
-		//SessionAuthenticationException - Thrown by an SessionAuthenticationStrategy to indicate that an authentication object is not valid for the current session, typically because the same user has exceeded the number of sessions they are allowed to have concurrently.
-		//UsernameNotFoundException - Thrown if an UserDetailsService implementation cannot locate a User by its username.
     }
 }
+
+
+//*** see AuthenticationException javadoc
+//AccountStatusException - Base class for authentication exceptions which are caused by a particular user account status (locked, disabled etc).
+//	AccountExpiredException, CredentialsExpiredException, DisabledException, LockedException
+//AuthenticationCredentialsNotFoundException -  Thrown if an authentication request is rejected because there is no Authentication object in the SecurityContext.
+//AuthenticationServiceException - Thrown if an authentication request could not be processed due to a system problem. This might be thrown if a backend authentication repository is unavailable, for example.
+//BadCredentialsException - Thrown if an authentication request is rejected because the credentials are invalid. For this exception to be thrown, it means the account is neither locked nor disabled.
+//InsufficientAuthenticationException - Thrown if an authentication request is rejected because the credentials are not sufficiently trusted.
+//ProviderNotFoundException - Thrown by ProviderManager if no AuthenticationProvider could be found that supports the presented Authentication object.
+//RememberMeAuthenticationException - This exception is thrown when an Authentication exception occurs while using the remember-me authentication.
+//SessionAuthenticationException - Thrown by an SessionAuthenticationStrategy to indicate that an authentication object is not valid for the current session, typically because the same user has exceeded the number of sessions they are allowed to have concurrently.
+//UsernameNotFoundException - Thrown if an UserDetailsService implementation cannot locate a User by its username.

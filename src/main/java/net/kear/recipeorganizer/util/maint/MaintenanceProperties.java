@@ -34,7 +34,7 @@ public class MaintenanceProperties {
 	public static final String DAYS_OF_WEEK_PROP = "maint.daysofweek";
 	public static final String START_TIME_PROP = "maint.starttime";
 	public static final String DURATION_PROP = "maint.duration";
-	public static final String PROP_FILE_NAME = "/WEB-INF/properties/maintenance.properties";
+	public static final String PROP_FILE_NAME = "/WEB-INF/maintenance.properties";
 
 	private PropertiesConfiguration propConfig;
 	private ServletContext servletContext;

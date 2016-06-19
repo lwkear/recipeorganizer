@@ -105,8 +105,11 @@
 						        <ul class="dropdown-menu" role="menu">
 						        	<li><a href="<c:url value="/user/dashboard" />"><spring:message code="menu.dashboard"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/messages" />"><spring:message code="menu.messages"></spring:message></a></li>						        	
+						        	<li role="separator" class="divider"></li>
 						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
+						        	<li role="separator" class="divider"></li>
+						        	<li><a href="<c:url value="/user/newMember" />"><spring:message code="menu.newmember"></spring:message></a></li>
 						        </ul>
 						    </li>
 					        <li><a href="javascript:submitLogoutForm()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;&nbsp;<spring:message code="menu.logout"></spring:message></a></li>

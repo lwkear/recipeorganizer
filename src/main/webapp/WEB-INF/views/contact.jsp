@@ -12,7 +12,7 @@
 
 <%@include file="common/nav.jsp" %>
 
-	<c:url var="faqUrl" value="${pageContext.servletContext.contextPath}/faq"></c:url>
+	<c:url var="faqUrl" value="/faq"></c:url>
 
 	<div class="container container-white">
 		<div class="col-sm-12 title-bar">

@@ -1,4 +1,4 @@
-package net.kear.recipeorganizer.interceptor;
+package net.kear.recipeorganizer.security;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

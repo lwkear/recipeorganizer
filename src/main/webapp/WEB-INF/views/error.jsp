@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Error</title>
-</head>
 
 <%@include file="common/head.jsp"%>
+
+<title><spring:message code="exception.title.error"></spring:message> - <spring:message code="menu.product"></spring:message></title>
+
+</head>
 
 <body role="document">
 
 <%@include file="common/nav.jsp" %>
 
-	<div class="container container-white">
-	 	<div class="col-sm-12 title-bar">
-			<div class="page-header">
-				<h3>${errorTitle}</h3>
-			</div>
+<div class="container container-white">
+	<div class="col-sm-12 spacer-vert-lg">
+		<div class="col-sm-2">
+			<h1 class="bold-maroon"><spring:message code="exception.title.oops"></spring:message></h1>
 		</div>
-		<div class="col-sm-12">			
-			<div class="col-sm-12">			
-				<div class="center alert text-center strong">
+		<div class="col-sm-8">
+			<h4><spring:message code="exception.common.snag"></spring:message></h4>
+			<div>
 				<c:forEach var="msg" items="${errorMsgs}">
-					<div><h4>${msg}</h4></div>
+					${msg}
 				</c:forEach>
-				</div>
 			</div>
+			<h4 class="spacer-vert-md"><em><spring:message code="exception.common.techteam"></spring:message></em></h4>
 		</div>
-	</div>	
+	</div>
+</div>	
 
 <%@include file="common/footer.jsp" %>
 	

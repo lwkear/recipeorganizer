@@ -221,6 +221,9 @@ $(function() {
 				}
 			}
 		
+			//trim leading/trailing spaces
+			desc = desc.trim();
+			
 			//capitalize the first letter of each word
 			desc = desc.toLowerCase().replace(/\b[a-z]/g, function(letter) {
 			    return letter.toUpperCase();

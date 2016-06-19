@@ -18,6 +18,7 @@ public class SessionListener implements HttpSessionListener {
 
 		logger.debug("Checking event.session...");
 		HttpSession session = event.getSession();
+
 		Date createTime = new Date(session.getCreationTime());
 		Date lastAccess = new Date(session.getLastAccessedTime());
 		int maxInactive = session.getMaxInactiveInterval();
@@ -35,6 +36,8 @@ public class SessionListener implements HttpSessionListener {
 		logger.debug("sessionCreated: " + sInactive); 
 		logger.debug("sessionCreated: " + sID);
 		logger.debug("sessionCreated: " + sPrincipal);
+		
+ 
 		
 		/*HttpSession session = event.getSession();
 		String sessionId = session.getId();

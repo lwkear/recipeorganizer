@@ -19,6 +19,7 @@ public class EmailDetail {
 	private ChangeType changeType;
 	private String recipeName;
 	private String userMessage;
+	private String userName;
 	private String userFirstName;
 	
 	public EmailDetail() {}
@@ -131,6 +132,14 @@ public class EmailDetail {
 
 	public void setUserMessage(String userMessage) {
 		this.userMessage = userMessage;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getUserFirstName() {

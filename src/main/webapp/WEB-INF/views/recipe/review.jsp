@@ -22,7 +22,7 @@
 			</div>
 		</div>
 	 	<div class="col-sm-12">
-			<div class="col-sm-10 col-sm-offset-1">
+			<div class="text-center">
 				<p class="std-maroon"><spring:message code="recipe.review.gobackandfix"></spring:message></p>
 			</div>
 			<div class="spacer-vert-md">

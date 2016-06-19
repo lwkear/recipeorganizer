@@ -57,7 +57,7 @@
 		<c:if test="${update}">			
 			<div class="col-sm-12 spacer-vert-xs">
 				<div class="form-group col-sm-2 text-center col-sm-offset-5">
-					<a class="btn btn-default" href="../viewRecipe/${recipe.id}" role="button"><spring:message code="recipe.done.viewrecipe"></spring:message></a>
+					<a class="btn btn-default" href="<c:url value='/recipe/viewRecipe/${recipe.id}'/>" role="button"><spring:message code="recipe.done.viewrecipe"></spring:message></a>
 				</div>
 			</div>
 		</c:if>
@@ -67,7 +67,7 @@
 			</div>
 			<div class="col-sm-12 spacer-vert-xs">
 				<div class="form-group col-sm-2 text-center col-sm-offset-5">
-					<a class="btn btn-default" href="../recipeorganizer/recipe" role="button"><spring:message code="recipe.done.newrecipe"></spring:message></a>
+					<a class="btn btn-default" href="<c:url value='/recipe'/>" role="button"><spring:message code="recipe.done.newrecipe"></spring:message></a>
 				</div>
 			</div>
 		</c:if>

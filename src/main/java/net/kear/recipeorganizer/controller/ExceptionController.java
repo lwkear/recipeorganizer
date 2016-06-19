@@ -8,21 +8,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.kear.recipeorganizer.exception.RestException;
+import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.view.CommonView;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRuntimeException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.exception.JDBCConnectionException;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,47 +47,11 @@ public class ExceptionController {
 	@Autowired
 	private ExceptionLogService logService;
 
-	/*	see ResponseEntityExceptionHandler
-	BindException.class,
-	ConversionNotSupportedException.class,
-	HttpMediaTypeNotAcceptableException.class,
-	HttpMediaTypeNotSupportedException.class,
-	HttpMessageNotReadableException.class,
-	HttpMessageNotWritableException.class,
-	HttpRequestMethodNotSupportedException.class,
-	MethodArgumentNotValidException.class,
-	MissingServletRequestParameterException.class,
-	MissingServletRequestPartException.class,
-	NoHandlerFoundException.class
-	NoSuchRequestHandlingMethodException.class,
-	ServletRequestBindingException.class,
-	TypeMismatchException.class,
-
-	1) manually entered a recipe ID into viewRecipe URL
-	ObjectNotFoundException: No row with the given identifier exists: [net.kear.recipeorganizer.persistence.model.Recipe#112]
-	NumberFormatException: For parameter string: "abc"
-	2) used a recipe view bookmark (referer is null)
-	NullPointerException
-	3) solr not running
-	NullPointerException
-
-Solr errors not accounted for:
-###exception log id=703###	
-HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: undefined field _text_
-
-###exception log id=718###
-HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: org.apache.solr.search.SyntaxError: Cannot parse '{allowshare:true}': Encountered " "}" "} "" at line 1, column 16.
-Was expecting one of:
-    "TO" ...
-    <RANGE_QUOTED> ...
-    <RANGE_GOOP> ...
-
-*/
-	
 	@ExceptionHandler(value={
 			JRException.class,
 			JRRuntimeException.class,
 			SolrServerException.class,
+			RemoteSolrException.class,
 			ObjectNotFoundException.class
 			})
 	public ModelAndView handleSpecificExceptions(Exception ex) {
@@ -106,21 +76,14 @@ Was expecting one of:
 		return commonView.getStandardErrorPage(ex);
 	}
 	
-/*
-2016-03-29 10:34:08,770 DEBUG: net.kear.recipeorganizer.util.email.PasswordEmail - construct PasswordEmail
-2016-03-29 10:34:10,330 INFO : net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions exception class: class org.springframework.mail.MailSendException
-2016-03-29 10:34:10,342 DEBUG: net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions msg: MailSendException: Mail server connection failed; nested exception is javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
-  nested exception is:
-	java.net.ConnectException: Connection refused: connect. Failed messages: javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
-  nested exception is:
-	java.net.ConnectException: Connection refused: connect
-2016-03-29 10:34:10,342 ERROR: net.kear.recipeorganizer.controller.ExceptionController - class org.springframework.mail.MailSendException
-*/
-
 	@ExceptionHandler(value= {
+			JDBCConnectionException.class,
 			CannotCreateTransactionException.class,
 			InternalAuthenticationServiceException.class,
-			ConnectException.class
+			ConnectException.class,
+			PSQLException.class,
+			AccessUserException.class,
+			RememberMeAuthenticationException.class
 			})
 	public ModelAndView handleDBException(Exception ex, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("handleDBExceptions exception class: " + ex.getClass().toString());
@@ -135,7 +98,7 @@ Was expecting one of:
 		}
 
 		//log the exception in the error log file
-		logger.error(ex.getClass().toString(), ex);		
+		logger.error(ex.getClass().toString(), ex);
 
 		return commonView.getSystemErrorPage(request, response, locale);
 	}
@@ -179,8 +142,14 @@ Was expecting one of:
 		//ExceptionUtils prepends the error code with the exception class followed by ": "; need to remove this to look up the message
 		code = code.substring(code.indexOf(":")+2, code.length());
 		
+		Object[] msgobj = new Object[] {null};
+		msgobj[0] = (Object) messages.getMessage("exception.common.tryagain", null, "", locale);
+		
 		//get the message for this exception
-		String msg = messages.getMessage(code, null, "Exception", locale);
+		String msg = messages.getMessage(code, msgobj, "", locale);
+		if (StringUtils.isEmpty(msg))
+			msg = messages.getMessage("exception.restDefault", null, "Houston, we have a problem!", locale);
+		
 		//log the exception in the error log file
 		logger.error(ex.getClass().toString(), ex);
 		//wrap the logService in case the db is down - do not want to throw another exception!
@@ -198,3 +167,70 @@ Was expecting one of:
 		return obj;
 	}
 }
+
+
+/*
+2016-03-29 10:34:08,770 DEBUG: net.kear.recipeorganizer.util.email.PasswordEmail - construct PasswordEmail
+2016-03-29 10:34:10,330 INFO : net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions exception class: class org.springframework.mail.MailSendException
+2016-03-29 10:34:10,342 DEBUG: net.kear.recipeorganizer.controller.ExceptionController - handleGeneralExceptions msg: MailSendException: Mail server connection failed; nested exception is javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
+  nested exception is:
+	java.net.ConnectException: Connection refused: connect. Failed messages: javax.mail.MessagingException: Could not connect to SMTP host: localhost, port: 587;
+  nested exception is:
+	java.net.ConnectException: Connection refused: connect
+2016-03-29 10:34:10,342 ERROR: net.kear.recipeorganizer.controller.ExceptionController - class org.springframework.mail.MailSendException
+
+CannotCreateTransactionException.class,	Could not open Hibernate Session for transaction
+GenericJDBCException.class,				Unable to acquire JDBC Connection
+SQLException.class,						Cannot create PoolableConnectionFactory
+PSQLException.class,					Connection to localhost:5432 refused
+ConnectException.class					Connection refused: connect
+
+** try to connect to hubbard.reciporganizer.net
+MailConnectException.class,	Couldn't connect to host, port: 127.0.0.1, 25
+SocketException.class		Permission denied: connect
+
+** remember me cookie **
+InternalAuthenticationServiceException.class,	Could not open Hibernate Session for transaction
+CannotCreateTransactionException.class,			Could not open Hibernate Session for transaction
+GenericJDBCException.class,						Unable to acquire JDBC Connection
+Cannot create PoolableConnectionFactory.class,	Connection to localhost:5432 refused
+PSQLException.class,							Connection to localhost:5432 refused
+ConnectException.class							Connection refused: connect
+*/
+
+/*	see ResponseEntityExceptionHandler
+BindException.class,
+ConversionNotSupportedException.class,
+HttpMediaTypeNotAcceptableException.class,
+HttpMediaTypeNotSupportedException.class,
+HttpMessageNotReadableException.class,
+HttpMessageNotWritableException.class,
+HttpRequestMethodNotSupportedException.class,
+MethodArgumentNotValidException.class,
+MissingServletRequestParameterException.class,
+MissingServletRequestPartException.class,
+NoHandlerFoundException.class
+NoSuchRequestHandlingMethodException.class,
+ServletRequestBindingException.class,
+TypeMismatchException.class,
+
+1) manually entered a recipe ID into viewRecipe URL
+ObjectNotFoundException: No row with the given identifier exists: [net.kear.recipeorganizer.persistence.model.Recipe#112]
+NumberFormatException: For parameter string: "abc"
+2) used a recipe view bookmark (referer is null)
+NullPointerException
+3) solr not running
+NullPointerException
+
+Solr errors not accounted for:
+###exception log id=703###	
+HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: undefined field _text_
+
+###exception log id=718###
+HttpSolrClient.RemoteSolrException: Error from server at http://localhost:8983/solr/recipe: org.apache.solr.search.SyntaxError: Cannot parse '{allowshare:true}': Encountered " "}" "} "" at line 1, column 16.
+Was expecting one of:
+"TO" ...
+<RANGE_QUOTED> ...
+<RANGE_GOOP> ...
+
+*/

@@ -3,15 +3,14 @@ package net.kear.recipeorganizer.config;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 
 import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
 import net.kear.recipeorganizer.enums.ApprovalReasonFormatter;
-import net.kear.recipeorganizer.interceptor.HttpHeadFilter;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.resolver.CustomCookieLocaleResolver;
+import net.kear.recipeorganizer.security.HttpHeadFilter;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -60,7 +59,9 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @EnableWebMvc
 @EnableAsync
 @EnableTransactionManagement
-@ComponentScan(basePackages = { 
+//@EnableAspectJAutoProxy
+@ComponentScan(basePackages = {
+	//"net.kear.recipeorganizer.advice",
 	"net.kear.recipeorganizer.controller",
 	"net.kear.recipeorganizer.listener",
 	"net.kear.recipeorganizer.util",
@@ -93,6 +94,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		logger.debug("addResourceHandlers");
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/").setCachePeriod(31556926);
         registry.addResourceHandler("/robots.txt").addResourceLocations("/");
+        registry.addResourceHandler("/favicon.ico").addResourceLocations("/resources/images");
     }
 	
 	/*** JSON configuration ***/
@@ -205,7 +207,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/faq"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(5);
+        source.setCacheSeconds(0);	//TODO: change this back to 5
         source.setFallbackToSystemLocale(false);
         return source;
     }
@@ -265,20 +267,18 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		return interceptor;
 	}
 
-	/*** interceptors ***/
+	/*** interceptors, filters and exception resolver ***/
 	public void addInterceptors(InterceptorRegistry registry) {
     	logger.debug("addInterceptors");
     	registry.addInterceptor(localeInterceptor());
     	registry.addInterceptor(maintenanceInterceptor());
     }
-	
-	/*** filters ***/
 	@Bean
 	public HttpHeadFilter httpHeadFilter() {
     	logger.debug("HttpHeadFilter");
 		return new HttpHeadFilter();
 	}
-			
+	
     /*** email configuration ***/
 	@Bean
     public JavaMailSenderImpl javaMailSender() {
@@ -301,12 +301,14 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         mailSenderImpl.getSession().setDebug(true);
         
-        try {
+        //removed test since it doesn't really matter at this point if mail is up or down;
+        //the user should be notified when an email is sent
+        /*try {
 			mailSenderImpl.testConnection();
 		} catch (MessagingException ex) {
 			logger.debug("test mail connection failed");
 			logger.error(ex.getClass().toString(), ex);
-		}
+		}*/
         
         return mailSenderImpl;
     }

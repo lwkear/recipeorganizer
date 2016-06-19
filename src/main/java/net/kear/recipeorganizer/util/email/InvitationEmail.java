@@ -20,6 +20,7 @@ public class InvitationEmail extends EmailMessage {
 			"email.invitation.inviteMsg1",
 			"email.invitation.inviteMsg2",
 			"email.invitation.inviteMsg3",
+			"email.invitation.expire",
 			"email.invitation.feature1",
 			"email.invitation.feature2",
 			"email.invitation.feature3",
@@ -34,7 +35,6 @@ public class InvitationEmail extends EmailMessage {
 			"email.invitation.login",
 			"email.common.nextSteps",
 			"email.common.pastelink",
-			"email.common.expire",
 			"email.common.enjoy",
 			"email.common.tagline",
 			"email.common.folks"};
@@ -70,7 +70,7 @@ public class InvitationEmail extends EmailMessage {
 		map.put("tokenUrl", getAppUrl() + emailDetail.getTokenUrl());
 		map.put("nextSteps", getMsgText("email.common.nextSteps"));
 		map.put("pasteLink", getMsgText("email.common.pastelink"));
-		map.put("expire", getMsgText("email.common.expire"));
+		map.put("expire", getMsgText("email.invitation.expire"));
 		map.put("enjoy", getMsgText("email.common.enjoy"));
 		map.put("folks", getMsgText("email.common.folks"));
 		DateTime now = new DateTime();

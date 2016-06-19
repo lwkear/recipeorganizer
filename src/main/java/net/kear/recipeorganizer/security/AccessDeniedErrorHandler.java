@@ -53,6 +53,3 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 		super.handle(request, response, ex);
 	}
 }
-//ExceptionTranslationFilter
-//DefaultRedirectStrategy
-//FilterSecurityInterceptor

@@ -435,7 +435,7 @@ public class DisplayController {
     	String userName = user.getFirstName() + " " + user.getLastName();
     	
     	EmailDetail emailDetail = new EmailDetail(recipientName, recipientEmail, locale);
-		emailDetail.setSenderName(userName);
+		emailDetail.setUserName(userName);
 		emailDetail.setUserFirstName(user.getFirstName());
 		emailDetail.setUserMessage(shareRecipeDto.getEmailMsg());
 		emailDetail.setRecipeName(shareRecipeDto.getRecipeName());

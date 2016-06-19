@@ -12,11 +12,11 @@
 
 <%@include file="../common/nav.jsp" %>
 
-	<c:url var="faqUrl" value="${pageContext.servletContext.contextPath}/faq"></c:url>
-	<c:url var="passwordUrl" value="${pageContext.servletContext.contextPath}/user/changePassword"></c:url>
-	<c:url var="recipeUrl" value="${pageContext.servletContext.contextPath}/recipe"></c:url>
-	<c:url var="profileUrl" value="${pageContext.servletContext.contextPath}/user/profile"></c:url>
-	<c:url var="dashboardUrl" value="${pageContext.servletContext.contextPath}/user/dashboard"></c:url>
+	<c:url var="faqUrl" value="/faq"></c:url>
+	<c:url var="passwordUrl" value="/user/changePassword"></c:url>
+	<c:url var="recipeUrl" value="/recipe"></c:url>
+	<c:url var="profileUrl" value="/user/profile"></c:url>
+	<c:url var="dashboardUrl" value="/user/dashboard"></c:url>
 	
 	<div class="container container-white">
 		<div class="col-sm-12 title-bar">

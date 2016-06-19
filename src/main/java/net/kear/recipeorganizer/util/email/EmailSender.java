@@ -74,32 +74,7 @@ public class EmailSender {
         }
         
         mimeMessage.setContent(multipart);
-        
-        //InternetAddress[] addresses = (InternetAddress[]) mimeMessage.getRecipients(Message.RecipientType.TO);
-        //logger.debug("end sendHtmlEmail to: " + addresses[0].getAddress());
-        
-        /*Properties javaMailProps = ((JavaMailSenderImpl) mailSender).getJavaMailProperties();
-        final String userName = ((JavaMailSenderImpl) mailSender).getUsername();
-        final String password = ((JavaMailSenderImpl) mailSender).getPassword();
-        final String host = ((JavaMailSenderImpl) mailSender).getHost();
-        
-        Session session = Session.getInstance(javaMailProps,
-      		  new javax.mail.Authenticator() {
-      			protected PasswordAuthentication getPasswordAuthentication() {
-      				return new PasswordAuthentication(userName, password);
-      			}
-      		  });
-        session.setDebug(true);
-        
-        //Address[] addresses = new Address[] {address};
-        Transport transport = session.getTransport("smtp");
-        transport.connect(host, userName, password);
-        mimeMessage.saveChanges();
-        transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
-        transport.close();*/
-        
         mailSender.send(mimeMessage);
-        
         logger.debug("end sendHtmlEmail to: " + emailDetail.getRecipientEmail());
 	}
 }
