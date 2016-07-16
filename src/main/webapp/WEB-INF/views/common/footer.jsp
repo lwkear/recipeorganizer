@@ -7,8 +7,8 @@
 <div class="clearfix spacer-vert-sm">
 </div>
 <footer class="footer">
-	<nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0; margin-top: 0; border-top:0; border-bottom:0">
-	    <p class="navbar-center" style="color:#ffffff">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;
+	<nav class="navbar navbar-default navbar-inverse" style="margin-bottom: 0; margin-top: 0; border-top:1px solid; border-bottom:0">
+	    <p class="navbar-center">&copy;&nbsp;<fmt:formatDate pattern="yyyy" value="${now}"/>&nbsp;&nbsp;Larry Kear&nbsp;&nbsp;
 	    		<spring:message code="footer.rights"></spring:message></p>
 		    <div class="navbar-collapse collapse">
 	    	<ul class="nav navbar-nav navbar-right">

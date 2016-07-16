@@ -24,7 +24,7 @@
 <!-- Note: path is required for AJAX url's -->
 <script>var appContextPath = "${pageContext.request.contextPath}"</script>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">		 <!-- navbar-inverse -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -82,9 +82,9 @@
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<c:if test="${isAdmin}">
+						<%-- <c:if test="${isAdmin}">
 							<li><a href="<c:url value="/test/testpage" />">Test</a></li>
-						</c:if>
+						</c:if> --%>
 					</ul>
 				</li>
 			</ul>

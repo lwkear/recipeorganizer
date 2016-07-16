@@ -24,7 +24,7 @@
 							&nbsp;&nbsp;&nbsp;${comment.firstName}&nbsp;${comment.lastName}
 							<span class="pull-right">
 								<button type="button" class="btn btn-link btn-sm" id="flagged-${comment.id}" 
-									style="margin-left:5px;font-size:20px;color: #d9534f; <c:if test="${comment.flag == 0}">display:none</c:if>"
+									style="margin-left:5px;font-size:20px;color: #a66759; <c:if test="${comment.flag == 0}">display:none</c:if>"
 									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.flagged"></spring:message>">
 									<span class="glyphicon glyphicon-flag"></span>
 								</button>

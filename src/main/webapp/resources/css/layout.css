@@ -1,6 +1,15 @@
 /***********************************************************************************************/
 /* overall layout of the page, including fixed footer and a container that spans top to bottom */
 /***********************************************************************************************/
+/* basic color scheme: dark to light
+	green:	5f6d62, 7e8e82, d6dbd7, f1f3f2
+	maroon:	633e36, 855247
+	tan:	f1e9da, f8f4ed
+	blue:	336699 (focus), 538cc6, 79a6d2
+	gray:	e6e6e6, f2f2f2
+	red:	d9534f (comment flag)
+*/
+
 html {
 	position: relative;
 	min-height:100%; /* needed for container min-height */
@@ -9,6 +18,10 @@ html {
 body {
 	margin-bottom: 50px;
 	box-sizing: border-box;
+	background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%);
+}
+
+.recipe-pic {
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
 	background-size: cover;
 }
@@ -65,11 +78,8 @@ body {
     font-size: 85%;
 }
 
-/* custom navbar colors */
-/* base color: 6b2e2e */
 .navbar-inverse {
-  background-image: linear-gradient(to top, #42658a 0%, #98b2cd 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff42658a', endColorstr='#ff98b2cd', GradientType=0);
+  background-image: linear-gradient(to top, #7e8e82 0%, #d6dbd7 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
   background-repeat: repeat-x;
   border-radius: 4px;
@@ -83,13 +93,13 @@ body {
 }
 
 .navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .active > a {
-    background-image: linear-gradient(to top, #42658a 0%, #98b2cd 100%);
+    background-image: linear-gradient(to top, #7e8e82 0%, #f1f3f2 100%);
     background-repeat: repeat-x;
     box-shadow: 0 3px 9px rgba(0, 0, 0, 0.25) inset;
 }
 
 .navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
-    background-color: #42658a;
+    background-color: #7e8e82;
     color: #fff;
 }
 
@@ -108,11 +118,6 @@ body {
   border-color: #336699;
   box-shadow: inset 0 1px 1px rgba(51, 102, 153, 0.075), 0 0 8px rgba(51, 102, 153, 0.6);
 }
-
-/* .glyphicon-envelope
-.glyphicon-print  {
-	font-size: 60px;
-} */
 
 .select-placeholder{color: #999;}
 .select-placeholder option:first-child{color: #999; display: none;}
@@ -144,7 +149,7 @@ body {
 
 /* navbar search box */
 .searchbox {
-	background-color:#264c73;
+	background-color:#5f6d62;
 	color:#ffffff;
 	border:none;
 	padding:3px;	
@@ -164,7 +169,7 @@ body {
 }
 
 .std-maroon {
-	color:#990000;
+	color:#855247;	
 }
 
 .bold-blue {
@@ -173,12 +178,12 @@ body {
 }
 
 .bold-maroon {
-	color:#990000;
+	color:#633e36;
 	font-weight:bold;
 }
 
 h4 {
-	color:#990000;
+	color:#855247;
 }
 
 .text-placeholder {
@@ -188,9 +193,8 @@ h4 {
 
 /* override of page-header bottom border */
 .page-header {
-	/* border-bottom: 2px solid #990000; */
-	border-bottom: 2px solid #cbd8e6;
-	color:#990000;
+	border-bottom: 2px solid #e6e6e6;
+	color:#855247;
 	margin: 0;
 }
 
@@ -214,19 +218,23 @@ h4 {
 	hyphens: auto;	
 }
 
-/* base color: 42658a */
-.title-bar{	
-	background-image: linear-gradient(to top, #cbd8e6 0%, #ffffff 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffcbd8e6', endColorstr='#ffffffff', GradientType=0);
-	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-	background-repeat: repeat-x;
+/* water's edge: #87999f; 9cabb0; aab7bb; b8c3c6; c6cfd2; d4dbdd; e2e7e9; f0f3f4 */
+/* e4e7e5 */
+/* Amsterdam 82959e; a9b6bc; c5ced3; d4dbde; c6ced2*/
+/* Britannia Blue 68747d; c7cdd1; d5dadd */
+/* Bachelor Blue 768492; c6ced2 */
+/* Airway b5c6d8 cdd8e5 dde5ee*/
+/* Black 000000; e6e6e6 f2f2f2*/
+
+ .title-bar{
+ 	background-image: linear-gradient(to top, #e6e6e6 0%, #ffffff 100%);
 	margin-left: -15px;
 	margin-bottom: 30px;
 	padding-right: 30px;
 	padding-left: 30px;
 	width: 1170px;
-	border-bottom: 3px solid #990000;
-	/* color:#990000; */
+	border-bottom: 2px solid #855247;
+	color:#855247;
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */

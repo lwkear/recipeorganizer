@@ -8,7 +8,7 @@
 
 </head>
 
-<body role="document">
+<body class="recipe-pic" role="document">
 	
 <%@include file="common/nav.jsp" %>	
 

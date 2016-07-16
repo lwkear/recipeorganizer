@@ -405,7 +405,7 @@ public class HomeController {
 			e.printStackTrace();
 		}*/
 		
-		/*EmailDetail emailDetail = new EmailDetail("Gene Kear", "kear.larry@gmail.com", locale);
+		EmailDetail emailDetail = new EmailDetail("Gene Kear", "kear.larry@gmail.com", locale);
 		emailDetail.setTokenUrl("/confirmRegistration?token=a72ad4cc-5772-4f5f-8fd6-9707aa85f920");
         try {
         	registrationEmail.constructEmail(emailDetail);
@@ -451,7 +451,7 @@ public class HomeController {
     	try {
     		shareRecipeEmail.constructEmail(emailDetail);
 			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {}*/
+		} catch (Exception ex) {}
     	
     	/*reportGenerator.createRecipePDF(741L, locale);
     	reportGenerator.createRecipePDF(1463L, locale);

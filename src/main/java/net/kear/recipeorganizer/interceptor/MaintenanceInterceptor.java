@@ -274,7 +274,7 @@ public class MaintenanceInterceptor extends HandlerInterceptorAdapter {
 		startTime = new DateTime();
 		//set the time for 5 minutes (minus 1 second) from now
 		startTime = startTime.plusSeconds(EMERGENCY_DELAY);
-		endTime = startTime.plusMinutes(duration);
+		endTime = startTime.plusMinutes(emergencyDuration);
 		maintenanceWindowSet = true;
 		logger.debug("emergency Window start/end: " + startTime.toString() + " / " + endTime.toString());
 	}

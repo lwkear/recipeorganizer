@@ -28,8 +28,8 @@
 				            <td width="18" height="56"></td>
 				            <td width="153"><a href=${recipeOrganizerUrl} target="_blank"><img src="cid:rologo" alt="RecipeOrganizer" border="0" align="left" height="56" width="153" style="display: block"/></a></td>
 				            <td width="415" align="right" valign="middle">
-				            	<i><font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 18px; line-height: 55px;">${tagline}</font></i>
-				            	<sup style="font-family: Arial, Helvetica, san-serif; color:#990000">&nbsp;&copy;</sup>
+				            	<i><font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 18px; line-height: 55px;">${tagline}</font></i>
+				            	<sup style="font-family: Arial, Helvetica, san-serif; color:#855247">&nbsp;&copy;</sup>
 				            </td>
 				            <td width="28"></td>
 						</tr>
@@ -42,10 +42,10 @@
 					<table width="614" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
 						<tr>
 							<td width="16" height="28"><img src="cid:cleargif" border="0" style="display:block" width="16" height="53"/></td>
-							<td width="11" bgcolor="#336699"></td>
-							<td width="558" align="left" valign="middle" bgcolor="#336699">
+							<td width="11" bgcolor="#7e8e82"></td>
+							<td width="558" align="left" valign="middle" bgcolor="#7e8e82">
 								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${recipeTitle}</font></td>
-							<td width="11" align="right" valign="top" bgcolor="#336699">&nbsp;</td>
+							<td width="11" align="right" valign="top" bgcolor="#7e8e82">&nbsp;</td>
 							<td width="18" align="right" valign="top"><img src="cid:cleargif" border="0" style="display:block" width="16" height="20"/></td>
 						</tr>
 					</table>
@@ -58,7 +58,7 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td><font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${dearUser},</font>
+							<td><font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 16px; line-height: 19px">${dearUser},</font>
 							<br><br>
 							<font face="Arial, Helvetica, sans-serif" color="#333333" style="font-size: 13px; line-height: 19px">
 							<strong>${senderName}</strong>&nbsp;${senderShare}
@@ -68,7 +68,7 @@
 								<tr>
 									<td width="20" valign="top"><img src="cid:cleargif" style="display:block" width="20" height="5"/></td>
 									<td width="400" valign="top">
-										<font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 13px; line-height: 19px"><strong>${recipeName}</strong></font>
+										<font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 13px; line-height: 19px"><strong>${recipeName}</strong></font>
 									</td>
 									<td width="70" valign="top"><img src="cid:cleargif" style="display:block" width="70" height="5"/></td>
 								</tr>
@@ -82,7 +82,8 @@
 									<tr>
 										<td width="20" valign="top"><img src="cid:cleargif" style="display:block" width="20" height="5"/></td>
 										<td width="400" valign="top">
-											<em>${userMessage}</em>
+											<font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 13px; line-height: 19px">
+											<strong><em>${userMessage}</em></strong>
 										</td>
 										<td width="70" valign="top"><img src="cid:cleargif" style="display:block" width="70" height="5"/></td>
 									</tr>
@@ -91,10 +92,10 @@
 							<br><br>
 							${problems}
 							<br><br>
-							${signup}&nbsp;<a href=${recipeOrganizerUrl} style="text-decoration: none">recipeorganizer.net.</a>&nbsp;${nocost}
+							${signup}&nbsp;<a href=${recipeOrganizerUrl} style="text-decoration: none">www.recipeorganizer.net.</a>&nbsp;${nocost}
 							<br><br><br>
 							</font>
-							<font face="Arial, Helvetica, sans-serif" color="#990000" style="font-size: 16px; line-height: 19px">${folks}</font>							
+							<font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 16px; line-height: 19px">${folks}</font>							
 							</td>
 							<td></td>
 							<td></td>
@@ -121,7 +122,7 @@
 							<td><font face="Arial, Helvetica, sans-serif" color="#333333" style="font-size: 13px; line-height: 19px">
 								&copy; ${copyright}
 								<br>
-								2607 Thayer | Evanston, IL 60201 | <a href=${recipeOrganizerUrl} style="text-decoration: none">recipeorganizer.net</a>
+								2607 Thayer | Evanston, IL 60201 | <a href=${recipeOrganizerUrl} style="text-decoration: none">www.recipeorganizer.net</a>
 							</font></td>
 							<td></td>
 						</tr>

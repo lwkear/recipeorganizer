@@ -49,8 +49,8 @@ public class ShareRecipeEmail extends EmailMessage {
 		obj[0] = emailDetail.getUserFirstName();
 		map.put("noteLabel", getArgMessage("email.recipe.noteLabel", obj));
 		map.put("userMessage", emailDetail.getUserMessage());
-		obj[0] = getAppUrl() + "/contact";
-		obj[1] = (Object) env.getProperty("company.email.support.account");
+		obj[0] = (Object) env.getProperty("company.email.support.account");
+		obj[1] = getAppUrl() + "/contact";
 		map.put("problems", getArgMessage("email.recipe.problems", obj));
 		map.put("signup", getMsgText("email.recipe.signup"));
 		map.put("nocost", getMsgText("email.recipe.nocost"));
