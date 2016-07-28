@@ -87,15 +87,15 @@
 						<c:choose>
 							<c:when test="${not empty userProfile.avatar}">
 								<label class="control-label col-sm-3 col-sm-offset-2" style="text-align: left;" 
-									id="photoLabel" for="selectedFile"><spring:message code="profile.photo"></spring:message></label>
+									id="photoLabel" for="selectedFile"><spring:message code="profile.image"></spring:message></label>
 								<label class="control-label col-sm-2" style="text-align: left;" 
-									id="photoOptionsLabel" for="file"><spring:message code="common.photo.options"></spring:message></label>
+									id="photoOptionsLabel" for="file"><spring:message code="common.image.options"></spring:message></label>
 								<label class="control-label col-sm-3 newphoto" style="text-align: left; display:none" 
-									id="newPhotoLabel" for="file"><spring:message code="common.photo.new"></spring:message></label>
+									id="newPhotoLabel" for="file"><spring:message code="common.image.new"></spring:message></label>
 							</c:when>
 							<c:otherwise>
 								<label class="control-label col-sm-3 col-sm-offset-2" style="text-align: left;" 
-									id="fileLabel" for="file"><spring:message code="profile.photo"></spring:message></label>
+									id="fileLabel" for="file"><spring:message code="profile.image"></spring:message></label>
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -109,13 +109,13 @@
 								</div>
 								<div class="col-sm-2">
 									<div class="radio">
-										<label><input  type="radio" name="photoOpts" value="keep" checked><spring:message code="common.photo.keep"></spring:message></label>
+										<label><input  type="radio" name="photoOpts" value="keep" checked><spring:message code="common.image.keep"></spring:message></label>
 									</div>
 									<div class="radio">
-										<label><input type="radio" name="photoOpts" value="remove"><spring:message code="common.photo.remove"></spring:message></label>
+										<label><input type="radio" name="photoOpts" value="remove"><spring:message code="common.image.remove"></spring:message></label>
 									</div>
 									<div class="radio">
-										<label><input type="radio" name="photoOpts" value="change"><spring:message code="common.photo.change"></spring:message></label>
+										<label><input type="radio" name="photoOpts" value="change"><spring:message code="common.image.change"></spring:message></label>
 									</div>
 								</div>
 								<div class="col-sm-3 newphoto" style="display:none">
