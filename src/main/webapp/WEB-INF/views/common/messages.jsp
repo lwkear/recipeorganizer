@@ -44,6 +44,7 @@
 	<p id="exception.file.failure"/><spring:message code="exception.file.failure"></spring:message>
 	<p id="exception.file.continuecancel"/><spring:message code="exception.file.continuecancel"></spring:message>
 	<p id="profile.image"/><spring:message code="profile.image"></spring:message>
+	<p id="profile.image.noneselected"/><spring:message code="profile.image.noneselected"></spring:message>
 	<p id="pswd.wordNotEmail"/><spring:message code="pswd.wordNotEmail"></spring:message>
 	<p id="pswd.wordLength"/><spring:message code="pswd.wordLength"></spring:message>
 	<p id="pswd.wordSequences"/><spring:message code="pswd.wordSequences"></spring:message>

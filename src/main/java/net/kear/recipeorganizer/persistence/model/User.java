@@ -23,14 +23,12 @@ import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "USERS")
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private static final int PASSWORD_EXPIRATION = 60 * 24 * 90;
+	private static final int PASSWORD_EXPIRATION = 60 * 24 * 365;
 	
 	@Id
 	@Column(name = "ID", nullable = false, unique = true, length = 11)

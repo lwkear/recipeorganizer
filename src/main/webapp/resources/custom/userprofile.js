@@ -31,7 +31,7 @@ function checkAvatarOptions() {
 	if (opt == 'change') {
 		var filename = $('#photoname').val();
 		if (filename == null || filename == "") {
-			displayOKMsg(getMessage('profile.photo'), getMessage('recipe.optional.photo.noneselected'));
+			displayOKMsg(getMessage('profile.image'), getMessage('profile.image.noneselected'));
 			return false;
 		}
 	}	
