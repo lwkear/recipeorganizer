@@ -20,10 +20,10 @@
 		</div>
 		<div class="col-sm-12">
 			<div class="row">
-				<div class="col-sm-2">
-					<ul class="nav">
+				<div class="col-sm-2" role="navigation">
+					<ul class="nav nav-pills nav-stacked">
 						<c:forEach var="topic" items="${topics}" varStatus="loop">
-							<li><a id="${topic.id}" onclick="getQuestions(${topic.id})">${topic.description}</a></li>
+							<li role="presentation" class="<c:if test="${loop.index eq 0}">active</c:if>"><a href="#" data-toggle="tab" id="${topic.id}" onclick="getQuestions(${topic.id})">${topic.description}</a></li>
 						</c:forEach>
 					</ul>
 				</div>

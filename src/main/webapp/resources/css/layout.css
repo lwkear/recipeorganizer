@@ -232,9 +232,24 @@ h4 {
 	margin-bottom: 30px;
 	padding-right: 30px;
 	padding-left: 30px;
-	width: 1170px;
 	border-bottom: 2px solid #855247;
 	color:#855247;
+}
+
+@media (min-width: 768px) {
+  .title-bar {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .title-bar {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .title-bar {
+    width: 1170px;
+  }
 }
 
 /* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */

@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
     
     public void createUserVerificationToken(final User user, final String token) {
         final VerificationToken newToken = new VerificationToken(token, user);
-        if (!user.isInvited()) {
+        if (user.isInvited()) {
         	Date expireDate = user.calculateExpiryDate(INVITATION_EXPIRATION);
         	newToken.setExpiryDate(expireDate);
         }

@@ -49,7 +49,10 @@
 						<div class="form-group col-sm-12 spacer-vert-sm">
 							<div class="row">
 								<div class="col-sm-5">
-									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.ingredients.sections"></spring:message></label>
+									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.ingredients.sections"></spring:message>
+									</label>
+									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" 
+										title="<spring:message code="recipe.basics.ingredients.sections.info"></spring:message>"></span>
 								</div>
 								<div class="row col-sm-6">
 									<div class="radio-inline col-sm-1">
@@ -73,6 +76,8 @@
 							<div class="row">
 								<div class="col-sm-5">
 									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.instructions.sections"></spring:message></label>
+									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" 
+										title="<spring:message code="recipe.basics.instructions.sections.info"></spring:message>"></span>
 								</div>
 								<div class="row col-sm-6">
 									<div class="radio-inline col-sm-1">

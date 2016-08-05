@@ -335,7 +335,8 @@ public class UserController {
 		}
         
 		Object[] obj = new Object[] {null};
-        if (verificationToken == null) {        	
+        if (verificationToken == null) {
+        	logger.debug("invalid token");
         	obj[0] = (Object) env.getProperty("company.email.support.account");
         	String msg = messages.getMessage("user.register.invalidToken1", null, "Invalid token", locale) + 
         				 messages.getMessage("user.register.invalidToken2", obj, "Invalid token", locale);
@@ -345,9 +346,18 @@ public class UserController {
         	return mv;     	
         }
 
-        final User user = verificationToken.getUser();
-        final Calendar cal = Calendar.getInstance();
+        User user = verificationToken.getUser();
+        //the user may have already clicked on the link once which would have enabled them; if that's the case just display the login,
+        //even if the token has expired
+        if (user.isEnabled()) {
+            logger.debug("user already enabled");
+            mv.setViewName("redirect:/user/login");
+            return mv;
+        }
+        
+        Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+        	logger.debug("token expired");
         	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, "Expired token", locale));
         	redir.addFlashAttribute("register", true);
         	redir.addFlashAttribute("expired", true);
@@ -359,7 +369,11 @@ public class UserController {
         user.setEnabled(1);
         try {
         	userService.updateUser(user);
-        	userService.deleteVerificationToken(verificationToken);
+        	//based upon confusion during beta testing deleting the token is just not working
+        	//a couple of users clicked on the email link a second time and got an invalid token message, even though they completed the registration
+        	//when they clicked on it the first time;  the token is required to look up the user to check if they are already enabled, in which case 
+        	//they should be presented with the login screen
+        	//userService.deleteVerificationToken(verificationToken);
         } catch (Exception ex) {
         	throw new SaveAccountException(ex);
         }
