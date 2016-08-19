@@ -337,12 +337,12 @@ $(function() {
     });
    
    	$('#submittedCarousel').carousel({
-   		//interval: 10000
-   		interval: false
+   		interval: 20000
+   		//interval: false
    	});
    	$('#viewedCarousel').carousel({
-   		//interval: 10000
-   		interval: false
+   		interval: 20000
+   		//interval: false
    	});
     
 	$(document)

@@ -6,7 +6,7 @@
 <spring:message var="yesLabel" code="common.yes"></spring:message>
 <spring:message var="noLabel" code="common.no"></spring:message>
 
-<c:set var="noPhoto" value="No photo"></c:set>
+<c:set var="noPhoto"><spring:message code="common.photo.nophoto"></spring:message></c:set>
 
 <div class="row">
 	<div class="row">

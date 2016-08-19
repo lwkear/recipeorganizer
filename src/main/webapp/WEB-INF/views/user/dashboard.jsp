@@ -13,7 +13,7 @@
 <%@include file="../common/nav.jsp" %>
 
 	<c:url var="whatsnewUrl" value="/whatsnew"></c:url>
-	<c:set var="noPhoto" value="No photo"></c:set>
+	<c:set var="noPhoto"><spring:message code="common.photo.nophoto"></spring:message></c:set>
 
 	<div class="container container-white">
 		<div class="col-sm-12 title-bar">
@@ -170,7 +170,7 @@
 											<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>">
 												<c:choose>
 													<c:when test="${not empty recipe.photo}">
-														<img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="no image"/>
+														<img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="${noPhoto}"/>
 													</c:when>
 													<c:otherwise>
 														<img data-src="holder.js/200x200?auto=yes&amp;text=${noPhoto}"/>
