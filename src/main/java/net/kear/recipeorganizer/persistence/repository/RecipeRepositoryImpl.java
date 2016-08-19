@@ -361,7 +361,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     public List<RecipeDisplayDto> recentRecipes() {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
-    		.add(Restrictions.in("status", ApprovalStatus.APPROVED))
+    		.add(Restrictions.eq("status", ApprovalStatus.APPROVED))
     		.add(Restrictions.eq("allowShare", true))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
@@ -419,7 +419,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		.createAlias("user", "u")
     		.add(Restrictions.gt("r.views", 0))
     		.add(Restrictions.eq("allowShare", true))
-    		.add(Restrictions.in("status", ApprovalStatus.APPROVED))
+    		.add(Restrictions.eq("status", ApprovalStatus.APPROVED))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
     			.add(Projections.property("u.id").as("userId"))
@@ -428,6 +428,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("r.photoName").as("photo")))
+    		.addOrder(Order.desc("r.views"))
     		.addOrder(Order.desc("r.dateUpdated"))
     		.setMaxResults(10)
     		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
