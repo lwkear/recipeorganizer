@@ -21,6 +21,15 @@ body {
 	background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%);
 }
 
+h4 {
+	color:#855247;
+}
+
+img {
+    /* max-width: 100%; */
+    max-height: 100%;
+}
+
 .recipe-pic {
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
 	background-size: cover;
@@ -182,10 +191,6 @@ body {
 	font-weight:bold;
 }
 
-h4 {
-	color:#855247;
-}
-
 .text-placeholder {
   color: #999;
   opacity: 1;
@@ -226,7 +231,7 @@ h4 {
 /* Airway b5c6d8 cdd8e5 dde5ee*/
 /* Black 000000; e6e6e6 f2f2f2*/
 
- .title-bar{
+ .title-bar {
  	background-image: linear-gradient(to top, #e6e6e6 0%, #ffffff 100%);
 	margin-left: -15px;
 	margin-bottom: 30px;
@@ -296,4 +301,19 @@ table.dataTable thead .sorting_desc:after {
  
 .dataTables_filter {
 	display: none
+}
+
+.carousel-control {
+  padding-top:10%;
+  width:1%;
+}
+
+.carousel-caption {
+    position: relative;
+    left: auto;
+    right: auto;
+    text-shadow: none;
+	color:#336699;
+	margin-top:5px;
+	margin-bottom:5px;
 }

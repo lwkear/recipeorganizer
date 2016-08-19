@@ -23,7 +23,9 @@ public interface UserService {
     public boolean doesUserEmailExist(String email);
     public boolean validateUser(String email, String password);
     public boolean isPasswordValid(String password, User user);
-    public void changePassword(String password, User user);
+    public User changeName(String firstName, String lastName, User user);
+    public User changeEmail(String email, User user);
+    public User changePassword(String password, User user);
     public void changeRole(String roleName, User user);
     public void saveUserProfile(UserProfile userProfile);
     public void createUserVerificationToken(User user, String token);

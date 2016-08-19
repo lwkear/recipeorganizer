@@ -126,13 +126,24 @@ public class UserServiceImpl implements UserService {
     	return passwordEncoder.matches(password, user.getPassword());
     }
     
-    public void changePassword(String password, User user) {
+    public User changeName(String firstName, String lastName, User user) {
+    	user.setFirstName(firstName);
+    	user.setLastName(lastName);
+    	return userRepository.updateUser(user);  	
+    }
+
+    public User changeEmail(String email, User user) {
+    	user.setEmail(email);
+    	return userRepository.updateUser(user);  	
+    }
+    
+    public User changePassword(String password, User user) {
     	user.setPassword(passwordEncoder.encode(password));
     	user.setPasswordExpired(0);
     	user.setPasswordExpiryDate();
-    	userRepository.updateUser(user);  	
+    	return userRepository.updateUser(user);  	
     }
-    
+
     public void changeRole(String roleName, User user) {
     	Role role = roleRepository.getRole(roleName);
     	if (role != null) {

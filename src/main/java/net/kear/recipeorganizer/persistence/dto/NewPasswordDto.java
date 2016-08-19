@@ -103,7 +103,7 @@ public class NewPasswordDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PasswordDto [password=" + password 
+		return "NewPasswordDto [password=" + password 
 				+ ", confirmPassword=" + confirmPassword + "]";
 	}
 }

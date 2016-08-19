@@ -6,6 +6,7 @@ import javax.validation.GroupSequence;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.validation.PasswordNotDuplicate;
 import net.kear.recipeorganizer.validation.PasswordMatch;
 
@@ -27,18 +28,24 @@ public class ChangePasswordDto implements Serializable {
 	public interface ChangePasswordDtoSequence {}
 
 	@NotBlank
-	@Size(min=6, max=20)
+	@Size(min=6, max=20)		//20
 	private String currentPassword;
 
 	@NotBlank
-	@Size(min=6, max=20)
+	@Size(min=6, max=20)		//20
 	private String password;
 	
 	@NotBlank
-	@Size(min=6, max=20)
+	@Size(min=6, max=20)		//20
 	private String confirmPassword;
+
+	private long userId;
 	
 	public ChangePasswordDto() {}
+	
+	public ChangePasswordDto(User user) {
+		this.userId = user.getId();
+	}
 	
 	public ChangePasswordDto(ChangePasswordDto password) {
 		this.currentPassword = password.currentPassword;
@@ -75,6 +82,14 @@ public class ChangePasswordDto implements Serializable {
 
 	public void setConfirmPassword(String password) {
 		this.confirmPassword = password;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	@Override
@@ -116,7 +131,7 @@ public class ChangePasswordDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PasswordDto [currentPassword=" + currentPassword 
+		return "ChangePasswordDto [currentPassword=" + currentPassword 
 				+ ", password=" + password 
 				+ ", confirmPassword=" + confirmPassword + "]";
 	}

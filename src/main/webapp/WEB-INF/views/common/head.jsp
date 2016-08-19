@@ -30,11 +30,10 @@
 <link href="<c:url value="/resources/jqueryui-notheme/jquery-ui.structure.min.css" />" rel="stylesheet">
 	
 <!-- Bootstrap -->	
-<link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.css" />" rel="stylesheet">
-
-<%-- <link href="<c:url value="/resources/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
-<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.min.css" />" rel="stylesheet"> --%>
+<%-- <link href="<c:url value="/resources/bootstrap/css/bootstrap.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.css" />" rel="stylesheet"> --%>
+<link href="<c:url value="/resources/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
+<link href="<c:url value="/resources/bootstrap/css/bootstrap-theme.min.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/selectize/css/selectize.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/selectize/css/selectize.bootstrap3.css" />" rel="stylesheet">
 <link href="<c:url value="/resources/bootstrap-multiselect/css/bootstrap-multiselect.css" />" rel="stylesheet">
@@ -44,8 +43,8 @@
 
 <!-- Datatables CSS -->
 <%-- <link href="<c:url value="/resources/DataTables/css/dataTables.foundation.css" />" rel="stylesheet"> --%>
-<link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.css" />" rel="stylesheet">
-<%-- <link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.min.css" />" rel="stylesheet"> --%>
+<%-- <link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.css" />" rel="stylesheet"> --%>
+<link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.min.css" />" rel="stylesheet">
 
 <!-- Custom styles for this app -->
 <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">

@@ -23,6 +23,8 @@ import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.Source;
 import net.kear.recipeorganizer.persistence.model.User;
+import net.kear.recipeorganizer.persistence.model.Viewed;
+import net.kear.recipeorganizer.persistence.model.ViewedKey;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
@@ -181,6 +183,18 @@ public class RecipeServiceImpl implements RecipeService {
 		Map<String, Object> constraints = constraintMap.getModelConstraints(constraintName, property, classes);
 		return constraints;    	
     }
+
+    public Viewed getViewed(ViewedKey key) {
+    	return recipeRepository.getViewed(key);
+    }
+    
+    public void addViewed(Viewed viewed) {
+    	recipeRepository.addViewed(viewed);
+    }
+    
+    public void updateViewed(Viewed viewed) {
+    	recipeRepository.updateViewed(viewed);
+    }
     
     public void addFavorite(Favorites favorite) {
     	recipeRepository.addFavorite(favorite);
@@ -236,19 +250,6 @@ public class RecipeServiceImpl implements RecipeService {
     	return recipeRepository.listRecipes(userId);
     }
     
-    public List<RecipeDisplayDto> listRecipes(List<String> ids) {
-    	ArrayList<Long> recipeIds = new ArrayList<Long>();
-    	for (String id : ids) {
-    		recipeIds.add(Long.valueOf(id));
-    	}
-	    	
-    	return recipeRepository.listRecipes(recipeIds);
-    }
-
-    public List<RecipeDisplayDto> recentRecipes(Long userId) {
-    	return recipeRepository.recentRecipes(userId);
-    }
-
     public List<RecipeListDto> favoriteRecipes(Long userId) {
     	List<Favorites> favorites = recipeRepository.getFavorites(userId);
     	List<Long> recipeIds = new AutoPopulatingList<Long>(Long.class);
@@ -262,6 +263,35 @@ public class RecipeServiceImpl implements RecipeService {
     	}
     	
     	return recipes;
+    }
+
+    public List<RecipeDisplayDto> listRecipes(List<String> ids) {
+    	ArrayList<Long> recipeIds = new ArrayList<Long>();
+    	for (String id : ids) {
+    		recipeIds.add(Long.valueOf(id));
+    	}
+	    	
+    	return recipeRepository.listRecipes(recipeIds);
+    }
+
+    public List<RecipeDisplayDto> recentUserRecipes(Long userId) {
+    	return recipeRepository.recentUserRecipes(userId);
+    }
+
+    public List<RecipeDisplayDto> recentRecipes() {
+    	return recipeRepository.recentRecipes();
+    }
+
+    public List<RecipeDisplayDto> viewedRecipes(Long userId) {
+    	return recipeRepository.viewedRecipes(userId);
+    }
+    
+    public RecipeDisplayDto getMostViewedRecipe(boolean hasPhoto) {
+    	return recipeRepository.getMostViewedRecipe(hasPhoto);
+    }
+    
+    public RecipeDisplayDto getFeaturedRecipe(Long recipeId) {
+    	return recipeRepository.getFeaturedRecipe(recipeId);
     }
     
     public Long getRecipeCount(Long userId) {

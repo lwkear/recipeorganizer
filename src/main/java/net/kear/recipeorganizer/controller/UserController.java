@@ -1,14 +1,11 @@
 package net.kear.recipeorganizer.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -65,6 +62,10 @@ import net.kear.recipeorganizer.exception.SaveAccountException;
 import net.kear.recipeorganizer.exception.VerificationException;
 import net.kear.recipeorganizer.exception.VerificationResendException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
+import net.kear.recipeorganizer.persistence.dto.ChangeEmailDto;
+import net.kear.recipeorganizer.persistence.dto.ChangeEmailDto.ChangeEmailDtoSequence;
+import net.kear.recipeorganizer.persistence.dto.ChangeNameDto;
+import net.kear.recipeorganizer.persistence.dto.ChangeNameDto.ChangeNameDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto.ChangePasswordDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.NewPasswordDto;
@@ -267,7 +268,7 @@ public class UserController {
 		if (exists) {
 			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
-			FieldError err = new FieldError("userDto","email", msg);
+			FieldError err = new FieldError("userDto", "email", userDto.getEmail(), false, null, null, msg);
 			result.addError(err);
 			mv.addObject("sizeMap", sizeMap);
 			return mv;
@@ -407,7 +408,7 @@ public class UserController {
     }
 	
 	/******************************************/
-	/*** Profile and Account change handler ***/
+	/*** Profile and Account upgrade handler ***/
 	/******************************************/
 	@MaintAware
 	@RequestMapping(value = "user/profile", method = RequestMethod.GET)
@@ -525,25 +526,25 @@ public class UserController {
 		return "redirect:/user/dashboard";
 	}
 	
-	@RequestMapping(value = "user/changeAccount", method = RequestMethod.GET)
+	@RequestMapping(value = "user/changeAccountLevel", method = RequestMethod.GET)
 	public String getchangeAccount(Model model) {
-		logger.info("user/changeAccount GET");
+		logger.info("user/changeAccountLevel GET");
 		
-		//accessDenied redirects to changeAccount if appropriate, but the URL displayed by the browser is 
+		//accessDenied redirects to changeAccountLevel if appropriate, but the URL displayed by the browser is 
 		//still the original URL, e.g., /recipe;  redirecting to user/account displays the correct URL
-		return "redirect:/user/account";
+		return "redirect:/user/upgradeAccount";
 	}
 
-	@RequestMapping(value = "user/account", method = RequestMethod.GET)
-	public String getAccount(Model model) {
-		logger.info("user/account GET");
+	@RequestMapping(value = "user/upgradeAccount", method = RequestMethod.GET)
+	public String upgradeAccount(Model model) {
+		logger.info("user/upgradeAccount GET");
 		
-		return "user/account";
+		return "user/upgradeAccount";
 	}
 
-	@RequestMapping(value = "user/account", method = RequestMethod.POST)
+	@RequestMapping(value = "user/upgradeAccount", method = RequestMethod.POST)
 	public String upgradeAccount() {
-		logger.info("user/account POST");
+		logger.info("user/upgradeAccount POST");
 		
 		//reload the user's authentication with the AUTHOR role
 		User currentUser = (User)userInfo.getUserDetails();
@@ -588,25 +589,17 @@ public class UserController {
 			logService.addException(ex);
 		}
 		
-		List<RecipeDisplayDto> viewedRecipes = null;		
-		Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, "recentRecipes", user.getId()); 
-		if (recentRecipesCookie != null) {
-			String recipes = recentRecipesCookie.getValue();
-			ArrayList<String> recipeIds = new ArrayList<String>(Arrays.asList(recipes.split(",")));
-			try {
-				viewedRecipes = recipeService.listRecipes(recipeIds);
-			} 
-			catch (Exception ex) {
-				//do nothing - this is not a fatal error
-				logService.addException(ex);
-			}
-		}
-		
 		List<RecipeDisplayDto> recentRecipes = null;
+		List<RecipeDisplayDto> viewedRecipes = null;
+		RecipeDisplayDto mostViewedRecipe = null;
+		RecipeDisplayDto featuredRecipe = null;
 		long viewCount = 0;
 		try {
-			recentRecipes = recipeService.recentRecipes(user.getId());
+			recentRecipes = recipeService.recentRecipes();
+			viewedRecipes = recipeService.viewedRecipes(user.getId());
 			viewCount = recipeService.getUserViewCount(user.getId());
+			mostViewedRecipe = recipeService.getMostViewedRecipe(true);
+			featuredRecipe = recipeService.getFeaturedRecipe(14L);
 		} 
 		catch (Exception ex) {
 			//do nothing - these are not a fatal errors
@@ -620,8 +613,6 @@ public class UserController {
 	        	int days = Days.daysBetween(new DateTime(todaysDt), new DateTime(passwordExpirtyDt)).getDays();
 	        	if (days <= 15) {
 		        	int hours = Hours.hoursBetween(new DateTime(todaysDt), new DateTime(passwordExpirtyDt)).getHours();
-		        	//float hrsToDays = (float)hours / 24;
-		        	//days = Math.round(hrsToDays);
 		        	days = Math.round((float)hours / 24);
 	        		String msg1 = messages.getMessage("user.password.willExpire1", null, "Your password is about to expire!", locale);
 	        		String msg2;
@@ -657,6 +648,8 @@ public class UserController {
 		model.addAttribute("nextMaint", maintInterceptor.getNextStartWindow(true, "sysmaint.usermessage", locale));
 		model.addAttribute("recentRecipes", recentRecipes);
 		model.addAttribute("viewedRecipes", viewedRecipes);
+		model.addAttribute("mostViewedRecipe", mostViewedRecipe);
+		model.addAttribute("featuredRecipe", featuredRecipe);
 
 		return "user/dashboard";
 	}
@@ -672,7 +665,7 @@ public class UserController {
 	/*******************************/
 	/*** Change password handler ***/
 	/*******************************/
-	@MaintAware
+	/*@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
 	public String getPassword(Model model) {
 		logger.info("user/changePassword GET");
@@ -683,9 +676,9 @@ public class UserController {
 		model.addAttribute("changePasswordDto", changePasswordDto);
 		
 		return "user/changePassword";
-	}
+	}*/
 
-	@MaintAware
+	/*@MaintAware
 	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
 	public String postPassword(Model model, @ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
 			throws SaveAccountException, AccessUserException {
@@ -739,6 +732,246 @@ public class UserController {
 		}        
 		
 		return "redirect:/user/dashboard";
+	}*/
+
+	/*******************************/
+	/*** Change account handler ***/
+	/*******************************/
+	@MaintAware
+	@RequestMapping(value = "user/changeAccount", method = RequestMethod.GET)
+	public String getChangeAccount(Model model) {
+		logger.info("user/changeAccount GET");
+
+		User user = (User)userInfo.getUserDetails();
+
+		ChangeNameDto changeNameDto = new ChangeNameDto(user);
+		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
+		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		model.addAttribute("changeNameDto", changeNameDto);		
+		model.addAttribute("changeEmailDto", changeEmailDto);
+		model.addAttribute("changePasswordDto", changePasswordDto);
+
+		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
+		return "user/changeAccount";
+	}
+
+	@MaintAware
+	@RequestMapping(value = "user/changeName", method = RequestMethod.POST)
+	public String postName(Model model, @ModelAttribute @Validated(ChangeNameDtoSequence.class) ChangeNameDto changeNameDto, BindingResult result, Locale locale) 
+			throws SaveAccountException, AccessUserException {
+		logger.info("user/changeName POST");
+
+		User user = null;
+		try {
+			user = userService.getUser(changeNameDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+
+		//must re-add attribute(s) in case of an error
+		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
+		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		model.addAttribute("changeEmailDto", changeEmailDto);
+		model.addAttribute("changePasswordDto", changePasswordDto);
+
+		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			changeNameDto.setCurrentFirstName(user.getFirstName());
+			changeNameDto.setCurrentLastName(user.getLastName());
+			return "user/changeAccount";
+		}
+		
+		try {
+			user = userService.changeName(changeNameDto.getFirstName(), changeNameDto.getLastName(), user);
+			//reload the user's authentication with the new name
+			userSecurityService.reauthenticateUser(user);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
+
+        String userName = user.getFirstName() + " " + user.getLastName();
+
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+        emailDetail.setChangeType(ChangeType.NAME);
+		try {
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}
+		
+		//return a success message
+		String msg = messages.getMessage("account.change.nameupdated", null, "Success", locale);
+
+		changeNameDto.setCurrentFirstName(user.getFirstName());
+		changeNameDto.setCurrentLastName(user.getLastName());
+		model.addAttribute("changeNameDto", changeNameDto);
+		model.addAttribute("nameSuccessMessage", msg);
+
+		return "user/changeAccount";
+	}
+
+	@MaintAware
+	@RequestMapping(value = "user/changeEmail", method = RequestMethod.POST)
+	public String postEmail(Model model, @ModelAttribute @Validated(ChangeEmailDtoSequence.class) ChangeEmailDto changeEmailDto, BindingResult result, Locale locale) 
+			throws SaveAccountException, AccessUserException {
+		logger.info("user/changeEmail POST");
+
+		User user = null;
+		try {
+			user = userService.getUser(changeEmailDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+
+		//must re-add attribute(s) in case of an error
+		ChangeNameDto changeNameDto = new ChangeNameDto(user);
+		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		model.addAttribute("changeNameDto", changeNameDto);
+		model.addAttribute("changePasswordDto", changePasswordDto);
+
+		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			changeEmailDto.setCurrentEmail(user.getEmail());
+			return "user/changeAccount";
+		}
+
+		//double-check the email isn't in use in case user ignored the AJAX error
+		boolean exists = false;
+		try {
+			exists = userService.doesUserEmailExist(changeEmailDto.getEmail());
+		} catch (Exception ex) {
+			//do nothing - if there is a problem with the database the user will be notifed when they submit the form
+			logService.addException(ex);
+		}
+
+		if (exists) {
+			logger.debug("Validation errors");
+			String msg = messages.getMessage("user.duplicateEmail", null, "Duplicate email", locale);
+			FieldError err = new FieldError("changeEmailDto", "email", changeEmailDto.getEmail(), false, null, null, msg);
+			result.addError(err);
+			changeEmailDto.setCurrentEmail(user.getEmail());
+			return "user/changeAccount";
+		}
+
+		try {
+			user = userService.changeEmail(changeEmailDto.getEmail(), user);
+			//reload the user's authentication with the new email
+			userSecurityService.reauthenticateUser(user);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
+		
+        String userName = user.getFirstName() + " " + user.getLastName();
+
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+        emailDetail.setChangeType(ChangeType.EMAIL);
+		try {
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}
+		
+		//return a success message
+		String msg = messages.getMessage("account.change.emailupdated", null, "Success", locale);
+
+		changeEmailDto.setCurrentEmail(user.getEmail());
+		model.addAttribute("changeEmailDto", changeEmailDto);
+		model.addAttribute("emailSuccessMessage", msg);
+		
+		return "user/changeAccount";
+	}
+	
+	@MaintAware
+	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
+	public String postPassword(Model model, @ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
+			throws SaveAccountException, AccessUserException {
+		logger.info("user/changePassword POST");
+
+		User user = null;
+		try {
+			user = userService.getUser(changePasswordDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+
+		//must re-add attribute(s) in case of an error
+		ChangeNameDto changeNameDto = new ChangeNameDto(user);
+		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
+		
+		model.addAttribute("changeNameDto", changeNameDto);		
+		model.addAttribute("changeEmailDto", changeEmailDto);
+
+		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+		
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			changePasswordDto.setCurrentPassword("");
+			changePasswordDto.setPassword("");
+			changePasswordDto.setConfirmPassword("");
+			return "user/changeAccount";
+		}
+		
+		if (!userService.isPasswordValid(changePasswordDto.getCurrentPassword(), user)) {
+			logger.debug("Validation errors");
+			String msg = messages.getMessage("user.invalidPassword", null, "Invalid password", locale);
+			FieldError err = new FieldError("changePasswordDto", "currentPassword",  msg);
+			result.addError(err);
+			changePasswordDto.setCurrentPassword("");
+			changePasswordDto.setPassword("");
+			changePasswordDto.setConfirmPassword("");
+			return "user/changeAccount";
+        }
+		
+		if (passwordEncoder.matches(changePasswordDto.getPassword(), user.getPassword())) {
+			String msg = messages.getMessage("PasswordNotDuplicate", null, "", locale);
+			FieldError fieldError = new FieldError("changePasswordDto", "password", msg);
+			result.addError(fieldError);
+			changePasswordDto.setCurrentPassword("");
+			changePasswordDto.setPassword("");
+			changePasswordDto.setConfirmPassword("");
+			return "user/changeAccount";
+		}
+        
+		try {
+			userService.changePassword(changePasswordDto.getPassword(), user);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
+		
+        String userName = user.getFirstName() + " " + user.getLastName();
+
+        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+		emailDetail.setChangeType(ChangeType.PASSWORD);
+		try {
+			accountChangeEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			//do nothing - it should not be fatal if the email doesn't get sent
+		}
+		
+		//return a success message
+		String msg = messages.getMessage("account.change.passwordupdated", null, "Success", locale);
+		model.addAttribute("passwordSuccessMessage", msg);
+		
+		return "user/changeAccount";
 	}
 
 	/***********************************************/
@@ -796,7 +1029,7 @@ public class UserController {
 		if (user == null) {
 			logger.debug("Validation errors");
 			String msg = messages.getMessage("user.userNotFound", null, "User not found", locale);
-			FieldError err = new FieldError("userEmail","email", msg);
+			FieldError err = new FieldError("userEmail", "email", userEmail.getEmail(), false, null, null, msg);
 			result.addError(err);
 			return mv;
 		}

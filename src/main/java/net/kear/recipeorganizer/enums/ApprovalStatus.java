@@ -11,7 +11,7 @@ public enum ApprovalStatus {
 	PRIVATE(3),
 	BLOCKED(4);
 	
-	private int value;
+	private final int value;
 	
 	ApprovalStatus(int value) {
 		this.value = value;
@@ -36,4 +36,30 @@ public enum ApprovalStatus {
 		
 		return status;
 	}	
+
+	//the following added during attempt to get the HQL RecipeRepository.viewedRecipes query to work
+	//appeared they were not required, but hesitant to remove them just yet
+	/*public static ApprovalStatus getStatus(int value) {
+	ApprovalStatus status = null;
+		for(ApprovalStatus stat : list()) {
+			if (stat.getValue() == value) {
+				status = stat;
+				break;
+			}
+		}
+	
+		return status;
+	}*/
+
+	/*public static ApprovalStatus fromValue(int value) {
+		ApprovalStatus status = null;
+		for(ApprovalStatus stat : list()) {
+			if (stat.getValue() == value) {
+				status = stat;
+				break;
+			}
+		}
+	
+		return status;
+	}*/
 }

@@ -18,6 +18,9 @@ public class UserMessageDto implements Serializable {
 	private String fromFirstName;
 	private String fromLastName;
 	private String fromEmail;
+	private String toFirstName;
+	private String toLastName;
+	private String toEmail;
 	private String subject;
 	private String message;
 	private String htmlMessage;
@@ -31,7 +34,8 @@ public class UserMessageDto implements Serializable {
 	
 	public UserMessageDto() {}
 	
-	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String fromEmail, String subject, String message,  
+	public UserMessageDto(long id, long toUserId, long fromUserId, String fromFirstName, String fromLastName, String fromEmail, 
+			String toFirstName, String toLastName, String toEmail, String subject, String message,  
 			String htmlMessage, boolean viewed, long recipeId, String recipeName, Date dateSent) {
 		super();
 		this.id = id;
@@ -40,6 +44,9 @@ public class UserMessageDto implements Serializable {
 		this.fromFirstName = fromFirstName;
 		this.fromLastName = fromLastName;
 		this.fromEmail = fromEmail;
+		this.toFirstName = toFirstName;
+		this.toLastName = toLastName;
+		this.toEmail = toEmail;
 		this.subject = subject;
 		this.message = message;
 		this.htmlMessage = htmlMessage;
@@ -95,6 +102,30 @@ public class UserMessageDto implements Serializable {
 
 	public void setFromEmail(String fromEmail) {
 		this.fromEmail = fromEmail;
+	}
+
+	public String getToFirstName() {
+		return toFirstName;
+	}
+
+	public void setToFirstName(String toFirstName) {
+		this.toFirstName = toFirstName;
+	}
+
+	public String getToLastName() {
+		return toLastName;
+	}
+
+	public void setToLastName(String toLastName) {
+		this.toLastName = toLastName;
+	}
+
+	public String getToEmail() {
+		return toEmail;
+	}
+
+	public void setToEmail(String toEmail) {
+		this.toEmail = toEmail;
 	}
 
 	public String getSubject() {
@@ -199,6 +230,9 @@ public class UserMessageDto implements Serializable {
 				+ ", fromFirstName=" + fromFirstName 
 				+ ", fromLastName=" + fromLastName
 				+ ", fromEmail=" + fromEmail
+				+ ", toFirstName=" + toFirstName 
+				+ ", toLastName=" + toLastName
+				+ ", toEmail=" + toEmail
 				+ ", subject=" + subject
 				+ ", message=" + message
 				+ ", htmlMessage=" + htmlMessage

@@ -51,7 +51,7 @@
 								<div class="col-sm-5">
 									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.ingredients.sections"></spring:message>
 									</label>
-									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" 
+									<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
 										title="<spring:message code="recipe.basics.ingredients.sections.info"></spring:message>"></span>
 								</div>
 								<div class="row col-sm-6">
@@ -76,7 +76,7 @@
 							<div class="row">
 								<div class="col-sm-5">
 									<label class="control-label" style="text-align: left;"><spring:message code="recipe.basics.instructions.sections"></spring:message></label>
-									<span class="glyphicon glyphicon-info-sign" data-toggle="tooltip" data-placement="top" 
+									<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
 										title="<spring:message code="recipe.basics.instructions.sections.info"></spring:message>"></span>
 								</div>
 								<div class="row col-sm-6">

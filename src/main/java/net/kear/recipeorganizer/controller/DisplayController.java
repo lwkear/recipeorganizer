@@ -2,12 +2,10 @@ package net.kear.recipeorganizer.controller;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -50,6 +48,8 @@ import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
+import net.kear.recipeorganizer.persistence.model.Viewed;
+import net.kear.recipeorganizer.persistence.model.ViewedKey;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
@@ -155,28 +155,22 @@ public class DisplayController {
 
 		UserProfile profile = recipe.getUser().getUserProfile();
 		
-		String idStr = recipeId.toString();
-		String cookieName = "recentRecipes";
-
 		if (user != null) {
-			Cookie recentRecipesCookie = cookieUtil.findUserCookie(request, cookieName, user.getId()); 
-			if (recentRecipesCookie == null) {
-				cookieUtil.setUserCookie(request, response, cookieName, user.getId(), idStr);
-			}
-			else {
-				String recipeIds = recentRecipesCookie.getValue();
-				ArrayList<String> cookieIds = new ArrayList<String>(Arrays.asList(recipeIds.split(",")));
-				if (!cookieIds.contains(idStr)) {
-					cookieIds.add(0, idStr);
-					if (cookieIds.size() > 5)
-						cookieIds.remove(5);				
+			ViewedKey key = new ViewedKey(user.getId(), recipe.getId());
+			try {
+				Viewed viewed = recipeService.getViewed(key);
+				if (viewed == null) {
+					viewed = new Viewed();
+					viewed.setId(key);
+					recipeService.addViewed(viewed);
 				}
 				else {
-					cookieIds.remove(idStr);
-					cookieIds.add(0, idStr);
+					//viewed.setId(key);
+					viewed.setDateViewed(null);
+					recipeService.updateViewed(viewed);
 				}
-				String newStr = cookieIds.toString().replace("[", "").replace("]", "").replace(", ", ",");
-				cookieUtil.setUserCookie(request, response, cookieName, user.getId(), newStr);
+			} catch (Exception ex) {
+				//do nothing - not a fatal error
 			}
 		}
 		

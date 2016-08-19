@@ -1,6 +1,9 @@
 package net.kear.recipeorganizer.controller;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -48,6 +51,7 @@ import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.dto.QuestionDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeMessageDto;
 import net.kear.recipeorganizer.persistence.dto.TopicDto;
+import net.kear.recipeorganizer.persistence.dto.WhatsNewDto;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeComment;
 import net.kear.recipeorganizer.persistence.model.User;
@@ -279,13 +283,72 @@ public class HomeController {
 		return "policies";
 	}
 
+	@RequestMapping(value = "/whatsnew", method = RequestMethod.GET)
+	public String getWhatsNew(Model model, Locale locale) {
+		logger.info("whatsnew GET");
+		
+		List<WhatsNewDto> releases = new AutoPopulatingList<WhatsNewDto>(WhatsNewDto.class);
+
+		String totalReleases = messages.getMessage("whatsnew.release.total", null, "0", locale);
+		int totReleases = Integer.parseInt(totalReleases);
+		String startRelease = messages.getMessage("whatsnew.release.start", null, "0", locale);
+		int startNdx = Integer.parseInt(startRelease);
+		String endRelease = messages.getMessage("whatsnew.release.end", null, "0", locale);
+		int endNdx = Integer.parseInt(endRelease);
+		
+		int tNdx = 1;
+		for (int ndx=startNdx;ndx>=endNdx;ndx--) {
+			if (tNdx > totReleases)
+				break;
+			
+			String currRelease = "whatsnew.release." + ndx + ".";
+			String releaseCount = messages.getMessage(currRelease + "count", null, "", locale);
+			if (StringUtils.isBlank(releaseCount))
+				continue;
+
+			int releaseTot = Integer.parseInt(releaseCount);
+			if (releaseTot > 0) {
+				WhatsNewDto whatsnew = new WhatsNewDto();				
+				
+				String releaseDateStr = messages.getMessage(currRelease + "date", null, "", locale);
+				SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+				
+				Date releaseDate = null;
+				try {
+					releaseDate = sdf.parse(releaseDateStr);
+				} catch (ParseException e) {
+				}
+				whatsnew.setReleaseDate(releaseDate);
+				
+				List<String> descList = new AutoPopulatingList<String>(String.class);
+				
+				for (int descndx=1;descndx<=releaseTot;descndx++) {
+			
+					String description = messages.getMessage(currRelease + "description." + descndx, null, "", locale);
+					if (StringUtils.isBlank(description))
+						continue;
+					
+					descList.add(description);
+				}
+
+				whatsnew.setDescriptions(descList);
+				releases.add(whatsnew);
+			}
+			tNdx++;
+		}
+
+		model.addAttribute("releases", releases);
+				
+		return "whatsnew";
+	}
+	
 	@RequestMapping(value = "/betatest", method = RequestMethod.GET)
 	public String getBetaTest(Model model, Locale locale) {
 		logger.info("betatest GET");
 
 		return "betatest";
 	}
-	
+
 	@RequestMapping(value = "/sysmaint", method = RequestMethod.GET)
 	public ModelAndView getMaintenance(Model model, Locale locale) {
 		logger.info("sysmaint GET");

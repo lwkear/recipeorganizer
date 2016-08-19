@@ -1,6 +1,7 @@
 package net.kear.recipeorganizer.persistence.repository;
  
 import java.util.List;
+import java.util.Properties;
 
 import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
@@ -10,9 +11,13 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.internal.TypeLocatorImpl;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
+import org.hibernate.type.EnumType;
 import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.type.Type;
+import org.hibernate.type.TypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.AutoPopulatingList;
@@ -26,6 +31,8 @@ import net.kear.recipeorganizer.persistence.model.InstructionSection;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
+import net.kear.recipeorganizer.persistence.model.Viewed;
+import net.kear.recipeorganizer.persistence.model.ViewedKey;
 import net.kear.recipeorganizer.persistence.repository.RecipeRepository;
 
 @Repository
@@ -63,7 +70,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 			"update recipe set status = :status where id = :id")
 			.setInteger("status", status.getValue())
 			.setLong("id", id);
-    	query.executeUpdate();		
+    	query.executeUpdate();
 	}
 
 	public Recipe getRecipe(Long id) {
@@ -96,6 +103,20 @@ public class RecipeRepositoryImpl implements RecipeRepository {
 		Recipe recipe = (Recipe) getSession().load(Recipe.class, id);
 		Hibernate.initialize(recipe.getSource());
 		return recipe;
+	}
+	
+	public Viewed getViewed(ViewedKey key) {
+		Viewed viewed = (Viewed) getSession().get(Viewed.class, key);
+		return viewed;
+	}
+
+	public void addViewed(Viewed viewed) {
+		getSession().save(viewed);
+	}
+
+	public void updateViewed(Viewed viewed) {
+		getSession().evict(viewed);
+		getSession().update(viewed);
 	}
 
     public void addFavorite(Favorites favorite) {
@@ -190,6 +211,15 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	Object result = criteria.uniqueResult();
     	return (result == null ? 0L : (Long)result);
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<Viewed> getViewed(Long userId) {
+    	Criteria criteria = getSession().createCriteria(Viewed.class)
+       		.add(Restrictions.eq("id.userId", userId));
+
+        	List<Viewed> viewed = (List<Viewed>) criteria.list();
+        	return viewed;
+    }
   
     @SuppressWarnings("unchecked")
     public List<Favorites> getFavorites(Long userId) {
@@ -252,6 +282,31 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	return recipes;
     }
 
+	@SuppressWarnings("unchecked")
+    public List<RecipeListDto> favoriteRecipes(List<Long> ids) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("category", "c")
+    		.createAlias("user", "u")
+    		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
+    		.add(Restrictions.in("r.id", ids))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.dateAdded").as("submitted"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.status").as("status"))
+    			.add(Projections.property("u.id").as("userId"))
+    			.add(Projections.property("u.firstName").as("firstName"))
+    			.add(Projections.property("u.lastName").as("lastName"))
+    			.add(Projections.property("c.name").as("category"))
+    			.add(Projections.property("s.type").as("sourceType")))
+    		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
+
+    	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
+    	return recipes;
+    }
+
     @SuppressWarnings("unchecked")
     public List<RecipeDisplayDto> listRecipes(List<Long> ids) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
@@ -282,7 +337,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public List<RecipeDisplayDto> recentRecipes(Long userId) {
+    public List<RecipeDisplayDto> recentUserRecipes(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
     		.add(Restrictions.eq("u.id", userId))
@@ -294,8 +349,8 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.status").as("status"))
     			.add(Projections.property("r.photoName").as("photo")))
-    		.addOrder(Order.desc("r.dateAdded"))
-    		.setMaxResults(5)
+    		.addOrder(Order.desc("r.dateUpdated"))
+    		.setMaxResults(12)
     		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
 
     	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) criteria.list();
@@ -303,30 +358,108 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     }
 
     @SuppressWarnings("unchecked")
-    public List<RecipeListDto> favoriteRecipes(List<Long> ids) {
+    public List<RecipeDisplayDto> recentRecipes() {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
-    		.createAlias("category", "c")
     		.createAlias("user", "u")
-    		.createAlias("source", "s", JoinType.LEFT_OUTER_JOIN)
-    		.add(Restrictions.in("r.id", ids))
+    		.add(Restrictions.in("status", ApprovalStatus.APPROVED))
+    		.add(Restrictions.eq("allowShare", true))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
     			.add(Projections.property("r.name").as("name"))
     			.add(Projections.property("r.description").as("description"))
-    			.add(Projections.property("r.dateAdded").as("submitted"))
     			.add(Projections.property("r.allowShare").as("allowShare"))
     			.add(Projections.property("r.status").as("status"))
-    			.add(Projections.property("u.id").as("userId"))
-    			.add(Projections.property("u.firstName").as("firstName"))
-    			.add(Projections.property("u.lastName").as("lastName"))
-    			.add(Projections.property("c.name").as("category"))
-    			.add(Projections.property("s.type").as("sourceType")))
-    		.setResultTransformer(Transformers.aliasToBean(RecipeListDto.class));
+    			.add(Projections.property("r.photoName").as("photo")))
+    		.addOrder(Order.desc("r.dateAdded"))
+    		.setMaxResults(12)
+    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
 
-    	List<RecipeListDto> recipes = (List<RecipeListDto>) criteria.list();
+    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) criteria.list();
     	return recipes;
     }
-    
+
+    @SuppressWarnings("unchecked")
+    public List<RecipeDisplayDto> viewedRecipes(Long userId) {
+    	//special handling for the ApprovalStatus enum in an SQLQuery context
+    	//cannot use a Criteria-based query due to the fact that the VIEWED table has no Hibernate association with the RECIPE table
+    	Properties params = new Properties();
+    	params.put("enumClass", "net.kear.recipeorganizer.enums.ApprovalStatus");
+    	params.put("type", "4");	//http://docs.oracle.com/javase/7/docs/api/constant-values.html#java.sql.Types.INTEGER    	
+    	Type statusEnumType = new TypeLocatorImpl(new TypeResolver()).custom(EnumType.class, params);
+    	
+    	//Note: w/o the addScalar for "status", the dto ends up with null value for status
+    	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
+    			"select r.id as id, v.user_id as userId, r.name as name, r.description as description, r.photo as photo, r.allow_share as allowShare, "
+    					+ " r.status as status "
+    					+ " from recipe r left outer join viewed v on r.id = v.recipe_id "
+    					+ " where v.user_id = :id "
+    					+ " and r.allow_share = true "
+    					+ " and r.status = :stat "
+    					+ " order by v.date_viewed desc")
+    			.addScalar("id",StandardBasicTypes.LONG)
+    			.addScalar("userId",StandardBasicTypes.LONG)
+    			.addScalar("name",StandardBasicTypes.STRING)
+    			.addScalar("description",StandardBasicTypes.STRING)
+    			.addScalar("photo",StandardBasicTypes.STRING)
+    			.addScalar("allowShare",StandardBasicTypes.BOOLEAN)
+    			.addScalar("status", statusEnumType)
+    			.setLong("id", userId)
+    			.setInteger("stat", ApprovalStatus.APPROVED.ordinal())
+    			.setMaxResults(12)
+    			.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
+    			
+    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) query.list();
+        return recipes;
+    }
+
+    @SuppressWarnings("unchecked")
+	public RecipeDisplayDto getMostViewedRecipe(boolean hasPhoto) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("user", "u")
+    		.add(Restrictions.gt("r.views", 0))
+    		.add(Restrictions.eq("allowShare", true))
+    		.add(Restrictions.in("status", ApprovalStatus.APPROVED))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.status").as("status"))
+    			.add(Projections.property("r.photoName").as("photo")))
+    		.addOrder(Order.desc("r.dateUpdated"))
+    		.setMaxResults(10)
+    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
+
+    	if (hasPhoto)
+    		criteria.add(Restrictions.ne("r.photoName", ""));
+    	
+    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>)criteria.list();
+    	RecipeDisplayDto recipe = null;
+    	if (recipes.size() > 0)
+    		recipe = recipes.get(0);
+    	return recipe;
+	}
+	
+    public RecipeDisplayDto getFeaturedRecipe(Long recipeId) {
+    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
+    		.createAlias("user", "u")
+    		.add(Restrictions.eq("r.id", recipeId))
+    		.setProjection(Projections.projectionList()
+    			.add(Projections.property("r.id").as("id"))
+    			.add(Projections.property("u.id").as("userId"))
+    			.add(Projections.property("r.name").as("name"))
+    			.add(Projections.property("r.description").as("description"))
+    			.add(Projections.property("r.allowShare").as("allowShare"))
+    			.add(Projections.property("r.status").as("status"))
+    			.add(Projections.property("r.photoName").as("photo")))
+    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
+
+    	RecipeDisplayDto recipe = (RecipeDisplayDto)criteria.uniqueResult();
+    	return recipe;
+    }
+
     public Long getRecipeCount(Long userId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class)
    			.add(Restrictions.eq("user.id", userId))

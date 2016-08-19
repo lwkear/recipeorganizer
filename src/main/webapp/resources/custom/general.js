@@ -335,6 +335,15 @@ $(function() {
     $('[data-toggle="tooltip"]').tooltip({
     	container : 'body'
     });
+   
+   	$('#submittedCarousel').carousel({
+   		//interval: 10000
+   		interval: false
+   	});
+   	$('#viewedCarousel').carousel({
+   		//interval: 10000
+   		interval: false
+   	});
     
 	$(document)
 	.on('blur', '.maxSize', function(e)

@@ -60,10 +60,13 @@ public class UserMessageRepositoryImpl implements UserMessageRepository {
     @SuppressWarnings("unchecked")
 	public List<UserMessageDto> listMessages(long toUserId) {
     	SQLQuery query = (SQLQuery) getSession().createSQLQuery(
-			"select m.id as id, m.to_user_id as toUserId, m.from_user_id as fromUserId, u.firstname as fromFirstName, u.lastname as fromLastName, u.email as fromEmail,"
-					+ " m.subject as subject, m.message as message, m.html_message as htmlMessage, m.viewed as viewed, m.recipe_id as recipeId, r.name as recipeName, "
-					+ " m.date_sent as dateSent from message m left outer join users u on m.from_user_id = u.id left outer join recipe r on m.recipe_id = r.id"
+			"select m.id as id, m.to_user_id as toUserId, m.from_user_id as fromUserId, u1.firstname as fromFirstName, u1.lastname as fromLastName, "
+    				+ " u1.email as fromEmail, u2.firstname as toFirstName, u2.lastname as toLastName, u2.email as toEmail, m.subject as subject, "
+					+ " m.message as message, m.html_message as htmlMessage, m.viewed as viewed, m.recipe_id as recipeId, r.name as recipeName, m.date_sent as dateSent "
+					+ " from message m left outer join users u1 on m.from_user_id = u1.id left outer join users u2 on m.to_user_id = u2.id "
+					+ " left outer join recipe r on m.recipe_id = r.id "
 					+ " where m.to_user_id = :toId"
+					+ " or m.from_user_id = :toId"
 					+ " order by dateSent desc")
 			.addScalar("id",StandardBasicTypes.LONG)
 			.addScalar("toUserId",StandardBasicTypes.LONG)
@@ -71,6 +74,9 @@ public class UserMessageRepositoryImpl implements UserMessageRepository {
 			.addScalar("fromFirstName",StandardBasicTypes.STRING)
 			.addScalar("fromLastName",StandardBasicTypes.STRING)
 			.addScalar("fromEmail",StandardBasicTypes.STRING)
+			.addScalar("toFirstName",StandardBasicTypes.STRING)
+			.addScalar("toLastName",StandardBasicTypes.STRING)
+			.addScalar("toEmail",StandardBasicTypes.STRING)
 			.addScalar("subject",StandardBasicTypes.STRING)
 			.addScalar("message",StandardBasicTypes.STRING)
 			.addScalar("htmlMessage",StandardBasicTypes.STRING)

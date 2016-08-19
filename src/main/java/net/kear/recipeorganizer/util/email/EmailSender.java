@@ -16,6 +16,7 @@ import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +32,7 @@ public class EmailSender {
 
 	public EmailSender() {}
 	
-	public void sendHtmlEmail(EmailDetail emailDetail) throws AddressException, MessagingException, IOException {
+	public void sendHtmlEmail(EmailDetail emailDetail) throws AddressException, MessagingException, IOException, Exception {
 		logger.debug("start sendHtmlEmail to: " + emailDetail.getRecipientEmail());
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -74,7 +75,11 @@ public class EmailSender {
         }
         
         mimeMessage.setContent(multipart);
-        mailSender.send(mimeMessage);
+        try {
+        	mailSender.send(mimeMessage);
+        } catch (MailException ex) {
+        	throw new Exception(ex);
+        }
         logger.debug("end sendHtmlEmail to: " + emailDetail.getRecipientEmail());
 	}
 }

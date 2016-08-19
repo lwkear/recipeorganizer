@@ -157,11 +157,12 @@ $(function() {
     	columnDefs: [
     	    {orderable: false, targets: [-1,-2,-3]},
     		{visible: false, targets: 0},
-    		{width: "20%", targets: 1},
+    		{width: "15%", targets: 1},
     		{width: "15%", targets: 2},
-    		{width: "20%", targets: 3},
-    		{width: "33%", targets: 4},
-    		{width: "4%", targets: [5,6,7]}
+    		{width: "15%", targets: 3},
+    		{width: "15%", targets: 4},
+    		{width: "33%", targets: 5},
+    		{width: "4%", targets: [6,7,8]}
     	],
 		searching: false,
 		lengthChange: false,

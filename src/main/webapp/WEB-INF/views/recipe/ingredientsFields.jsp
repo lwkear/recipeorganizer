@@ -26,7 +26,10 @@
 				<label class="control-label col-sm-1" style="text-align: left" >*<spring:message code="recipe.ingredients.quantity"></spring:message></label>
 				<label class="control-label col-sm-2" style="text-align: left" ><spring:message code="recipe.ingredients.measure"></spring:message></label>
 				<label class="control-label col-sm-5" style="text-align: left" >*<spring:message code="recipe.ingredients.ingredient"></spring:message></label>
-				<label class="control-label col-sm-4" style="text-align: left" ><spring:message code="recipe.ingredients.qualifier"></spring:message></label>
+				<label class="control-label col-sm-4" style="text-align: left" ><spring:message code="recipe.ingredients.qualifier"></spring:message>
+					<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
+						title="<spring:message code="recipe.ingredients.qualifier.info"></spring:message>"></span>
+				</label>
 			</div>
 			<c:forEach items="${recipe.ingredSections[currNdx].recipeIngredients}" var="ingred" varStatus="loop">
 				<!-- bind server-side validation errors -->

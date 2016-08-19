@@ -59,9 +59,7 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 @EnableWebMvc
 @EnableAsync
 @EnableTransactionManagement
-//@EnableAspectJAutoProxy
 @ComponentScan(basePackages = {
-	//"net.kear.recipeorganizer.advice",
 	"net.kear.recipeorganizer.controller",
 	"net.kear.recipeorganizer.listener",
 	"net.kear.recipeorganizer.util",
@@ -204,7 +202,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/messages",
     		"WEB-INF/messages/labels",
     		"WEB-INF/messages/validation",
-    		"WEB-INF/messages/faq"
+    		"WEB-INF/messages/faq",
+    		"WEB-INF/messages/whatsnew"
     		);
         source.setDefaultEncoding("UTF-8");
         source.setCacheSeconds(5);	//TODO: change this back to 5

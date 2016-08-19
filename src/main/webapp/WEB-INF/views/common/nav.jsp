@@ -79,6 +79,7 @@
 							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
+						<li><a href="<c:url value="/whatsnew" />"><spring:message code="menu.whatsnew"></spring:message></a></li>
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
@@ -106,8 +107,8 @@
 						        	<li><a href="<c:url value="/user/dashboard" />"><spring:message code="menu.dashboard"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/messages" />"><spring:message code="menu.messages"></spring:message></a></li>						        	
 						        	<li role="separator" class="divider"></li>
+						        	<li><a href="<c:url value="/user/changeAccount" />"><spring:message code="menu.account"></spring:message></a></li>
 						        	<li><a href="<c:url value="/user/profile" />"><spring:message code="menu.profile"></spring:message></a></li>
-						        	<li><a href="<c:url value="/user/changePassword" />"><spring:message code="menu.changepassword"></spring:message></a></li>
 						        	<li role="separator" class="divider"></li>
 						        	<li><a href="<c:url value="/user/newMember" />"><spring:message code="menu.newmember"></spring:message></a></li>
 						        </ul>

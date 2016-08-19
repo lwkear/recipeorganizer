@@ -42,7 +42,7 @@ public class AccessDeniedErrorHandler extends AccessDeniedHandlerImpl {
 			if (!userInfo.isUserAnonymous() && 
 				role.equalsIgnoreCase(Role.TYPE_GUEST) && 
 				(StringUtils.endsWith(uri, "/recipe/recipeList") || StringUtils.endsWith(uri, "/recipe"))) { 
-					setErrorPage("/user/changeAccount");
+					setErrorPage("/user/changeAccountLevel");
 			}
 			if (userInfo.isUserAnonymous() &&
 				(StringUtils.endsWith(uri, "/recipe/recipeList") || StringUtils.endsWith(uri, "/recipe"))) {

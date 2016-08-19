@@ -6,6 +6,8 @@
 <spring:message var="yesLabel" code="common.yes"></spring:message>
 <spring:message var="noLabel" code="common.no"></spring:message>
 
+<c:set var="noPhoto" value="No photo"></c:set>
+
 <div class="row">
 	<div class="row">
 		<div class="col-sm-9">
@@ -159,11 +161,18 @@
 			</div>
 			</div>
 		</div>
-		<c:if test="${not empty recipe.photoName}">			
-			<div class="col-sm-3">
-				<span><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photoName}"/>" alt="" style="width:250px;height:188px;"/></span>
+		<div class="col-sm-3" style="height:200px;">
+			<div class="col-sm-12">
+			<c:choose>
+				<c:when test="${not empty recipe.photoName}">
+					<img class="img-responsive center-block" src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photoName}"/>" alt="${noPhoto}"/>
+				</c:when>
+				<c:otherwise>
+					<img class="img-responsive center-block" data-src="holder.js/200x200?auto=yes&amp;text=${noPhoto}"/>
+				</c:otherwise>
+			</c:choose>
 			</div>
-		</c:if>	
+		</div>
 	</div>
 	<div class="<c:if test="${privateRecipe}">transparent</c:if>">
 	<div class="col-sm-12 spacer-vert-xs">

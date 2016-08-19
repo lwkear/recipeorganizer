@@ -2,6 +2,9 @@ package net.kear.recipeorganizer.persistence.dto;
 
 import java.io.Serializable;
 
+//import javax.persistence.EnumType;
+//import javax.persistence.Enumerated;
+
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 
 public class RecipeDisplayDto implements Serializable {
@@ -14,6 +17,7 @@ public class RecipeDisplayDto implements Serializable {
 	private String description;
 	private String photo;
 	private boolean allowShare;
+	//@Enumerated(EnumType.ORDINAL)
 	private ApprovalStatus status;
 	
 	public RecipeDisplayDto() {};
@@ -84,6 +88,10 @@ public class RecipeDisplayDto implements Serializable {
 		this.status = status;
 	}
 
+	/*public void setStatus(Integer value) {
+		this.status = ApprovalStatus.getStatus(value);
+	}*/
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -125,4 +133,21 @@ public class RecipeDisplayDto implements Serializable {
 				+ ", allowShare=" + allowShare 
 				+ ", status=" + status + "]";
 	}
+
+	//the following added during attempt to get the HQL RecipeRepository.viewedRecipes query to work
+	//appeared they were not required, but hesitant to remove them just yet
+	/*public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, Integer status) {
+		this.id = id;
+		this.userId = userId;
+		this.name = name;
+		this.description = description;
+		this.photo = photo;
+		this.allowShare = allowShare;
+		this.status = ApprovalStatus.getStatus(status);
+	};*/	
+	/*public void setStatus(Integer value) {
+		this.status = ApprovalStatus.getStatus(value);
+	}*/
+	//@Enumerated(EnumType.ORDINAL)
+	//private ApprovalStatus status;	
 }

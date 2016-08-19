@@ -25,8 +25,9 @@ public class UserRepositoryImpl implements UserRepository {
     	getSession().save(user);
     }
 
-    public void updateUser(User user) {
-       	getSession().merge(user);
+    public User updateUser(User user) {
+    	User updatedUser = (User)getSession().merge(user);
+    	return updatedUser;
     }
     
     public void deleteUser(Long id) {

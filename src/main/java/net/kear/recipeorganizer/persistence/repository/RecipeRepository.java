@@ -9,6 +9,8 @@ import net.kear.recipeorganizer.persistence.model.Favorites;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.RecipeMade;
 import net.kear.recipeorganizer.persistence.model.RecipeNote;
+import net.kear.recipeorganizer.persistence.model.Viewed;
+import net.kear.recipeorganizer.persistence.model.ViewedKey;
  
 public interface RecipeRepository {
 
@@ -18,6 +20,9 @@ public interface RecipeRepository {
     public void approveRecipe(Long id, ApprovalStatus status);
     public Recipe getRecipe(Long id);
     public Recipe loadRecipe(Long id);
+    public Viewed getViewed(ViewedKey key);
+    public void addViewed(Viewed viewed);
+    public void updateViewed(Viewed viewed);
     public void addFavorite(Favorites favorite);
     public void removeFavorite(Favorites favorite);
     public boolean isFavorite(Long userId, Long recipeId);
@@ -29,12 +34,17 @@ public interface RecipeRepository {
     public Long getRecipeViewCount(Long recipeId);
     public Long getUserViewCount(Long userId);
     public Long getRequireApprovalCount();
+    public List<Viewed> getViewed(Long userId);
     public List<Favorites> getFavorites(Long userId);
     public List<RecipeListDto> approveRecipesList();
     public List<RecipeListDto> listRecipes(Long userId);
-    public List<RecipeDisplayDto> listRecipes(List<Long> ids);
-    public List<RecipeDisplayDto> recentRecipes(Long userId);
     public List<RecipeListDto> favoriteRecipes(List<Long> ids);
+    public List<RecipeDisplayDto> listRecipes(List<Long> ids);
+    public List<RecipeDisplayDto> recentUserRecipes(Long userId);
+    public List<RecipeDisplayDto> recentRecipes();
+    public List<RecipeDisplayDto> viewedRecipes(Long userId);
+    public RecipeDisplayDto getMostViewedRecipe(boolean hasPhoto);
+    public RecipeDisplayDto getFeaturedRecipe(Long recipeId);
     public Long getRecipeCount(Long userId);
     public List<String> getTags(Long userId);
     public boolean lookupName(String lookupName, Long userId);

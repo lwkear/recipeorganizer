@@ -37,6 +37,7 @@ table {
 						<th></th>
 						<th><spring:message code="messages.column.sent"></spring:message></th>
 						<th><spring:message code="messages.column.from"></spring:message></th>
+						<th><spring:message code="messages.column.to"></spring:message></th>
 						<th><spring:message code="messages.column.subject"></spring:message></th>
 						<th><spring:message code="messages.column.message"></spring:message></th>
 						<th data-orderable="false"></th>
@@ -66,6 +67,7 @@ table {
 							<td>${msg.viewed}</td>
 							<td><fmt:formatDate type="both" timeStyle="short" value="${msg.dateSent}" /></td>
 							<td>${msg.fromFirstName} ${msg.fromLastName}</td>							
+							<td>${msg.toFirstName} ${msg.toLastName}</td>
 							<td>${subject}</td>
 							<td>
 								<span class="text-truncate show-popover" data-toggle="popover" title="<strong>${subject}</strong>" data-content="${popoverMsg}">${msg.message}</span>

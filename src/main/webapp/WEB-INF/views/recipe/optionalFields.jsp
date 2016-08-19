@@ -7,7 +7,6 @@
 <div class="row">
 	<div class="col-sm-12">
 		<c:set var="backgroundplaceholder"><spring:message code="recipe.optional.background.placeholder"></spring:message></c:set>
-		<c:set var="tagsplaceholder"><spring:message code="recipe.optional.tags.placeholder"></spring:message></c:set>
 		<c:set var="notesplaceholder"><spring:message code="recipe.optional.notes.placeholder"></spring:message></c:set>
 		<input type="text" id="typeCookbook" value="${SourceType.COOKBOOK}" style="display:none">
 		<input type="text" id="typeMagazine" value="${SourceType.MAGAZINE}" style="display:none">
@@ -116,7 +115,10 @@
 			<form:hidden id="hiddentags" path="tags" value="${recipe.tags}"/>
 			<div class="row">
 				<label class="control-label col-sm-5 <c:if test="${not empty tagsError}">text-danger</c:if>" style="text-align: left;" 
-					id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message></label>
+					id="tagsLabel" for="inputTags"><spring:message code="recipe.optional.tags"></spring:message>
+					<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
+						title="<spring:message code="recipe.optional.tags.info"></spring:message>"></span>
+				</label>
 			</div>
 			<div class="row">
 				<div class="col-sm-5 <c:if test="${not empty tagsError}">has-error</c:if>">
