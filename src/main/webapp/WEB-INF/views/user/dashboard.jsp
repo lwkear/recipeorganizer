@@ -200,37 +200,39 @@
 			</div>
 		</div>
 		
-		<div class="col-sm-12 spacer-vert-md">
-			<div class="row">
-				<div class="col-sm-6 col-sm-offset-3 text-center">
-					<h4><strong><spring:message code="dashboard.featured"></spring:message></strong></h4>
+		<c:if test="${not empty featuredRecipe}">
+			<div class="col-sm-12 spacer-vert-md">
+				<div class="row">
+					<div class="col-sm-6 col-sm-offset-3 text-center">
+						<h4><strong><spring:message code="dashboard.featured"></spring:message></strong></h4>
+					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="col-sm-3 col-sm-offset-3" style="height:200px;">
-					<a href="<c:url value="/recipe/viewRecipe/${featuredRecipe.id}"/>">
-						<c:choose>
-							<c:when test="${not empty featuredRecipe.photo}">
-								<img class="img-responsive center-block" src="<c:url value="/recipe/photo?id=${featuredRecipe.id}&filename=${featuredRecipe.photo}"/>" alt="${noPhoto}"/>
-							</c:when>
-							<c:otherwise>
-								<img class="img-responsive center-block" data-src="holder.js/200x200?auto=yes&amp;text=${noPhoto}"/>
-							</c:otherwise>
-						</c:choose>
-					</a>
-				</div>
-				<div class="col-sm-3">
-					<div class="row">
+				<div class="row">
+					<div class="col-sm-3 col-sm-offset-3" style="height:200px;">
 						<a href="<c:url value="/recipe/viewRecipe/${featuredRecipe.id}"/>">
-							<h3>${featuredRecipe.name}</h3>
+							<c:choose>
+								<c:when test="${not empty featuredRecipe.photo}">
+									<img class="img-responsive center-block" src="<c:url value="/recipe/photo?id=${featuredRecipe.id}&filename=${featuredRecipe.photo}"/>" alt="${noPhoto}"/>
+								</c:when>
+								<c:otherwise>
+									<img class="img-responsive center-block" data-src="holder.js/200x200?auto=yes&amp;text=${noPhoto}"/>
+								</c:otherwise>
+							</c:choose>
 						</a>
 					</div>
-					<div class="row">
-						<p>${featuredRecipe.description}</p>
+					<div class="col-sm-3">
+						<div class="row">
+							<a href="<c:url value="/recipe/viewRecipe/${featuredRecipe.id}"/>">
+								<h3>${featuredRecipe.name}</h3>
+							</a>
+						</div>
+						<div class="row">
+							<p>${featuredRecipe.description}</p>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</c:if>
 
 		<div class="col-sm-12 spacer-vert-md">
 			<div class="row">

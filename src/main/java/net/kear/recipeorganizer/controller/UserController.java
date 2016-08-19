@@ -588,18 +588,29 @@ public class UserController {
 			//do nothing - this is not a fatal error
 			logService.addException(ex);
 		}
-		
+
 		List<RecipeDisplayDto> recentRecipes = null;
 		List<RecipeDisplayDto> viewedRecipes = null;
 		RecipeDisplayDto mostViewedRecipe = null;
 		RecipeDisplayDto featuredRecipe = null;
 		long viewCount = 0;
+		
 		try {
 			recentRecipes = recipeService.recentRecipes();
 			viewedRecipes = recipeService.viewedRecipes(user.getId());
 			viewCount = recipeService.getUserViewCount(user.getId());
 			mostViewedRecipe = recipeService.getMostViewedRecipe(true);
-			featuredRecipe = recipeService.getFeaturedRecipe(14L);
+		} 
+		catch (Exception ex) {
+			//do nothing - these are not a fatal errors
+			logService.addException(ex);
+		}
+
+		String recipeIdStr = messages.getMessage("featuredrecipe", null, "0", locale);
+		long recipeId = Long.parseLong(recipeIdStr);
+		
+		try {
+			featuredRecipe = recipeService.getFeaturedRecipe(recipeId);
 		} 
 		catch (Exception ex) {
 			//do nothing - these are not a fatal errors
