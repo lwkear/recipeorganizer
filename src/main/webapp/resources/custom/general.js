@@ -319,6 +319,16 @@ $(function() {
 		};
 	}
 
+    $('[data-toggle="tooltip"]').tooltip({
+    	container : 'body'
+    });
+   	$('#submittedCarousel').carousel({
+   		interval: 20000	//: false
+   	});
+   	$('#viewedCarousel').carousel({
+   		interval: 20000	//: false
+   	});
+    
 	messageMap = setMessageMap();
 	
 	setInputFocus();
@@ -332,19 +342,6 @@ $(function() {
     
     getSessionTimeout();
    
-    $('[data-toggle="tooltip"]').tooltip({
-    	container : 'body'
-    });
-   
-   	$('#submittedCarousel').carousel({
-   		interval: 20000
-   		//interval: false
-   	});
-   	$('#viewedCarousel').carousel({
-   		interval: 20000
-   		//interval: false
-   	});
-    
 	$(document)
 	.on('blur', '.maxSize', function(e)
 	{

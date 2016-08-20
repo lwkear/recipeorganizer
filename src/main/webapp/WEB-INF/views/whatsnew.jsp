@@ -24,11 +24,13 @@
 					<div class="col-sm-12">
 						<h4><spring:message code="whatsnew.releasedate"></spring:message> <fmt:formatDate type="date" value="${release.releaseDate}"/></h4>
 					</div>
-					<ul>
-					<c:forEach var="description" items="${release.descriptions}" varStatus="loop">
-						<li style="margin-top: 10px">${description}</li>
-					</c:forEach>
-					</ul>
+					<div class="col-sm-12">
+						<ul>
+						<c:forEach var="description" items="${release.descriptions}" varStatus="loop">
+							<li style="margin-top: 10px">${description}</li>
+						</c:forEach>
+						</ul>
+					</div>
 				</c:forEach>
 			</div>
 		</div>
