@@ -10,7 +10,9 @@
 .dataTable > thead > tr > th[class*="sort"]:after{
     content: "" !important;
 }
-
+.toolbar {
+    float: left;
+}
 </style>
 
 </head>
@@ -18,6 +20,8 @@
 <body role="document" onload="blurInputFocus()">
 	
 <%@include file="common/nav.jsp" %>	
+
+	<c:set var="noPhoto"><spring:message code="common.photo.nophoto"></spring:message></c:set>
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12 title-bar">
@@ -33,7 +37,7 @@
 				<div class="col-sm-3">
 					<div class="col-sm-12">
 						<form>
-							<h5><strong><spring:message code="recipe.table.category"></spring:message></strong></h5>
+							<h4><spring:message code="recipe.table.category"></spring:message></h4>
 							<div class="form-group">
 								<c:forEach var="cat" items="${categories}">
 									<div class="checkbox">
@@ -47,7 +51,7 @@
 					</div>
 					<div class="col-sm-12">
 						<form>
-							<h5><strong><spring:message code="recipe.table.source"></spring:message></strong></h5>
+							<h4><spring:message code="recipe.table.source"></spring:message></h4>
 							<div class="form-group">
 								<c:forEach var="src" items="${sources}">
 									<div class="checkbox">
@@ -61,6 +65,9 @@
 					</div>
 				</div>
 				<div class="col-sm-9">
+					<div class="col-sm-12">
+						<span class="search-label"><spring:message code="recipe.table.label"></spring:message></span>
+					</div>
 					<table class="table" id="recipeList">
 						<thead>
 							<tr>
@@ -75,14 +82,28 @@
 								<tr id="${recipe.id}">
 									<td>${recipe.rank}</td>
 									<td>
-										<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>" class="list-group-item">
-										<c:if test="${not empty recipe.photo}">
-											<span class="pull-right"><img src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" style="width:48px;height:48px;"/></span>
-										</c:if>	
-										<h4 class="std-blue">${recipe.name}</h4>
-										<p class="list-group-item-text">${recipe.description}</p>
-										<p class="clearfix"></p>										
-										</a>									
+										<div class="media">
+											<div class="media-left">
+												<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>">
+													<c:choose>
+														<c:when test="${not empty recipe.photo}">
+															<img class="media-object" style="width:96px" 
+																src="<c:url value="/recipe/photo?id=${recipe.id}&filename=${recipe.photo}"/>" alt="${noPhoto}">
+														</c:when>
+														<c:otherwise>
+															<img class="media-object" style="width:96px" 
+																data-src="holder.js/96x96?auto=yes&amp;text=${noPhoto}">
+														</c:otherwise>
+													</c:choose>
+												</a>
+											</div>
+											<div class="media-body">
+												<a href="<c:url value="/recipe/viewRecipe/${recipe.id}"/>">
+													<h4 class="media-heading std-blue">${recipe.name}</h4>
+												</a>
+												<div style="color:black">${recipe.description}</div>												
+											</div>
+										</div>
 									</td>
 									<td>cat${recipe.catId}</td>
 									<td>src${recipe.sourceType}</td>

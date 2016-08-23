@@ -42,7 +42,7 @@ $(function() {
 			    	previous:   getMessage('common.table.paginate.previous')
 			    }
 			},	
-			stateSave: true,
+			stateSave: false,
 			stateLoadParams: function (settings, data) {
 				var newSearch = $('#newSearch').val();
 				//returning false should abort the process of loading the state

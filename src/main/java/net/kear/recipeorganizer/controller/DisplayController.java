@@ -38,7 +38,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.exception.RestException;
+import net.kear.recipeorganizer.persistence.dto.CategoryDto;
 import net.kear.recipeorganizer.persistence.dto.CommentDto;
+import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeListDto;
 import net.kear.recipeorganizer.persistence.dto.ShareRecipeDto;
 import net.kear.recipeorganizer.persistence.model.Favorites;
@@ -50,6 +52,7 @@ import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
 import net.kear.recipeorganizer.persistence.model.Viewed;
 import net.kear.recipeorganizer.persistence.model.ViewedKey;
+import net.kear.recipeorganizer.persistence.service.CategoryService;
 import net.kear.recipeorganizer.persistence.service.CommentService;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
@@ -75,6 +78,8 @@ public class DisplayController {
 	private UserService userService;
 	@Autowired
 	private RecipeService recipeService;
+	@Autowired
+	private CategoryService categoryService;
 	@Autowired
 	private CommentService commentService;
 	@Autowired
@@ -119,7 +124,7 @@ public class DisplayController {
 
 	@MaintAware
 	@RequestMapping(value = "recipe/favorites", method = RequestMethod.GET)
-	public String favoriteRecipeS(ModelMap model, Locale locale) {
+	public String favoriteRecipes(ModelMap model, Locale locale) {
 		logger.info("recipe/favoriteRecipes GET");
 		
 		String title = messages.getMessage("menu.favorites", null, "Favorites", locale);
@@ -132,6 +137,31 @@ public class DisplayController {
 		model.addAttribute("recipes", recipes);
 
 		return "recipe/recipeList";
+	}
+
+	@MaintAware
+	@RequestMapping(value = "recipe/browseRecipes", method = RequestMethod.GET)
+	public String browseRecipes(ModelMap model, Locale locale) {
+		logger.info("recipe/browseRecipes GET");
+		
+		long defaultCatId = 7L;
+		List<CategoryDto> catList = categoryService.listCategoryDto(locale);
+		
+		model.addAttribute("defaultCatId", defaultCatId);
+		model.addAttribute("catList", catList);
+		
+		return "recipe/browseRecipes";
+	}
+	
+	@RequestMapping(value = "recipe/categoryRecipes", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public List<RecipeDisplayDto> getCategoryRecipes(@RequestParam("categoryId") Long categoryId) throws RestException {
+		logger.info("categoryRecipes/category GET: categoryId=" + categoryId);
+
+		List<RecipeDisplayDto> recipeList = recipeService.categoryRecipes(categoryId);
+		
+		return recipeList;
 	}
 	
 	/***************************/
@@ -165,7 +195,6 @@ public class DisplayController {
 					recipeService.addViewed(viewed);
 				}
 				else {
-					//viewed.setId(key);
 					viewed.setDateViewed(null);
 					recipeService.updateViewed(viewed);
 				}

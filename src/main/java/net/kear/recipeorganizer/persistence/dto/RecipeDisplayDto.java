@@ -5,6 +5,8 @@ import java.io.Serializable;
 //import javax.persistence.EnumType;
 //import javax.persistence.Enumerated;
 
+import java.util.Date;
+
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 
 public class RecipeDisplayDto implements Serializable {
@@ -16,18 +18,22 @@ public class RecipeDisplayDto implements Serializable {
 	private String name;
 	private String description;
 	private String photo;
+	private long views;
+	private Date submitted;
 	private boolean allowShare;
-	//@Enumerated(EnumType.ORDINAL)
 	private ApprovalStatus status;
 	
 	public RecipeDisplayDto() {};
 	
-	public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, ApprovalStatus status) {
+	public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, Long views, Date submitted, boolean allowShare, 
+			ApprovalStatus status) {
 		this.id = id;
 		this.userId = userId;
 		this.name = name;
 		this.description = description;
 		this.photo = photo;
+		this.views = views;
+		this.submitted = submitted;
 		this.allowShare = allowShare;
 		this.status = status;
 	};	
@@ -72,6 +78,22 @@ public class RecipeDisplayDto implements Serializable {
 		this.photo = photo;
 	}	
 
+	public long getViews() {
+		return views;
+	}
+
+	public void setViews(long views) {
+		this.views = views;
+	}
+
+	public Date getSubmitted() {
+		return submitted;
+	}
+
+	public void setSubmitted(Date submitted) {
+		this.submitted = submitted;
+	}
+
 	public boolean getAllowShare() {
 		return allowShare;
 	}
@@ -87,10 +109,6 @@ public class RecipeDisplayDto implements Serializable {
 	public void setStatus(ApprovalStatus status) {
 		this.status = status;
 	}
-
-	/*public void setStatus(Integer value) {
-		this.status = ApprovalStatus.getStatus(value);
-	}*/
 
 	@Override
 	public int hashCode() {
@@ -125,29 +143,14 @@ public class RecipeDisplayDto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "SearchResultsDto [id=" + id 
+		return "RescipeDisplayDto [id=" + id 
 				+ ", userId=" + userId 
 				+ ", name=" + name 
 				+ ", description=" + description 
-				+ ", photo=" + photo 
+				+ ", photo=" + photo
+				+ ", views=" + views
+				+ ", submitted=" + submitted
 				+ ", allowShare=" + allowShare 
 				+ ", status=" + status + "]";
 	}
-
-	//the following added during attempt to get the HQL RecipeRepository.viewedRecipes query to work
-	//appeared they were not required, but hesitant to remove them just yet
-	/*public RecipeDisplayDto(Long id, Long userId, String name, String description, String photo, boolean allowShare, Integer status) {
-		this.id = id;
-		this.userId = userId;
-		this.name = name;
-		this.description = description;
-		this.photo = photo;
-		this.allowShare = allowShare;
-		this.status = ApprovalStatus.getStatus(status);
-	};*/	
-	/*public void setStatus(Integer value) {
-		this.status = ApprovalStatus.getStatus(value);
-	}*/
-	//@Enumerated(EnumType.ORDINAL)
-	//private ApprovalStatus status;	
 }

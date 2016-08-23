@@ -12,6 +12,7 @@
 	<p id="common.table.paginate.next"/><spring:message code="common.table.paginate.next"></spring:message>
 	<p id="common.table.paginate.previous"/><spring:message code="common.table.paginate.previous"></spring:message>
 	<p id="common.size.max"/><spring:message code="common.size.max"></spring:message>
+	<p id="common.photo.nophoto"/><spring:message code="common.photo.nophoto"></spring:message>
 	<p id="errordlg.title"/><spring:message code="errordlg.title"></spring:message>
 	<p id="useradmin.delete.areyousure"/><spring:message code="useradmin.delete.areyousure"></spring:message>
 	<p id="useradmin.delete.hasrecipe1"/><spring:message code="useradmin.delete.hasrecipe1"></spring:message>

@@ -51,6 +51,8 @@
 							<li><a href="<c:url value="/recipe"/>"><spring:message code="menu.submitrecipe"></spring:message></a></li>
 							<li><a href="<c:url value="/recipe/recipeList" />"><spring:message code="menu.submittedrecipes"></spring:message></a></li>
 							<li><a href="<c:url value="/recipe/favorites" />"><spring:message code="menu.favorites"></spring:message></a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="<c:url value="/recipe/browseRecipes" />"><spring:message code="menu.browse"></spring:message></a></li>
 						</ul>
 					</li>
 				</c:if>

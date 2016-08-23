@@ -43,6 +43,7 @@ public interface RecipeRepository {
     public List<RecipeDisplayDto> recentUserRecipes(Long userId);
     public List<RecipeDisplayDto> recentRecipes();
     public List<RecipeDisplayDto> viewedRecipes(Long userId);
+    public List<RecipeDisplayDto> categoryRecipes(Long categoryId);
     public RecipeDisplayDto getMostViewedRecipe(boolean hasPhoto);
     public RecipeDisplayDto getFeaturedRecipe(Long recipeId);
     public Long getRecipeCount(Long userId);

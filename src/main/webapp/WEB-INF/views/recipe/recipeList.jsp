@@ -58,12 +58,12 @@
 								<td><custom:approval status="${recipe.status}"></custom:approval></td>
 							</c:if>	
 							<td><a class="btn btn-info btn-xs" href="<c:url value='/recipe/viewRecipe/${recipe.id}'/>"
-								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
+								data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.view"></spring:message>">
 								<span class="glyphicon glyphicon-list-alt"></span></a>
 							</td>
 							<c:if test="${!fav}">
 								<td><a class="btn btn-success btn-xs" href="<c:url value='/recipe/editRecipe/${recipe.id}'/>"
-									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
+									data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.edit"></spring:message>">
 									<span class="glyphicon glyphicon-pencil"></span></a>
 								</td>
 							</c:if>
@@ -72,7 +72,7 @@
 									<td>
 										<button class="btn btn-danger btn-xs" type="button" id="fav${recipe.id}" onclick="removeFavorite(${userId}, ${recipe.id}, 
 										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
-										data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.remove"></spring:message>">
+										data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.remove"></spring:message>">
 										<span class="glyphicon glyphicon-remove"></span></button>
 									</td>
 								</c:when>
@@ -80,7 +80,7 @@
 									<td>
 										<button class="btn btn-danger btn-xs" type="button" id="delete${recipe.id}" onclick="deleteRecipe(${recipe.id}, 
 										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
-										data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
+										data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
 										<span class="glyphicon glyphicon-remove"></span></button>
 									</td>
 								</c:otherwise>

@@ -1,0 +1,319 @@
+/***********************************************************************************************/
+/* overall layout of the page, including fixed footer and a container that spans top to bottom */
+/***********************************************************************************************/
+/* basic color scheme: dark to light
+	green:	5f6d62, 7e8e82, d6dbd7, f1f3f2
+	maroon:	633e36, 855247
+	tan:	f1e9da, f8f4ed
+	blue:	336699 (focus), 538cc6, 79a6d2
+	gray:	e6e6e6, f2f2f2
+	red:	d9534f (comment flag)
+*/
+
+html {
+	position: relative;
+	min-height:100%; /* needed for container min-height */
+}
+
+body {
+	margin-bottom: 50px;
+	box-sizing: border-box;
+	background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%);
+}
+
+h4 {
+	color:#855247;
+}
+
+img {
+    /* max-width: 100%; */
+    max-height: 100%;
+}
+
+.recipe-pic {
+	background: url("../images/recipes.jpg") no-repeat center center fixed;
+	background-size: cover;
+}
+
+.container-white {
+	position:relative; /* needed for footer positioning*/
+	margin-top:50px;
+	background:#ffffff;
+	height:auto;
+	min-height:100%;
+	opacity:1;
+}
+
+.container-opaque {
+	position:relative; /* needed for footer positioning*/
+	margin-top:50px;
+	background:none;
+	height:auto;
+	min-height:100%;
+	opacity:1;
+	color:#FFFFFF
+}
+
+/* spans the complete height behind the actual content */
+.verticalFiller {	
+    display:block;
+    position:absolute;
+    height:100%;
+    bottom:0;
+    top:0;
+    left:0;
+    right:0;
+    z-index: -9999;
+    background-color: #ffffff;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 50px;
+}
+
+/* centers the footer copyright text */ 
+.navbar-center
+{
+	padding: 15px 15px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    text-align: center;
+    margin: auto;
+    font-size: 85%;
+}
+
+.navbar-inverse {
+  background-image: linear-gradient(to top, #7e8e82 0%, #d6dbd7 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-radius: 4px;
+}
+
+.navbar-inverse .navbar-text {
+  color: #000000;
+}
+.navbar-inverse .navbar-nav > li > a {
+  color: #000000;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .active > a {
+    background-image: linear-gradient(to top, #7e8e82 0%, #f1f3f2 100%);
+    background-repeat: repeat-x;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.25) inset;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+    background-color: #7e8e82;
+    color: #fff;
+}
+
+/* original page-header bottom border for home and thankyou pages */
+.page-header-white {
+	border-bottom: 2px solid #eee;
+}
+
+/* horizontal line bottom border */
+.hr-black {
+	border-top: 1px solid #000;
+}
+
+/* changes the Bootstrap default "glow" around input controls */
+.form-control:focus {
+  border-color: #336699;
+  box-shadow: inset 0 1px 1px rgba(51, 102, 153, 0.075), 0 0 8px rgba(51, 102, 153, 0.6);
+}
+
+.select-placeholder{color: #999;}
+.select-placeholder option:first-child{color: #999; display: none;}
+.select-placeholder option{color: #555;} /* bootstrap default color */
+
+/* vertical spacers */
+.spacer-vert-lg {
+	margin-top:60px;
+}
+
+.spacer-vert-md {
+	margin-top:45px;
+}
+
+.spacer-vert-sm {
+	margin-top:30px;
+}
+
+.spacer-vert-xs {
+	margin-top:15px;
+}
+
+/* dashboard view */
+.recipe-table {
+	margin-bottom:0;
+	margin-left:20px;
+	width:auto;
+}
+
+/* navbar search box */
+.searchbox {
+	background-color:#5f6d62;
+	color:#ffffff;
+	border:none;
+	padding:3px;	
+}
+
+/* list-group-item-heading replacement */
+.header-blue {
+	color:#336699;
+	margin-top:0px;
+	margin-bottom:5px;
+	font-weight:bold;
+}
+
+/* theme colors */
+.std-blue {
+	color:#79a6d2;
+}
+
+.std-maroon {
+	color:#855247;	
+}
+
+.bold-blue {
+	color:#336699;
+	font-weight:bold;
+}
+
+.bold-maroon {
+	color:#633e36;
+	font-weight:bold;
+}
+
+.text-placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+/* override of page-header bottom border */
+.page-header {
+	border-bottom: 2px solid #e6e6e6;
+	color:#855247;
+	margin: 0;
+}
+
+/* blurs copyrighted recipe content */
+.transparent {
+	-webkit-filter: blur(3px);
+	-moz-filter: blur(3px);
+	-o-filter: blur(3px);
+	-ms-filter: blur(3px);
+	filter: blur(3px);
+	opacity: 0.9;
+}
+
+/* truncates the message column in the message view */
+.text-truncate {
+	word-wrap: normal;
+	display: block;	
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	hyphens: auto;	
+}
+
+/* water's edge: #87999f; 9cabb0; aab7bb; b8c3c6; c6cfd2; d4dbdd; e2e7e9; f0f3f4 */
+/* e4e7e5 */
+/* Amsterdam 82959e; a9b6bc; c5ced3; d4dbde; c6ced2*/
+/* Britannia Blue 68747d; c7cdd1; d5dadd */
+/* Bachelor Blue 768492; c6ced2 */
+/* Airway b5c6d8 cdd8e5 dde5ee*/
+/* Black 000000; e6e6e6 f2f2f2*/
+
+ .title-bar {
+ 	background-image: linear-gradient(to top, #e6e6e6 0%, #ffffff 100%);
+	margin-left: -15px;
+	margin-bottom: 30px;
+	padding-right: 30px;
+	padding-left: 30px;
+	border-bottom: 2px solid #855247;
+	color:#855247;
+}
+
+@media (min-width: 768px) {
+  .title-bar {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .title-bar {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .title-bar {
+    width: 1170px;
+  }
+}
+
+/* http://www.abeautifulsite.net/whipping-file-inputs-into-shape-with-bootstrap-3/ */
+/* used for file input controls */
+.btn-file {
+	position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+/* not used, but handy idea for a transparent navbar */
+.navbar-inner {
+    background:transparent;
+}
+
+/* replace the glyphicons used by the DataTable bootstrap styling */ 
+ table.dataTable thead .sorting:after {
+  opacity: 0.2;
+  content: "\e252";
+  sort
+}
+table.dataTable thead .sorting_asc:after {
+  content: "\e252";
+  sort-by-attributes
+}
+table.dataTable thead .sorting_desc:after {
+  content: "\e253";
+  sort-by-attributes-alt
+}
+ 
+.dataTables_filter {
+	display: none
+}
+
+.carousel-control {
+  padding-top:10%;
+  width:1%;
+}
+
+.carousel-caption {
+    position: relative;
+    left: auto;
+    right: auto;
+    text-shadow: none;
+	color:#336699;
+	margin-top:5px;
+	margin-bottom:5px;
+}

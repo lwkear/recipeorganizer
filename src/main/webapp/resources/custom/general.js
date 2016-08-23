@@ -326,7 +326,7 @@ $(function() {
    		interval: 20000	//: false
    	});
    	$('#viewedCarousel').carousel({
-   		interval: 20000	//: false
+   		interval: 15000	//: false
    	});
     
 	messageMap = setMessageMap();

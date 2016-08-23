@@ -84,6 +84,8 @@ public class SolrUtilImpl implements SolrUtil {
 		query.addHighlightField("name or description or ingredname or background or source or notes or tags");
 		query.setHighlightSimplePre("<strong>");
 		query.setHighlightSimplePost("</strong>");
+		query.setHighlightFragsize(0);
+		query.setHighlightSnippets(10);
 		query.setFacet(true);
 		query.addFacetField("catid");
 		query.addFacetField("sourcetype");

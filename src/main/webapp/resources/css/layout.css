@@ -18,17 +18,18 @@ html {
 body {
 	margin-bottom: 50px;
 	box-sizing: border-box;
-	background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%);
+	/* background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%); */
+	background: url("../images/recipes.jpg") no-repeat center center fixed;
+	background-size: cover;
 }
 
 h4 {
 	color:#855247;
 }
 
-img {
-    /* max-width: 100%; */
-    max-height: 100%;
-}
+/* img {
+     max-height: 100%;
+} */
 
 .recipe-pic {
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
@@ -203,6 +204,13 @@ img {
 	margin: 0;
 }
 
+.search-label {
+	color:#633e36;
+	font-weight: 500;
+	font-size:24px;
+	line-height: 1.1;
+}
+
 /* blurs copyrighted recipe content */
 .transparent {
 	-webkit-filter: blur(3px);
@@ -303,6 +311,9 @@ table.dataTable thead .sorting_desc:after {
 	display: none
 }
 
+/* used by the browse recipe datatable where the columns are drawn dynamically after an Ajax call */
+.dt_col_hide{display: none;}
+
 .carousel-control {
   padding-top:10%;
   width:1%;
@@ -317,3 +328,4 @@ table.dataTable thead .sorting_desc:after {
 	margin-top:5px;
 	margin-bottom:5px;
 }
+

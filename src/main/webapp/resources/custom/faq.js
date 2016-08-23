@@ -3,7 +3,7 @@ function getQuestions(topicId) {
 	    type: 'GET',
 		contentType: 'application/json',
 	    url: appContextPath + '/questions/' + topicId,
-		dataType: 'html',
+		dataType: 'html'
 	})
 	.done(function(data) {
 		console.log('getQuestions done');
