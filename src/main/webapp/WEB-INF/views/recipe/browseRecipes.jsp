@@ -38,6 +38,16 @@
 					<div id="recipesSection">
 						<div class="col-sm-12">
 							<span class="search-label"><spring:message code="recipe.table.label"></spring:message></span>
+							<div class="col-sm-5 pull-right form-horizontal text-right">
+					        	<label class="control-label bold-maroon" for="sortOption"><spring:message code="recipe.table.sort.label"></spring:message>&nbsp;&nbsp;</label>
+					        	<div class="pull-right">
+					                <select class="form-control" id="sortOption">
+					                	<option data-id=0><spring:message code="recipe.table.sort.name"></spring:message></option>
+					                	<option data-id=3><spring:message code="recipe.table.sort.view"></spring:message></option>
+					                	<option data-id=4><spring:message code="recipe.table.sort.date"></spring:message></option>
+									</select>
+								</div>									
+							</div>
 						</div>
 						<table class="table" id="categoryRecipeList">
 							<thead>

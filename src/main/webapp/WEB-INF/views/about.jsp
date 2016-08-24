@@ -46,6 +46,13 @@
 				<spring:message code="about.technical.description3"></spring:message>
 			</div>
 		</div>
+		<div class="col-sm-12 spacer-vert-xs">
+			<h4><spring:message code="about.acknowledge.title"></spring:message></h4>
+			<div>
+				<spring:message code="about.acknowledge.description1"></spring:message>
+				<spring:message code="about.acknowledge.description2"></spring:message>
+			</div>
+		</div>
 	</div>
     
 <%@include file="common/footer.jsp" %>	

@@ -48,6 +48,7 @@
 					<li>Bootstrap Multiselect - <a href="http://davidstutz.github.io/bootstrap-multiselect/">davidstutz.github.io/bootstrap-multiselect/</a></li>
 					<li>jQuery Password Strength plugin for Twitter Bootstrap v1.2.10 - <a href="https://github.com/ablanco/jquery.pwstrength.bootstrap">github.com/ablanco/jquery.pwstrength.bootstrap</a></li>					
 					<li>JavaScript Cookie v2.0.1 - <a href="https://github.com/js-cookie/js-cookie">github.com/js-cookie/js-cookie</a></li>
+					<li>Image placeholders - <a href="http://www.holderjs.com">www.holderjs.com</a></li>
 					<li>Flag icons - <a href="http://www.icondrawer.com/free.php">www.icondrawer.com</a></li>
 					<li>Recipe Box favicon Fotosearch Stock Photography - <a href="http://www.fotosearch.com">www.fotosearch.com</a></li>
 				</ul>
