@@ -209,7 +209,7 @@ function setInputFocus()
 	//the first two controls on any page are the search input and button
 	//:eq(2) ensures that those controls do NOT get the focus
 	//TODO: GUI: the above is not true in iPad-sized viewport - the search input is hidden
-	var control = $(':input:visible:enabled:eq(2)').focus();
+	$(':input:visible:enabled:eq(2)').focus();
 }
 
 function blurInputFocus()
@@ -319,6 +319,11 @@ $(function() {
 		};
 	}
 
+   	messageMap = setMessageMap();
+   	
+   	setInputFocus();
+	findFirstError();
+
     $('[data-toggle="tooltip"]').tooltip({
     	container : 'body'
     });
@@ -326,13 +331,23 @@ $(function() {
    		interval: 20000	//: false
    	});
    	$('#viewedCarousel').carousel({
-   		interval: 15000	//: false
+   		interval: 20000	//: false
    	});
-    
-	messageMap = setMessageMap();
-	
-	setInputFocus();
-	findFirstError();
+   	
+   	/*this option applies to all datatables, hiding the footer if there is less than two pages of information*/
+   	$.extend(true, $.fn.dataTable.defaults, {
+		preDrawCallback: function (settings) {
+	        var api = new $.fn.dataTable.Api(settings);
+	        var pagination = $(this)
+	            .closest('.dataTables_wrapper')
+	            .find('.dataTables_paginate');
+	        pagination.toggle(api.page.info().pages > 1);
+	        var showing = $(this)
+            	.closest('.dataTables_wrapper')
+            	.find('.dataTables_info');
+	        showing.toggle(api.page.info().recordsTotal > api.page.len());
+	    }
+   	});   	
 
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
