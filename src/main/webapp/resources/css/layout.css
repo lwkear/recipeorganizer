@@ -27,9 +27,10 @@ h4 {
 	color:#855247;
 }
 
-/* img {
+/* Note: this is vital to displaying images in the dashboard carousel and elsewhere - do not remove!!! */
+img {
      max-height: 100%;
-} */
+}
 
 .recipe-pic {
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
