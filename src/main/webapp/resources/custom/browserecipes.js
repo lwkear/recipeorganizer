@@ -16,9 +16,9 @@ function assembleColumn(val) {
 	str = str + linkHref + val.id + endTag;
 	str = str + "<img id='image" + val.id + "' style='width:96px' ";
 	if (val.photo)
-		str = str + " class='media-object' src='photo?id=" + val.id + "&" + "filename=" + val.photo + endTag + endHref + endDiv;
+		str = str + " class='media-object' src='photo?id=" + val.id + "&" + "filename=" + val.photo + "' alt='" + noPhoto + endTag + endHref + endDiv;
 	else
-		str = str + " class='media-object blankImage' data-src='holder.js/96x96?auto=yes&;text=" + noPhoto + endTag + endHref + endDiv;
+		str = str + " class='media-object blankImage' alt='No photo' data-src='holder.js/96x96?auto=yes&text=" + noPhoto + endTag + endHref + endDiv;
 	str = str + divMediaBody;
 	str = str + linkHref + val.id + endTag;
 	str = str + divMediaHeading + val.name + endHeading + endHref;
@@ -74,8 +74,8 @@ $(function() {
 		    { "data": "description",
 			  "render": function(row, type, val, meta) {
 				  return assembleColumn(val);
-				},
-		    	"searchable": false
+			  },
+		      "searchable": false
 		    },
 		    { "data": "photo", "className": "dt_col_hide"},
 		    { "data": "views", "className": "dt_col_hide"},
@@ -83,6 +83,22 @@ $(function() {
 		]		
 	});
 
+	$('#sortOption').change(function() {	
+		var entry = $(this).find(':selected');
+		var option = entry.attr("data-id");
+		if (option == 0)
+			//order by name, date
+			recipeTable.order([0, 'asc'],[4, 'desc']).draw();
+		else
+		if (option == 3)
+			//order by views, name
+			recipeTable.order([3, 'desc'],[0, 'asc']).draw();
+		else
+		if (option == 4)
+			//order by date, name
+			recipeTable.order([4, 'desc'],[0, 'asc']).draw();
+	});
+	
 	$(document)
 		.on('click', '.category', function(e) {
 			var id = e.target.id;
@@ -91,5 +107,7 @@ $(function() {
 			console.log('catId:' + catId);
 			$("#currentCategoryId").val(catId);
 			recipeTable.ajax.reload();
+			$('#sortOption option[data-id=0]').prop('selected',true);
+			$("#sortOption").trigger("change");
 		});
 })
