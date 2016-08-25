@@ -48,9 +48,9 @@
 					<li>Bootstrap Multiselect - <a href="http://davidstutz.github.io/bootstrap-multiselect/">davidstutz.github.io/bootstrap-multiselect/</a></li>
 					<li>jQuery Password Strength plugin for Twitter Bootstrap v1.2.10 - <a href="https://github.com/ablanco/jquery.pwstrength.bootstrap">github.com/ablanco/jquery.pwstrength.bootstrap</a></li>					
 					<li>JavaScript Cookie v2.0.1 - <a href="https://github.com/js-cookie/js-cookie">github.com/js-cookie/js-cookie</a></li>
-					<li>Image placeholders - <a href="http://www.holderjs.com">www.holderjs.com</a></li>
-					<li>Flag icons - <a href="http://www.icondrawer.com/free.php">www.icondrawer.com</a></li>
-					<li>Recipe Box favicon Fotosearch Stock Photography - <a href="http://www.fotosearch.com">www.fotosearch.com</a></li>
+					<li>Image placeholders - <a href="http://www.holderjs.com">holderjs.com</a></li>
+					<li>Flag icons - <a href="http://www.icondrawer.com/free.php">icondrawer.com</a></li>
+					<li>Recipe Box favicon Fotosearch Stock Photography - <a href="http://www.fotosearch.com">fotosearch.com</a></li>
 				</ul>
 			</div>
 		</div>
@@ -62,8 +62,10 @@
 					<li>Subversion v1.8.10 - <a href="https://subversion.apache.org/">subversion.apache.org/</a></li>
 					<li>Firebug v2.0.16 - <a href="https://getfirebug.com/">getfirebug.com/</a></li>
 					<li>Papercut v4.5.0 - <a href="http://papercut.codeplex.com/">papercut.codeplex.com</a></li>
-					<li>GIMP v2.8.14 - <a href="http://www.gimp.org">www.gimp.org</a></li>
+					<li>GIMP v2.8.14 - <a href="http://www.gimp.org">gimp.org</a></li>
 					<li>TIBCO Jaspersoft Studio v6.2.0 - <a href="http://community.jaspersoft.com/project/jaspersoft-studio">community.jaspersoft.com/project/jaspersoft-studio</a></li>
+					<li>French translation assistance - <a href="https://www.freetranslation.com/en/">freetranslation.com</a> and <a href="https://translate.google.com/">translate.google.com</a></li>
+					<li>Programming assistance - <a href="http://stackoverflow.com/">stackoverflow.com</a></li>
 				</ul>
 			</div>
 		</div>
