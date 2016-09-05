@@ -242,7 +242,7 @@ public class UserController {
 		logger.info("user/signup GET");
 		
 		//TODO: PRODUCTION: restore this after beta testing is completed
-		UserDto user = new UserDto();
+		/*UserDto user = new UserDto();
 		user.setSubmitRecipes(true);
 		user.setEmailAdmin(true);
 		user.setEmailRecipe(true);
@@ -251,9 +251,9 @@ public class UserController {
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userDto", user);		
 		
-		return "user/signup";
+		return "user/signup";*/
 		
-		//return "betatest";
+		return "betatest";
 	}
 	
 	@MaintAware
