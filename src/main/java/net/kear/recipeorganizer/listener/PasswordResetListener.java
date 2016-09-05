@@ -56,6 +56,7 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
         
         EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), event.getLocale());
         emailDetail.setTokenUrl(confirmationUrl);
+        
         try {
             passwordEmail.constructEmail(emailDetail);        	
         	emailSender.sendHtmlEmail(emailDetail);

@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,11 +36,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import freemarker.template.Configuration;
 import net.kear.recipeorganizer.enums.ApprovalAction;
 import net.kear.recipeorganizer.enums.ApprovalReason;
 import net.kear.recipeorganizer.enums.ApprovalStatus;
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.enums.MessageType;
+import net.kear.recipeorganizer.enums.OptOutType;
 import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
@@ -70,6 +70,7 @@ import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.solr.SolrUtil;
+import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
@@ -127,11 +128,8 @@ public class AdminController {
 	private EmailSender emailSender;
 	@Autowired
 	private InvitationEmail invitationEmail; 
-
 	@Autowired
-    public Environment env;
-	@Autowired
-	private Configuration freemarkerConfig;
+	EncryptionUtil encryptUtil;
 
 	/********************************/
 	/*** User maintenance handler ***/
@@ -237,11 +235,16 @@ public class AdminController {
 		}
 
 		if (!originalRole.equals(user.getRole())) {
-			if (((originalRole.isType(Role.TYPE_GUEST)) 	||
-				 (originalRole.isType(Role.TYPE_AUTHOR)))	&&
-				((user.getRole().isType(Role.TYPE_EDITOR)) ||
-				 (user.getRole().isType(Role.TYPE_ADMIN))))
-				sendUpdateRoleMessage(user, originalRole, locale);
+			if ((originalRole.isType(Role.TYPE_GUEST) &&
+				((user.getRole().isType(Role.TYPE_AUTHOR))	||
+				 (user.getRole().isType(Role.TYPE_EDITOR))	||
+				 (user.getRole().isType(Role.TYPE_ADMIN))))	||	
+				(originalRole.isType(Role.TYPE_AUTHOR) &&
+				((user.getRole().isType(Role.TYPE_EDITOR))	||
+				 (user.getRole().isType(Role.TYPE_ADMIN))))	||
+				(originalRole.isType(Role.TYPE_EDITOR) && 
+				 user.getRole().isType(Role.TYPE_ADMIN)))
+			sendUpdateRoleMessage(user, originalRole, locale);
 		}		
 		
 		//if the user no longer should have access then expire the user's session if present
@@ -286,7 +289,7 @@ public class AdminController {
 		userMsg.setMessage(subject);
 		userMsg.setHtmlMessage(htmlMsg);
 		
-		userMessageService.addMessage(userMsg);
+		userMessageService.addMessage(userMsg, MessageType.ADMIN, locale);
 	}
 
 	/************************************/
@@ -645,7 +648,7 @@ public class AdminController {
 		userMsg.setMessage(heading);
 		userMsg.setHtmlMessage(msg);
 		
-		userMessageService.addMessage(userMsg);
+		userMessageService.addMessage(userMsg, MessageType.RECIPE, locale);
 	}
 	
 	/**********************************/
@@ -787,6 +790,11 @@ public class AdminController {
     	
     	EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
     	emailDetail.setTokenUrl(confirmationUrl);
+        String idStr = String.valueOf(user.getId());
+		String userIdStr = encryptUtil.encryptURLParam(idStr);
+		String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+		String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+		emailDetail.setOptoutUrl(optoutUrl);
 
         try {
         	invitationEmail.constructEmail(emailDetail);

@@ -18,7 +18,8 @@ public class PasswordEmail extends EmailMessage {
 	public String[] textCodes = {
 			"email.password.reset",
 			"email.password.completeProcess",
-			"email.common.accountChange",			
+			"email.common.accountChange",
+			"email.common.optout.required.password",
 			"email.common.pastelink",
 			"email.common.tagline",
 			"email.common.notinitiate",
@@ -59,6 +60,8 @@ public class PasswordEmail extends EmailMessage {
 		obj[0] = now.toString("yyyy");
 		obj[1] = null;
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
+		obj[0] = getMsgText("email.common.optout.required.password");
+		map.put("optout", getArgMessage("email.common.optout.required", obj));
 		Writer out = new StringWriter();
 		
 		try {

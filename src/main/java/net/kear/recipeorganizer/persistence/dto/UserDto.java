@@ -53,6 +53,9 @@ public class UserDto implements Serializable {
 	private String confirmPassword;
 	
 	private boolean submitRecipes;
+	private boolean emailAdmin;
+	private boolean emailRecipe;
+	private boolean emailMessage;
 	private boolean invited = false;
 	
 	public UserDto() {}
@@ -63,15 +66,22 @@ public class UserDto implements Serializable {
 		this.email = user.email;
 		this.password = user.password;
 		this.submitRecipes = user.submitRecipes;
+		this.emailAdmin = user.emailAdmin;
+		this.emailRecipe = user.emailRecipe;
+		this.emailMessage = user.emailMessage;
 		this.invited = user.invited;
 	}
 	
-	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes, boolean invited) {
+	public UserDto(String firstName, String lastName, String email, String password, boolean submitRecipes, boolean emailAdmin, boolean emailRecipe, 
+			boolean emailMessage, boolean invited) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.submitRecipes = submitRecipes;
+		this.emailAdmin = emailAdmin;
+		this.emailRecipe = emailRecipe;
+		this.emailMessage = emailMessage;
 		this.invited = invited;
 	}
 
@@ -131,7 +141,31 @@ public class UserDto implements Serializable {
 		this.submitRecipes = submitRecipes;
 	}
 	
-    public boolean isInvited() {
+	public boolean isEmailAdmin() {
+		return emailAdmin;
+	}
+
+	public void setEmailAdmin(boolean emailAdmin) {
+		this.emailAdmin = emailAdmin;
+	}
+
+	public boolean isEmailRecipe() {
+		return emailRecipe;
+	}
+
+	public void setEmailRecipe(boolean emailRecipe) {
+		this.emailRecipe = emailRecipe;
+	}
+
+	public boolean isEmailMessage() {
+		return emailMessage;
+	}
+
+	public void setEmailMessage(boolean emailMessage) {
+		this.emailMessage = emailMessage;
+	}
+
+	public boolean isInvited() {
 		return invited;
 	}
 
@@ -169,6 +203,9 @@ public class UserDto implements Serializable {
 				+ ", email=" + email 
 				+ ", password=" + password 
 				+ ", submitRecipes=" + submitRecipes 
+				+ ", emailAdmin=" + emailAdmin 
+				+ ", emailRecipe=" + emailRecipe
+				+ ", emailMessage=" + emailMessage
 				+ ", invited=" + invited
 				+ "]";
 	}

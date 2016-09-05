@@ -40,6 +40,18 @@ function clearField(fieldName) {
 	$('#'+fieldName+'ErrMsg').hide();
 }
 
+function resetOptions() {
+	var option = $('#hiddenEmailAdmin').val();
+	var yesno = (option == "true" ? "Yes" : "No");
+	$('#emailAdmin'+yesno).prop('checked', true);
+	option = $('#hiddenEmailRecipe').val();
+	yesno = (option == "true" ? "Yes" : "No");
+	$('#emailRecipe'+yesno).prop('checked', true);
+	option = $('#hiddenEmailMessage').val();
+	yesno = (option == "true" ? "Yes" : "No");
+	$('#emailMessage'+yesno).prop('checked', true);
+}
+
 function displayErrorPanel() {
 	if ((!$('#firstNameErrMsg').is(':empty')) ||
 		(!$('#lastNameErrMsg').is(':empty'))) {
@@ -194,6 +206,9 @@ $(function() {
 			$('#password').pwstrength('forceUpdate');
 		}
 	})
+	.on('click', '#linkNotify', function(e){
+		resetOptions();
+	})
 	.on('click', '#btnCancelName', function(e){
 		e.preventDefault();
 		$('#panelName').collapse('hide');
@@ -212,5 +227,10 @@ $(function() {
 		clearField('currentPassword');
 		clearField('password');
 		clearField('confirmPassword');
+	})
+	.on('click', '#btnCancelNotification', function(e){
+		e.preventDefault();
+		$('#panelNotify').collapse('hide');
+		resetOptions();
 	})
 });

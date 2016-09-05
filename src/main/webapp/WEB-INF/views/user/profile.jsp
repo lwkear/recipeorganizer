@@ -78,7 +78,6 @@
 											<form:radiobutton value="false" path="submitRecipes"/><spring:message code="common.no"></spring:message>
 										</div>
 									</div>
-									
 								</div>
 							</div>
 						</div>

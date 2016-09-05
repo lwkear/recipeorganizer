@@ -17,6 +17,27 @@
 			<div class="page-header"> 		
 				<h3>Test Page</h3>
 			</div>
+			<div class="col-sm-12">
+				Encrypted text: ${encryptText}
+			</div>
+			<div class="col-sm-12">
+				Decrypted text: ${decryptText}
+			</div>
+		</div>
+	</div>
+
+
+			<%-- <div class="col-sm-12">
+				Full Date/Time: ${fullDate}
+			</div>
+			<div class="col-sm-12">
+				Medium Date/Time: ${medDate}
+			</div>
+			<div class="col-sm-12">
+				Short Time: ${shrtDate}
+			</div> --%>
+
+
 			<%-- <div class="col-sm-12">
 			<<div class="row">
 				<form:form name="approvalForm" role="form" method="post" modelAttribute="recipeMessageDto">
@@ -61,8 +82,6 @@
 				</form>
 			</div>
 			</div> --%>
-		</div>
-	</div>
 
 
 	<%-- <div class="col-sm-12">

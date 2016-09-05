@@ -1,13 +1,15 @@
 package net.kear.recipeorganizer.persistence.service;
 
 import java.util.List;
+import java.util.Locale;
 
+import net.kear.recipeorganizer.enums.MessageType;
 import net.kear.recipeorganizer.persistence.dto.UserMessageDto;
 import net.kear.recipeorganizer.persistence.model.UserMessage;
  
 public interface UserMessageService {
 
-    public void addMessage(UserMessage message);
+    public void addMessage(UserMessage message, MessageType messageType, Locale locale);
     public void updateMessage(UserMessage message);
     public void deleteMessage(long id);
     public void setViewed(long id);

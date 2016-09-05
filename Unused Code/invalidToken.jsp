@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%-- <!DOCTYPE html>
 <html>
 <head>
 
@@ -52,4 +52,4 @@
 <%@include file="../common/footer.jsp" %>
 	
 </body>
-</html>
+</html> --%>

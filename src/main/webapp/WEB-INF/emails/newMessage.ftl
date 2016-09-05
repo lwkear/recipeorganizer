@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>${registrationConfirm}</title>
+<title>${newMessage}</title>
 </head>
 <body bgcolor="#FFFFFF">
 <table width="100%" border="0" bgcolor="#e6e6e6">
@@ -36,10 +36,10 @@
 					</table>
 					<table width="614" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
 						<tr>
-							<td width="16" height="28"><img src="cid:cleargif" border="0" style="display:block" width="16" height="53"/></td>
+							<td width="18" height="28"><img src="cid:cleargif" border="0" style="display:block" width="16" height="28"/></td>
 							<td width="11" bgcolor="#7e8e82"></td>
 							<td width="556" align="left" valign="middle" bgcolor="#7e8e82">
-								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${registrationConfirm}</font></td>
+								<font face="Arial, Helvetica, sans-serif" color="#ffffff" style="font-size: 18px; line-height: 55px;">${newMessage}</font></td>
 							<td width="11" align="right" valign="top" bgcolor="#7e8e82">&nbsp;</td>
 							<td width="18" align="right" valign="top"><img src="cid:cleargif" border="0" style="display:block" width="16" height="20"/></td>
 						</tr>
@@ -52,22 +52,13 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td><font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 16px; line-height: 19px">${welcomeUser}</font>
-							<br><br><br>
+							<td><font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 16px; line-height: 19px">${dearUser},</font>
+								<br><br>
 								<font face="Arial, Helvetica, sans-serif" color="#333333" style="font-size: 13px; line-height: 19px">
-								${signupThankyou}
+								${newMessageText}  ${messageLink}
 								<br><br>
-								${completeProcess}
-								<br>
-								<a href=${tokenUrl}>${tokenUrl}</a>
+								${memberThankyou}
 								<br><br>
-								${pasteLink}
-								${expire}
-								<br><br>
-								${nextSteps}
-								<br><br>
-								${enjoy}
-								<br><br><br>
 								</font>
 								<font face="Arial, Helvetica, sans-serif" color="#855247" style="font-size: 16px; line-height: 19px">${folks}</font>							
 							</td>

@@ -101,7 +101,14 @@
 				</h5>
 				<c:if test="${privateRecipe}">
 					<h5 class="spacer-vert-xs">
-						<span><spring:message code="recipe.view.copyright"></spring:message></span>
+						<c:choose>
+							<c:when test="${allowEmail}">
+								<span><spring:message code="recipe.view.copyright"></spring:message></span>
+							</c:when>
+							<c:otherwise>
+								<span><spring:message code="recipe.view.copyright.noemail"></spring:message></span>
+							</c:otherwise>
+						</c:choose>
 					</h5>
 				</c:if>
 			</div>

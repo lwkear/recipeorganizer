@@ -178,10 +178,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     	.addFilterBefore(encodingFilter, CsrfFilter.class)
     	.addFilterAfter(httpHeadFilter(), FilterSecurityInterceptor.class)
     	.authorizeRequests()
-			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/betatest", "/technical", "/policies", "/sysmaint", "/whatsnew").permitAll()	/*, "/test/testpage"*/
+			.antMatchers("/", "/home", "/about", "/contact",  "/faq", "/thankyou", "/betatest", "/technical", "/policies", "/sysmaint", "/whatsnew").permitAll()
 			.antMatchers("/submitSearch", "/searchResults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
-    		.antMatchers("/user/fatalError", "/user/expiredToken", "/user/invalidToken", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
+    		.antMatchers("/user/fatalError", "/user/tokenError", "/user/optout**", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/changeAccountLevel", "user/upgradeAccount", "user/newMember", "/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes").hasAuthority(Role.TYPE_GUEST)

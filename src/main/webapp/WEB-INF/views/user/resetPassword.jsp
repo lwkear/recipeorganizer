@@ -23,7 +23,7 @@
 		<div class="col-sm-12">			
 			<div class="row">
 				<div class="form-group col-sm-4 col-sm-offset-4 text-center">
-					<spring:message code="user.password.resetInstructions"></spring:message>
+					<strong><spring:message code="user.password.resetInstructions"></spring:message></strong>
 				</div>
 				<form:form role="form" name="forgotForm" modelAttribute="userEmail" method="post">
 			        <div class="col-sm-12">

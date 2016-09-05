@@ -9,6 +9,7 @@ import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserProfile;
+import net.kear.recipeorganizer.persistence.dto.ChangeNotificationDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.model.VerificationToken;
 import net.kear.recipeorganizer.persistence.repository.PasswordResetTokenRepository;
@@ -50,6 +51,9 @@ public class UserServiceImpl implements UserService {
     	user.setPassword(encodedPsswd);
     	user.setFirstName(userDto.getFirstName());
     	user.setLastName(userDto.getLastName());
+    	user.setEmailAdmin(userDto.isEmailAdmin());
+    	user.setEmailRecipe(userDto.isEmailRecipe());
+    	user.setEmailMessage(userDto.isEmailMessage());
     	user.setInvited(userDto.isInvited());
     	user.setEnabled(0);
     	user.setTokenExpired(0);
@@ -141,6 +145,20 @@ public class UserServiceImpl implements UserService {
     	user.setPassword(passwordEncoder.encode(password));
     	user.setPasswordExpired(0);
     	user.setPasswordExpiryDate();
+    	return userRepository.updateUser(user);  	
+    }
+
+    public User changeNotification(boolean emailAdmin, boolean emailRecipe, boolean emailMessage, User user) {
+    	user.setEmailAdmin(emailAdmin);
+    	user.setEmailRecipe(emailRecipe);
+    	user.setEmailMessage(emailMessage);
+    	return userRepository.updateUser(user);  	
+    }
+
+    public User changeNotification(ChangeNotificationDto changeNotificationDto, User user) {
+    	user.setEmailAdmin(changeNotificationDto.isEmailAdmin());
+    	user.setEmailRecipe(changeNotificationDto.isEmailRecipe());
+    	user.setEmailMessage(changeNotificationDto.isEmailMessage());
     	return userRepository.updateUser(user);  	
     }
 

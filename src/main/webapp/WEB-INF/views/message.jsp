@@ -12,16 +12,22 @@
 
 <%@include file="common/nav.jsp" %>
 
-	<div class="container container-white">
-	 	<div class="col-sm-12">
-			<div class="page-header">
+	<div class="container container-white">	
+	 	<div class="col-sm-12 title-bar">
+			<div class="page-header"> 		
 				<h3>${title}</h3>
-			</div>			
-			<div class="col-sm-8 col col-sm-offset-2">			
-				<div class="center alert text-center strong">
-					<div><h4>${message}</h4></div>
-				</div>
 			</div>
+		</div>
+		<div class="col-sm-6 col-sm-offset-3 spacer-vert-sm">
+			<h4>${msgHeader}</h4>
+		</div>
+		<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs">
+			<c:forEach var="msg" items="${messages}">
+				${msg}
+			</c:forEach>
+		</div>
+		<div class="col-sm-6 col-sm-offset-3 spacer-vert-xs">
+			<h4><spring:message code="email.common.memberthankyou"></spring:message></h4>
 		</div>
 	</div>	
 

@@ -40,6 +40,11 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 	}
 
 	@Override
+	protected String getTargetUrlParameter() {
+		return super.getTargetUrlParameter();
+	}
+
+	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 		logger.info("onAuthenticationSuccess: name=" + authentication.getName());
 		
@@ -76,6 +81,8 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 		
 		String servePath = request.getServletPath();
 		logger.debug("servePath:" + servePath);
+		String targetParam = null;
+		targetParam = getTargetUrlParameter();
 		
 		String redirectUrl = null;
 		SavedRequest savedRequest = requestCache.getRequest(request, response);

@@ -1,5 +1,6 @@
 package net.kear.recipeorganizer.controller;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,11 +21,13 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -49,12 +52,16 @@ import org.joda.time.Days;
 import org.joda.time.Hours;
 
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.enums.MessageType;
+import net.kear.recipeorganizer.enums.OptOutType;
 import net.kear.recipeorganizer.enums.UserAge;
 import net.kear.recipeorganizer.event.PasswordResetEvent;
 import net.kear.recipeorganizer.event.RegistrationCompleteEvent;
+import net.kear.recipeorganizer.event.UserMessageEvent;
 import net.kear.recipeorganizer.exception.AccessProfileException;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.AddUserException;
+import net.kear.recipeorganizer.exception.OptOutException;
 import net.kear.recipeorganizer.exception.PasswordResendException;
 import net.kear.recipeorganizer.exception.PasswordResetException;
 import net.kear.recipeorganizer.exception.RestException;
@@ -66,6 +73,7 @@ import net.kear.recipeorganizer.persistence.dto.ChangeEmailDto;
 import net.kear.recipeorganizer.persistence.dto.ChangeEmailDto.ChangeEmailDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.ChangeNameDto;
 import net.kear.recipeorganizer.persistence.dto.ChangeNameDto.ChangeNameDtoSequence;
+import net.kear.recipeorganizer.persistence.dto.ChangeNotificationDto;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto;
 import net.kear.recipeorganizer.persistence.dto.ChangePasswordDto.ChangePasswordDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.NewPasswordDto;
@@ -75,6 +83,7 @@ import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto.UserDtoSequence;
 import net.kear.recipeorganizer.persistence.dto.UserMessageDto;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
+import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.model.Role;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.model.UserMessage;
@@ -89,6 +98,7 @@ import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.security.LoginAttemptService;
 import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.CookieUtil;
+import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
@@ -96,6 +106,7 @@ import net.kear.recipeorganizer.util.email.AccountChangeEmail;
 import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
+import net.kear.recipeorganizer.util.email.NewMessageEmail;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileConstant;
 import net.kear.recipeorganizer.util.file.FileResult;
@@ -143,9 +154,13 @@ public class UserController {
 	@Autowired
 	private MaintenanceInterceptor maintInterceptor; 
 	@Autowired
-	private AccountChangeEmail accountChangeEmail; 
+	private AccountChangeEmail accountChangeEmail;
+	@Autowired
+	private NewMessageEmail newMessageEmail;
 	@Autowired
 	PropertiesFactoryBean properties;
+	@Autowired
+	EncryptionUtil encryptUtil;
 	
     /*********************/
     /*** Login handler ***/
@@ -226,17 +241,19 @@ public class UserController {
 	public String getSignup(Model model) {
 		logger.info("user/signup GET");
 		
-		//TODO: restore this after beta testing is completed
-		/*UserDto user = new UserDto();
-		//default to AUTHOR
+		//TODO: PRODUCTION: restore this after beta testing is completed
+		UserDto user = new UserDto();
 		user.setSubmitRecipes(true);
+		user.setEmailAdmin(true);
+		user.setEmailRecipe(true);
+		user.setEmailMessage(true);
 		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", UserDto.class); 
 		model.addAttribute("sizeMap", sizeMap);
 		model.addAttribute("userDto", user);		
 		
-		return "user/signup";*/
+		return "user/signup";
 		
-		return "betatest";
+		//return "betatest";
 	}
 	
 	@MaintAware
@@ -284,8 +301,15 @@ public class UserController {
        	logger.debug("user added - publishing event");
        	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale, null));
         
-        redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentToken", null, "Token sent", locale));
+       	Object[] obj = new String[] {null};
+       	redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Success", locale));
+       	obj[0] = user.getFirstName() + " " + user.getLastName();
+		String msg = messages.getMessage("user.register.header.sent", obj, "", locale);
+		redir.addFlashAttribute("msgHeader", msg);
+		List<String> msgList = new ArrayList<String>();
+        msg = messages.getMessage("user.register.sentToken", null, "Token sent", locale);
+        msgList.add(msg);
+        redir.addFlashAttribute("messages", msgList);
         mv.setViewName("redirect:/message");
         
         return mv;
@@ -328,6 +352,7 @@ public class UserController {
 		
 		ModelAndView mv = new ModelAndView();
 	
+		User user = null;
 		VerificationToken verificationToken = null;
 		try {
 			verificationToken = userService.getVerificationToken(token);
@@ -335,21 +360,29 @@ public class UserController {
 			throw new VerificationException(ex);
 		}
         
+        if (verificationToken != null) {
+        	user = verificationToken.getUser();
+        }
+        
 		Object[] obj = new Object[] {null};
-        if (verificationToken == null) {
+        if (verificationToken == null || user == null) {
         	logger.debug("invalid token");
-        	obj[0] = (Object) env.getProperty("company.email.support.account");
-        	String msg = messages.getMessage("user.register.invalidToken1", null, "Invalid token", locale) + 
-        				 messages.getMessage("user.register.invalidToken2", obj, "Invalid token", locale);
-        	redir.addFlashAttribute("message", msg);
+    		String msg = messages.getMessage("user.register.header.invalid", null, "", locale);
+    		redir.addFlashAttribute("msgHeader", msg);
+    		List<String> msgList = new ArrayList<String>();
+    		obj[0] = (Object) env.getProperty("company.email.support.account");
+        	msg = messages.getMessage("user.register.invalidToken", obj, "Invalid token", locale);
+            msgList.add(msg);
+            redir.addFlashAttribute("messages", msgList);
         	redir.addFlashAttribute("register", true);
-        	mv.setViewName("redirect:/user/invalidToken");
+        	redir.addFlashAttribute("invalid", true);
+        	mv.setViewName("redirect:/user/tokenError");
         	return mv;     	
         }
 
-        User user = verificationToken.getUser();
         //the user may have already clicked on the link once which would have enabled them; if that's the case just display the login,
         //even if the token has expired
+        //TODO: SECURITY: test what happens if the user record has been deleted
         if (user.isEnabled()) {
             logger.debug("user already enabled");
             mv.setViewName("redirect:/user/login");
@@ -359,11 +392,16 @@ public class UserController {
         Calendar cal = Calendar.getInstance();
         if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
         	logger.debug("token expired");
-        	redir.addFlashAttribute("message", messages.getMessage("user.register.expiredToken", null, "Expired token", locale));
+    		String msg = messages.getMessage("user.register.header.expired", null, "", locale);
+    		redir.addFlashAttribute("msgHeader", msg);
+    		List<String> msgList = new ArrayList<String>();
+        	msg = messages.getMessage("user.register.expiredToken", null, "Expired token", locale);
+            msgList.add(msg);
+            redir.addFlashAttribute("messages", msgList);
         	redir.addFlashAttribute("register", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
-        	mv.setViewName("redirect:/user/expiredToken");
+        	mv.setViewName("redirect:/user/tokenError");
         	return mv;
         }
 
@@ -401,8 +439,15 @@ public class UserController {
        	logger.debug("new token requested - publishing event");
        	eventPublisher.publishEvent(new RegistrationCompleteEvent(user, locale, token));
 
-        redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.register.sentNewToken", null, "Token sent", locale));
+       	Object[] obj = new String[] {null};
+       	redir.addFlashAttribute("title", messages.getMessage("registration.title", null, "Successful registration", locale));
+       	obj[0] = user.getFirstName() + " " + user.getLastName();
+		String msg = messages.getMessage("user.register.header.sent", obj, "", locale);
+		redir.addFlashAttribute("msgHeader", msg);
+		List<String> msgList = new ArrayList<String>();
+        msg = messages.getMessage("user.register.sentNewToken", null, "Token sent", locale);
+        msgList.add(msg);
+        redir.addFlashAttribute("messages", msgList);
         mv.setViewName("redirect:/message");
         return mv;
     }
@@ -512,15 +557,24 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}
 		
-        String userName = user.getFirstName() + " " + user.getLastName();
+		if (user.isEmailAdmin()) {
+			String userName = user.getFirstName() + " " + user.getLastName();
+	
+	        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+			emailDetail.setChangeType(ChangeType.PROFILE);
+	        String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
 
-        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-		emailDetail.setChangeType(ChangeType.PROFILE);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-			throw new SaveAccountException(ex);
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+			}
 		}
 		
 		return "redirect:/user/dashboard";
@@ -674,78 +728,6 @@ public class UserController {
 	}
 	
 	/*******************************/
-	/*** Change password handler ***/
-	/*******************************/
-	/*@MaintAware
-	@RequestMapping(value = "user/changePassword", method = RequestMethod.GET)
-	public String getPassword(Model model) {
-		logger.info("user/changePassword GET");
-
-		ChangePasswordDto changePasswordDto = new ChangePasswordDto();
-		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", ChangePasswordDto.class); 
-		model.addAttribute("sizeMap", sizeMap);
-		model.addAttribute("changePasswordDto", changePasswordDto);
-		
-		return "user/changePassword";
-	}*/
-
-	/*@MaintAware
-	@RequestMapping(value = "user/changePassword", method = RequestMethod.POST)
-	public String postPassword(Model model, @ModelAttribute @Validated(ChangePasswordDtoSequence.class) ChangePasswordDto changePasswordDto, BindingResult result, Locale locale) 
-			throws SaveAccountException, AccessUserException {
-		logger.info("user/changePassword POST");
-
-		//must re-add attribute(s) in case of an error
-		Map<String, Object> sizeMap = constraintMap.getModelConstraint("Size", "max", ChangePasswordDto.class); 
-		model.addAttribute("sizeMap", sizeMap);
-		
-		User currentUser = (User)userInfo.getUserDetails();
-		
-		if (result.hasErrors()) {
-			logger.debug("Validation errors");
-			changePasswordDto.setCurrentPassword("");
-			changePasswordDto.setPassword("");
-			changePasswordDto.setConfirmPassword("");
-			return "user/changePassword";
-		}
-		
-		User user = null;
-		try {
-			user = userService.getUser(currentUser.getId());
-		} 
-		catch (Exception ex) {
-			throw new AccessUserException(ex);
-		}
-
-		if (!userService.isPasswordValid(changePasswordDto.getCurrentPassword(), user)) {
-			logger.debug("Validation errors");
-			String msg = messages.getMessage("user.invalidPassword", null, "Invalid password", locale);
-			FieldError err = new FieldError("changePasswordDto","currentPassword", msg);
-			result.addError(err);
-			return "user/changePassword";
-        }
-        
-		try {		
-			userService.changePassword(changePasswordDto.getPassword(), user);
-		} catch (Exception ex) {
-			throw new SaveAccountException(ex);
-		}        
-		
-        String userName = user.getFirstName() + " " + user.getLastName();
-
-        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-		emailDetail.setChangeType(ChangeType.PASSWORD);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-			throw new SaveAccountException(ex);
-		}        
-		
-		return "redirect:/user/dashboard";
-	}*/
-
-	/*******************************/
 	/*** Change account handler ***/
 	/*******************************/
 	@MaintAware
@@ -753,14 +735,26 @@ public class UserController {
 	public String getChangeAccount(Model model) {
 		logger.info("user/changeAccount GET");
 
+		//must get the user info from the database, not the userInfo object because
+		//the user may have clicked on an opt-out link in an email; that method
+		//is not able to update the userInfo object since it can't tell if the user
+		//is logged in or not
 		User user = (User)userInfo.getUserDetails();
+		try {
+			user = userService.getUser(user.getId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
 
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
 		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
 		model.addAttribute("changeNameDto", changeNameDto);		
 		model.addAttribute("changeEmailDto", changeEmailDto);
 		model.addAttribute("changePasswordDto", changePasswordDto);
+		model.addAttribute("changeNotificationDto", changeNotificationDto);
 
 		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
 				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
@@ -786,8 +780,10 @@ public class UserController {
 		//must re-add attribute(s) in case of an error
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
 		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
 		model.addAttribute("changeEmailDto", changeEmailDto);
 		model.addAttribute("changePasswordDto", changePasswordDto);
+		model.addAttribute("changeNotificationDto", changeNotificationDto);
 
 		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
 				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
@@ -808,20 +804,28 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}        
 
-        String userName = user.getFirstName() + " " + user.getLastName();
-
-        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-        emailDetail.setChangeType(ChangeType.NAME);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-			throw new SaveAccountException(ex);
+		if (user.isEmailAdmin()) {
+			String userName = user.getFirstName() + " " + user.getLastName();
+	
+	        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+	        emailDetail.setChangeType(ChangeType.NAME);
+			String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
+			
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+			}
 		}
 		
 		//return a success message
 		String msg = messages.getMessage("account.change.nameupdated", null, "Success", locale);
-
 		changeNameDto.setCurrentFirstName(user.getFirstName());
 		changeNameDto.setCurrentLastName(user.getLastName());
 		model.addAttribute("changeNameDto", changeNameDto);
@@ -847,8 +851,10 @@ public class UserController {
 		//must re-add attribute(s) in case of an error
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
 		model.addAttribute("changeNameDto", changeNameDto);
 		model.addAttribute("changePasswordDto", changePasswordDto);
+		model.addAttribute("changeNotificationDto", changeNotificationDto);
 
 		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
 				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
@@ -886,20 +892,28 @@ public class UserController {
 			throw new SaveAccountException(ex);
 		}        
 		
-        String userName = user.getFirstName() + " " + user.getLastName();
-
-        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-        emailDetail.setChangeType(ChangeType.EMAIL);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-			throw new SaveAccountException(ex);
+		if (user.isEmailAdmin()) {
+			String userName = user.getFirstName() + " " + user.getLastName();
+	
+	        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+	        emailDetail.setChangeType(ChangeType.EMAIL);
+			String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
+			
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+			}
 		}
 		
 		//return a success message
 		String msg = messages.getMessage("account.change.emailupdated", null, "Success", locale);
-
 		changeEmailDto.setCurrentEmail(user.getEmail());
 		model.addAttribute("changeEmailDto", changeEmailDto);
 		model.addAttribute("emailSuccessMessage", msg);
@@ -924,9 +938,11 @@ public class UserController {
 		//must re-add attribute(s) in case of an error
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
+		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
 		
-		model.addAttribute("changeNameDto", changeNameDto);		
+		model.addAttribute("changeNameDto", changeNameDto);
 		model.addAttribute("changeEmailDto", changeEmailDto);
+		model.addAttribute("changeNotificationDto", changeNotificationDto);
 
 		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
 				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
@@ -963,19 +979,30 @@ public class UserController {
         
 		try {
 			userService.changePassword(changePasswordDto.getPassword(), user);
+			//reload the user's authentication with the new password
+			userSecurityService.reauthenticateUser(user);
 		} catch (Exception ex) {
 			throw new SaveAccountException(ex);
 		}        
 		
-        String userName = user.getFirstName() + " " + user.getLastName();
-
-        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-		emailDetail.setChangeType(ChangeType.PASSWORD);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-			//do nothing - it should not be fatal if the email doesn't get sent
+		if (user.isEmailAdmin()) {
+			String userName = user.getFirstName() + " " + user.getLastName();
+	
+	        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+			emailDetail.setChangeType(ChangeType.PASSWORD);
+			String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
+			
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+			}
 		}
 		
 		//return a success message
@@ -985,6 +1012,150 @@ public class UserController {
 		return "user/changeAccount";
 	}
 
+	@MaintAware
+	@RequestMapping(value = "user/changeNotification", method = RequestMethod.POST)
+	public String postNotification(Model model, @ModelAttribute ChangeNotificationDto changeNotificationDto, BindingResult result, Locale locale) 
+			throws SaveAccountException, AccessUserException {
+		logger.info("user/changeNotification POST");
+
+		User user = null;
+		try {
+			user = userService.getUser(changeNotificationDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+
+		//must re-add attribute(s) in case of an error
+		ChangeNameDto changeNameDto = new ChangeNameDto(user);
+		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
+		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
+		model.addAttribute("changeNameDto", changeNameDto);
+		model.addAttribute("changeEmailDto", changeEmailDto);
+		model.addAttribute("changePasswordDto", changePasswordDto);
+		
+		Map<String, Object> sizeMap = constraintMap.getModelConstraints("Size", "max", 
+				ChangeNameDto.class, ChangeEmailDto.class, ChangePasswordDto.class); 
+		model.addAttribute("sizeMap", sizeMap);
+
+		if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			return "user/changeAccount";
+		}
+		
+		try {
+			user = userService.changeNotification(changeNotificationDto, user);
+			//reload the user's authentication with the new notification
+			userSecurityService.reauthenticateUser(user);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
+
+		if (user.isEmailAdmin()) {
+	        String userName = user.getFirstName() + " " + user.getLastName();
+	
+	        EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+	        emailDetail.setChangeType(ChangeType.NOTIFY);
+			String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
+	        
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+			}
+		}
+		
+		//return a success message
+		String msg = messages.getMessage("account.change.notificationupdated", null, "Success", locale);
+		model.addAttribute("notificationSuccessMessage", msg);
+
+		return "user/changeAccount";
+	}
+	
+	@RequestMapping(value = "user/optout", method = RequestMethod.GET)
+	public ModelAndView optOut(@RequestParam("id") final String id, @RequestParam("type") final String type, RedirectAttributes redir, Locale locale) {
+		
+		String userIdStr = encryptUtil.decryptURLParam(id);
+		String msgTypeStr = encryptUtil.decryptURLParam(type);
+		
+		if (StringUtils.isBlank(userIdStr) || StringUtils.isBlank(msgTypeStr)) {
+			throw new OptOutException("exception.OptOutException", null);
+		}
+
+		long userId = 0;
+		User user = null;
+		OptOutType outType = null;
+		
+		try {
+			userId = Long.parseLong(userIdStr);
+			outType = OptOutType.valueOf(msgTypeStr);
+		}
+		catch (Exception ex) {
+			throw new OptOutException(ex);
+		}
+		
+		try {
+			user = userService.getUser(userId);
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+		
+		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
+		
+		String msgCode = null;
+		
+		if (outType == OptOutType.ACCOUNT) {
+			changeNotificationDto.setEmailAdmin(false);
+			msgCode = "account.optout.emailAdmin";
+		}
+		else
+		if (outType == OptOutType.NEWMESSAGE) {
+			changeNotificationDto.setEmailMessage(false);
+			msgCode = "account.optout.emailMessage";
+		}
+		else
+		if (outType == OptOutType.RECIPE) {
+			changeNotificationDto.setEmailRecipe(false);
+			msgCode = "account.optout.emailRecipe";
+		}
+		else {
+			throw new OptOutException("exception.OptOutException", null);
+		}
+		
+		try {
+			user = userService.changeNotification(changeNotificationDto, user);
+			if (userSecurityService.isUserLoggedIn(user))
+				userSecurityService.reauthenticateUser(user);
+		} catch (Exception ex) {
+			throw new SaveAccountException(ex);
+		}        
+	
+		ModelAndView mv = new ModelAndView();
+	
+		Object[] obj = new String[] {null};
+		redir.addFlashAttribute("title", messages.getMessage("signup.notification", null, "Success", locale));
+		obj[0] = user.getFirstName() + " " + user.getLastName();
+		String msg = messages.getMessage("account.optout.header", obj, "", locale);
+		redir.addFlashAttribute("msgHeader", msg);
+		List<String> msgList = new ArrayList<String>();		
+		obj[0] = (Object) messages.getMessage(msgCode, null, "", locale);
+		msg = messages.getMessage("account.optout.message", obj, "", locale);
+        msgList.add(msg);
+        obj[0] = env.getProperty("company.support.baseurl");
+		msg = messages.getMessage("account.optout.review", obj, "", locale);
+        msgList.add(msg);
+        redir.addFlashAttribute("messages", msgList);
+        mv.setViewName("redirect:/message");
+        return mv;
+	}
+	
 	/***********************************************/
 	/*** Reset password and new password handler ***/
 	/***********************************************/
@@ -1048,8 +1219,15 @@ public class UserController {
 		logger.debug("password reset - publishing event");
        	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), null));
         
-        redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentToken", null, "Token sent", locale));
+       	Object[] obj = new String[] {null};
+       	redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
+       	obj[0] = user.getFirstName() + " " + user.getLastName();
+		String msg = messages.getMessage("user.password.header.sent", obj, "", locale);
+		redir.addFlashAttribute("msgHeader", msg);
+		List<String> msgList = new ArrayList<String>();
+        msg = messages.getMessage("user.password.sentToken", null, "Token sent", locale);
+        msgList.add(msg);
+        redir.addFlashAttribute("messages", msgList);
         mv.setViewName("redirect:/message");
         return mv;
     }
@@ -1077,25 +1255,37 @@ public class UserController {
         }
         
     	if (passwordResetToken == null || user == null || user.getId() != id) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.invalidToken", null, "Invalid token", locale));
+        	logger.debug("invalid token");
+    		String msg = messages.getMessage("user.password.header.invalid", null, "", locale);
+    		redir.addFlashAttribute("msgHeader", msg);
+    		List<String> msgList = new ArrayList<String>();
+        	msg = messages.getMessage("user.password.invalidToken", null, "Invalid token", locale);
+            msgList.add(msg);
+            redir.addFlashAttribute("messages", msgList);
         	redir.addFlashAttribute("password", true);
-        	mv.setViewName("redirect:/user/invalidToken");
-        	return mv;     	
+        	redir.addFlashAttribute("invalid", true);
+        	mv.setViewName("redirect:/user/tokenError");
+        	return mv;
     	}
 		
         final Calendar cal = Calendar.getInstance();
         if ((passwordResetToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-        	redir.addFlashAttribute("message", messages.getMessage("user.password.expiredToken", null, "Expired token", locale));
+        	logger.debug("token expired");
+    		String msg = messages.getMessage("user.password.header.expired", null, "", locale);
+    		redir.addFlashAttribute("msgHeader", msg);
+    		List<String> msgList = new ArrayList<String>();
+        	msg = messages.getMessage("user.password.expiredToken", null, "Expired token", locale);
+            msgList.add(msg);
+            redir.addFlashAttribute("messages", msgList);
         	redir.addFlashAttribute("password", true);
         	redir.addFlashAttribute("expired", true);
         	redir.addFlashAttribute("token", token);
-        	mv.setViewName("redirect:/user/expiredToken");
+        	mv.setViewName("redirect:/user/tokenError");
         	return mv;
         }
 
 		//Note: setting security at this point as suggested by Baeldung opens up all menu items to the user prior to 
         //creating a new password;  alternatively, adding the user ID to the model allows for retrieving in in the POST method
-
         //final Authentication auth = new UsernamePasswordAuthenticationToken(user, null, userDetailsService.loadUserByUsername(user.getEmail()).getAuthorities());
         //SecurityContextHolder.getContext().setAuthentication(auth);
         
@@ -1125,8 +1315,15 @@ public class UserController {
 		logger.debug("new token requested - publishing event");
        	eventPublisher.publishEvent(new PasswordResetEvent(user, request.getLocale(), token));
 		
-        redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
-        redir.addFlashAttribute("message", messages.getMessage("user.password.sentNewToken", null, "Token sent", locale));
+       	Object[] obj = new String[] {null};
+       	redir.addFlashAttribute("title", messages.getMessage("password.title", null, "Success", locale));
+       	obj[0] = user.getFirstName() + " " + user.getLastName();
+		String msg = messages.getMessage("user.password.header.sent", obj, "", locale);
+		redir.addFlashAttribute("msgHeader", msg);
+		List<String> msgList = new ArrayList<String>();
+        msg = messages.getMessage("user.password.sentNewToken", null, "Token sent", locale);
+        msgList.add(msg);
+        redir.addFlashAttribute("messages", msgList);
         mv.setViewName("redirect:/message");
         return mv;
     }
@@ -1178,16 +1375,25 @@ public class UserController {
         	throw new PasswordResetException(ex);
         }
         
-		String userName = user.getFirstName() + " " + user.getLastName();
-		
-		EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
-		emailDetail.setChangeType(ChangeType.PASSWORD);
-		try {
-			accountChangeEmail.constructEmail(emailDetail);
-			emailSender.sendHtmlEmail(emailDetail);
-		} catch (Exception ex) {
-	    	throw new PasswordResetException(ex);
-	    }
+		if (user.isEmailAdmin()) {
+			String userName = user.getFirstName() + " " + user.getLastName();
+			
+			EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), locale);
+			emailDetail.setChangeType(ChangeType.PASSWORD);
+			String idStr = String.valueOf(user.getId());
+			String userIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.ACCOUNT.name());
+			String optoutUrl = "/user/optout?id=" + userIdStr + "&type=" + msgTypeStr;
+			emailDetail.setOptoutUrl(optoutUrl);
+			
+			try {
+				accountChangeEmail.constructEmail(emailDetail);
+				emailSender.sendHtmlEmail(emailDetail);
+			} catch (Exception ex) {
+				//log the error but do nothing - it should not be fatal if the email doesn't get sent
+				logService.addException(ex);
+		    }
+		}
 		
 		return "redirect:/user/login";
 	}
@@ -1218,11 +1424,11 @@ public class UserController {
 	@RequestMapping(value = "user/sendMessage", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject sendUserMessage(@RequestBody UserMessage userMessage) throws RestException {
+	public ResponseObject sendUserMessage(@RequestBody UserMessage userMessage, Locale locale) throws RestException {
 		logger.info("user/sendMessage POST");
 		
 		try {
-			userMessageService.addMessage(userMessage);
+			userMessageService.addMessage(userMessage, MessageType.MEMBER, locale);
 		} catch (Exception ex) {
 			throw new RestException("exception.sendUserMessage", ex);
 		}
@@ -1245,23 +1451,64 @@ public class UserController {
 		return new ResponseObject();
 	}
 
+	@Async
+	@TransactionalEventListener(fallbackExecution = true)
+	public void handleUserMessageEvent(UserMessageEvent event) {
+		logger.info("handleUserMessageEvent");
+		User recipient = userService.getUser(event.getUserMessage().getToUserId());
+
+		//do nothing if the user opted out of receiving message emails
+		if (!recipient.isEmailMessage())
+			return;
+		
+		String recipientName = recipient.getFirstName() + " " + recipient.getLastName();
+		String recipientEmail = recipient.getEmail();
+		
+		EmailDetail emailDetail = new EmailDetail(recipientName, recipientEmail, event.getLocale());
+		
+		MessageType type = event.getMessageType();
+		if (type == MessageType.MEMBER) {
+			User sender = userService.getUser(event.getUserMessage().getFromUserId());
+			String senderName = sender.getFirstName() + " " + sender.getLastName();
+			emailDetail.setUserName(senderName);
+		}
+		if (type == MessageType.RECIPE) {
+			Recipe recipe = recipeService.getRecipe(event.getUserMessage().getRecipeId());
+			emailDetail.setRecipeName(recipe.getName());
+		}
+		
+		//build the URL with encrypted parameters
+		String idStr = String.valueOf(recipient.getId());
+		String recipIdStr = encryptUtil.encryptURLParam(idStr);
+		String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.NEWMESSAGE.name());
+		String optoutUrl = "/user/optout?id=" + recipIdStr + "&type=" + msgTypeStr;
+		emailDetail.setOptoutUrl(optoutUrl);
+		
+		emailDetail.setMessageType(event.getMessageType());
+		//it's not possible to get the precise date/time without querying the DB again;
+		//using "now" is close enough since the seconds do not appear in the email
+		//emailDetail.setMessageDate(event.getUserMessage().getDateSent());
+		emailDetail.setMessageDate(new Date());
+		
+    	try {
+    		newMessageEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			// do nothing - not a fatal error
+			logService.addException(ex);
+		}
+	}
+	
 	/********************/
 	/*** Shared pages ***/
 	/********************/
-	@RequestMapping(value = "user/expiredToken", method = RequestMethod.GET)
+	@RequestMapping(value = "user/tokenError", method = RequestMethod.GET)
 	public String getExpiredToken(Model model) {
-		logger.info("user/expiredToken GET");
+		logger.info("user/tokenError GET");
 		
-		return "user/expiredToken";
+		return "user/tokenError";
 	}
 	
-	@RequestMapping(value = "user/invalidToken", method = RequestMethod.GET)
-	public String getInvalidToken(Model model) {
-		logger.info("user/invalidToken GET");
-		
-		return "user/invalidToken";
-	}	
-
 	@RequestMapping(value = "message", method = RequestMethod.GET)
 	public String getUserMessage(Model model) {
 		logger.info("message GET");

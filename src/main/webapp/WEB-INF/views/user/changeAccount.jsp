@@ -59,7 +59,6 @@
 			</div>
 		</div>
 		<div class="panel-group" id="changeGroup">
-		<!-- <div> -->
 			<div class="panel col-sm-12">
 				<div class="panel-heading">
 					<div class="row form-group ">
@@ -77,7 +76,6 @@
 						</div>
 					</div>
 				</div>
-				<%-- <div id="panelName" class="panel-collapse <c:if test="${empty firstNameError and empty lastNameError}">collapse</c:if>"> --%>
 				<div id="panelName" class="panel-collapse collapse">
 					<c:url var="changeName" value="/user/changeName"/>
 					<form:form name="nameForm" id="nameForm" role="form" action="${changeName}" method="post" modelAttribute="changeNameDto">
@@ -163,7 +161,6 @@
 						</div>
 					</div>
 				</div>
-				<%-- <div id="panelPassword" class="panel-collapse <c:if test="${empty passwordError and empty confirmPasswordError and empty currentPasswordError}">collapse</c:if>"> --%>
 				<div id="panelPassword" class="panel-collapse collapse">
 					<c:url var="changePassword" value="/user/changePassword"/>
 					<form:form name="formWithPswd" id="formWithPswd" role="form" action="${changePassword}" method="post" modelAttribute="changePasswordDto">
@@ -194,6 +191,80 @@
 						<div class="form-group col-sm-2 col-sm-offset-5 text-center">
 							<button class="btn btn-primary pull-left" type="submit" id="btnSubmitPassword" name="btnSubmitPassword"><spring:message code="common.submit"></spring:message></button>
 							<button class="btn btn-default pull-right" id="btnCancelPassword" name="btnCancelPassword"><spring:message code="common.cancel"></spring:message></button>
+		        		</div>
+		       		</div>
+					</form:form>
+				</div>
+			</div>
+			<div class="panel col-sm-12">
+				<div class="panel-heading">
+					<div class="row form-group ">
+						<div class="col-sm-2 col-sm-offset-2">
+							<label class="control-label"><spring:message code="signup.notification"></spring:message></label>
+						</div>
+						<div class="col-sm-3">
+						</div>
+						<div class="col-sm-2">
+							<a id="linkNotify" data-toggle="collapse" data-target="#panelNotify" href="#panelNotify"><spring:message code="account.changenotification"></spring:message></a>
+						</div>
+						<div class="col-sm-3">
+							${notificationSuccessMessage}
+						</div>
+					</div>
+				</div>
+				<div id="panelNotify" class="panel-collapse collapse">
+					<c:url var="changeNotification" value="/user/changeNotification"/>
+					<form:form name="formWithNotify" id="formWithNotify" role="form" action="${changeNotification}" method="post" 
+						modelAttribute="changeNotificationDto">
+					<form:input type="hidden" path="userId"/>
+					<input type="hidden" id="hiddenEmailAdmin" value="${changeNotificationDto.emailAdmin}"/>
+					<input type="hidden" id="hiddenEmailRecipe" value="${changeNotificationDto.emailRecipe}"/>
+					<input type="hidden" id="hiddenEmailMessage" value="${changeNotificationDto.emailMessage}"/>
+					<div class="panel-body" style="padding-top:0px;padding-bottom:10px">
+						<div class="row">		
+							<div class="col-sm-6 col-sm-offset-2">
+								<label style="font-weight:normal"><spring:message code="signup.emailAccount"></spring:message></label>
+								<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
+									title="<spring:message code="signup.emailAccount.info"></spring:message>"></span>
+							</div>
+							<div class="col-sm-3">
+								<div class="radio-inline">
+									<form:radiobutton id="emailAdminYes" value="true" path="emailAdmin"/><spring:message code="common.yes"></spring:message>
+								</div>
+								<div class="radio-inline">
+									<form:radiobutton id="emailAdminNo" value="false" path="emailAdmin"/><spring:message code="common.no"></spring:message>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6 col-sm-offset-2">
+								<label style="font-weight:normal"><spring:message code="signup.emailRecipe"></spring:message></label>
+							</div>
+							<div class="col-sm-3">
+								<div class="radio-inline">
+									<form:radiobutton id="emailRecipeYes" value="true" path="emailRecipe"/><spring:message code="common.yes"></spring:message>
+								</div>
+								<div class="radio-inline">
+									<form:radiobutton id="emailRecipeNo" value="false" path="emailRecipe"/><spring:message code="common.no"></spring:message>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6 col-sm-offset-2">
+								<label style="font-weight:normal"><spring:message code="signup.emailNewMessage"></spring:message></label>
+							</div>
+							<div class="col-sm-3">
+								<div class="radio-inline">
+									<form:radiobutton id="emailMessageYes" value="true" path="emailMessage"/><spring:message code="common.yes"></spring:message>
+								</div>
+								<div class="radio-inline">
+									<form:radiobutton id="emailMessageNo" value="false" path="emailMessage"/><spring:message code="common.no"></spring:message>
+								</div>
+							</div>
+						</div>
+						<div class="form-group col-sm-2 col-sm-offset-5 text-center spacer-vert-xs">
+							<button class="btn btn-primary pull-left" type="submit" id="btnSubmitNotification" name="btnSubmitNotification"><spring:message code="common.submit"></spring:message></button>
+							<button class="btn btn-default pull-right" id="btnCancelNotification" name="btnCancelNotification"><spring:message code="common.cancel"></spring:message></button>
 		        		</div>
 		       		</div>
 					</form:form>

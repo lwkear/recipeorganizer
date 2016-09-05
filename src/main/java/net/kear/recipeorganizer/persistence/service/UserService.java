@@ -2,6 +2,7 @@ package net.kear.recipeorganizer.persistence.service;
  
 import java.util.List;
 
+import net.kear.recipeorganizer.persistence.dto.ChangeNotificationDto;
 import net.kear.recipeorganizer.persistence.dto.UserDto;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
@@ -26,6 +27,8 @@ public interface UserService {
     public User changeName(String firstName, String lastName, User user);
     public User changeEmail(String email, User user);
     public User changePassword(String password, User user);
+    public User changeNotification(boolean emailAdmin, boolean emailRecipe, boolean emailMessage, User user);
+    public User changeNotification(ChangeNotificationDto changeNotificationDto, User user);
     public void changeRole(String roleName, User user);
     public void saveUserProfile(UserProfile userProfile);
     public void createUserVerificationToken(User user, String token);

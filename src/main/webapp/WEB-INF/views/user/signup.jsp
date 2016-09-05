@@ -90,15 +90,62 @@
 					<div class="col-sm-12 spacer-vert-xs">
 						<div class="form-group col-sm-8 col-sm-offset-2">
 							<div class="row">
-								<div class="col-sm-8">
+								<div class="col-sm-9">
 									<label class="control-label" for="submitRecipes"><spring:message code="signup.submitrecipe"></spring:message></label>
 								</div>
 								<div class="col-sm-3">
 									<div class="radio-inline">
-										<form:radiobutton value="true" path="submitRecipes" checked="true"/><spring:message code="common.yes"></spring:message>
+										<form:radiobutton value="true" path="submitRecipes"/><spring:message code="common.yes"></spring:message>
 									</div>
 									<div class="radio-inline">
 										<form:radiobutton value="false" path="submitRecipes"/><spring:message code="common.no"></spring:message>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-sm-12">
+						<div class="form-group col-sm-8 col-sm-offset-2">
+							<label class="control-label"><spring:message code="signup.notification"></spring:message></label>
+							<div class="row">
+								<div class="col-sm-9">
+									<label style="font-weight:normal"><spring:message code="signup.emailAccount"></spring:message></label>
+									<span class="glyphicon glyphicon-info-sign" style="color:#336699;" data-toggle="tooltip" data-placement="top" 
+										title="<spring:message code="signup.emailAccount.info"></spring:message>"></span>
+								</div>
+								<div class="col-sm-3">
+									<div class="radio-inline">
+										<form:radiobutton value="true" path="emailAdmin"/><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline">
+										<form:radiobutton value="false" path="emailAdmin"/><spring:message code="common.no"></spring:message>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-9">
+									<label style="font-weight:normal"><spring:message code="signup.emailRecipe"></spring:message></label>
+								</div>
+								<div class="col-sm-3">
+									<div class="radio-inline">
+										<form:radiobutton value="true" path="emailRecipe"/><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline">
+										<form:radiobutton value="false" path="emailRecipe"/><spring:message code="common.no"></spring:message>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-9">
+									<label style="font-weight:normal"><spring:message code="signup.emailNewMessage"></spring:message></label>
+								</div>
+								<div class="col-sm-3">
+									<div class="radio-inline">
+										<form:radiobutton value="true" path="emailMessage"/><spring:message code="common.yes"></spring:message>
+									</div>
+									<div class="radio-inline">
+										<form:radiobutton value="false" path="emailMessage"/><spring:message code="common.no"></spring:message>
 									</div>
 								</div>
 							</div>

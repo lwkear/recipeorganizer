@@ -96,9 +96,11 @@ table {
 				</tbody>
 			</table>
 		</div>
-		<div class="col-sm-12">
-			<small>*<spring:message code="messages.hover"></spring:message></small>
-		</div>
+		<c:if test="${not empty messages}">
+			<div class="col-sm-12">
+				<small>*<spring:message code="messages.hover"></spring:message></small>
+			</div>
+		</c:if>
 	</div>	
 
 <!-- share recipe dialog -->

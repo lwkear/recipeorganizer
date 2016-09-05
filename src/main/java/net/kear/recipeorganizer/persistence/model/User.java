@@ -85,7 +85,16 @@ public class User implements Serializable {
 	
 	@Column(name = "INVITED")
 	private boolean invited;
-	
+
+	@Column(name = "EMAIL_ADMIN")
+	private boolean emailAdmin;
+
+	@Column(name = "EMAIL_RECIPE")
+	private boolean emailRecipe;
+
+	@Column(name = "EMAIL_MESSAGE")
+	private boolean emailMessage;
+
 	@Transient
 	private boolean loggedIn = false;
 	
@@ -105,8 +114,9 @@ public class User implements Serializable {
 	
 	public User() {}
 	
-	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, Date dateAdded, 
-				Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean invited, boolean loggedIn, long numRecipes, long newMsgCount, Role role, UserProfile userProfile) {
+	public User(long id, String firstName, String lastName, String email, String password, int enabled, int tokenExpired, int locked, int accountExpired, 
+				Date dateAdded, Date lastLogin, int passwordExpired, Date passwordExpiryDate, boolean invited, boolean emailAdmin, boolean emailRecipe, 
+				boolean emailMessage, boolean loggedIn, long numRecipes, long newMsgCount, Role role, UserProfile userProfile) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -121,6 +131,9 @@ public class User implements Serializable {
 		this.lastLogin = lastLogin;
 		this.passwordExpired = passwordExpired;
 		this.invited = invited;
+		this.emailAdmin = emailAdmin;
+		this.emailRecipe = emailRecipe;
+		this.emailMessage = emailMessage;
 		this.loggedIn = loggedIn;
 		this.numRecipes = numRecipes;
 		this.newMsgCount = newMsgCount;
@@ -144,6 +157,9 @@ public class User implements Serializable {
 		this.passwordExpired = user.passwordExpired;
 		this.passwordExpiryDate = user.passwordExpiryDate;
 		this.invited = user.invited;
+		this.emailAdmin = user.emailAdmin;
+		this.emailRecipe = user.emailRecipe;
+		this.emailMessage = user.emailMessage;
 		this.loggedIn = user.loggedIn;
 		this.numRecipes = user.numRecipes;
 		this.newMsgCount = user.newMsgCount;
@@ -257,6 +273,30 @@ public class User implements Serializable {
 
 	public void setInvited(boolean invited) {
 		this.invited = invited;
+	}
+
+	public boolean isEmailAdmin() {
+		return emailAdmin;
+	}
+
+	public void setEmailAdmin(boolean emailAdmin) {
+		this.emailAdmin = emailAdmin;
+	}
+
+	public boolean isEmailRecipe() {
+		return emailRecipe;
+	}
+
+	public void setEmailRecipe(boolean emailRecipe) {
+		this.emailRecipe = emailRecipe;
+	}
+
+	public boolean isEmailMessage() {
+		return emailMessage;
+	}
+
+	public void setEmailMessage(boolean emailMessage) {
+		this.emailMessage = emailMessage;
 	}
 
 	public Date getDateUpdated() {
@@ -385,6 +425,9 @@ public class User implements Serializable {
 				+ ", passwordExpired=" + passwordExpired
 				+ ", passwordExpiryDate=" +  passwordExpiryDate
 				+ ", invited=" + invited
+				+ ", emailAdmin=" + emailAdmin
+				+ ", emailRecipe=" + emailRecipe
+				+ ", emailMessage=" + emailMessage
 				+ ", loggedIn=" + loggedIn 
 				+ ", numRecipes=" + numRecipes 
 				+ ", role=" + role 

@@ -19,6 +19,7 @@ public class RegistrationEmail extends EmailMessage {
 			"email.registration.subject",
 			"email.registration.signupThankyou",
 			"email.registration.completeProcess",
+			"email.common.optout.required.registration",
 			"email.common.expire",
 			"email.common.nextSteps",
 			"email.common.pastelink",
@@ -58,6 +59,8 @@ public class RegistrationEmail extends EmailMessage {
 		DateTime now = new DateTime();
 		obj[0] = now.toString("yyyy");
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
+		obj[0] = getMsgText("email.common.optout.required.registration");
+		map.put("optout", getArgMessage("email.common.optout.required", obj));
 		Writer out = new StringWriter();
 		
 		try {

@@ -15,15 +15,16 @@ public class AccountChangeEmail extends EmailMessage {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public enum ChangeType {NAME, EMAIL, PASSWORD, PROFILE}; 
+	public enum ChangeType {NAME, EMAIL, PASSWORD, NOTIFY, PROFILE}; 
 	
 	public String[] textCodes = {
 			"email.account.email",
 			"email.account.name",
 			"email.account.password",
 			"email.account.profile",
-			"email.account.change",
-			"email.common.accountChange",			
+			"email.account.notify",
+			"email.common.accountChange",
+			"email.common.optout.type.account",
 			"email.common.tagline",
 			"email.common.notinitiate",
 			"email.common.memberthankyou",
@@ -40,7 +41,7 @@ public class AccountChangeEmail extends EmailMessage {
 		
 		emailDetail.setSubject(getMsgText("email.common.accountChange"));
 		
-		Object[] obj = new String[] {null, null};
+		Object[] obj = new String[] {null, null, null};
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("accountChange", getMsgText("email.common.accountChange"));		
@@ -57,6 +58,9 @@ public class AccountChangeEmail extends EmailMessage {
 		if (emailDetail.getChangeType() == ChangeType.PASSWORD)
 			obj[0] = (Object) getMsgText("email.account.password");
 		else
+		if (emailDetail.getChangeType() == ChangeType.NOTIFY)
+			obj[0] = (Object) getMsgText("email.account.notify");
+		else
 			obj[0] = (Object) getMsgText("email.account.profile");
 		map.put("changeText", getArgMessage("email.account.change", obj));
 		obj[0] = (Object) env.getProperty("company.email.support.account");
@@ -68,6 +72,10 @@ public class AccountChangeEmail extends EmailMessage {
 		obj[0] = now.toString("yyyy");
 		obj[1] = null;
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
+		obj[0] = getMsgText("email.common.optout.type.account"); 
+		obj[1] = getAppUrl() + emailDetail.getOptoutUrl();
+		obj[2] = getAppUrl() + "/user/changeAccount";
+		map.put("optout", getArgMessage("email.common.optout", obj));
 		Writer out = new StringWriter();
 		
 		try {

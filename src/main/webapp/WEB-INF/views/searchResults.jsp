@@ -63,6 +63,11 @@
 							</div>
 						</form>
 					</div>
+					<div class="col-sm-12">
+						<div class="form-group text-center">
+							<button class="btn btn-default" id="btnReset"><spring:message code="common.reset"></spring:message></button>
+		        		</div>
+					</div>
 				</div>
 				<div class="col-sm-9">
 					<div class="col-sm-12">

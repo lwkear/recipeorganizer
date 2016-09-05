@@ -98,4 +98,17 @@ $(function() {
 		else
 			resultsTable.column([3]).search('').draw();
 	});
+	
+	$('#btnReset').on('click', function() {
+		$('.category').each(function() {
+			$(this).attr('checked', false);
+		});
+		$('.source').each(function() {
+			$(this).attr('checked', false);
+		});
+		resultsTable.column([2]).search('');
+		resultsTable.column([3]).search('');
+		resultsTable.draw();
+		blurInputFocus();
+	});
 })

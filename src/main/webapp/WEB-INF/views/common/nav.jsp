@@ -82,6 +82,7 @@
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
 						<li><a href="<c:url value="/whatsnew" />"><spring:message code="menu.whatsnew"></spring:message></a></li>
+						<li role="separator" class="divider"></li>
 						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
 						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
 						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>

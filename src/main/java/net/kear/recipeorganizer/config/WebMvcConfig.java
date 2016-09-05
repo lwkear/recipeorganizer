@@ -206,7 +206,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     		"WEB-INF/messages/whatsnew"
     		);
         source.setDefaultEncoding("UTF-8");
-        source.setCacheSeconds(5);	//TODO: change this back to 5
+        source.setCacheSeconds(5);	//TODO: PRODUCTION: change this back to 5
         source.setFallbackToSystemLocale(false);
         return source;
     }

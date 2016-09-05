@@ -1,7 +1,9 @@
 package net.kear.recipeorganizer.util.email;
 
+import java.util.Date;
 import java.util.Locale;
 
+import net.kear.recipeorganizer.enums.MessageType;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
 
 public class EmailDetail {
@@ -13,14 +15,17 @@ public class EmailDetail {
 	private String subject = "";
 	private String body = "";
 	private String tokenUrl = "";
+	private String optoutUrl = "";
 	private Locale locale = null;
 	private boolean pdfAttached = false;
 	private String pdfFileName = "";
 	private ChangeType changeType;
+	private MessageType messageType;
 	private String recipeName;
 	private String userMessage;
 	private String userName;
 	private String userFirstName;
+	private Date messageDate;
 	
 	public EmailDetail() {}
 	
@@ -86,6 +91,14 @@ public class EmailDetail {
 		this.tokenUrl = tokenUrl;
 	}
 
+	public String getOptoutUrl() {
+		return optoutUrl;
+	}
+
+	public void setOptoutUrl(String optoutUrl) {
+		this.optoutUrl = optoutUrl;
+	}
+
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
@@ -118,6 +131,14 @@ public class EmailDetail {
 		this.changeType = changeType;
 	}
 
+	public MessageType getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(MessageType messageType) {
+		this.messageType = messageType;
+	}
+
 	public String getRecipeName() {
 		return recipeName;
 	}
@@ -148,5 +169,17 @@ public class EmailDetail {
 
 	public void setUserFirstName(String userFirstName) {
 		this.userFirstName = userFirstName;
+	}
+
+	public Date getMessageDate() {
+		return messageDate;
+	}
+
+	public void setMessageDate(Date messageDate) {
+		this.messageDate = messageDate;
+	}
+	
+	public String getEncodedUser() {
+		return null;
 	}
 }

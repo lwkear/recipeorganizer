@@ -80,6 +80,7 @@
 	<p id="ingredadmin.table.zeroRecords"/><spring:message code="ingredadmin.table.zeroRecords"></spring:message>
 	<p id="usermessage.to"/><spring:message code="usermessage.to"></spring:message>
 	<p id="usermessage.sent"/><spring:message code="usermessage.sent"></spring:message>
+	<p id="usermessage.nomessage"/><spring:message code="usermessage.nomessage"></spring:message>
 	<p id="messages.table.emptyTable"/><spring:message code="messages.table.emptyTable"></spring:message>
 	<p id="messages.table.info"/><spring:message code="messages.table.info"></spring:message>
 	<p id="messages.table.infoEmpty"/><spring:message code="messages.table.infoEmpty"></spring:message>

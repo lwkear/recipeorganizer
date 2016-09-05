@@ -33,6 +33,7 @@ public class InvitationEmail extends EmailMessage {
 			"email.invitation.tryit",
 			"email.invitation.convenience",
 			"email.invitation.login",
+			"email.common.optout.type.account",
 			"email.common.nextSteps",
 			"email.common.pastelink",
 			"email.common.enjoy",
@@ -50,7 +51,7 @@ public class InvitationEmail extends EmailMessage {
 		
 		emailDetail.setSubject(getMsgText("email.invitation.subject"));
 	
-		Object[] obj = new String[1];
+		Object[] obj = new String[] {null, null};
 		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("invitationSubject", getMsgText("email.invitation.subject"));		
@@ -76,6 +77,9 @@ public class InvitationEmail extends EmailMessage {
 		DateTime now = new DateTime();
 		obj[0] = now.toString("yyyy");
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
+		obj[0] = getMsgText("email.common.optout.type.account"); 
+		obj[1] = getAppUrl() + emailDetail.getOptoutUrl();
+		map.put("optout", getArgMessage("email.common.optout.invitation", obj));
 		Writer out = new StringWriter();
 		
 		try {

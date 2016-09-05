@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.enums.OptOutType;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.CategoryDto;
@@ -59,6 +60,7 @@ import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.util.CookieUtil;
+import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
@@ -102,6 +104,8 @@ public class DisplayController {
 	private EmailSender emailSender;
 	@Autowired
 	private ShareRecipeEmail shareRecipeEmail;
+	@Autowired
+	EncryptionUtil encryptUtil;
 	
 	/****************************/
 	/*** List recipes handler ***/
@@ -238,6 +242,7 @@ public class DisplayController {
 		model.addAttribute("submitJoin", recipe.getUser().getDateAdded());
 		model.addAttribute("profile", profile);
 		model.addAttribute("recipeShareDto", shareDto);
+		model.addAttribute("allowEmail",user.isEmailRecipe());
 		
 		if (user.getId() != recipe.getUser().getId())
 			recipeService.addView(recipe);
@@ -430,6 +435,8 @@ public class DisplayController {
 		User recipient = null;
 		String recipientName = "";
 		String recipientEmail = "";
+		String optoutUrl = "";
+		boolean recipientIsUser = false;
 		if (shareRecipeDto.getRecipientId() != 0) {
 			try {
 				recipient = userService.getUser(shareRecipeDto.getRecipientId());
@@ -438,12 +445,28 @@ public class DisplayController {
 				throw new RestException("exception.shareRecipeUser", ex);
 			}
 			
+			recipientIsUser = true;
 			recipientName = recipient.getFirstName() + " " + recipient.getLastName();
 			recipientEmail = recipient.getEmail();
+			String idStr = String.valueOf(recipient.getId());
+			String recipIdStr = encryptUtil.encryptURLParam(idStr);
+			String msgTypeStr = encryptUtil.encryptURLParam(OptOutType.RECIPE.name());
+			optoutUrl = "/user/optout?id=" + recipIdStr + "&type=" + msgTypeStr;
 		}
 		else {
 			recipientName = shareRecipeDto.getRecipientName();
 			recipientEmail = shareRecipeDto.getRecipientEmail(); 
+		}
+		
+		if (recipientIsUser) {
+			if (!recipient.isEmailRecipe()) {
+				String msg = messages.getMessage("email.recipe.noemail", null, "Unable to send recipe.", locale);
+				ResponseObject obj = new ResponseObject(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+				response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+				return obj;
+			}
 		}
 		
     	String pdfFileName = "";
@@ -464,6 +487,8 @@ public class DisplayController {
 		emailDetail.setRecipeName(shareRecipeDto.getRecipeName());
 		emailDetail.setPdfAttached(true);
 		emailDetail.setPdfFileName(pdfFileName);
+		emailDetail.setOptoutUrl(optoutUrl);
+	
     	try {
     		shareRecipeEmail.constructEmail(emailDetail);
 			emailSender.sendHtmlEmail(emailDetail);

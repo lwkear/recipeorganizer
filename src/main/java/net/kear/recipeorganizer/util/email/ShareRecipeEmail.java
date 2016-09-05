@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public class ShareRecipeEmail extends EmailMessage {
 		
 		emailDetail.setSubject(getMsgText("email.recipe.title"));
 		
-		Object[] obj = new String[] {null, null};
+		Object[] obj = new String[] {null, null, null};
 
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("recipeTitle", getMsgText("email.recipe.title"));		
@@ -59,6 +60,14 @@ public class ShareRecipeEmail extends EmailMessage {
 		obj[0] = now.toString("yyyy");
 		obj[1] = null;
 		map.put("copyright", getArgMessage("email.common.copyright", obj));
+		if (!StringUtils.isBlank(emailDetail.getOptoutUrl())) {
+			obj[0] = getMsgText("email.common.optout.type.recipe");
+			obj[1] = getAppUrl() + emailDetail.getOptoutUrl();
+			obj[2] = getAppUrl() + "/user/changeAccount";
+			map.put("optout", getArgMessage("email.common.optout", obj));
+		}
+		else
+			map.put("optout", "");
 		Writer out = new StringWriter();
 		
 		try {

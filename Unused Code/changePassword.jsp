@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<%-- <!DOCTYPE html>
 <html>
 <head>
 
@@ -85,3 +85,4 @@
 <script src="<c:url value="/resources/custom/usersignup.js" />"></script>
 
 </html>
+ --%>

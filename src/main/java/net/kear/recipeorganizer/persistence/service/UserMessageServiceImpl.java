@@ -1,11 +1,15 @@
 package net.kear.recipeorganizer.persistence.service;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import net.kear.recipeorganizer.enums.MessageType;
+import net.kear.recipeorganizer.event.UserMessageEvent;
 import net.kear.recipeorganizer.persistence.dto.UserMessageDto;
 import net.kear.recipeorganizer.persistence.model.UserMessage;
 import net.kear.recipeorganizer.persistence.repository.UserMessageRepository;
@@ -16,10 +20,13 @@ public class UserMessageServiceImpl implements UserMessageService {
 
 	@Autowired
 	UserMessageRepository messageRepository;
+	@Autowired
+    private ApplicationEventPublisher eventPublisher;
 	
 	@Override
-	public void addMessage(UserMessage message) {
+	public void addMessage(UserMessage message, MessageType messageType, Locale locale) {
 		messageRepository.addMessage(message);
+		eventPublisher.publishEvent(new UserMessageEvent(message, messageType, locale)); 
 	}
 
 	@Override
