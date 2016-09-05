@@ -1234,8 +1234,8 @@ public class UserController {
 
 	//respond to user click on email link
 	@RequestMapping(value = "/confirmPassword", method = RequestMethod.GET)
-    public ModelAndView confirmPassword(@RequestParam("id") final long id, @RequestParam("token") final String token,
-    		RedirectAttributes redir, Locale locale) throws PasswordResetException {
+    public ModelAndView confirmPassword(@RequestParam("id") final String id, @RequestParam("token") final String token,
+    		RedirectAttributes redir, Locale locale) {
 		logger.info("confirmPassword GET: id=" + id);		
 		
 		ModelAndView mv = new ModelAndView();
@@ -1254,7 +1254,17 @@ public class UserController {
         	user = passwordResetToken.getUser();
         }
         
-    	if (passwordResetToken == null || user == null || user.getId() != id) {
+		String userIdStr = encryptUtil.decryptURLParam(id);
+		long userId = 0;
+	
+		try {
+			userId = Long.parseLong(userIdStr);
+		}
+		catch (Exception ex) {
+			//do nothing - the error will be returned to the user in the next if statement
+		}
+		
+    	if (passwordResetToken == null || user == null || user.getId() != userId) {
         	logger.debug("invalid token");
     		String msg = messages.getMessage("user.password.header.invalid", null, "", locale);
     		redir.addFlashAttribute("msgHeader", msg);

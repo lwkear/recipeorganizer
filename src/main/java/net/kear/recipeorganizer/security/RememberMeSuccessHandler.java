@@ -11,6 +11,7 @@ import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.util.CookieUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionInformation;
@@ -37,11 +38,6 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 	public RememberMeSuccessHandler() {
 		super();
 		setUseReferer(true);		
-	}
-
-	@Override
-	protected String getTargetUrlParameter() {
-		return super.getTargetUrlParameter();
 	}
 
 	@Override
@@ -80,9 +76,8 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 			sessionRegistry.registerNewSession(request.getSession().getId(), authentication.getPrincipal());
 		
 		String servePath = request.getServletPath();
-		logger.debug("servePath:" + servePath);
-		String targetParam = null;
-		targetParam = getTargetUrlParameter();
+		String qryStr = request.getQueryString();
+		logger.debug("servePath:" + servePath + " qryStr:" + qryStr);
 		
 		String redirectUrl = null;
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
@@ -90,6 +85,12 @@ public class RememberMeSuccessHandler extends SavedRequestAwareAuthenticationSuc
 			redirectUrl = savedRequest.getRedirectUrl();
 			logger.debug("redirectUrl:" + redirectUrl);
 		}
+		
+		//opt out includes two parameters that must be added to the redirect path
+		//TODO: SECURITY: probably need to be more specific about when to add the parameters
+		//	to avoid opening up the app to potential security issues
+		if (StringUtils.isNotBlank(qryStr))
+			servePath += "?" + qryStr; 
 
 		if (redirectUrl != null)
 			getRedirectStrategy().sendRedirect(request, response, redirectUrl);

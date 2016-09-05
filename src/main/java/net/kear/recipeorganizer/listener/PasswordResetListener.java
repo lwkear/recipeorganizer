@@ -13,6 +13,7 @@ import net.kear.recipeorganizer.exception.PasswordResendException;
 import net.kear.recipeorganizer.persistence.model.PasswordResetToken;
 import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.UserService;
+import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
@@ -28,6 +29,8 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
 	private EmailSender emailSender;
 	@Autowired
 	private PasswordEmail passwordEmail; 
+	@Autowired
+	EncryptionUtil encryptUtil;
 	
     @Override
     public void onApplicationEvent(final PasswordResetEvent event) {
@@ -52,7 +55,9 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
         }
 
         String userName = user.getFirstName() + " " + user.getLastName();
-        String confirmationUrl = "/confirmPassword?id=" + user.getId() + "&token=" + newToken;
+        String idStr = String.valueOf(user.getId());
+		String userIdStr = encryptUtil.encryptURLParam(idStr);
+        String confirmationUrl = "/confirmPassword?id=" + userIdStr + "&token=" + newToken;
         
         EmailDetail emailDetail = new EmailDetail(userName, user.getEmail(), event.getLocale());
         emailDetail.setTokenUrl(confirmationUrl);
