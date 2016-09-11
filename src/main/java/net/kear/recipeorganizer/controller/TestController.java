@@ -1,10 +1,18 @@
 package net.kear.recipeorganizer.controller;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,12 +23,15 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -35,11 +46,24 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.util.WaveUtils;
+
+import net.kear.recipeorganizer.enums.FileType;
+import net.kear.recipeorganizer.persistence.model.IngredientSection;
+import net.kear.recipeorganizer.persistence.model.Recipe;
+import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
+import net.kear.recipeorganizer.persistence.service.RecipeIngredientService;
+import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.persistence.service.UserMessageService;
 import net.kear.recipeorganizer.persistence.service.UserService;
 import net.kear.recipeorganizer.report.ReportGenerator;
 import net.kear.recipeorganizer.util.EncryptionUtil;
+import net.kear.recipeorganizer.util.SpeechUtil;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
@@ -91,14 +115,96 @@ public class TestController {
 	DataSource dataSource;
 	@Autowired
 	EncryptionUtil encryptUtil;
+	@Autowired
+	SpeechUtil speechUtil;
+	@Autowired
+	RecipeService recipeService;
 
 	/*****************/
 	/*** test page ***/
-	/*****************/
+	/**/
+/*
+	@RequestMapping(value = "/test/getAudio", method = RequestMethod.GET)
+	public void getAudio(@RequestParam("recipeId") final Long recipeId, @RequestParam("section") final Integer section, HttpServletResponse response, Locale locale) throws Exception {
+		logger.debug("getOggAudio");
+
+		TextToSpeech service = new TextToSpeech("7d42a907-17c9-4006-9fc8-9b351563df04", "vK27rCEP7Uyy");
+		
+		String ingredText = "<speak version='1.0'>1 cup sugar <break time='3s'/>2 cups flour <break time='3s'/>"
+				+ "1/2 teaspoon salt <break time='3s'/>1 teaspoon vanilla<break time='3s' />1 pound chicken breast <break time='3s'/>"
+				+ "1 tablespoon olive oil <break time='3s'/>8 ounces dark chocolate <break time='3s'/>done</speak>";
+		
+		InputStream oggStream = service.synthesize(ingredText, Voice.EN_MICHAEL, AudioFormat.OGG_VORBIS).execute();
+
+		File oggFile = new File("G:\\recipeorganizer\\test.ogg");
+		try {
+			FileUtils.copyInputStreamToFile(oggStream, oggFile);
+		} catch (IOException e) {}
+		
+        try {
+        	Path path = oggFile.toPath();
+        	ServletOutputStream stream = response.getOutputStream();
+        	Files.copy(path, stream);
+        	stream.flush();
+        	stream.close();
+        	logger.debug("Successful download");                
+        } catch (IOException ex) {
+        	throw new Exception(ex);
+        }
+
+		String ingredText = "";
+		Recipe recipe = recipeService.getRecipe(recipeId);
+		IngredientSection ingredSection = recipe.getIngredSections().get(section);
+		List<RecipeIngredient> ingreds = ingredSection.getRecipeIngredients();
+		ingredText = speechUtil.prepareIngredients(ingreds, 0);
+		logger.debug("watson text: " + ingredText);
+	
+		try {
+			speechUtil.getAudio(ingredText, Voice.EN_MICHAEL, response);
+		} catch (Exception e) {
+			logger.debug("got error: " + e.getMessage(), e);
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		}
+		
+		InputStream inStream = null;
+		ServletOutputStream outStream = null;
+		
+		try {
+			TextToSpeech service = new TextToSpeech("7d42a907-17c9-4006-9fc8-9b351563df04", "vK27rCEP7Uyy");
+		
+			inStream = service.synthesize(ingredText, Voice.EN_MICHAEL, AudioFormat.OGG_VORBIS).execute();
+			
+			outStream = response.getOutputStream();
+	        byte[] buffer = new byte[2048];
+	        int read;
+	        while ((read = inStream.read(buffer)) != -1) {
+	        	outStream.write(buffer, 0, read);
+	        }
+	        outStream.flush();
+		} catch (Exception e) {
+			logger.debug("got error: " + e.getMessage(), e);
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+		} finally {
+		    close(inStream);
+		    close(outStream);
+		}
+	}
+		
+*/
+	/*private void close(Closeable closeable) {
+	    if (closeable != null) {
+	        try {
+	            closeable.close();
+	        } catch (IOException e) {
+	            // ignore
+	        }
+	    }	      	   
+	}*/
+
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model, HttpServletRequest request, Locale locale) {
 		logger.debug("getTestpage");
-
+		
 		/* 
 		*****************************************
 	 	* encryption test
@@ -162,13 +268,11 @@ public class TestController {
 		model.addAttribute("decryptText", decryptText);
 		*/
 		
-		
-		String enc = encryptUtil.encryptURLParam("lkear@outlook.com");
+		/*String enc = encryptUtil.encryptURLParam("lkear@outlook.com");
 		String dec = encryptUtil.decryptURLParam(enc);
 		model.addAttribute("encryptText", enc);
-		model.addAttribute("decryptText", dec);
-	
-	
+		model.addAttribute("decryptText", dec);*/
+		
 		
 		/*try {
 			dataSource.getConnection();
@@ -510,3 +614,59 @@ public boolean isValid(String qty) {
 							
 */ 
 
+/*
+@RequestMapping(value = "/test/getOggSampleAudio", method = RequestMethod.GET)
+public void getOggSampleAudio(HttpServletResponse response, Locale locale) throws Exception {
+	logger.debug("getOggSampleAudio");
+
+	File oggFile = new File("G:\\recipeorganizer\\sample.ogg");
+    try {
+    	Path path = oggFile.toPath();
+    	ServletOutputStream stream = response.getOutputStream();
+    	Files.copy(path, stream);
+    	stream.flush();
+    	stream.close();
+    	logger.debug("Successful download");                
+    } catch (IOException ex) {
+    	throw new Exception(ex);
+    }
+}	
+
+@RequestMapping(value = "/test/getWavAudio", method = RequestMethod.GET)
+public void getWavAudio(HttpServletResponse response, Locale locale) throws Exception {
+	logger.debug("getWavAudio");
+
+	TextToSpeech service = new TextToSpeech("7d42a907-17c9-4006-9fc8-9b351563df04", "vK27rCEP7Uyy");
+	
+	String ingredText = "<speak version='1.0'>1 cup sugar <break time='3s'/>2 cups flour <break time='3s'/>"
+			+ "1 teaspoon salt <break time='3s'/>1 teaspoon vanilla<break time='3s' />1 pound chicken breast <break time='3s'/>"
+			+ "1 tablespoon olive oil <break time='3s'/>8 ounces dark chocolate <break time='3s'/>done</speak>";
+	
+	InputStream wavStream = service.synthesize(ingredText, Voice.EN_MICHAEL, AudioFormat.WAV).execute();
+	InputStream wavStreamHdr = null;
+	try {
+		wavStreamHdr = WaveUtils.reWriteWaveHeader(wavStream);
+	} catch (IOException e) {
+		throw new Exception(e);
+	}
+
+	File wavFile = new File("G:\\recipeorganizer\\test.wav");
+	if (wavStream != null) {
+		try {
+			FileUtils.copyInputStreamToFile(wavStreamHdr, wavFile);
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+	}
+
+    try {
+    	Path path = wavFile.toPath();
+    	ServletOutputStream stream = response.getOutputStream();
+    	Files.copy(path, stream);
+    	stream.flush();
+    	stream.close();
+    	logger.debug("Successful download");                
+    } catch (IOException ex) {
+    	throw new Exception(ex);
+    }
+}*/	

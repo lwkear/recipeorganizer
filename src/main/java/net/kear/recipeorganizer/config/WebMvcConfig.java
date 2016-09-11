@@ -13,6 +13,8 @@ import net.kear.recipeorganizer.resolver.CustomCookieLocaleResolver;
 import net.kear.recipeorganizer.security.HttpHeadFilter;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
+import net.kear.recipeorganizer.util.SpeechUtil;
+import net.kear.recipeorganizer.util.SpeechUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileActionsImpl;
 import net.kear.recipeorganizer.util.maint.MaintenanceProperties;
@@ -328,12 +330,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		generator.configureReports(servletContext, env.getProperty("file.directory.pdfs"));
 		return generator;
 	}
-	
-	/*@Controller
-    static class FaviconController {
-        @RequestMapping("favicon.ico")
-        String favicon() {
-            return "forward:/resources/images/favicon.ico";
-        }
-    }*/
+
+    /*** Watson SST and TTS configuration ***/
+	@Bean
+	public SpeechUtil speechUtil() {
+		SpeechUtilImpl speech = new SpeechUtilImpl();
+		speech.setWatsonTTSAccount(env.getProperty("company.watson.tts.username"), env.getProperty("company.watson.tts.password"));
+		speech.setSpeechDir(env.getProperty("file.directory.speech"));
+		return speech;
+	}
 }

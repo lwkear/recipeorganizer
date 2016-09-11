@@ -51,6 +51,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Hours;
 
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
+
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.enums.MessageType;
 import net.kear.recipeorganizer.enums.OptOutType;
@@ -100,6 +102,7 @@ import net.kear.recipeorganizer.security.UserSecurityService;
 import net.kear.recipeorganizer.util.CookieUtil;
 import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
+import net.kear.recipeorganizer.util.SpeechUtil;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
@@ -161,6 +164,8 @@ public class UserController {
 	PropertiesFactoryBean properties;
 	@Autowired
 	EncryptionUtil encryptUtil;
+	@Autowired
+	SpeechUtil speechUtil;
 	
     /*********************/
     /*** Login handler ***/
@@ -476,6 +481,8 @@ public class UserController {
 			userProfile.setUser(user);
 		}
 		
+		List<Voice> voices = speechUtil.getVoices(locale);
+		
 		if (userInfo.isUserRole(Role.TYPE_GUEST))
 			userProfile.setSubmitRecipes(false);
 		
@@ -485,6 +492,7 @@ public class UserController {
 		String rangeDescription = messages.getMessage("profile.nevermind", null, "Default", locale);
 		UserAge.UANEVERMIND.setDescription(rangeDescription);		
 		model.addAttribute("ageRanges", UserAge.values());
+		model.addAttribute("voices", voices);
 		
 		return "user/profile";
 	}

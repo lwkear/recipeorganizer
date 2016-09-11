@@ -114,6 +114,14 @@ function postNote(e) {
 			$('#noteRight').show();
 		}
 		$('#privateNotesSection').html(data);
+		var audioOn = canPlay();
+		//this is necessary to get the tooltip to appear correctly; see http://jsfiddle.net/fScua/
+		$('body').tooltip({
+            selector: '[rel=tooltip]'
+        });
+		if (audioOn) {
+			$('.privateNoteBtn').show();
+		}
 		console.log('postNote done');
 	})
 	.fail(function(jqXHR, status, error) {
@@ -330,11 +338,37 @@ function getContent() {
 	return content;
 }
 
+/***********************/
+/*** audio functions ***/
+/***********************/
+function playAudio(userId, recipeId, section, type) {
+	$('.audioBtn').blur();
+	var audio = null;
+	audio = $('#audio'+type+section).get(0);
+	var ready = audio.readyState;
+	var network = audio.networkState;
+	var paused = audio.paused
+	if (paused && ready > 0)
+		audio.play();
+	else {
+		audio.setAttribute('src', appContextPath + '/getAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type);
+		audio.play();
+	}
+}
+
+function checkAudio() {
+	var audioOn = canPlay();
+	if (audioOn) {
+		$('.audioBtn').show();
+	}
+}
+
 $(function() {
 
 	convertFractions('.ingredqty');	
 	setIcons();
 	fixTags();
+	checkAudio();
 	
 	$('#submittedBy').popover({
 		trigger: 'hover',
@@ -363,4 +397,5 @@ $(function() {
 			else
 				postFailed(getMessage('exception.JRException'));
 		})
+		
 })

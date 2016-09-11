@@ -46,6 +46,9 @@ public class UserProfile implements Serializable {
 
 	@Column(name = "AVATAR")
 	private String avatar;
+
+	@Column(name = "TTS_VOICE")
+	private String ttsVoice;
 	
 	@Transient
 	private boolean submitRecipes;
@@ -67,15 +70,17 @@ public class UserProfile implements Serializable {
 		this.age = user.age;
 		this.interests = user.interests;
 		this.avatar = user.avatar;
+		this.ttsVoice = user.ttsVoice;
 	}
 	
-	public UserProfile(String city, String state, int age, String interests, String avatar) {
+	public UserProfile(String city, String state, int age, String interests, String avatar, String ttsVoice) {
 		super();
 		this.city = city;
 		this.state = state;
 		this.age = age;
 		this.interests = interests;
 		this.avatar = avatar;
+		this.ttsVoice = ttsVoice;
 	}
 
 	public long getId() {
@@ -124,6 +129,14 @@ public class UserProfile implements Serializable {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public String getTtsVoice() {
+		return ttsVoice;
+	}
+
+	public void setTtsVoice(String ttsVoice) {
+		this.ttsVoice = ttsVoice;
 	}
 
 	public boolean getSubmitRecipes() {
@@ -198,6 +211,7 @@ public class UserProfile implements Serializable {
 				+ ", state=" + state 
 				+ ", age=" + age 
 				+ ", interests=" + interests 
-				+ ", avatar=" + avatar + "]";
+				+ ", avatar=" + avatar
+				+ ", ttsVoice=" + ttsVoice + "]";
 	}
 }

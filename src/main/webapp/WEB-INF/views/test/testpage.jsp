@@ -17,15 +17,32 @@
 			<div class="page-header"> 		
 				<h3>Test Page</h3>
 			</div>
-			<div class="col-sm-12">
+		</div>
+		<div class="col-sm-12 spacer-vert-md">
+			<label>Ingredients</label>
+			<audio id="recipeAudio" controls>
+				<%-- <source src="<c:url value="/test/getOggAudio"/>" type="audio/ogg"> --%>
+			</audio>
+		</div>
+		
+		<div class="col-sm-12 spacer-vert-md">
+			<div class="col-sm-2">
+    			<!-- <button onclick="document.getElementById('oggAudio').play()">Ogg Play</button> -->
+    			<button id="play">Play</button>
+    		</div>
+    		<div class="col-sm-2">
+    			<!-- <button onclick="document.getElementById('oggAudio').pause()">Ogg Pause</button> -->
+    			<button id="pause">Pause</button>
+    		</div>
+		</div>
+	</div>
+
+			<%-- <div class="col-sm-12">
 				Encrypted text: ${encryptText}
 			</div>
 			<div class="col-sm-12">
 				Decrypted text: ${decryptText}
-			</div>
-		</div>
-	</div>
-
+			</div> --%>
 
 			<%-- <div class="col-sm-12">
 				Full Date/Time: ${fullDate}
@@ -332,5 +349,30 @@ $(function() {
 })
 
 </script> -->
+
+<script type="text/javascript">
+
+$(function() {
+
+	$('#play').on('click', function(e) {
+		var audio = $('#recipeAudio').get(0);
+		var ready = audio.readyState;
+		var network = audio.networkState;
+		var paused = audio.paused
+		if (paused && ready > 0)
+			audio.play();
+		else {
+			audio.setAttribute('src', '/recipeorganizer/test/getAudio?userId=1&recipeId=16&section=0');
+		}
+	});
+
+	$('#pause').on('click', function(e) {
+		var audio = $('#recipeAudio').get(0);
+		audio.pause();
+	});
+})
+
+</script>
+
 
 </html>

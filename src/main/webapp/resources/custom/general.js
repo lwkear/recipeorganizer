@@ -303,6 +303,11 @@ function fixTags() {
 	}
 }
 
+function canPlay() { 
+	var a = document.createElement('audio');
+	return !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
+}
+
 $(function() {
 	
 	$.fn.bootstrapBtn = $.fn.button.noConflict();

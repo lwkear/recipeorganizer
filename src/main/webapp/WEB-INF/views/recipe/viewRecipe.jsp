@@ -213,7 +213,7 @@
 				<form role="form" class="form">
 					<div class="form-group">
 			            <label class="control-label" for="recipeNote"><spring:message code="recipe.note.label"></spring:message></label>
-			            <textarea class="form-control" rows="5" id="inputNote">${recipeNote}</textarea>
+			            <textarea class="form-control" rows="5" id="inputNote">${recipeNote.note}</textarea>
 				    </div>           
 				</form>
 			</div>

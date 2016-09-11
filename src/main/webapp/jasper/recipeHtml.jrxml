@@ -316,7 +316,7 @@
 				<textElement textAlignment="Left">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$R{report.privateNotes}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$R{report.privatenotes}]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="51">

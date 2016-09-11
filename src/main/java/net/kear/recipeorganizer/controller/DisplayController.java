@@ -232,7 +232,7 @@ public class DisplayController {
 		
 		model.addAttribute("madeCount", recipeMade.getMadeCount());
 		model.addAttribute("lastMade", recipeMade.getLastMade());
-		model.addAttribute("recipeNote", recipeNote.getNote());
+		model.addAttribute("recipeNote", recipeNote);
 		model.addAttribute("jsonNote", jsonNote);
 		model.addAttribute("favorite", fav);
 		model.addAttribute("commentCount", commentCount);
@@ -336,7 +336,8 @@ public class DisplayController {
 
 		response.setContentType("text/html");
 		response.setCharacterEncoding("utf-8");
-		model.addAttribute("recipeNote", recipeNote.getNote());
+		/*model.addAttribute("recipeNote", recipeNote.getNote());*/
+		model.addAttribute("recipeNote", recipeNote);
 		
 		return "recipe/privateNotes";
 	}

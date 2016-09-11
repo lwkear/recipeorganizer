@@ -52,6 +52,23 @@ function checkForFileError() {
 	}
 }
 
+function setVoice() {
+	var audioOn = canPlay();
+	if (!audioOn) {
+		$('#selVoice').prop('disabled', true);
+		$('.audioBtn').prop('disabled', true);
+		$('#noAudioMsg').prop('hidden', false);
+		return;
+	}
+	
+	var ndx = $('#selVoice option:selected').index();
+	//the first option is the placeholder
+	if (ndx > 0) {
+		$("#selVoice").removeClass('select-placeholder');
+		$('.audioBtn').prop('disabled', false);
+	}
+}
+
 function saveProfile(e) {
 	$("#messageDlg").modal('hide');
 	//remove the file object
@@ -65,6 +82,7 @@ $(function() {
 
 	initStatesTA();
 	checkForFileError();
+	setVoice();
 
 	$(document)
 		.on('click', 'input[name="photoOpts"]:checked', function(e)
@@ -79,11 +97,24 @@ $(function() {
 			var input = $(this),
 			label = input.val();
 			input.trigger('fileselect', [label]);
+		})
+		.on('change', '#selVoice', function() {
+			$(this).removeClass('select-placeholder');
+			$('.audioBtn').prop('disabled', false);
+		})	
+		.on('click', '.audioBtn', function(e)
+		{
+			$(this).blur();
+			$(this).tooltip("hide");
+			var audio = $('#sampleVoice').get(0);
+			var desc = $('#selVoice').val();
+			audio.setAttribute('src', appContextPath + '/getSample?voiceName=' + desc);
+			audio.play();
 		});
 	
 	$('.btn-file :file').on('fileselect', function(event, label) {
 		var input = $(this).parents('.input-group').find(':text');
 		if (input.length)
 			input.val(label);
-    });		
+    });
 });

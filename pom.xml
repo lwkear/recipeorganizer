@@ -308,7 +308,12 @@
 			<artifactId>jasperreports</artifactId>
 			<version>${jasper-version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+		
 		<!-- Freemarker -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -316,11 +321,12 @@
 			<version>${freemarker-version}</version>
 		</dependency>
 
+		<!-- Watson TTS & STT -->
 		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-fonts</artifactId>
-			<version>6.0.0</version>
-		</dependency>
+			<groupId>com.ibm.watson.developer_cloud</groupId>
+				<artifactId>java-sdk</artifactId>
+			<version>3.3.0</version>
+		</dependency>		
 	</dependencies>
 
      <build>

@@ -83,6 +83,25 @@
 						</div>
 					</c:if>
 					<div class="col-sm-12">
+						<div class="col-sm-8 col-sm-offset-2">
+							<label class="control-label"><spring:message code="profile.voice"></spring:message></label>
+							<span class="text-danger" id="noAudioMsg" hidden=true><small><spring:message code="profile.voice.notsupported"></spring:message></small></span>
+						</div>
+						<div class="form-group col-sm-4 col-sm-offset-2">
+							<form:select class="form-control select-placeholder" id="selVoice" path="ttsVoice" >
+		            			<form:option style="display:none" value=""><spring:message code="profile.voice.select"></spring:message></form:option>
+		            			<form:options items="${voices}" itemValue="name" itemLabel="description" />
+							</form:select>
+						</div>
+						<div class="col-sm-1">
+							<button type="button" class="btn btn-link audioBtn" disabled
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.sample"></spring:message>">
+								<span class="glyphicon glyphicon-play"></span>
+							</button>
+							<audio id="sampleVoice"></audio>
+						</div>
+					</div>
+					<div class="col-sm-12">
 						<c:choose>
 							<c:when test="${not empty userProfile.avatar}">
 								<label class="control-label col-sm-3 col-sm-offset-2" style="text-align: left;" 
