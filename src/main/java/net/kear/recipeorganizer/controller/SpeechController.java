@@ -65,8 +65,10 @@ public class SpeechController {
 		
 		if (user != null) {
 			UserProfile userProfile = user.getUserProfile();
-			if (userProfile != null)
-				voice = Voice.getByName(userProfile.getTtsVoice());
+			if (userProfile != null) {
+				if (userProfile.getTtsVoice() != null)
+					voice = Voice.getByName(userProfile.getTtsVoice());
+			}
 		}		
 	
 		String watsonText = "";
@@ -75,7 +77,7 @@ public class SpeechController {
 		
 		String voiceLang = voice.getLanguage().substring(0, 2);
 		if (!StringUtils.equals(voiceLang, recipe.getLang())) {
-			voice = defaultVoiceEN; 
+			voice = defaultVoiceEN;
 			if (recipe.getLang().equals(new Locale("fr").getLanguage()))
 				voice = defaultVoiceFR;
 		}
