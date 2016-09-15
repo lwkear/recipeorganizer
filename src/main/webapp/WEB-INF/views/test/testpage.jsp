@@ -4,8 +4,6 @@
 
 <%@include file="../common/head.jsp"%>
 
-<%-- <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="ISO-8859-1"%> --%>
-
 </head>
 
 <body role="document">
@@ -20,9 +18,7 @@
 		</div>
 		<div class="col-sm-12 spacer-vert-md">
 			<label>Ingredients</label>
-			<audio id="recipeAudio" controls>
-				<%-- <source src="<c:url value="/test/getOggAudio"/>" type="audio/ogg"> --%>
-			</audio>
+			<audio id="sampleVoice"></audio>
 		</div>
 		
 		<div class="col-sm-12 spacer-vert-md">
@@ -350,7 +346,7 @@ $(function() {
 
 </script> -->
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 
 $(function() {
 
@@ -371,8 +367,50 @@ $(function() {
 		audio.pause();
 	});
 })
-
+ 
 </script>
+-->
 
+<script type="text/javascript">
+
+function hasGetUserMedia() {
+	  return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+	            navigator.mozGetUserMedia || navigator.msGetUserMedia);
+}
+
+function playVoice() {
+	var audio = $('#sampleVoice').get(0);
+	audio.setAttribute('src', appContextPath + '/getSample?voiceName=en-US_MichaelVoice');
+	audio.play();
+}
+
+$(function() {
+
+	/* if (hasGetUserMedia()) {
+		alert('getUserMedia() works');
+	} 
+	else {
+		alert('getUserMedia() is not supported in your browser');
+	} */
+
+	/* navigator.getUserMedia = navigator.getUserMedia ||
+    	navigator.webkitGetUserMedia ||
+    	navigator.mozGetUserMedia; */
+
+  	/* if (annyang) {
+  		  // Let's define our first command. First the text we expect, and then the function it should call
+		var commands = {
+			'voice': playVoice, 'hello': playVoice			
+		};
+		
+		// Add our commands to annyang
+		annyang.addCommands(commands);
+		
+		// Start listening. You can call this here, or attach this call to an event, button, etc.
+		annyang.start();
+	} */	
+	
+})
+</script>
 
 </html>

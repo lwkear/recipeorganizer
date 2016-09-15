@@ -182,6 +182,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/submitSearch", "/searchResults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
     		.antMatchers("/user/fatalError", "/user/tokenError", "/user/optout**", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
+    		.antMatchers("/test/testpage").permitAll()	//TODO: be sure to remove this in production!!!!
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/changeAccountLevel", "user/upgradeAccount", "user/newMember").hasAuthority(Role.TYPE_GUEST)
