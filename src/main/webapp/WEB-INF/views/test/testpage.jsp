@@ -17,21 +17,176 @@
 			</div>
 		</div>
 		<div class="col-sm-12 spacer-vert-md">
+		    <h2>Output:</h2>
+		    <div id="output"></div>
+		</div><div class="col-sm-12 spacer-vert-md">
+			<div class="col-sm-2">
+    			<button id="speak">Speak</button>
+    		</div>
+    		<div class="col-sm-2">
+    			<button id="stop">Stop</button>
+    		</div>
+		</div>
+	</div>
+
+<%@include file="../common/footer.jsp" %>
+
+<script type="text/javascript">
+
+var token = "";
+
+function getToken() {
+	$.ajax({
+	    type: 'GET',
+		contentType: 'application/json',
+	    url: appContextPath + '/getWatsonToken'
+		//dataType: 'json',
+		//data: JSON.stringify(data)
+	})
+	.done(function(data) {
+		console.log('done data: '+ data);
+		token = data;
+	})
+	.fail(function(jqXHR, status, error) {
+		var data = jqXHR.responseJSON;
+		console.log('fail data: '+ data);
+		token = "";
+	});
+}
+
+$(function() {
+
+	var stream = "";
+	
+	$(document)
+		.on('click', '#speak', function(e) {
+			getToken();
+			console.log('start stt');
+		    stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
+		        token: token,
+		        outputElement: '#output' // CSS selector or DOM Element
+		    });
+		    console.log('end stt');
+		})
+		.on('click', '#stop', function(e) {
+			stream.stop();
+		})
+	
+})
+
+</script>
+
+</body>
+</html>
+
+<!-- <script type="text/javascript">
+
+function viewtext() {
+	var text = $('#inputTags option:selected').map(function () {
+				return $(this).text();}).get();
+	alert(text);	
+}
+
+$(function() {
+	$('#inputTags').selectize({
+		maxItems: 5,
+	    persist: false,
+	    diacritics: true,
+	    create: function(input) {
+	        return {
+	            value: input,
+	            text: input
+	        }
+	    }
+	});
+})
+
+</script> -->
+
+<!-- <script type="text/javascript">
+
+$(function() {
+
+	$('#play').on('click', function(e) {
+		var audio = $('#recipeAudio').get(0);
+		var ready = audio.readyState;
+		var network = audio.networkState;
+		var paused = audio.paused
+		if (paused && ready > 0)
+			audio.play();
+		else {
+			audio.setAttribute('src', '/recipeorganizer/test/getAudio?userId=1&recipeId=16&section=0');
+		}
+	});
+
+	$('#pause').on('click', function(e) {
+		var audio = $('#recipeAudio').get(0);
+		audio.pause();
+	});
+})
+ 
+</script>
+-->
+
+<!-- <script type="text/javascript">
+
+function hasGetUserMedia() {
+	  return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+	            navigator.mozGetUserMedia || navigator.msGetUserMedia);
+}
+
+function playVoice() {
+	var audio = $('#sampleVoice').get(0);
+	audio.setAttribute('src', appContextPath + '/getSample?voiceName=en-US_MichaelVoice');
+	audio.play();
+}
+
+
+		<div class="col-sm-12 spacer-vert-md">
 			<label>Ingredients</label>
 			<audio id="sampleVoice"></audio>
 		</div>
 		
 		<div class="col-sm-12 spacer-vert-md">
 			<div class="col-sm-2">
-    			<!-- <button onclick="document.getElementById('oggAudio').play()">Ogg Play</button> -->
     			<button id="play">Play</button>
     		</div>
     		<div class="col-sm-2">
-    			<!-- <button onclick="document.getElementById('oggAudio').pause()">Ogg Pause</button> -->
     			<button id="pause">Pause</button>
     		</div>
 		</div>
-	</div>
+
+$(function() {
+
+	/* if (hasGetUserMedia()) {
+		alert('getUserMedia() works');
+	} 
+	else {
+		alert('getUserMedia() is not supported in your browser');
+	} */
+
+	/* navigator.getUserMedia = navigator.getUserMedia ||
+    	navigator.webkitGetUserMedia ||
+    	navigator.mozGetUserMedia; */
+
+  	/* if (annyang) {
+  		  // Let's define our first command. First the text we expect, and then the function it should call
+		var commands = {
+			'voice': playVoice, 'hello': playVoice			
+		};
+		
+		// Add our commands to annyang
+		annyang.addCommands(commands);
+		
+		// Start listening. You can call this here, or attach this call to an event, button, etc.
+		annyang.start();
+	} */	
+	
+})
+</script>
+
+</html>
+-->
 
 			<%-- <div class="col-sm-12">
 				Encrypted text: ${encryptText}
@@ -318,99 +473,3 @@ $V{SourcePerson} + $V{SourceOther} + $V{SourceMagazine} + $V{SourceNewspaper}
 		</div>
 	</div>
  --%>
-<%@include file="../common/footer.jsp" %>
-
-</body>
-
-<!-- <script type="text/javascript">
-
-function viewtext() {
-	var text = $('#inputTags option:selected').map(function () {
-				return $(this).text();}).get();
-	alert(text);	
-}
-
-$(function() {
-	$('#inputTags').selectize({
-		maxItems: 5,
-	    persist: false,
-	    diacritics: true,
-	    create: function(input) {
-	        return {
-	            value: input,
-	            text: input
-	        }
-	    }
-	});
-})
-
-</script> -->
-
-<!-- <script type="text/javascript">
-
-$(function() {
-
-	$('#play').on('click', function(e) {
-		var audio = $('#recipeAudio').get(0);
-		var ready = audio.readyState;
-		var network = audio.networkState;
-		var paused = audio.paused
-		if (paused && ready > 0)
-			audio.play();
-		else {
-			audio.setAttribute('src', '/recipeorganizer/test/getAudio?userId=1&recipeId=16&section=0');
-		}
-	});
-
-	$('#pause').on('click', function(e) {
-		var audio = $('#recipeAudio').get(0);
-		audio.pause();
-	});
-})
- 
-</script>
--->
-
-<script type="text/javascript">
-
-function hasGetUserMedia() {
-	  return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-	            navigator.mozGetUserMedia || navigator.msGetUserMedia);
-}
-
-function playVoice() {
-	var audio = $('#sampleVoice').get(0);
-	audio.setAttribute('src', appContextPath + '/getSample?voiceName=en-US_MichaelVoice');
-	audio.play();
-}
-
-$(function() {
-
-	/* if (hasGetUserMedia()) {
-		alert('getUserMedia() works');
-	} 
-	else {
-		alert('getUserMedia() is not supported in your browser');
-	} */
-
-	/* navigator.getUserMedia = navigator.getUserMedia ||
-    	navigator.webkitGetUserMedia ||
-    	navigator.mozGetUserMedia; */
-
-  	/* if (annyang) {
-  		  // Let's define our first command. First the text we expect, and then the function it should call
-		var commands = {
-			'voice': playVoice, 'hello': playVoice			
-		};
-		
-		// Add our commands to annyang
-		annyang.addCommands(commands);
-		
-		// Start listening. You can call this here, or attach this call to an event, button, etc.
-		annyang.start();
-	} */	
-	
-})
-</script>
-
-</html>

@@ -15,11 +15,13 @@ import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 
 public interface SpeechUtil {
 
-	public void initTTS();
+	public void initWatson();
+	public void setWatsonTTSAccount(String username, String password);
+	public void setWatsonSTTAccount(String username, String password);
+	public boolean isWatsonAvailable();
 	public void setSpeechDir(String dir);
 	public String getSpeechDir();
-	public boolean isTtsAvailable();
-	public void setWatsonTTSAccount(String username, String password);
+	public String getSTTToken();
 	public boolean getAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response);
 	public void getSample(String fileName, HttpServletResponse response);
 	public String prepareIngredients(List<RecipeIngredient> ingredList, int interval);

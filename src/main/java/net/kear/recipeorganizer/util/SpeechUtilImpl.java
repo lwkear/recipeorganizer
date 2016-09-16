@@ -24,6 +24,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
+import com.ibm.watson.developer_cloud.http.ServiceCall;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
@@ -49,18 +51,52 @@ public class SpeechUtilImpl implements SpeechUtil {
 	private final static AudioFormat audioFormat = AudioFormat.OGG_VORBIS;
 	private String watsonTTSUsername = "";
 	private String watsonTTSPassword = "";
-	private boolean ttsInitialized = false;
-	private boolean ttsAvailable = true;
+	private String watsonSTTUsername = "";
+	private String watsonSTTPassword = "";
+	private boolean watsonInitialized = false;
+	private boolean watsonAvailable = true;
 	private TextToSpeech ttsService = null;
+	private SpeechToText sttService = null;
 	private String speechDir = "";
 	
 	public SpeechUtilImpl() {}
 
+	public void initWatson() {
+		try {
+			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
+			sttService = new SpeechToText(watsonSTTUsername, watsonSTTPassword);
+		} catch (Exception ex) {
+			logger.debug("TextToSpeech init(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+			watsonAvailable = false;
+		}
+	}
+	
+	@EventListener
+    public void handleContextRefresh(ContextRefreshedEvent event) {
+		//this routine gets called twice for the two contexts, hence the flag
+		if (watsonInitialized)
+			return;
+		
+		initWatson();
+		getNoAudioFiles();
+		watsonInitialized = true;
+    }	
+
+	public boolean isWatsonAvailable() {
+		return this.watsonAvailable;
+	}
+	
 	public void setWatsonTTSAccount(String username, String password) {
 		this.watsonTTSUsername = username;
 		this.watsonTTSPassword = password;
 	}
-	
+
+	public void setWatsonSTTAccount(String username, String password) {
+		this.watsonSTTUsername = username;
+		this.watsonSTTPassword = password;
+	}
+
 	public void setSpeechDir(String dir) {
 		this.speechDir = dir;
 	}
@@ -69,29 +105,10 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return this.speechDir;
 	}
 	
-	public void initTTS() {
-		try {
-			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
-		} catch (Exception ex) {
-			logger.debug("TextToSpeech init(): " + ex.getMessage(), ex);
-			logService.addException(ex);
-			ttsAvailable = false;
-		}
-	}
-	
-	@EventListener
-    public void handleContextRefresh(ContextRefreshedEvent event) {
-		//this routine gets called twice for the two contexts, hence the flag
-		if (ttsInitialized)
-			return;
-		
-		initTTS();
-		getNoAudioFiles();
-		ttsInitialized = true;
-    }	
-	
-	public boolean isTtsAvailable() {
-		return this.ttsAvailable;
+	//TODO: SPEECH: add try/catch
+	public String getSTTToken() {
+		String token = sttService.getToken().execute();
+		return token;
 	}
 	
 	public boolean getAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response) {
@@ -136,7 +153,7 @@ public class SpeechUtilImpl implements SpeechUtil {
     		}
 		}
 		
-		if (isTtsAvailable()) {
+		if (isWatsonAvailable()) {
 			//get audio from Watson then save it to a file and copy it to the response
 			try {
 				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
@@ -265,7 +282,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 		Locale locales[] = new Locale[] {Locale.ENGLISH, Locale.FRANCE};
 		Object[] obj = new String[] {null};
 		
-		if (!isTtsAvailable())
+		if (!isWatsonAvailable())
 			return;
 				
 		for (Locale locale : locales) {
@@ -321,7 +338,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public List<Voice> getVoices(Locale locale) {
 		List<Voice> localeVoices = new ArrayList<Voice>();
 		
-		if (!isTtsAvailable())
+		if (!isWatsonAvailable())
 			return null;
 		
 		String localeLang = locale.getLanguage();
