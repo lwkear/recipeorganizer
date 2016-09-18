@@ -363,13 +363,13 @@ function checkAudio() {
 	}
 }
 
-function getAudio() {
+/*function getAudio() {
 	var userId = $('#viewerId').val();
 	var recipeId = $('#recipeId').val();
 	var section = 0;
 	var type = 'INGREDIENTS';
 	playAudio(userId, recipeId, section, type)	
-}
+}*/
 
 $(function() {
 
@@ -394,19 +394,6 @@ $(function() {
 		)
 	);
 	$('#madeDate').datepicker();
-	
-	if (annyang) {
-		  // Let's define our first command. First the text we expect, and then the function it should call
-		var commands = {
-			'ingredients': getAudio			
-		};
-		
-		// Add our commands to annyang
-		annyang.addCommands(commands);
-		
-		// Start listening. You can call this here, or attach this call to an event, button, etc.
-		annyang.start();
-	}
 	
 	$(document)
 		.on('click', '#htmlPrint', function(e) {

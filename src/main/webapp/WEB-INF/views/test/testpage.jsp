@@ -33,45 +33,60 @@
 
 <script type="text/javascript">
 
-var token = "";
+var stream = null;
 
-function getToken() {
+function getSTTToken() {
 	$.ajax({
 	    type: 'GET',
 		contentType: 'application/json',
 	    url: appContextPath + '/getWatsonToken'
-		//dataType: 'json',
-		//data: JSON.stringify(data)
 	})
 	.done(function(data) {
 		console.log('done data: '+ data);
-		token = data;
+		listen(data);
 	})
 	.fail(function(jqXHR, status, error) {
 		var data = jqXHR.responseJSON;
 		console.log('fail data: '+ data);
-		token = "";
 	});
+}
+
+function parseResults(result) {
+	console.log(result);	
+}
+
+function listen(token) {
+	console.log('start stt');
+    stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
+        token: token,
+        objectMode: true,
+        word_confidence: true,
+        format: false
+		//outputElement: '#output',
+        //keepMicrophone: navigator.userAgent.indexOf('Firefox') > 0
+    });
+    
+	stream.on('error', function(err) {
+        console.log(err);
+	});
+
+	stream.on('data', function(result) {
+		parseResults(result);	
+	});
+
+	console.log('end stt');
 }
 
 $(function() {
 
-	var stream = "";
-	
 	$(document)
 		.on('click', '#speak', function(e) {
-			getToken();
-			console.log('start stt');
-		    stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
-		        token: token,
-		        outputElement: '#output' // CSS selector or DOM Element
-		    });
-		    console.log('end stt');
+			getSTTToken();
 		})
 		.on('click', '#stop', function(e) {
-			stream.stop();
+			if (stream)
+				stream.stop();
 		})
-	
 })
 
 </script>
