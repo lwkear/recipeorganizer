@@ -337,6 +337,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		SpeechUtilImpl speech = new SpeechUtilImpl();
 		speech.setWatsonTTSAccount(env.getProperty("company.watson.tts.username"), env.getProperty("company.watson.tts.password"));
 		speech.setWatsonSTTAccount(env.getProperty("company.watson.stt.username"), env.getProperty("company.watson.stt.password"));
+		speech.setWatsonConvAccount(env.getProperty("company.watson.conv.username"), env.getProperty("company.watson.conv.password"), 
+				env.getProperty("company.watson.conv.workspace"));
 		speech.setSpeechDir(env.getProperty("file.directory.speech"));
 		return speech;
 	}

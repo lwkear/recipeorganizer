@@ -182,11 +182,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/submitSearch", "/searchResults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
     		.antMatchers("/user/fatalError", "/user/tokenError", "/user/optout**", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
-    		.antMatchers("/test/testpage").permitAll()	//TODO: be sure to remove this in production!!!!
     		.antMatchers("/recipe/photo**").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/changeAccountLevel", "user/upgradeAccount", "user/newMember").hasAuthority(Role.TYPE_GUEST)
-    		.antMatchers("/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes", "/getAudio**", "/getSample**", "/getWatsonToken").hasAuthority(Role.TYPE_GUEST)
+    		.antMatchers("/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes").hasAuthority(Role.TYPE_GUEST)
+    		.antMatchers("/getRecipeAudio**", "/getAudio**", "/getSample**", "/getWatsonToken", "/postWatsonResult", "/getWatsonKeywords", "/startWatsonConversation").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*", "/recipe/categoryRecipes/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)
     		.antMatchers("/admin/approval", "/admin/approveRecipe", "/admin/comments", "/admin/ingredients").hasAuthority(Role.TYPE_EDITOR)
@@ -224,6 +224,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.expiredUrl("/expiredSession")
     		//.maxSessionsPreventsLogin(false)	//when enabled it prevents a user from logging in before the session expires
     	;
+    	
+    	//"/postWatsonResult**"
     	
     	http.apply(new DatabaseConnectionConfigurer<HttpSecurity>(dbConnectionFilter()));
     }

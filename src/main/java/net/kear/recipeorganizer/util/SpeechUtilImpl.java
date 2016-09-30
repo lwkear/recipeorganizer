@@ -8,8 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +26,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.ibm.watson.developer_cloud.http.ServiceCall;
+import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
@@ -49,14 +53,21 @@ public class SpeechUtilImpl implements SpeechUtil {
 	private final static String breakTag = " <break time='%ds'/>";
 	private final static int defaultInterval = 3;
 	private final static AudioFormat audioFormat = AudioFormat.OGG_VORBIS;
+	private final static String[] keywords = {"ingredient","ingredients","instruction","instructions","note","notes","private"};
 	private String watsonTTSUsername = "";
 	private String watsonTTSPassword = "";
 	private String watsonSTTUsername = "";
 	private String watsonSTTPassword = "";
+	private String watsonConvUsername = "";
+	private String watsonConvPassword = "";
+	private String watsonConvWorkspaceId = "";
 	private boolean watsonInitialized = false;
-	private boolean watsonAvailable = true;
+	private boolean watsonTTSAvailable = true;
+	private boolean watsonSTTAvailable = true;
+	private boolean watsonConvAvailable = true;
 	private TextToSpeech ttsService = null;
 	private SpeechToText sttService = null;
+	private ConversationService convService = null; 
 	private String speechDir = "";
 	
 	public SpeechUtilImpl() {}
@@ -64,11 +75,26 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public void initWatson() {
 		try {
 			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
-			sttService = new SpeechToText(watsonSTTUsername, watsonSTTPassword);
 		} catch (Exception ex) {
 			logger.debug("TextToSpeech init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
-			watsonAvailable = false;
+			watsonTTSAvailable = false;
+		}
+
+		try {
+			sttService = new SpeechToText(watsonSTTUsername, watsonSTTPassword);
+		} catch (Exception ex) {
+			logger.debug("SpeechToText init(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+			watsonSTTAvailable = false;
+		}
+
+		try {
+			convService = new ConversationService(ConversationService.VERSION_DATE_2016_07_11, watsonConvUsername, watsonConvPassword);
+		} catch (Exception ex) {
+			logger.debug("Conversation init(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+			watsonConvAvailable = false;
 		}
 	}
 	
@@ -79,14 +105,10 @@ public class SpeechUtilImpl implements SpeechUtil {
 			return;
 		
 		initWatson();
-		getNoAudioFiles();
+		getDefaultAudioFiles();
 		watsonInitialized = true;
     }	
 
-	public boolean isWatsonAvailable() {
-		return this.watsonAvailable;
-	}
-	
 	public void setWatsonTTSAccount(String username, String password) {
 		this.watsonTTSUsername = username;
 		this.watsonTTSPassword = password;
@@ -97,6 +119,12 @@ public class SpeechUtilImpl implements SpeechUtil {
 		this.watsonSTTPassword = password;
 	}
 
+	public void setWatsonConvAccount(String username, String password, String workspaceId) {
+		this.watsonConvUsername = username;
+		this.watsonConvPassword = password;
+		this.watsonConvWorkspaceId = workspaceId;
+	}
+	
 	public void setSpeechDir(String dir) {
 		this.speechDir = dir;
 	}
@@ -105,13 +133,26 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return this.speechDir;
 	}
 	
-	//TODO: SPEECH: add try/catch
-	public String getSTTToken() {
-		String token = sttService.getToken().execute();
-		return token;
+	public String[] getKeywords() {
+		return keywords;
 	}
 	
-	public boolean getAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response) {
+	public boolean isWatsonTTSAvailable() {
+		return this.watsonTTSAvailable;
+	}
+	
+	public boolean isWatsonSTTAvailable() {
+		return this.watsonSTTAvailable;
+	}
+	
+	public boolean isWatsonConvAvailable() {
+		return this.watsonConvAvailable;
+	}
+	
+	/**********************/
+	/*** Text to Speech ***/
+	/**********************/
+	public boolean getRecipeAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response) {
 		InputStream inStream = null;
 		ServletOutputStream outStream = null;
 		File audioFile = null;
@@ -153,7 +194,7 @@ public class SpeechUtilImpl implements SpeechUtil {
     		}
 		}
 		
-		if (isWatsonAvailable()) {
+		if (isWatsonTTSAvailable()) {
 			//get audio from Watson then save it to a file and copy it to the response
 			try {
 				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
@@ -174,6 +215,35 @@ public class SpeechUtilImpl implements SpeechUtil {
 		
 		return result;
 	}
+
+	/*public boolean getAudio(String text, Voice voice, HttpServletResponse response) {
+		InputStream inStream = null;
+		ServletOutputStream outStream = null;
+		boolean result = false;
+		
+		if (isWatsonTTSAvailable()) {
+			//get audio from Watson and copy to response
+			try {
+				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
+				if (inStream != null) {
+					outStream = response.getOutputStream();
+			        byte[] buffer = new byte[2048];
+			        int read;
+			        while ((read = inStream.read(buffer)) != -1) {
+			        	outStream.write(buffer, 0, read);
+			        }
+			        outStream.flush();
+				}
+			} catch (Exception ex) {
+				logService.addException(ex);
+			} finally {
+			    closeStream(inStream);
+			    closeStream(outStream);
+			}
+		}
+		
+		return result;
+	}*/
 	
 	public void getSample(String fileName, HttpServletResponse response) {
 		ServletOutputStream outStream = null;
@@ -192,7 +262,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	    	return;
 		}
 		
-		//if the audio file already exists then simply return it in the response
+		//the audio file should already exist so simply return it in the response
 		if (audioFile.exists()) {
 			try {
 				outStream = response.getOutputStream();
@@ -275,14 +345,14 @@ public class SpeechUtilImpl implements SpeechUtil {
 		}
 	}
 	
-	public void getNoAudioFiles() {
+	public void getDefaultAudioFiles() {
 		InputStream inStream = null;
 		File audioFile = null;
 		String fileName = "";
 		Locale locales[] = new Locale[] {Locale.ENGLISH, Locale.FRANCE};
 		Object[] obj = new String[] {null};
 		
-		if (!isWatsonAvailable())
+		if (!isWatsonTTSAvailable())
 			return;
 				
 		for (Locale locale : locales) {
@@ -338,7 +408,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public List<Voice> getVoices(Locale locale) {
 		List<Voice> localeVoices = new ArrayList<Voice>();
 		
-		if (!isWatsonAvailable())
+		if (!isWatsonTTSAvailable())
 			return null;
 		
 		String localeLang = locale.getLanguage();
@@ -361,5 +431,38 @@ public class SpeechUtilImpl implements SpeechUtil {
 	            // ignore
 	        }
 	    }	      	   
+	}
+
+	/**********************/
+	/*** Speech to Text ***/
+	/**********************/
+	//TODO: SPEECH: add try/catch
+	public String getSTTToken() {
+		String token = sttService.getToken().execute();
+		return token;
+	}
+	
+	/********************/
+	/*** Conversation ***/
+	/********************/
+	public MessageRequest startWatsonConversation(long userId, long recipeId) {
+		Map<String, Object> contextMap = new HashMap<String, Object>();
+		//TODO: SPEECH: look up the recipe specific stuff and put into context
+		//TODO: SPEECH: consider adding the userID and recipeID to the context
+		contextMap.put("ingredSetCount", 1);
+		contextMap.put("instructSetCount", 2);
+		contextMap.put("ingredSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
+		contextMap.put("instructSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
+		MessageRequest message = new MessageRequest.Builder()
+										.context(contextMap)
+										.inputText("")
+										.build();
+
+		return message;
+	}
+	
+	public MessageResponse sendWatsonRequest(MessageRequest message) {
+		MessageResponse response = convService.message(watsonConvWorkspaceId, message).execute();
+		return response;
 	}
 }

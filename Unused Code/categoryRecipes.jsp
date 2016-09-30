@@ -1,4 +1,4 @@
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%-- <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:set var="noPhoto"><spring:message code="common.photo.nophoto"></spring:message></c:set>
@@ -56,3 +56,4 @@
 <script src="<c:url value="/resources/DataTables/js/dataTables.bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/holder/holder.min.js"/>"></script>
 <script src="<c:url value="/resources/custom/categoryrecipes.js" />"></script>
+ --%>

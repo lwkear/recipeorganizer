@@ -346,12 +346,12 @@ function playAudio(userId, recipeId, section, type) {
 	var audio = null;
 	audio = $('#audio'+type+section).get(0);
 	var ready = audio.readyState;
-	var network = audio.networkState;
+	//var network = audio.networkState;
 	var paused = audio.paused
 	if (paused && ready > 0)
 		audio.play();
 	else {
-		audio.setAttribute('src', appContextPath + '/getAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type);
+		audio.setAttribute('src', appContextPath + '/getRecipeAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type);
 		audio.play();
 	}
 }

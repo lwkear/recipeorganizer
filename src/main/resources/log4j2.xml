@@ -7,10 +7,10 @@
 		<!-- <Property name="errfilename">/srv/www/recipeorganizer/logs/recipeorganizer.error.log</Property> -->
 		<!-- <Property name="stdfilename">${bundle:filedir:file.directory.logs}recipeorganizer.log</Property> -->
 		<!-- <Property name="errfilename">${bundle:filedir:file.directory.logs}recipeorganizer.error.log</Property> -->
-		<Property name="stdfilename">C:/recipeorganizer/logs/recipeorganizer.log</Property>
-		<Property name="errfilename">C:/recipeorganizer/logs/recipeorganizer.error.log</Property>
-		<!-- <Property name="stdfilename">G:/recipeorganizer/logs/recipeorganizer.log</Property> -->
-		<!-- <Property name="errfilename">G:/recipeorganizer/logs/recipeorganizer.error.log</Property> -->
+		<!-- <Property name="stdfilename">C:/recipeorganizer/logs/recipeorganizer.log</Property> -->
+		<!-- <Property name="errfilename">C:/recipeorganizer/logs/recipeorganizer.error.log</Property> -->
+		<Property name="stdfilename">G:/recipeorganizer/logs/recipeorganizer.log</Property>
+		<Property name="errfilename">G:/recipeorganizer/logs/recipeorganizer.error.log</Property>
 	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">

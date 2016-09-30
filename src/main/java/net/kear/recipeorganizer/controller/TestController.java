@@ -10,8 +10,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.crypto.BadPaddingException;
@@ -26,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 
@@ -44,10 +47,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ibm.watson.developer_cloud.conversation.v1.model.Entity;
+import com.ibm.watson.developer_cloud.conversation.v1.model.Intent;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
@@ -201,9 +209,148 @@ public class TestController {
 	    }	      	   
 	}*/
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
-	public String getTestpage(Model model, HttpServletRequest request, Locale locale) {
+	public String getTestpage(Model model, HttpServletRequest request, HttpSession session, Locale locale) {
 		logger.debug("getTestpage");
+
+		/*WatsonConversation wc = new WatsonConversation();
+
+		Map<String, Object> contextMap = new HashMap<String, Object>();
+		contextMap.put("recipe_name", new String("Mom's Brownies"));
+		contextMap.put("ingredSetCount", 2);
+		contextMap.put("instructSetCount", 2);
+		contextMap.put("ingredSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
+		contextMap.put("instructSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
+		MessageRequest message = new MessageRequest.Builder()
+										.context(contextMap)
+										.inputText("")
+										.build();
+		MessageResponse response = speechUtil.sendWatsonRequest(message);
+
+		Map<String, Object> context = response.getContext();
+		List<Entity> entities = response.getEntities();
+		List<Intent> intents = response.getIntents();
+		Map<String, Object> output = response.getOutput();
+		List<String> outputText = (List<String>)output.get("text");
+		String fullText = "";
+		for (String text : outputText)
+			fullText += text + "; ";
+		String concatText = response.getTextConcatenated(":");
+		String conversationID = (String)context.get("conversation_id");
+		
+		session.setAttribute("watsonContext", context);
+		session.setAttribute("watsonEntities", entities);
+		session.setAttribute("watsonIntents", intents);
+		session.setAttribute("watsonOutput", output);
+		wc.setContext(context);
+		wc.setEntities(entities);
+		wc.setIntents(intents);
+		
+		model.addAttribute("watsonConversation", wc);
+		model.addAttribute("watsonResponse", fullText);
+		model.addAttribute("concatText", concatText);
+		model.addAttribute("conversationID", conversationID);
+		model.addAttribute("watsonContext", context);
+		model.addAttribute("watsonEntities", entities);
+		model.addAttribute("watsonIntents", intents);
+		model.addAttribute("watsonOutput", output);*/
+		return "test/testpage";
+	}
+
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/test/testpage", method = RequestMethod.POST)
+	public String postTestpage(Model model, @RequestBody @ModelAttribute WatsonConversation wc, BindingResult result, HttpSession session, Locale locale) {
+		/*if (result.hasErrors()) {
+			logger.debug("Validation errors");
+			return "test/testpage";
+		}
+		
+		logger.debug("getTestpage");
+		logger.debug("wc.userInput: " + wc.getUserInput());
+		
+		Map<String, Object> context = (Map<String, Object>)session.getAttribute("watsonContext");
+		//List<Entity> entities = (List<Entity>)session.getAttribute("watsonEntities");
+		//List<Intent> intents = (List<Intent>)session.getAttribute("watsonIntents");
+		MessageRequest message = new MessageRequest.Builder()
+										.context(context)
+										//.entities(entities)
+										//.intents(intents)
+										.inputText(wc.getUserInput())
+										.build();
+		MessageResponse response = speechUtil.sendWatsonRequest(message);		
+
+		context = response.getContext();
+		List<Entity> entities = response.getEntities();
+		List<Intent> intents = response.getIntents();
+		Map<String, Object> output = response.getOutput();
+		List<String> outputText = (List<String>)output.get("text");
+		String fullText = "";
+		for (String text : outputText)
+			fullText += text + "; ";
+		String concatText = response.getTextConcatenated(":");
+		String conversationID = (String)context.get("conversation_id");
+		
+		session.setAttribute("watsonContext", context);
+		session.setAttribute("watsonEntities", entities);
+		session.setAttribute("watsonIntents", intents);
+		session.setAttribute("watsonOutput", output);
+		wc.setUserInput("");
+		wc.setContext(context);
+		wc.setEntities(entities);
+		wc.setIntents(intents);
+
+		model.addAttribute("watsonResponse", fullText);
+		model.addAttribute("concatText", concatText);
+		model.addAttribute("conversationID", conversationID);
+		model.addAttribute("watsonContext", context);
+		model.addAttribute("watsonEntities", entities);
+		model.addAttribute("watsonIntents", intents);
+		model.addAttribute("watsonOutput", output);*/
+		return "test/testpage";
+	}
+	
+	public static class WatsonConversation {
+		
+		private String userInput;
+		/*Map<String, Object> context;
+		List<Entity> entities;
+		List<Intent> intents;*/
+
+		public WatsonConversation() {}
+
+		public String getUserInput() {
+			return userInput;
+		}
+
+		public void setUserInput(String userInput) {
+			this.userInput = userInput;
+		}
+
+		/*public Map<String, Object> getContext() {
+			return context;
+		}
+
+		public void setContext(Map<String, Object> context) {
+			this.context = context;
+		}
+
+		public List<Entity> getEntities() {
+			return entities;
+		}
+
+		public void setEntities(List<Entity> entities) {
+			this.entities = entities;
+		}
+
+		public List<Intent> getIntents() {
+			return intents;
+		}
+
+		public void setIntents(List<Intent> intents) {
+			this.intents = intents;
+		}*/
+	}
 		
 		/* 
 		*****************************************
@@ -464,13 +611,15 @@ public class TestController {
 		msg.setMessage("Some regular text, then some html");
 		msg.setHtmlMessage("<p>This is a message!</p><ul><li>Reason #1</li><li>Reason #2</li><li>Reason #3</li></ul><p>Some other message</p>");
 
-		userMessageService.addMessage(msg);*/
+		userMessageService.addMessage(msg);
 		
 		return "test/testpage";
-	}
+	}*/
 
-	@RequestMapping(value = "/test/testpage", method = RequestMethod.POST)
-	public String postTestpage(@ModelAttribute @Valid WebGreeting wb, BindingResult result) {
+
+	/*
+		@RequestMapping(value = "/test/testpage", method = RequestMethod.POST)
+		public String postTestpage(@ModelAttribute @Valid WebGreeting wb, BindingResult result) {
 		if (result.hasErrors()) {
 			logger.debug("Validation errors");
 			return "test/testpage";
@@ -481,8 +630,8 @@ public class TestController {
 		
 		return "test/testpage";
 	}
-	
-	public static class WebGreeting {
+
+		public static class WebGreeting {
 		
 		//@Size(max=20)
 		private String greeting;
@@ -496,7 +645,7 @@ public class TestController {
 		public void setGreeting(String greeting) {
 			this.greeting = greeting;
 		}
-	}
+	}*/
 }
 
 

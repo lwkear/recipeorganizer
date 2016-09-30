@@ -168,11 +168,11 @@ function setSessionTimeout() {
 }
 
 function getSessionTimeout() {
-	var uri = document.documentURI;
+	/*var uri = document.documentURI;
 	console.log('document.documentURI: ' + uri);
 	var url = document.URL;
 	console.log('document.URL: ' + url);
-	console.log('appContextPath: ' + appContextPath);
+	console.log('appContextPath: ' + appContextPath);*/
 	
 	var user = Cookies.get('authUser');
 	if (user === 'anonymousUser')

@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
 
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 
 import net.kear.recipeorganizer.enums.AudioType;
@@ -18,16 +20,23 @@ public interface SpeechUtil {
 	public void initWatson();
 	public void setWatsonTTSAccount(String username, String password);
 	public void setWatsonSTTAccount(String username, String password);
-	public boolean isWatsonAvailable();
+	public void setWatsonConvAccount(String username, String password, String workspaceId);
 	public void setSpeechDir(String dir);
 	public String getSpeechDir();
-	public String getSTTToken();
-	public boolean getAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response);
+	public String[] getKeywords();
+	public boolean isWatsonTTSAvailable();
+	public boolean isWatsonSTTAvailable();
+	public boolean isWatsonConvAvailable();
+	public boolean getRecipeAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response);
+	//public boolean getAudio(String text, Voice voice, HttpServletResponse response);
 	public void getSample(String fileName, HttpServletResponse response);
 	public String prepareIngredients(List<RecipeIngredient> ingredList, int interval);
 	public String prepareInstructions(List<Instruction> instructList, int interval);
 	public String prepareNotes(String notes, int interval);
-	public void getNoAudioFiles();
+	public void getDefaultAudioFiles();
 	public void getNoAudioFile(AudioType audioType, Voice voice, HttpServletResponse response);
 	public List<Voice> getVoices(Locale locale);
+	public String getSTTToken();
+	public MessageRequest startWatsonConversation(long userId, long recipeId);
+	public MessageResponse sendWatsonRequest(MessageRequest message);
 }
