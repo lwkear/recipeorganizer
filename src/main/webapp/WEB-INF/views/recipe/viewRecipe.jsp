@@ -55,7 +55,11 @@
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
 					<span class="pull-right">
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:30px;font-size:20px" 
+						<button type="button" class="btn btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"> 
+							<%--data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>"> --%>
+							<span class="fa fa-microphone fa-fw"></span>
+						</button>
+						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:5px;font-size:20px" 
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
@@ -141,6 +145,9 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
+			<div>		
+				<audio class="audioCtl"></audio>
+			</div>			
 							
 			<div>
 			
@@ -163,7 +170,7 @@
 	<input type="hidden" id="recipeId" value="${recipe.id}"/>
 	<input type="hidden" id="recipeName" value="${recipe.name}"/>
 	<input type="hidden" id="returnUrl" value="${returnUrl}"/>
-	<input type="hidden" id="isFav" value="${favorite}"/>
+	<input type="hidden" id="isFav" value="${favorite}"/>	
 
 <%@include file="../common/footer.jsp" %>
 
@@ -289,6 +296,7 @@
 </body>
 
 <!-- include recipe-specific routines -->
+<script src="<c:url value="/resources/custom/audio.js" />"></script>
 <script src="<c:url value="/resources/custom/viewrecipe.js" />"></script>
 <script src="<c:url value="/resources/custom/usermessage.js" />"></script>
 

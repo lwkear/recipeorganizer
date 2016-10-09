@@ -37,6 +37,7 @@
 			<AppenderRef ref="errLog"/>
 		</Root>
 		<Logger name="net.kear.recipeorganizer" level="debug"/>
+		<Logger name="net.kear.recipeorganizer.security" level="info"/>
 		<Logger name="org.springframework" level="warn"/>
 		<logger name="org.springframework.web" level="warn"/>
 		<!-- <logger name="org.springframework.web.context" level="warn"/> -->

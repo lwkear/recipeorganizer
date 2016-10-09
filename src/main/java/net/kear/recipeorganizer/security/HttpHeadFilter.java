@@ -31,12 +31,12 @@ public class HttpHeadFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		logger.info("doFilter");
+		logger.debug("doFilter");
 		
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
         if (isHttpHead(httpServletRequest)) {
-        	logger.info("isHttpHead = true");
+        	logger.debug("isHttpHead = true");
         	HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             NoBodyResponseWrapper noBodyResponseWrapper = new NoBodyResponseWrapper(httpServletResponse);
 

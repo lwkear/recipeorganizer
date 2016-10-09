@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -216,23 +215,65 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return result;
 	}
 
-	/*public boolean getAudio(String text, Voice voice, HttpServletResponse response) {
+	public boolean getAudio(String text, Voice voice, String fileName, boolean saveFile, HttpServletResponse response) {
 		InputStream inStream = null;
 		ServletOutputStream outStream = null;
+		File audioFile = null;
+		Path path = null;
 		boolean result = false;
+
+		if ((StringUtils.isBlank(text) || voice == null) ||
+			(saveFile && StringUtils.isBlank(fileName))) 
+			return result;
+		
+		if (saveFile) {
+			//prepare the output file
+			try {
+				audioFile = new File(fileName);
+				path = audioFile.toPath();
+			} catch (Exception ex) {
+		    	logService.addException(ex);
+		    	return result;
+			}
+
+			//if the audio file already exists then simply return it in the response
+			if (audioFile.exists()) {
+	    		try {
+					outStream = response.getOutputStream();
+			    	Files.copy(path, outStream);
+			    	outStream.flush();
+			    	outStream.close();
+			    	return true;
+			    } catch (Exception ex) {
+			    	closeStream(outStream);
+			    	logService.addException(ex);
+			    	return result;
+			    }
+			}
+		}
 		
 		if (isWatsonTTSAvailable()) {
 			//get audio from Watson and copy to response
 			try {
 				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
 				if (inStream != null) {
-					outStream = response.getOutputStream();
-			        byte[] buffer = new byte[2048];
-			        int read;
-			        while ((read = inStream.read(buffer)) != -1) {
-			        	outStream.write(buffer, 0, read);
-			        }
-			        outStream.flush();
+					if (saveFile) {
+						FileUtils.copyInputStreamToFile(inStream, audioFile);
+						outStream = response.getOutputStream();
+				    	Files.copy(path, outStream);
+				    	outStream.flush();
+				    	result = true;
+					}
+					else {
+						outStream = response.getOutputStream();
+				        byte[] buffer = new byte[2048];
+				        int read;
+				        while ((read = inStream.read(buffer)) != -1) {
+				        	outStream.write(buffer, 0, read);
+				        }
+				        outStream.flush();
+				        result = true;
+					}
 				}
 			} catch (Exception ex) {
 				logService.addException(ex);
@@ -243,7 +284,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 		}
 		
 		return result;
-	}*/
+	}
 	
 	public void getSample(String fileName, HttpServletResponse response) {
 		ServletOutputStream outStream = null;
@@ -323,6 +364,34 @@ public class SpeechUtilImpl implements SpeechUtil {
 
 		String type = StringUtils.lowerCase(audioType.name());
 		String fileName = getSpeechDir() + "noaudio." + type + "." + voice.getName() + ".ogg";
+		
+		try {
+			audioFile = new File(fileName);
+			path = audioFile.toPath();
+		} catch (Exception ex) {
+	    	logService.addException(ex);
+	    	return;
+		}
+
+		if (audioFile.exists()) {
+			try {
+				outStream = response.getOutputStream();
+		    	Files.copy(path, outStream);
+		    	outStream.flush();
+		    	outStream.close();
+		    } catch (Exception ex) {
+		    	closeStream(outStream);
+		    	logService.addException(ex);
+		    }
+		}
+	}
+
+	public void getAudio(String name, HttpServletResponse response) {
+		ServletOutputStream outStream = null;
+		File audioFile = null;
+		Path path = null;
+
+		String fileName = getSpeechDir() + name;
 		
 		try {
 			audioFile = new File(fileName);
@@ -436,7 +505,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	/**********************/
 	/*** Speech to Text ***/
 	/**********************/
-	//TODO: SPEECH: add try/catch
+	//TODO: SPEECH: add try/catch?
 	public String getSTTToken() {
 		String token = sttService.getToken().execute();
 		return token;
@@ -445,19 +514,12 @@ public class SpeechUtilImpl implements SpeechUtil {
 	/********************/
 	/*** Conversation ***/
 	/********************/
-	public MessageRequest startWatsonConversation(long userId, long recipeId) {
-		Map<String, Object> contextMap = new HashMap<String, Object>();
-		//TODO: SPEECH: look up the recipe specific stuff and put into context
-		//TODO: SPEECH: consider adding the userID and recipeID to the context
-		contextMap.put("ingredSetCount", 1);
-		contextMap.put("instructSetCount", 2);
-		contextMap.put("ingredSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
-		contextMap.put("instructSetName", "cake|icing|for cake|for icing|for the cake|for the icing");
+	//TODO: SPEECH: add try/catch?
+	public MessageRequest startWatsonConversation(Map<String, Object> contextMap) {
 		MessageRequest message = new MessageRequest.Builder()
 										.context(contextMap)
 										.inputText("")
 										.build();
-
 		return message;
 	}
 	

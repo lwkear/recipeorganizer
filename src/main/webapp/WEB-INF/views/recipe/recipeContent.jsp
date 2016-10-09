@@ -25,12 +25,17 @@
 			<c:if test="${not empty recipe.notes}">
 				<div class="col-sm-12 spacer-vert-xs">
 					<strong><spring:message code="recipe.optional.notes"></spring:message></strong>
-					<button type="button" class="btn btn-link audioBtn collapse"
+					<button type="button" class="btn btn-link playBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>"
 						onclick="playAudio(${viewerId}, ${recipe.id}, 0, '${AudioType.NOTES}')"
 						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.notes"></spring:message>">
 						<span class="glyphicon glyphicon-play"></span>
 					</button>
-					<audio id="audio${AudioType.NOTES}0"></audio>
+					<button type="button" class="btn btn-link pauseBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+						<span class="glyphicon glyphicon-pause"></span>
+					</button>
+					<button type="button" class="btn btn-link stopBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+						<span class="glyphicon glyphicon-stop"></span>
+					</button>
 					<p>${recipe.notes}</p>
 				</div>
 			</c:if>
@@ -39,7 +44,6 @@
 				<%@include file="privateNotes.jsp" %>
 			
 			</div>
-			<div class="<c:if test="${privateRecipe}">transparent</c:if>">
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="col-sm-4 spacer-vert-xs">
@@ -146,44 +150,6 @@
 					</c:if>
 				</div>
 			</div>
-			<div class="col-sm-12 spacer-vert-xs">
-				<h4><spring:message code="recipe.ingredients.title"></spring:message> <!-- hidden=true -->
-					<c:if test="${recipe.numIngredSections eq 1}">
-						<button type="button" class="btn btn-link audioBtn collapse"
-							onclick="playAudio(${viewerId}, ${recipe.id}, 0, '${AudioType.INGREDIENTS}')"
-							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.ingred"></spring:message>">
-							<span class="glyphicon glyphicon-play"></span>
-						</button>
-						<audio id="audio${AudioType.INGREDIENTS}0"></audio>
-					</c:if>
-				</h4>				
-			</div>
-			<div class="col-sm-12">
-				<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
-					<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
-						<p><strong>${section.name}</strong>
-							<button type="button" class="btn btn-link audioBtn collapse"
-								onclick="playAudio(${viewerId}, ${recipe.id}, ${loop.index}, '${AudioType.INGREDIENTS}')"
-								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.ingred"></spring:message>">
-								<span class="glyphicon glyphicon-play"></span>
-							</button>
-							<audio id="audio${AudioType.INGREDIENTS}${loop.index}"></audio>
-						</p>
-					</c:if>
-					<table class="table table-condensed recipe-table">
-						<tbody>
-							<c:forEach var="ingred" items="${section.recipeIngredients}">
-							<tr>
-								<td class="ingredqty">${ingred.qtyAmt}</td>
-								<td>${ingred.qtyType}</td>
-								<td>${ingred.ingredient.name}&nbsp;&nbsp;<c:if test="${not empty ingred.qualifier}">(${ingred.qualifier})</c:if></td>
-							</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-				</c:forEach>
-			</div>
-			</div>
 		</div>
 		<div class="col-sm-3" style="height:200px;">
 			<div class="col-sm-12">
@@ -199,38 +165,101 @@
 		</div>
 	</div>
 	<div class="<c:if test="${privateRecipe}">transparent</c:if>">
-	<div class="col-sm-12 spacer-vert-xs">
-		<h4><spring:message code="recipe.instructions.title"></spring:message>
-			<c:if test="${recipe.numInstructSections eq 1}">
-				<button type="button" class="btn btn-link audioBtn collapse"
-					onclick="playAudio(${viewerId}, ${recipe.id}, 0, '${AudioType.INSTRUCTIONS}')"
-					data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.instruct"></spring:message>">
-					<span class="glyphicon glyphicon-play"></span>
-				</button>
-				<audio id="audio${AudioType.INSTRUCTIONS}0"></audio>
-			</c:if>
-		</h4>
-	</div>
-	<div class="col-sm-12">
-		<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
-			<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
-				<p><strong>${section.name}</strong>
-					<button type="button" class="btn btn-link audioBtn collapse"
-						onclick="playAudio(${viewerId}, ${recipe.id}, ${loop.index}, '${AudioType.INSTRUCTIONS}')"
-						data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.instruct"></spring:message>">
-						<span class="glyphicon glyphicon-play"></span>
-					</button>
-					<audio id="audio${AudioType.INSTRUCTIONS}${loop.index}"></audio>
-				</p>
-			</c:if>
-			<table class="table table-condensed recipe-table">
-				<tbody>				
-					<c:forEach var="instrct" items="${section.instructions}">
-						<tr><td><strong>${instrct.sequenceNo}.</strong>&nbsp;&nbsp;${instrct.description}</td></tr>
+		<div class="row spacer-vert-xs">
+			<div class="col-sm-6">
+				<div class="col-sm-12">
+					<h4><spring:message code="recipe.ingredients.title"></spring:message> <!-- hidden=true -->
+						<c:if test="${recipe.numIngredSections eq 1}">
+							<button type="button" class="btn btn-link playBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>"
+								onclick="playAudio(${viewerId}, ${recipe.id}, 0, '${AudioType.INGREDIENTS}')"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.ingred"></spring:message>">
+								<span class="glyphicon glyphicon-play"></span>
+							</button>
+							<button type="button" class="btn btn-link pauseBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+								<span class="glyphicon glyphicon-pause"></span>
+							</button>
+							<button type="button" class="btn btn-link stopBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+								<span class="glyphicon glyphicon-stop"></span>
+							</button>
+						</c:if>
+					</h4>				
+				</div>
+				<div class="col-sm-12">
+					<c:forEach var="section" items="${recipe.ingredSections}" varStatus="loop">
+						<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
+							<p><strong>${section.name}</strong>
+								<button type="button" class="btn btn-link playBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>"
+									onclick="playAudio(${viewerId}, ${recipe.id}, ${loop.index}, '${AudioType.INGREDIENTS}')"
+									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.ingred"></spring:message>">
+									<span class="glyphicon glyphicon-play"></span>
+								</button>
+								<button type="button" class="btn btn-link pauseBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+									<span class="glyphicon glyphicon-pause"></span>
+								</button>
+								<button type="button" class="btn btn-link stopBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+									<span class="glyphicon glyphicon-stop"></span>
+								</button>
+							</p>
+						</c:if>
+						<table class="table table-condensed recipe-table">
+							<tbody>
+								<c:forEach var="ingred" items="${section.recipeIngredients}">
+								<tr>
+									<td class="ingredqty">${ingred.qtyAmt}</td>
+									<td>${ingred.qtyType}</td>
+									<td>${ingred.ingredient.name}&nbsp;&nbsp;<c:if test="${not empty ingred.qualifier}">(${ingred.qualifier})</c:if></td>
+								</tr>
+								</c:forEach>
+							</tbody>
+						</table>
 					</c:forEach>
-				</tbody>
-			</table>
-		</c:forEach>
-	</div>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="col-sm-12">
+					<h4><spring:message code="recipe.instructions.title"></spring:message>
+						<c:if test="${recipe.numInstructSections eq 1}">
+							<button type="button" class="btn btn-link playBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>"
+								onclick="playAudio(${viewerId}, ${recipe.id}, 0, '${AudioType.INSTRUCTIONS}')"
+								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.instruct"></spring:message>">
+								<span class="glyphicon glyphicon-play"></span>
+							</button>
+							<button type="button" class="btn btn-link pauseBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+								<span class="glyphicon glyphicon-pause"></span>
+							</button>
+							<button type="button" class="btn btn-link stopBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+								<span class="glyphicon glyphicon-stop"></span>
+							</button>
+						</c:if>
+					</h4>
+				</div>
+				<div class="col-sm-12">
+					<c:forEach var="section" items="${recipe.instructSections}" varStatus="loop">
+						<c:if test="${(not empty section.name) && (section.name != 'XXXX')}">
+							<p><strong>${section.name}</strong>
+								<button type="button" class="btn btn-link playBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>"
+									onclick="playAudio(${viewerId}, ${recipe.id}, ${loop.index}, '${AudioType.INSTRUCTIONS}')"
+									data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.instruct"></spring:message>">
+									<span class="glyphicon glyphicon-play"></span>
+								</button>
+								<button type="button" class="btn btn-link pauseBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+									<span class="glyphicon glyphicon-pause"></span>
+								</button>
+								<button type="button" class="btn btn-link stopBtn audioBtn collapse <c:if test="${privateRecipe}">disabled</c:if>">
+									<span class="glyphicon glyphicon-stop"></span>
+								</button>
+							</p>
+						</c:if>
+						<table class="table table-condensed recipe-table">
+							<tbody>				
+								<c:forEach var="instrct" items="${section.instructions}">
+									<tr><td><strong>${instrct.sequenceNo}.</strong>&nbsp;&nbsp;${instrct.description}</td></tr>
+								</c:forEach>
+							</tbody>
+						</table>
+					</c:forEach>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

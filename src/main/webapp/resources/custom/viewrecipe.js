@@ -117,10 +117,10 @@ function postNote(e) {
 		var audioOn = canPlay();
 		//this is necessary to get the tooltip to appear correctly; see http://jsfiddle.net/fScua/
 		$('body').tooltip({
-            selector: '[rel=tooltip]'
+            selector: '[data-rel=tooltip]'
         });
 		if (audioOn) {
-			$('.privateNoteBtn').show();
+			$('.audioBtn').show();
 		}
 		console.log('postNote done');
 	})
@@ -337,39 +337,6 @@ function getContent() {
 	var content = $("#popoverContent").html();
 	return content;
 }
-
-/***********************/
-/*** audio functions ***/
-/***********************/
-function playAudio(userId, recipeId, section, type) {
-	$('.audioBtn').blur();
-	var audio = null;
-	audio = $('#audio'+type+section).get(0);
-	var ready = audio.readyState;
-	//var network = audio.networkState;
-	var paused = audio.paused
-	if (paused && ready > 0)
-		audio.play();
-	else {
-		audio.setAttribute('src', appContextPath + '/getRecipeAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type);
-		audio.play();
-	}
-}
-
-function checkAudio() {
-	var audioOn = canPlay();
-	if (audioOn) {
-		$('.audioBtn').show();
-	}
-}
-
-/*function getAudio() {
-	var userId = $('#viewerId').val();
-	var recipeId = $('#recipeId').val();
-	var section = 0;
-	var type = 'INGREDIENTS';
-	playAudio(userId, recipeId, section, type)	
-}*/
 
 $(function() {
 

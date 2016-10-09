@@ -91,6 +91,14 @@ var keywordsArray = "";
 /***********************/
 /*** audio functions ***/
 /***********************/
+/*function getAudio() {
+	var userId = $('#viewerId').val();
+	var recipeId = $('#recipeId').val();
+	var section = 0;
+	var type = 'INGREDIENTS';
+	playAudio(userId, recipeId, section, type)	
+}*/
+
 function playRecipeAudio(userId, recipeId, section, type) {
 	//$('.audioBtn').blur();
 	var audio = null;
@@ -117,6 +125,19 @@ function checkAudio() {
 		playRecipeAudio(1,15,0,data.result);
 	}
 } */
+
+function getAudio() {
+	var audio = null;
+	audio = $('.audioCtl').get(0);
+	var ready = audio.readyState;
+	var paused = audio.paused
+	if (paused && ready > 0)
+		audio.play();
+	else {
+		audio.setAttribute('src', appContextPath + '/startWatsonConversation');
+		audio.play();
+	}
+}
 
 function retrieveAudio(result) {
 	if (result != null) {
@@ -165,10 +186,12 @@ function startConversation() {
 	var recipeId = 15; 
 	var data = {"userId":viewerId,"recipeId":recipeId};
 	$.ajax({
-	    type: 'POST',
+	    //type: 'POST',
+	    type: 'GET',
 	    url: appContextPath + '/startWatsonConversation',
 	    //dataType: 'json',
-	    dataType: 'blob',
+	    dataType: 'audio',
+	    processData: false
 	    //data: data
 	})
 	.done(function(data) {
@@ -195,11 +218,11 @@ function startConversation2() {
 	console.log('startConversation');
 	//var viewerId = $(viewerId).val();
 	//var recipeId = $(recipeId).val();
-	var viewerId = 1;
-	var recipeId = 15;
-	var param = {"userId":viewerId,"recipeId":recipeId};
-	var data = JSON.stringify(param);
-	var url = appContextPath + '/startWatsonConversation';
+	//var viewerId = 1;
+	//var recipeId = 15;
+	//var param = {"userId":viewerId,"recipeId":recipeId};
+	//var data = JSON.stringify(param);
+	var url = appContextPath + '/startWatsonConversation?name=noaudio.instructions.en-US_MichaelVoice.ogg';
 
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
@@ -209,33 +232,63 @@ function startConversation2() {
 	//xhr.setRequestHeader('Content-Type', 'application/json');;
 	xhr.setRequestHeader(header, token);
 	xhr.responseType = 'blob';
-	
+	//xhr.responseType = 'arraybuffer';
+
 	xhr.onload = function(e) {
-	  if (this.status == 200) {
+		if (this.readyState == 4 && this.status == 200) {
 	    // get binary data as a response
-		var blob = new Blob([xhr.response], {type: 'audio/ogg'});
-		//var blob = null;
-	    //var objectUrl = URL.createObjectUrl(blob);
-	    //var objectUrl = window.URL.createObjectUrl(blob);
-	    //var objectUrl = (window.URL || window.webkitURL).createObjectUrl(blob);
-	    
-	    audio = $('.audioCtl').get(0);
-	    //audio.src = objectUrl;
-	    //audio.src = window.URL.createObjectUrl(blob);
-	    var url = window.URL.createObjectUrl(blob);
-	    audio.src = url;
-	    //audio.mozSrcObject = blob;
-	    // Release resource when it's loaded
-	    audio.onload = function(evt) {
-	    	URL.revokeObjectUrl(objectUrl);
-	    };
-	    audio.play();
-	  }
+			var blob = new Blob([xhr.response], {type: 'audio/ogg; codecs=opus'});
+			var size = blob.size;
+			var type = blob.type;
+			//var blob = null;
+		    //var objectUrl = URL.createObjectUrl(blob);
+		    //var objectUrl = window.URL.createObjectUrl(blob);
+		    //var objectUrl = (window.URL || window.webkitURL).createObjectUrl(blob);
+		    //audio.src = objectUrl;
+		    //audio.src = window.URL.createObjectUrl(blob);
+		    //var url = (window.URL || window.webkitURL).createObjectUrl(blob);
+		    //var url = URL.createObjectUrl(blob);
+		    //var audio = $('.audioCtl').get(0);
+		    //audio.src = url;
+		    //audio.mozSrcObject = blob;
+		    // Release resource when it's loaded
+
+		    $('.recipeAudio').get(0).src = window.URL.createObjectURL(blob);
+		    var audio = $('.recipeAudio').get(0);
+		    audio.onload = function(evt) {
+		    	window.URL.revokeObjectUrl(audio.src);
+		    };
+		    audio.play();
+
+
+		}		
 	};
 	
-	//xhr.send(data);
 	xhr.send();
 }
+
+/* function getAudio() {
+	var url = appContextPath + '/getAudio?audioId=1';
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'blob';
+	xhr.onload = function(e) {
+		if (this.readyState == 4 && this.status == 200) {
+			var blob = new Blob([xhr.response], {type: 'audio/ogg'});
+		    var audio = $('.audioCtl').get(0);
+		    //var url = window.URL.createObjectUrl(blob);
+		    var url = URL.createObjectUrl(blob);
+		    audio.src = url;
+		    audio.onload = function(evt) {
+		    	URL.revokeObjectUrl(objectUrl);
+		    }
+		    audio.play();
+		};	    
+	  };
+	};
+
+	xhr.send();
+} */
 
 function postResults(results) {
 	console.log('postResults: ' + results);
@@ -322,8 +375,11 @@ $(function() {
 	
 	$(document)
 		.on('click', '#startConv', function(e) {
+			//startConversation();
 			startConversation2();
+			//getAudio();
 			//getSTTToken();			
+
 		})
 		.on('click', '#stop', function(e) {
 			if (stream)

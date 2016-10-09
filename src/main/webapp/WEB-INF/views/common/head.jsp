@@ -46,6 +46,9 @@
 <%-- <link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.css" />" rel="stylesheet"> --%>
 <link href="<c:url value="/resources/DataTables/css/dataTables.bootstrap.min.css" />" rel="stylesheet">
 
+<!-- Font Awesome -->
+<link href="<c:url value="/resources/font-awesome/css/font-awesome.min.css" />" rel="stylesheet">
+
 <!-- Custom styles for this app -->
 <link href="<c:url value="/resources/css/layout.css" />" rel="stylesheet">
 
