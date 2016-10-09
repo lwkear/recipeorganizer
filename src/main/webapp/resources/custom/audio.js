@@ -41,14 +41,14 @@ function checkAudio() {
 
 function startListening() {
 	console.log('startListening');
-	recording = true;
+	//on the laptop it appears that the ended event is fired before the audio has actually ended
+	//adding a second delay before starting to record seems to work
+	setTimeout(function(){ recording = true; }, 1000);
 }
 
 //user clicked on the forward VCR button
 function playAudio(userId, recipeId, section, type) {
 	$('.audioBtn').blur();
-	//var audio = null;
-	//audio = $('.audioCtl').get(0);
 	var url = appContextPath + '/getRecipeAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type;
 	var currUrl = audio.src;
 	var ready = audio.readyState;
@@ -103,8 +103,31 @@ function listen(token) {
 	stream.on('receive-json', function(msg) {
 		console.log(msg);
 		console.log('receive-json: recording='+recording);
-		if (!recording)
+		if (!recording) {
+			if (msg.results) {
+				var words = msg.results[0].alternatives[0].transcript;
+				if (words) {
+					console.log('receive-json: words='+words);
+					var command = words.match(/pause|continue|start|play|replay|stop/g);
+					if (command != null) {
+						console.log('receive-json: match='+command);
+						if (command[0].match(/pause/) != null)
+							audio.pause();
+						if (command[0].match(/continue|start/) != null)
+							audio.play();
+						if (command[0].match(/stop/) != null) {
+							audio.pause();
+							audio.currentTime = 0;
+						}
+						if (command[0].match(/play|replay/) != null) {
+							audio.currentTime = 0;
+							audio.pause();							
+						}
+					}
+				}
+			}
 			return;
+		}
 		if (msg.state !== 'listening') {
 			if (msg.results) {
 				console.log(msg.results[0].alternatives[0].transcript);
@@ -112,56 +135,17 @@ function listen(token) {
 					console.log('receive-json: ' + msg);
 					recording = false;
 					postResults(msg);				
-					//stream.close;
-					/*audio = $('.audioCtl').get(0);
-					if (audio.ended) {
-						console.log('receive-json: ' + msg);
-						postResults(msg);				
-						stream.close;
-					}*/
 				}
 			}
 		}
 	});
-
-	/* this function returns only the text result 
-	stream.on('data', function(result) {
-		if (result.final) { 
-			//parseResults(result);
-			//postResults(result);
-			console.log(result);
-			stream.close;
-		}
-		//console.log(result);
-		//stream.close;
-		//postResults(result);		
-	});
-	*/
 }
 
-/*function postResults(results) {
-	console.log('postResults: ' + results);
-	var speech = JSON.stringify(results);
-	var viewerId = $(viewerId).val();
-	var recipeId = $(recipeId).val();
-	var data = {"userId":viewerId,"recipeId":recipeId,"message":speech};
-	$.ajax({
-	    type: 'POST',
-	    url: appContextPath + '/postWatsonResult',
-	    dataType: 'json',
-	    data: data
-	})
-	.done(function(data) {
-		console.log('done data');
-		retrieveAudio(data);
-	})
-	.fail(function(jqXHR, status, error) {
-		var data = jqXHR.responseJSON;
-		console.log('fail data: '+ data);
-		alert('Error retrieving STT results')
-	});
-}*/
-
+//TODO: SPEECH: combine startConversation with postResults (redundant code)
+//TODO: SPEECH: blob error was not handled correctly - appeared as console error but no alert, etc.
+//TODO: SPEECH: visually indicate that the mic is on
+//TODO: SPEECH: click on a live mic to turn it off
+//TODO: SPEECH: how can you say "pause", "continue", "stop" or "replay" if the mic is not recording while the audio is playing???
 
 function startConversation() {
 	console.log('startConversation');
@@ -181,14 +165,12 @@ function startConversation() {
 				// get binary data as a response
 				var blob = new Blob([xhr.response], {type: 'audio/ogg; codecs=opus'});
 			    $('.audioCtl').get(0).src = window.URL.createObjectURL(blob);
-			    //var audio = $('.audioCtl').get(0);
 			    audio.onload = function(evt) {
 			    	window.URL.revokeObjectUrl(audio.src);
 			    };
 			    audio.play();
 			}
 			else {
-				//var text = xhr.responseText;
 				var resp = xhr.response;				
 				alert('startConversation server error');
 			}
@@ -202,7 +184,7 @@ function startConversation() {
 }
 
 function postResults(results) {
-	console.log('postResults');
+	console.log('postResults: start');
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
 	var viewerId = $('#viewerId').val();
@@ -217,17 +199,18 @@ function postResults(results) {
 	xhr.onload = function(e) {
 		if (this.readyState == 4) {
 			if (this.status == 200) {
+				console.log('postResults: status=200');
 				// get binary data as a response
 				var blob = new Blob([xhr.response], {type: 'audio/ogg; codecs=opus'});
 			    $('.audioCtl').get(0).src = window.URL.createObjectURL(blob);
-			    //var audio = $('.audioCtl').get(0);
 			    audio.onload = function(evt) {
 			    	window.URL.revokeObjectUrl(audio.src);
 			    };
+			    console.log('postResults: before play');
 			    audio.play();
+			    console.log('postResults: after play');
 			}
 			else {
-				//var text = xhr.responseText;
 				var resp = xhr.response;				
 				alert('postResults server error');
 			}

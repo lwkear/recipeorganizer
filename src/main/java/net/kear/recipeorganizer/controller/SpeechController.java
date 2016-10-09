@@ -107,57 +107,12 @@ public class SpeechController {
 			//TODO: SPEECH: return default sorry audio
 		}
 		
-		/*
-		String watsonText = "";
-		String extra = "";
-
-		String voiceLang = voice.getLanguage().substring(0, 2);
-		if (!StringUtils.equals(voiceLang, recipe.getLang())) {
-			voice = defaultVoiceEN;
-			if (recipe.getLang().equals(new Locale("fr").getLanguage()))
-				voice = defaultVoiceFR;
-		}
-
-		Date recipeDate;
-		if (recipe.getDateUpdated() != null)
-			recipeDate = recipe.getDateUpdated();
-		else
-			recipeDate = recipe.getDateAdded();
-		DateTime recipeDateTime = new DateTime(recipeDate);
-		
-		switch (type) 
-		{
-		case INGREDIENTS	: watsonText = getIngredText(recipe, section);
-							  extra = "." + section;
-							  break;
-		case INSTRUCTIONS	: watsonText = getInstructText(recipe, section);
-							  extra = "." + section;
-							  break;
-		case NOTES			: watsonText = getNoteText(recipe, null, false);
-							  break;
-		case PRIVATENOTES	: watsonText = getNoteText(recipe, user, true);
-							  extra = "." + userId;
-							  break;
-		}
-
-		//TODO: SPEECH: handle empty watsonText, e.g., no private notes vs. can't access the user or recipe - different default audios
-		
-		String fileName = speechUtil.getSpeechDir() + "recipe" + recipeId + "." + StringUtils.lowerCase(type.name()) + extra + "." + voice.getName() + ".ogg";
-		boolean result = speechUtil.getRecipeAudio(fileName, watsonText, voice, recipeDateTime, response);*/
-		
 		boolean result = getRecipeElement(voice, recipe, user, section, type, response, locale);		
 		if (!result) {
 			speechUtil.getNoAudioFile(type, voice, response);
 		}
 	}
 
-	/*@RequestMapping(value = "/getAudio", method = RequestMethod.GET)
-	public void getAudio(ConversationDto convDto, HttpServletResponse response, Locale locale) {
-		logger.debug("getRecipeAudio:requestparam");
-		
-		speechUtil.getNoAudioFile(AudioType.INGREDIENTS, defaultVoiceEN, response);
-	}*/
-	
 	@RequestMapping(value = "/getSample", method = RequestMethod.GET)
 	public void getSample(@RequestParam("voiceName") final String voiceName, HttpServletResponse response, Locale locale) {
 		logger.debug("getSample");
@@ -187,42 +142,6 @@ public class SpeechController {
 		return keywords;
 	}
 
-	/*@RequestMapping(value = "/getAudio", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
-	public void getAudio(@RequestParam("audioId") Long audioId, HttpServletResponse response, Locale locale) {
-		audioUtil.getNoAudioFile(audioId, response);
-	}*/
-	
-	/*@RequestMapping(value = "/startWatsonConversation", method = RequestMethod.POST)	//, headers = "x-requested-with=XMLHttpRequest")
-	@RequestMapping(value = "/startWatsonConversation", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})	//, headers = "x-requested-with=XMLHttpRequest")
-	//@ResponseBody
-	//@ResponseStatus(value=HttpStatus.OK)
-	public void startWatsonConversation(@RequestParam("userId") Long userId, @RequestParam("recipeId") Long recipeId, HttpServletResponse response, Locale locale) {
-	public ResponseObject startWatsonConversation(HttpServletResponse response, Locale locale) {
-	public void startWatsonConversation(@RequestParam("name") String name, HttpServletResponse response, Locale locale) {
-	public void startWatsonConversation(HttpServletResponse response, Locale locale) {
-		logger.info("startWatsonConversation");
-
-		//ResponseObject obj = new ResponseObject();
-
-		MessageRequest msg = speechUtil.startWatsonConversation(userId, recipeId);
-		MessageResponse resp = speechUtil.sendWatsonRequest(msg);
-		String concatText = resp.getTextConcatenated(":");
-		ConversationType type = ConversationType.valueOf(concatText);
-		//ConversationType type = ConversationType.GREETING;
-		//ConversationDto conversationDto = new ConversationDto(userId, recipeId, 0, null, type);
-		//obj.setResult((Object)conversationDto);
-		
-		speechUtil.getNoAudioFile(AudioType.INGREDIENTS, defaultVoiceEN, response);
-		//speechUtil.getAudio(name, response);
-		//response.setContentType("audio/ogg");
-		//response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		//HttpHeaders header = new HttpHeaders();
-		//speechUtil.getNoAudioFile(AudioType.INGREDIENTS, defaultVoiceEN, header.);
-		//header.setContentType(new MediaType("audio","vnd.ogg"));
-        //response.setStatus(HttpServletResponse.SC_OK);
-		//return obj;
-	}*/
-	
 	@RequestMapping(value = "/startWatsonConversation", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
 	@ResponseStatus(value=HttpStatus.OK)
 	public void startWatsonConversation(@RequestParam("userId") Long userId, @RequestParam("recipeId") Long recipeId, HttpServletResponse response, 
@@ -346,11 +265,14 @@ public class SpeechController {
 			//speechUtil.getNoAudioFile(AudioType.INGREDIENTS, defaultVoiceEN, response);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			return;
-		}		
+		}
+		
+		//TODO: SPEECH: examine the results of STT confidence and pull out specific words?
+		//this applies ingred/instruct sections which reply on a regex match
 	
 		String speechText = results.getResults().get(0).getAlternatives().get(0).getTranscript();
 		logger.debug("text: " + speechText);
-		speechText = speechText.trim();
+		speechText = speechText.toLowerCase().trim();
 
 		Map<String, Object> context = (Map<String, Object>)session.getAttribute("watsonContext");
 		MessageRequest req = new MessageRequest.Builder()
@@ -385,80 +307,6 @@ public class SpeechController {
 		}
 	}
 	
-	//Note: several things were needed to get this to work:
-	//	the Ajax call must not include contentType: 'application/json; charset=utf-8'
-	//	the result object from Watson must be wrapped in an outer Json layer, e.g., {message:data}
-	//		(data = stringified result Json object from Watson)
-	//	do not use @RequestBody
-	//	the Watson result must be captured by the 'receive-json' event, not the 'data' event 
-	/*@RequestMapping(value = "/postWatsonResult", method = RequestMethod.POST)
-	@ResponseBody
-	@ResponseStatus(value=HttpStatus.OK)
-	public ResponseObject postWatsonResult(@RequestParam("userId") Long userId, @RequestParam("recipeId") Long recipeId, @RequestParam("message") String message, 
-			HttpServletResponse response, Locale locale) {
-		logger.info("postWatsonResult");
-		//following code lifted from Watson Java SDK WebSocketManager
-		JsonObject json = new JsonParser().parse(message).getAsJsonObject();
-		SpeechResults results = null;
-		if (json.has("results")) {
-			results = GSON.fromJson(message, SpeechResults.class);
-		}
-		
-		if (results == null) {
-	        //TODO: SPEECH: get standard error or maybe just throw RestException
-	        String msg = "Error extracting STT";
-	        ResponseObject obj = new ResponseObject(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	        return obj;
-		}
-		
-		String speechText = results.getResults().get(0).getAlternatives().get(0).getTranscript();
-		logger.debug("results: " + speechText);
-
-		ResponseObject obj = new ResponseObject();
-	 */			
-		/*if (results != null) {
-			logger.debug("results: " + results.getResults().get(0).getAlternatives().get(0).getTranscript());
-			
-			int keywordCount = 0;
-			String keyword = "";
-			
-			List<String> keywords = Arrays.asList(speechUtil.getKeywords());
-			Map<String, List<KeywordsResult>> keywordsResult = results.getResults().get(0).getKeywordsResult();
-			if (keywordsResult != null) {
-				for (String key : keywordsResult.keySet()) {
-					logger.debug("keywords: " + key);
-					if (keywords.contains(key)) {
-						keywordCount++;
-						keyword = key;
-					}
-				}
-			}
-			
-			if (keywordCount == 1) {
-				AudioType type = null;
-				
-				//private final static String[] keywords = {"ingredient","ingredients","instruction","instructions","note","notes","private"};
-				if ((StringUtils.equalsIgnoreCase(keyword, "ingredient")) ||
-					(StringUtils.equalsIgnoreCase(keyword, "ingredients")))
-					type = AudioType.INGREDIENTS;
-				if ((StringUtils.equalsIgnoreCase(keyword, "instruction")) ||
-					(StringUtils.equalsIgnoreCase(keyword, "instructions")))
-					type = AudioType.INSTRUCTIONS;
-				if ((StringUtils.equalsIgnoreCase(keyword, "note")) ||
-					(StringUtils.equalsIgnoreCase(keyword, "notes")))
-					type = AudioType.NOTES;
-				if (StringUtils.equalsIgnoreCase(keyword, "private"))
-					type = AudioType.PRIVATENOTES;
-					
-				responseObj.setResult((String)type.name());
-			}
-		}*/
-
-    /*    response.setStatus(HttpServletResponse.SC_OK);
-		return obj;
-	}*/
-
 	private boolean getRecipeElement(Voice voice, Recipe recipe, User user, int section, AudioType type, HttpServletResponse response, Locale locale) {
 		String watsonText = "";
 		String extra = "";
@@ -545,12 +393,11 @@ public class SpeechController {
 			String names = "";
 			String connector = "|";
 			String connStr = "";
-			//for (IngredientSection sect : recipe.getIngredSections()) {
-				//String name = StringUtils.replaceChars(sect.getName(), ' ', '|');
-				//ingredNameList = ingredNameList + name + "|" + sect.getName() + "|";
-			//}
 			for (IngredientSection sect : recipe.getIngredSections()) {
-				String[] words = StringUtils.split(sect.getName());
+				String sectionName = sect.getName().toLowerCase();
+				String[] words = StringUtils.split(sectionName);
+				//TODO: SPEECH: make this a loop that works for n number of words
+				//TODO: SPEECH: consider adding non-adjacent words?
 				if (words.length > 1) {
 					for (int i=0;i<words.length;i++) {
 						names += connStr + words[i];
@@ -561,10 +408,10 @@ public class SpeechController {
 							names += connStr + words[i] + " " + words[i+1];
 						}
 					}
-					names += connStr + sect.getName(); 
+					names += connStr + sectionName; 
 				}
 				else
-					names = sect.getName();
+					names = sectionName;
 			}
 			String[] nameArray = StringUtils.split(names, "|");
 			List<String> dupeList = Arrays.asList(nameArray);
@@ -576,19 +423,15 @@ public class SpeechController {
 			}			
 		}
 		
-		//"ingredSetName": "For|the|cake|For the cake|For|the|icing|For the icing|",
-		//"instructSetName": "For|the|cake|For the cakeFor|the|icing|For the icing",
-
 		if (instructCount > 1) {
 			String names = "";
 			String connector = "|";
 			String connStr = "";
-			/*for (InstructionSection sect : recipe.getInstructSections()) {
-				String name = StringUtils.replaceChars(sect.getName(), ' ', '|');
-				instructNameList = instructNameList + name + "|" + sect.getName();				
-			}*/			 
 			for (InstructionSection sect : recipe.getInstructSections()) {
-				String[] words = StringUtils.split(sect.getName());
+				String sectionName = sect.getName().toLowerCase();
+				String[] words = StringUtils.split(sectionName);
+				//TODO: SPEECH: make this a loop that works for n number of words
+				//TODO: SPEECH: consider adding non-adjacent words?
 				if (words.length > 1) {
 					for (int i=0;i<words.length;i++) {
 						names += connStr + words[i];
@@ -599,10 +442,10 @@ public class SpeechController {
 							names += connStr + words[i] + " " + words[i+1];
 						}
 					}
-					names += connStr + sect.getName(); 
+					names += connStr + sectionName; 
 				}
 				else
-					names = sect.getName();
+					names = sectionName;
 			}
 			String[] nameArray = StringUtils.split(names, "|");
 			List<String> dupeList = Arrays.asList(nameArray);
@@ -648,6 +491,10 @@ public class SpeechController {
 			if (audioType != null) {
 				result = getRecipeElement(voice, recipe, user, 0, audioType, response, locale);
 			}
+			else {
+				watsonText = "Error";
+				result = speechUtil.getAudio(watsonText, voice, fileName, false, response);
+			}
 			break;			
 		case INGREDSET				:
 		case INSTRUCTSET			:
@@ -660,6 +507,9 @@ public class SpeechController {
 			break;
 		case INGREDSET_MATCH		:
 		case INSTRUCTSET_MATCH		:
+			audioType = converseType == ConversationType.INGREDSET_MATCH ? AudioType.INGREDIENTS : AudioType.INSTRUCTIONS;
+			//TODO: SPEECH: which section was requested? match returned text against the section name?
+			result = getRecipeElement(voice, recipe, user, 0, audioType, response, locale);
 			break;
 		case PAUSE					:
 		case CONTINUE				:
