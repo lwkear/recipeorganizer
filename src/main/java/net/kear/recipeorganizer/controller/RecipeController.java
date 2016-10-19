@@ -368,7 +368,7 @@ public class RecipeController {
 		try {
 			count = recipeService.getRecipeCount(userId);
 		} catch (Exception ex) {
-			throw new RestException("exception.getUser", ex);
+			throw new RestException("exception.getRecipe", ex);
 		}
 		
 		logger.debug("count result=" + count);

@@ -180,7 +180,7 @@ img {
 }
 
 .std-maroon {
-	color:#855247;	
+	color:#855247;
 }
 
 .bold-blue {
@@ -330,3 +330,48 @@ table.dataTable thead .sorting_desc:after {
 	margin-bottom:5px;
 }
 
+.mic-btn-link {
+  font-weight: normal;
+  color: #337ab7;
+  border-radius: 0;
+}
+.mic-btn-link,
+.mic-btn-link:active,
+.mic-btn-link.active,
+.mic-btn-link[disabled],
+fieldset[disabled] .btn-link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+.mic-btn-link,
+.mic-btn-link:hover,
+.mic-btn-link:focus,
+.mic-btn-link:active {
+  border-color: transparent;
+}
+.mic-btn-link:hover,
+.mic-btn-link:focus {
+  color: #23527c;
+  text-decoration: underline;
+  background-color: transparent;
+}
+.mic-btn-link[disabled]:hover,
+fieldset[disabled] .btn-link:hover,
+.mic-btn-link[disabled]:focus,
+fieldset[disabled] .btn-link:focus {
+  color: #777;
+  text-decoration: none;
+}
+
+.mic-btn-link-active {
+  font-weight: normal;
+  color: #ff0000;
+  border-radius: 0;
+}
+.mic-btn-link-active:hover,
+.mic-btn-link-active:focus {
+  color: #cc0000;
+  text-decoration: underline;
+  background-color: transparent;
+}

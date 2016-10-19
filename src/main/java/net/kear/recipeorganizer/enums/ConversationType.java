@@ -18,11 +18,7 @@ public enum ConversationType {
 	INSTRUCTSET_MATCH,
 	INSTRUCTSET_BAD,
 	INSTRUCTSET_TRYAGAIN,
-	NOTUNDERSTAND,
-	PAUSE,
-	CONTINUE,
-	REPLAY,
-	STOP;	
+	NOTUNDERSTAND;	
 	
 	public static List<ConversationType> list() {
 		return Arrays.asList();

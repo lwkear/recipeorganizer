@@ -290,7 +290,8 @@ function continueSubmitCancel(e) {
 }
 
 function postFailed(error) {
-	displayOKMsg(getMessage('errordlg.title'), error);
+	/*displayOKMsg(getMessage('errordlg.title'), error);*/
+	displayOKMsg('', error);
 }
 
 function fixTags() {

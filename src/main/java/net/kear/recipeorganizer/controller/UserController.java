@@ -475,6 +475,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+		
 		UserProfile userProfile = user.getUserProfile();
 		if (userProfile == null) {
 			userProfile = new UserProfile();
@@ -519,6 +524,11 @@ public class UserController {
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
 		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
 
 		if (file != null) {
 			FileResult rslt = fileAction.uploadFile(FileType.AVATAR, user.getId(), file);
@@ -610,7 +620,17 @@ public class UserController {
 		
 		//reload the user's authentication with the AUTHOR role
 		User currentUser = (User)userInfo.getUserDetails();
-		User user = userService.getUser(currentUser.getId());
+		User user = null;
+		try {
+			user = userService.getUser(currentUser.getId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
 		userService.changeRole(Role.TYPE_AUTHOR, user);
 		userSecurityService.reauthenticateUser(user);
 		
@@ -642,6 +662,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+		
 		Long recipeCount = null;
 		try {
 			recipeCount = recipeService.getRecipeCount(user.getId());
@@ -754,6 +779,11 @@ public class UserController {
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
 		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
 
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
@@ -784,6 +814,11 @@ public class UserController {
 		catch (Exception ex) {
 			throw new AccessUserException(ex);
 		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
 
 		//must re-add attribute(s) in case of an error
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
@@ -856,6 +891,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+		
 		//must re-add attribute(s) in case of an error
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangePasswordDto changePasswordDto = new ChangePasswordDto(user);
@@ -943,6 +983,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+		
 		//must re-add attribute(s) in case of an error
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
@@ -1034,6 +1079,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+		
 		//must re-add attribute(s) in case of an error
 		ChangeNameDto changeNameDto = new ChangeNameDto(user);
 		ChangeEmailDto changeEmailDto = new ChangeEmailDto(user);
@@ -1115,6 +1165,11 @@ public class UserController {
 			throw new AccessUserException(ex);
 		}
 		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
+
 		ChangeNotificationDto changeNotificationDto = new ChangeNotificationDto(user);
 		
 		String msgCode = null;
@@ -1373,7 +1428,18 @@ public class UserController {
 			return "user/newPassword";
 		}
 		
-		User user = userService.getUser(newPasswordDto.getUserId());
+		User user = null;
+		try {
+			user = userService.getUser(newPasswordDto.getUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}		
 
 		if (passwordEncoder.matches(newPasswordDto.getPassword(), user.getPassword())) {
 			String msg = messages.getMessage("PasswordNotDuplicate", null, "", locale);
@@ -1473,8 +1539,20 @@ public class UserController {
 	@TransactionalEventListener(fallbackExecution = true)
 	public void handleUserMessageEvent(UserMessageEvent event) {
 		logger.info("handleUserMessageEvent");
-		User recipient = userService.getUser(event.getUserMessage().getToUserId());
+		User recipient = null;
 
+		try {
+			recipient = userService.getUser(event.getUserMessage().getToUserId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (recipient == null) {
+			throw new AccessUserException();
+		}		
+		
 		//do nothing if the user opted out of receiving message emails
 		if (!recipient.isEmailMessage())
 			return;
@@ -1486,7 +1564,20 @@ public class UserController {
 		
 		MessageType type = event.getMessageType();
 		if (type == MessageType.MEMBER) {
-			User sender = userService.getUser(event.getUserMessage().getFromUserId());
+			User sender = null;
+
+			try {
+				sender = userService.getUser(event.getUserMessage().getFromUserId());
+			} 
+			catch (Exception ex) {
+				throw new AccessUserException(ex);
+			}
+			
+			//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+			if (sender == null) {
+				throw new AccessUserException();
+			}		
+
 			String senderName = sender.getFirstName() + " " + sender.getLastName();
 			emailDetail.setUserName(senderName);
 		}

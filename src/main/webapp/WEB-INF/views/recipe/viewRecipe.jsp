@@ -28,6 +28,8 @@
 <c:if test="${userId == recipe.user.id}">
 	<c:set var="privateNotes" value="true"></c:set>
 </c:if>
+<input type="text" id="recipeLocaleCode" style="display:none" value="${recipe.lang}"/>
+
 
 	<div class="container container-white">	
 	 	<div class="col-sm-12 title-bar">
@@ -55,7 +57,7 @@
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
 					<span class="pull-right">
-						<button type="button" class="btn btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"> 
+						<button type="button" class="btn mic-btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"> 
 							<%--data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>"> --%>
 							<span class="fa fa-microphone fa-fw"></span>
 						</button>

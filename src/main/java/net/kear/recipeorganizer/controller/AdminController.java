@@ -209,9 +209,19 @@ public class AdminController {
 	public ResponseObject updateUser(@RequestBody User user, HttpSession session, Locale locale) throws RestException {
 		logger.info("admin/updateUser POST: userId=" + user.getId());
 
-		User originalUser = userService.getUser(user.getId());
-		Role originalRole = originalUser.getRole();
+		User originalUser = null;
+		try {
+			originalUser = userService.getUser(user.getId());
+		} catch (Exception ex) {
+			throw new RestException("exception.getUser", ex);
+		}
 
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (originalUser == null) {
+			throw new RestException("exception.getUser", new AccessUserException());
+		}
+
+		Role originalRole = originalUser.getRole();
 		if (originalUser.isAccountExpired() && !user.isAccountExpired()) {
 			userService.setLastLogin(user);
 		}
@@ -574,7 +584,6 @@ public class AdminController {
 			logger.info("admin/approveRecipe calling recipeService.approveRecipe"); 
 			try {
 				recipeService.approveRecipe(recipeMessageDto.getRecipeId(), status);
-				//recipe = recipeService.getRecipe(recipeMessageDto.getRecipeId());				
 			} catch (Exception ex) {
 				throw new RestException("exception.approveRecipe", ex);
 			}

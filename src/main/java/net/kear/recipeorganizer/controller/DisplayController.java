@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.enums.OptOutType;
+import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RecipeNotFound;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.persistence.dto.CategoryDto;
@@ -430,7 +431,12 @@ public class DisplayController {
 			user = userService.getUser(shareRecipeDto.getUserId());
 		} 
 		catch (Exception ex) {
-			throw new RestException("exception.shareRecipeUser", ex);
+			throw new RestException("exception.getUser", ex);
+		}
+		
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new RestException("exception.getUser", new AccessUserException());
 		}
 		
 		User recipient = null;
@@ -444,6 +450,11 @@ public class DisplayController {
 			} 
 			catch (Exception ex) {
 				throw new RestException("exception.shareRecipeUser", ex);
+			}
+
+			//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+			if (recipient == null) {
+				throw new RestException("exception.getUser", new AccessUserException());
 			}
 			
 			recipientIsUser = true;

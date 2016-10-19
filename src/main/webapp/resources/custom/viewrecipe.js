@@ -343,7 +343,6 @@ $(function() {
 	convertFractions('.ingredqty');	
 	setIcons();
 	fixTags();
-	checkAudio();
 	
 	$('#submittedBy').popover({
 		trigger: 'hover',

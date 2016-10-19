@@ -186,7 +186,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/changeAccountLevel", "user/upgradeAccount", "user/newMember").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes").hasAuthority(Role.TYPE_GUEST)
-    		.antMatchers("/getRecipeAudio**", "/getAudio**", "/getSample**", "/getWatsonToken", "/postWatsonResult", "/getWatsonKeywords", "/startWatsonConversation").hasAuthority(Role.TYPE_GUEST)
+    		.antMatchers("/getRecipeAudio**", "/getAudio**", "/getSample**", "/getWatsonToken", "/postWatsonResult", "/getWatsonKeywords").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*", "/recipe/categoryRecipes/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)
     		.antMatchers("/admin/approval", "/admin/approveRecipe", "/admin/comments", "/admin/ingredients").hasAuthority(Role.TYPE_EDITOR)

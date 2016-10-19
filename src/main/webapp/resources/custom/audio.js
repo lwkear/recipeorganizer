@@ -1,31 +1,44 @@
 /***********************/
 /*** audio functions ***/
 /***********************/
-function canPlay() { 
+function canPlay() {
+	console.log('function canPlay');
 	var a = document.createElement('audio');
 	return !!(a.canPlayType && a.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/, ''));
 }
 
-function canTalk() { 
-	if (navigator.mediaDevices.enumerateDevices) {
-		navigator.mediaDevices.enumerateDevices()
-		.then(function gotDevices(devices) {
-			devices.forEach(function(device) {
-				if (device.kind === 'audioinput') {
-					return true;
-				}
-			});
-		})
-	};
-
-	return false;
+function canTalk() {
+	console.log('function canTalk');
+	var locale = $('#localeCode').val();
+	var recipeLocale = $('#recipeLocaleCode').val();
+	var result = false;
+	if ((locale === 'fr') || (recipeLocale === 'fr')) {
+		console.log('function canTalk: french');
+		return false;
+	}
+	else {
+		if (navigator.mediaDevices.enumerateDevices) {
+			navigator.mediaDevices.enumerateDevices()
+			.then(function gotDevices(devices) {
+				devices.forEach(function(device) {
+					if (device.kind === 'audioinput') {
+						console.log('function canTalk .then: found audioinput');
+						$('#startSpeech').show();						
+						return true;
+					}
+				})
+			})
+		}
+	}
 }
 
 var stream = null;
 var keywordsArray = "";
 var recording = false;
+var micOn = false;
 var stream;
 var audio;
+//var testCounter = 0;	//testing
 
 //show the VCR buttons for compatible browsers (canPlay() is in general.js)
 function checkAudio() {
@@ -34,35 +47,75 @@ function checkAudio() {
 		audio = $('.audioCtl').get(0);
 		audio.addEventListener("ended", startListening);
 	}
-	if (canPlay()) {
-		$('#startSpeech').show();
-	}	
+	canTalk();
 }
 
 function startListening() {
-	console.log('startListening');
-	//on the laptop it appears that the ended event is fired before the audio has actually ended
-	//adding a second delay before starting to record seems to work
-	setTimeout(function(){ recording = true; }, 1000);
+	if (micOn) {
+		console.log('startListening');
+		//on the laptop it appears that the ended event is fired before the audio has actually ended
+		//adding a second and a half delay before starting to record seems to work
+		setTimeout(function(){ recording = true; }, 1500);
+	}
+}
+
+function turnOffConversation() {
+	console.log('turnOffConversation');
+	micOn = false;
+	recording = false;
+	$('#startSpeech').removeClass('mic-btn-link-active');
+	$('#startSpeech').prop('disabled', true);
+	//the user may allow the microphone to be used while the unavailable message is being played
+	//wait a couple of seconds to turn it off
+	setTimeout(function() { 
+		if (stream)
+			stream.stop();
+	}, 3000);
 }
 
 //user clicked on the forward VCR button
 function playAudio(userId, recipeId, section, type) {
+	console.log('function playAudio');
 	$('.audioBtn').blur();
+	var origin = location.origin;
 	var url = appContextPath + '/getRecipeAudio?userId=' + userId + '&recipeId=' + recipeId + '&section=' + section + '&type=' + type;
 	var currUrl = audio.src;
+	var matchUrl = origin + url;
 	var ready = audio.readyState;
 	var paused = audio.paused
-	if (paused && (ready > 0) && (url === currUrl))
-		audio.play();
-	else {
-		audio.setAttribute('src', url);
+	if (paused && (ready === 4) && (matchUrl === currUrl)) {
 		audio.play();
 	}
+	else {
+		audio.setAttribute('src', url);
+		audio.play();			
+	}
+}
+
+function getKeywords() {
+	console.log('function getKeywords');
+	var recipeId = $('#recipeId').val();
+	//var recipeId = 999;	//testing
+	var url = appContextPath + '/getWatsonKeywords?recipeId=' + recipeId;
+	$.getJSON(url)
+		.done(function (data) {
+			console.log("get keywords: " + data);
+			keywordsArray = $.makeArray(data);
+			console.log("mapped json: " + keywordsArray);
+			//get the token next
+			getSTTToken();
+	 	})
+	 	.fail(function (jqXHR, status, err) {
+	 		var data = jqXHR.responseJSON;
+			console.log('fail: '+ data.msg);
+			turnOffConversation();
+			postFailed(data.msg);
+	 	});
 }
 
 //token required to initiate Watson STT
 function getSTTToken() {
+	console.log('function getSTTToken');
 	$.ajax({
 	    type: 'GET',
 		contentType: 'application/json',
@@ -70,16 +123,28 @@ function getSTTToken() {
 	})
 	.done(function(data) {
 		console.log('done data: '+ data);
+		//initialize the microphone
 		listen(data);
+		//start the conversation
+		getGreeting();
 	})
 	.fail(function(jqXHR, status, error) {
-		var data = jqXHR.responseJSON;
-		console.log('fail data: '+ data);
+ 		var data = jqXHR.responseJSON;
+		console.log('fail: '+ data.msg);
+		turnOffConversation();
+		postFailed(data.msg);
 	});
 }
 
+function getGreeting() {
+	console.log('function getGreeting');
+	$('#startSpeech').addClass('mic-btn-link-active');				
+	micOn = true;
+	var start = {start:null};
+	postResults(start);
+}
+
 function listen(token) {
-	$('#response').html('');
     stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
         token: token,
         readableObjectMode: true,
@@ -87,108 +152,80 @@ function listen(token) {
         word_confidence: true,
         format: false,
         keywords: keywordsArray,
-        keywords_threshold : 0.5,
+        keywords_threshold : 0.2,
         continuous : true,
         inactivity_timeout : -1,
-        //interim_results : false,
-        keepMicrophone: navigator.userAgent.indexOf('Firefox') > 0
     });
 
 	stream.setEncoding('utf8');    
     
 	stream.on('error', function(err) {
+		//TODO: SPEECH: handle this error?
         console.log('error:' + err);
+        //alert('stream.on error');
 	});
 
 	stream.on('receive-json', function(msg) {
 		console.log(msg);
 		console.log('receive-json: recording='+recording);
+		console.log('receive-json: micOn='+micOn);		
+		if (!micOn) {
+			return;
+		}
 		if (!recording) {
 			if (msg.results) {
 				var words = msg.results[0].alternatives[0].transcript;
 				if (words) {
 					console.log('receive-json: words='+words);
-					var command = words.match(/pause|continue|start|play|replay|stop/g);
+					var command = words.match(/pause|continue|replay|stop/g);
 					if (command != null) {
 						console.log('receive-json: match='+command);
 						if (command[0].match(/pause/) != null)
 							audio.pause();
-						if (command[0].match(/continue|start/) != null)
+						if (command[0].match(/continue/) != null)
 							audio.play();
 						if (command[0].match(/stop/) != null) {
 							audio.pause();
-							audio.currentTime = 0;
+							startListening();
 						}
-						if (command[0].match(/play|replay/) != null) {
-							audio.currentTime = 0;
-							audio.pause();							
+						if (command[0].match(/replay/) != null) {
+							audio.load();
+							audio.play();
 						}
 					}
 				}
 			}
 			return;
 		}
-		if (msg.state !== 'listening') {
-			if (msg.results) {
-				console.log(msg.results[0].alternatives[0].transcript);
-				if (msg.results[0].final) {
-					console.log('receive-json: ' + msg);
-					recording = false;
-					postResults(msg);				
+		else {
+			if (msg.state !== 'listening') {
+				if (msg.results) {
+					console.log(msg.results[0].alternatives[0].transcript);
+					if (msg.results[0].final) {
+						console.log('receive-json: ' + msg);
+						recording = false;
+						postResults(msg);				
+					}
 				}
 			}
 		}
 	});
 }
 
-//TODO: SPEECH: combine startConversation with postResults (redundant code)
-//TODO: SPEECH: blob error was not handled correctly - appeared as console error but no alert, etc.
-//TODO: SPEECH: visually indicate that the mic is on
-//TODO: SPEECH: click on a live mic to turn it off
-//TODO: SPEECH: how can you say "pause", "continue", "stop" or "replay" if the mic is not recording while the audio is playing???
-
-function startConversation() {
-	console.log('startConversation');
-	var token = $("meta[name='_csrf']").attr("content");
-	var header = $("meta[name='_csrf_header']").attr("content");
-	var viewerId = $('#viewerId').val();
-	var recipeId = $('#recipeId').val();
-	var url = appContextPath + '/startWatsonConversation?userId=' + viewerId + '&recipeId=' + recipeId;
-	
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', url, true);
-	xhr.setRequestHeader(header, token);
-	xhr.responseType = 'blob';
-	xhr.onload = function(e) {
-		if (this.readyState == 4) {
-			if (this.status == 200) {
-				// get binary data as a response
-				var blob = new Blob([xhr.response], {type: 'audio/ogg; codecs=opus'});
-			    $('.audioCtl').get(0).src = window.URL.createObjectURL(blob);
-			    audio.onload = function(evt) {
-			    	window.URL.revokeObjectUrl(audio.src);
-			    };
-			    audio.play();
-			}
-			else {
-				var resp = xhr.response;				
-				alert('startConversation server error');
-			}
-		}		
-	};
-	xhr.onerror = function(e) {
-		var resp = xhr.response;
-		alert('startConversation network error');
-	};
-	xhr.send();
-}
-
 function postResults(results) {
-	console.log('postResults: start');
 	var token = $("meta[name='_csrf']").attr("content");
 	var header = $("meta[name='_csrf_header']").attr("content");
 	var viewerId = $('#viewerId').val();
 	var recipeId = $('#recipeId').val();
+	//testing
+	/*testCounter = testCounter + 1;	
+	//force a server error
+	if (testCounter > 3) {
+		viewerId = 999;
+		recipeId = 999;
+		testCounter = 0;
+	}*/
+	//viewerId = 999;
 	var speech = JSON.stringify(results);
 	var url = appContextPath + '/postWatsonResult?userId=' + viewerId + '&recipeId=' + recipeId + '&message=' + speech;
 	
@@ -206,19 +243,41 @@ function postResults(results) {
 			    audio.onload = function(evt) {
 			    	window.URL.revokeObjectUrl(audio.src);
 			    };
-			    console.log('postResults: before play');
+			    audio.currentTime = 0;
 			    audio.play();
-			    console.log('postResults: after play');
 			}
 			else {
-				var resp = xhr.response;				
-				alert('postResults server error');
+				console.log('postResults: status='+this.status);
+				var type = this.response.type;
+				if ((type === 'blob') || (type === 'application/xml')) {
+					// get binary data as a response
+					var blob = new Blob([xhr.response], {type: 'audio/ogg; codecs=opus'});
+				    $('.audioCtl').get(0).src = window.URL.createObjectURL(blob);
+				    audio.onload = function(evt) {
+				    	window.URL.revokeObjectUrl(audio.src);
+				    };
+				    audio.play();
+				}
+				else {
+					if ((type === 'text/html') || (type === 'application/json')) {
+						var blob = new Blob([xhr.response], {type: type});
+						var reader = new FileReader();
+						reader.onload = function(e) {
+							var obj = JSON.parse(e.target.result);
+							alert(obj.msg);
+						};
+						reader.readAsText(blob);
+					}
+				}
+				turnOffConversation();
 			}
 		}		
 	};
 	xhr.onerror = function(e) {
 		var resp = xhr.response;
-		alert('postResults network error');
+		console.log('xhr.onerror:'+resp)
+		//TODO: SPEECH: replace this alert
+		//alert('postResults xhr.error');
 	};
 	xhr.send();
 }
@@ -226,29 +285,32 @@ function postResults(results) {
 $(function() {
 	checkAudio();
 
-	var url = appContextPath + '/getWatsonKeywords';
-	$.getJSON(url)
-		.done(function (data) {
-			console.log("get keywords: " + data);
-			keywordsArray = $.makeArray(data);
-			console.log("mapped json: " + keywordsArray);
-	 	});
-	
 	$(document)
 	.on('click', '.pauseBtn', function(e) {
+		e.preventDefault();
 		$('.audioBtn').blur();
-		audio = $('.audioCtl').get(0);
-		if (!audio.ended)
+		if (!audio.ended) {
 			audio.pause();
+		}
 	})
 	.on('click', '.stopBtn', function(e) {
+		e.preventDefault();
 		$('.audioBtn').blur();
-		audio = $('.audioCtl').get(0);
 		if (!audio.ended)
 			audio.load();
 	})
 	.on('click', '#startSpeech', function(e) {
-		startConversation();
-		getSTTToken();		
+		e.preventDefault();
+		$(this).blur();
+		if (micOn) {			
+			$(this).removeClass('mic-btn-link-active');
+			micOn = false;
+			recording = false;
+			if (stream)
+				stream.stop();
+		}
+		else {
+			getKeywords();
+		}
 	})
 })

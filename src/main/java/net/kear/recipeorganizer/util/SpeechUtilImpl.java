@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -72,6 +71,8 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public SpeechUtilImpl() {}
 
 	public void initWatson() {
+		//testing appears to show that no exception is thrown initializing a service
+		//retaining the try/catch anyway
 		try {
 			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
 		} catch (Exception ex) {
@@ -147,10 +148,29 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public boolean isWatsonConvAvailable() {
 		return this.watsonConvAvailable;
 	}
-	
+
+	public void setWatsonTTSAvailable(boolean watsonTTSAvailable) {
+		this.watsonTTSAvailable = watsonTTSAvailable;
+	}
+
+	public void setWatsonSTTAvailable(boolean watsonSTTAvailable) {
+		this.watsonSTTAvailable = watsonSTTAvailable;
+	}
+
+	public void setWatsonConvAvailable(boolean watsonConvAvailable) {
+		this.watsonConvAvailable = watsonConvAvailable;
+	}
+
 	/**********************/
 	/*** Text to Speech ***/
 	/**********************/
+	public void watsonUnavailable(Voice voice, HttpServletResponse response) {
+		String fileName = "conversation.notavailable." + voice.getName() + ".ogg";
+		//must set the status first or otherwise Spring returns the SC_OK status
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		getAudio(fileName, response);		
+	}
+	
 	public boolean getRecipeAudio(String fileName, String text, Voice voice, DateTime recipeDate, HttpServletResponse response) {
 		InputStream inStream = null;
 		ServletOutputStream outStream = null;
@@ -215,7 +235,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return result;
 	}
 
-	public boolean getAudio(String text, Voice voice, String fileName, boolean saveFile, HttpServletResponse response) {
+	public boolean getAudio(String fileName, String text, Voice voice, boolean saveFile, HttpServletResponse response) {
 		InputStream inStream = null;
 		ServletOutputStream outStream = null;
 		File audioFile = null;
@@ -285,14 +305,77 @@ public class SpeechUtilImpl implements SpeechUtil {
 		
 		return result;
 	}
+
+	public boolean getAudio(String name, HttpServletResponse response) {
+		ServletOutputStream outStream = null;
+		File audioFile = null;
+		Path path = null;
+
+		String fileName = getSpeechDir() + name;
+		
+		try {
+			audioFile = new File(fileName);
+			path = audioFile.toPath();
+		} catch (Exception ex) {
+	    	logService.addException(ex);
+	    	return false;
+		}
+
+		if (audioFile.exists()) {
+			try {
+				outStream = response.getOutputStream();
+		    	Files.copy(path, outStream);
+		    	outStream.flush();
+		    	outStream.close();
+		    } catch (Exception ex) {
+		    	logService.addException(ex);
+		    	closeStream(outStream);		    	
+		    	return false;
+		    }
+		}
+		
+		return true;
+	}
 	
-	public void getSample(String fileName, HttpServletResponse response) {
+	public boolean getNoAudio(AudioType audioType, Voice voice, HttpServletResponse response) {
+		ServletOutputStream outStream = null;
+		File audioFile = null;
+		Path path = null;
+
+		String type = StringUtils.lowerCase(audioType.name());
+		String fileName = getSpeechDir() + "noaudio." + type + "." + voice.getName() + ".ogg";
+		
+		try {
+			audioFile = new File(fileName);
+			path = audioFile.toPath();
+		} catch (Exception ex) {
+	    	logService.addException(ex);
+	    	return false;
+		}
+
+		if (audioFile.exists()) {
+			try {
+				outStream = response.getOutputStream();
+		    	Files.copy(path, outStream);
+		    	outStream.flush();
+		    	outStream.close();
+		    } catch (Exception ex) {
+		    	logService.addException(ex);
+		    	closeStream(outStream);		    	
+		    	return false;
+		    }
+		}
+		
+		return true;
+	}
+
+	public boolean getSample(String fileName, HttpServletResponse response) {
 		ServletOutputStream outStream = null;
 		File audioFile = null;
 		Path path = null;
 		
 		if (StringUtils.isBlank(fileName))
-			return;
+			return false;
 		
 		//prepare the output file
 		try {
@@ -300,7 +383,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 			path = audioFile.toPath();
 		} catch (Exception ex) {
 	    	logService.addException(ex);
-	    	return;
+	    	return false;
 		}
 		
 		//the audio file should already exist so simply return it in the response
@@ -310,13 +393,14 @@ public class SpeechUtilImpl implements SpeechUtil {
 		    	Files.copy(path, outStream);
 		    	outStream.flush();
 		    	outStream.close();
-		    	return;
 		    } catch (Exception ex) {
-		    	closeStream(outStream);
 		    	logService.addException(ex);
-		    	return;
+		    	closeStream(outStream);
+		    	return false;
 		    }
 		}
+		
+		return true;
 	}
 	
 	public String prepareIngredients(List<RecipeIngredient> ingredList, int interval) {
@@ -357,67 +441,9 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return watsonText;
 	}
 
-	public void getNoAudioFile(AudioType audioType, Voice voice, HttpServletResponse response) {
-		ServletOutputStream outStream = null;
-		File audioFile = null;
-		Path path = null;
-
-		String type = StringUtils.lowerCase(audioType.name());
-		String fileName = getSpeechDir() + "noaudio." + type + "." + voice.getName() + ".ogg";
-		
-		try {
-			audioFile = new File(fileName);
-			path = audioFile.toPath();
-		} catch (Exception ex) {
-	    	logService.addException(ex);
-	    	return;
-		}
-
-		if (audioFile.exists()) {
-			try {
-				outStream = response.getOutputStream();
-		    	Files.copy(path, outStream);
-		    	outStream.flush();
-		    	outStream.close();
-		    } catch (Exception ex) {
-		    	closeStream(outStream);
-		    	logService.addException(ex);
-		    }
-		}
-	}
-
-	public void getAudio(String name, HttpServletResponse response) {
-		ServletOutputStream outStream = null;
-		File audioFile = null;
-		Path path = null;
-
-		String fileName = getSpeechDir() + name;
-		
-		try {
-			audioFile = new File(fileName);
-			path = audioFile.toPath();
-		} catch (Exception ex) {
-	    	logService.addException(ex);
-	    	return;
-		}
-
-		if (audioFile.exists()) {
-			try {
-				outStream = response.getOutputStream();
-		    	Files.copy(path, outStream);
-		    	outStream.flush();
-		    	outStream.close();
-		    } catch (Exception ex) {
-		    	closeStream(outStream);
-		    	logService.addException(ex);
-		    }
-		}
-	}
-	
 	public void getDefaultAudioFiles() {
-		InputStream inStream = null;
-		File audioFile = null;
 		String fileName = "";
+		String text = "";
 		Locale locales[] = new Locale[] {Locale.ENGLISH, Locale.FRANCE};
 		Object[] obj = new String[] {null};
 		
@@ -429,59 +455,48 @@ public class SpeechUtilImpl implements SpeechUtil {
 			for (Voice voice : voices) {
 				for (AudioType audioType : AudioType.values()) {
 					String type = StringUtils.lowerCase(audioType.name());
-					obj[0] = messages.getMessage("report."+type, null, type, locale);
-					String text = messages.getMessage("recipe.view.noaudio", obj, null, locale);
-					
+					obj[0] = messages.getMessage("watson."+type, null, type, locale);
+					text = messages.getMessage("watson.noaudio", obj, null, locale);
 					fileName = getSpeechDir() + "noaudio." + type + "." + voice.getName() + ".ogg";
-					audioFile = new File(fileName);
-					if (audioFile.exists())
-						continue;
-	
-					//get audio from Watson then save it to a file
-					try {
-						inStream = ttsService.synthesize(text, voice, audioFormat).execute();
-						if (inStream != null) {
-							FileUtils.copyInputStreamToFile(inStream, audioFile);
-						}
-					} catch (Exception ex) {
-						logService.addException(ex);
+					if (!createFile(text, fileName, voice))
 						break;
-					} finally {
-					    closeStream(inStream);
+					if ((audioType == AudioType.NOTES)	||
+						(audioType == AudioType.PRIVATENOTES)) {
+						text = messages.getMessage("watson." + type + ".notavailable", null, null, locale);
+						fileName = getSpeechDir() + "notavailable." + type + "." + voice.getName() + ".ogg";
+						if (!createFile(text, fileName, voice))
+							break;
 					}
 				}
 				String name = voice.getName();
+				String desc = voice.getDescription();
+				obj[0] = StringUtils.substringBefore(desc, ":");
+				text = messages.getMessage("profile.voice.sample", obj, null, locale);
 				fileName = getSpeechDir() + "sample." + name + ".ogg";
-				audioFile = new File(fileName);
-				if (!audioFile.exists()) {
-					//get audio from Watson then save it to a file
-					String desc = voice.getDescription();
-					obj[0] = StringUtils.substringBefore(desc, ":");
-					String text = messages.getMessage("profile.voice.sample", obj, null, locale);
-					try {
-						inStream = ttsService.synthesize(text, voice, audioFormat).execute();
-						if (inStream != null) {
-							FileUtils.copyInputStreamToFile(inStream, audioFile);
-						}
-					} catch (Exception ex) {
-						logService.addException(ex);
-						break;
-					} finally {
-					    closeStream(inStream);
-					}
-				}
+				if (!createFile(text, fileName, voice))
+					break;
+				text = messages.getMessage("watson.watson.notavailable", null, null, locale);
+				fileName = getSpeechDir() + "conversation.notavailable." + name + ".ogg";
+				if (!createFile(text, fileName, voice))
+					break;
 			}
 		}		
 	}
 	
 	public List<Voice> getVoices(Locale locale) {
 		List<Voice> localeVoices = new ArrayList<Voice>();
+		List<Voice> voices = null;
 		
 		if (!isWatsonTTSAvailable())
 			return null;
 		
 		String localeLang = locale.getLanguage();
-		List<Voice> voices = ttsService.getVoices().execute();
+		try {
+			voices = ttsService.getVoices().execute();
+	    } catch (Exception ex) {
+	    	logService.addException(ex);
+	    	return null;
+	    }
 		
 		for (Voice voice : voices) {
 			String voiceLang = voice.getLanguage().substring(0, 2);
@@ -490,6 +505,34 @@ public class SpeechUtilImpl implements SpeechUtil {
 		}
 		
 		return localeVoices;
+	}
+
+	private boolean createFile(String text, String fileName, Voice voice) {
+		InputStream inStream = null;
+		File audioFile = null;
+		boolean result = true;
+
+		audioFile = new File(fileName);
+		if (audioFile.exists())
+			return result;
+
+		if (!isWatsonTTSAvailable())
+			return false;
+		
+		//get audio from Watson then save it to a file
+		try {
+			inStream = ttsService.synthesize(text, voice, audioFormat).execute();
+			if (inStream != null) {
+				FileUtils.copyInputStreamToFile(inStream, audioFile);
+			}
+		} catch (Exception ex) {
+			logService.addException(ex);
+			result = false;
+		} finally {
+		    closeStream(inStream);
+		}
+		
+		return result;
 	}
 	
 	private void closeStream(Closeable closeable) {
@@ -505,26 +548,28 @@ public class SpeechUtilImpl implements SpeechUtil {
 	/**********************/
 	/*** Speech to Text ***/
 	/**********************/
-	//TODO: SPEECH: add try/catch?
 	public String getSTTToken() {
-		String token = sttService.getToken().execute();
+		String token = "";
+
+		if (!isWatsonSTTAvailable())
+			return token;
+		
+		token = sttService.getToken().execute();			
+		
 		return token;
 	}
 	
 	/********************/
 	/*** Conversation ***/
 	/********************/
-	//TODO: SPEECH: add try/catch?
-	public MessageRequest startWatsonConversation(Map<String, Object> contextMap) {
-		MessageRequest message = new MessageRequest.Builder()
-										.context(contextMap)
-										.inputText("")
-										.build();
-		return message;
-	}
-	
 	public MessageResponse sendWatsonRequest(MessageRequest message) {
-		MessageResponse response = convService.message(watsonConvWorkspaceId, message).execute();
+		MessageResponse response = null;
+
+		if (!isWatsonConvAvailable())
+			return response;
+		
+		response = convService.message(watsonConvWorkspaceId, message).execute();
+
 		return response;
 	}
 }
