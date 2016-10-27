@@ -14,7 +14,7 @@ function canTalk() {
 	var result = false;
 	if ((locale === 'fr') || (recipeLocale === 'fr')) {
 		console.log('function canTalk: french');
-		return false;
+		return;
 	}
 	else {
 		if (navigator.mediaDevices.enumerateDevices) {
@@ -24,7 +24,7 @@ function canTalk() {
 					if (device.kind === 'audioinput') {
 						console.log('function canTalk .then: found audioinput');
 						$('#startSpeech').show();						
-						return true;
+						return;
 					}
 				})
 			})
@@ -36,6 +36,7 @@ var stream = null;
 var keywordsArray = "";
 var recording = false;
 var micOn = false;
+var permissionGranted = false;
 var stream;
 var audio;
 //var testCounter = 0;	//testing
@@ -48,6 +49,32 @@ function checkAudio() {
 		audio.addEventListener("ended", startListening);
 	}
 	canTalk();
+}
+
+function getPermission() {
+	permissionGranted = false;
+	navigator.mediaDevices
+	.getUserMedia({
+		video: false, audio: true
+	})
+	.then(function(stream){
+		alert('got it');
+		//if (stream)
+		//	stream.stop();
+		permissionGranted = true;
+	})
+	.catch(function(err) {
+		alert(err);
+	});	
+	/*try {
+		navigator.mediaDevices
+		.getUserMedia({
+			video: false, audio: true
+		});		
+	}
+	catch(err) {
+		alert('try/catch: ' + err);
+	};*/
 }
 
 function startListening() {
@@ -161,7 +188,8 @@ function listen(token) {
     
 	stream.on('error', function(err) {
 		//TODO: SPEECH: handle this error?
-        console.log('error:' + err);
+        console.log('stream.on(error): ' + err);
+        alert('stream.on(error): ' + err);
         //alert('stream.on error');
 	});
 
@@ -310,7 +338,9 @@ $(function() {
 				stream.stop();
 		}
 		else {
-			getKeywords();
+			//getPermission();			
+			//if (permissionGranted === true)
+				getKeywords();
 		}
 	})
 })

@@ -76,7 +76,7 @@
 		</div>
 
 		<div class="row col-sm-12">
-			<div class="col-sm-9">
+			<div class="col-sm-12">
 				<h4><em><spring:message code="dashboard.whatsnew" arguments="${whatsnewUrl}"></spring:message></em></h4>
 			</div>
 		</div>

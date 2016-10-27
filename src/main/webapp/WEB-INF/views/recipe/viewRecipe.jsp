@@ -57,8 +57,8 @@
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
 					<span class="pull-right">
-						<button type="button" class="btn mic-btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"> 
-							<%--data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>"> --%>
+						<button type="button" class="btn mic-btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"
+							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.microphone"></spring:message>">
 							<span class="fa fa-microphone fa-fw"></span>
 						</button>
 						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:5px;font-size:20px" 

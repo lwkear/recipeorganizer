@@ -33,6 +33,8 @@
 					<li>SolrJ v5.5.0 - <a href="http://lucene.apache.org/solr/">lucene.apache.org/solr</a></li>					
 					<li>Tomcat v8.0.33 - <a href="http://tomcat.apache.org/">tomcat.apache.org</a></li>
 					<li>IBM Watson Text to Speech - <a href="https://console.ng.bluemix.net/catalog/services/text-to-speech/">console.ng.bluemix.net/catalog/services/text-to-speech</a></li>
+					<li>IBM Watson Speech to Text - <a href="https://console.ng.bluemix.net/catalog/services/speech-to-text/">console.ng.bluemix.net/catalog/services/speech-to-text</a></li>
+					<li>IBM Watson Conversation - <a href="https://console.ng.bluemix.net/catalog/services/conversation/">console.ng.bluemix.net/catalog/services/conversation</a></li>
 				</ul>
 			</div>
 		</div>
