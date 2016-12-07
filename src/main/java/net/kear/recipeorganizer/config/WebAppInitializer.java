@@ -28,6 +28,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
 		
 		final Logger logger = LoggerFactory.getLogger(getClass());
         
+    	logger.debug("WebAppInitializer:rootContext");		
     	AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
     	
     	String profile = "dev";
@@ -51,14 +52,17 @@ public class WebAppInitializer implements WebApplicationInitializer {
     		env.setActiveProfiles("dev");
     	}
 
+    	logger.debug("WebAppInitializer:rootContext.register");
     	//set the servlet context also so that the @Properties annotations in WebMcvConfig.java will be resolved correctly
     	servletContext.setInitParameter("spring.profiles.active", profile);
     	rootContext.register(WebMvcConfig.class, RepositoryConfig.class, SecurityConfig.class, WebFlowConfig.class);
 
+    	logger.debug("WebAppInitializer:applicationContext");    	
     	AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
     	DispatcherServlet dispatcherServlet = new DispatcherServlet(applicationContext);
     	dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
     	String dispatcherName = Conventions.getVariableName(dispatcherServlet);
+    	logger.debug("ServletRegistration.Dynamic");
     	ServletRegistration.Dynamic dispatcher = servletContext.addServlet(dispatcherName, dispatcherServlet);
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
@@ -70,8 +74,6 @@ public class WebAppInitializer implements WebApplicationInitializer {
         servletContext.addListener(new SessionListener());
         servletContext.setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
     }
-    
-    
 }
 
 

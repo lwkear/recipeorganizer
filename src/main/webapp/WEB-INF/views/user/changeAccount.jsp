@@ -111,7 +111,6 @@
 							<span>${changeEmailDto.currentEmail}</span>
 						</div>
 						<div class="col-sm-2">
-							<%-- <a id="linkEmail" data-toggle="collapse" data-parent="#changeGroup" data-target="#panelEmail" href="#panelEmail"><spring:message code="account.changeemail"></spring:message></a> --%>
 							<a id="linkEmail" data-toggle="collapse" data-target="#panelEmail" href="#panelEmail"><spring:message code="account.changeemail"></spring:message></a>
 						</div>
 						<div class="col-sm-3">

@@ -71,6 +71,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	public SpeechUtilImpl() {}
 
 	public void initWatson() {
+		logger.debug("initWatson");
 		//testing appears to show that no exception is thrown initializing a service
 		//retaining the try/catch anyway
 		try {
@@ -90,7 +91,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 		}
 
 		try {
-			convService = new ConversationService(ConversationService.VERSION_DATE_2016_07_11, watsonConvUsername, watsonConvPassword);
+			convService = new ConversationService(ConversationService.VERSION_DATE_2016_09_20, watsonConvUsername, watsonConvPassword);
 		} catch (Exception ex) {
 			logger.debug("Conversation init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
@@ -100,6 +101,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 	
 	@EventListener
     public void handleContextRefresh(ContextRefreshedEvent event) {
+		logger.debug("handleContextRefresh: watsonInitialized=" + watsonInitialized);
 		//this routine gets called twice for the two contexts, hence the flag
 		if (watsonInitialized)
 			return;
@@ -225,6 +227,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 			    	result = true;
 				}
 			} catch (Exception ex) {
+				logger.debug("getRecipeAudio(): " + ex.getMessage(), ex);
 				logService.addException(ex);
 			} finally {
 			    closeStream(inStream);
@@ -296,6 +299,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 					}
 				}
 			} catch (Exception ex) {
+				logger.debug("getAudio(): " + ex.getMessage(), ex);
 				logService.addException(ex);
 			} finally {
 			    closeStream(inStream);
@@ -452,6 +456,8 @@ public class SpeechUtilImpl implements SpeechUtil {
 				
 		for (Locale locale : locales) {
 			List<Voice> voices = getVoices(locale);
+			if (voices == null)
+				return;
 			for (Voice voice : voices) {
 				for (AudioType audioType : AudioType.values()) {
 					String type = StringUtils.lowerCase(audioType.name());
@@ -487,13 +493,16 @@ public class SpeechUtilImpl implements SpeechUtil {
 		List<Voice> localeVoices = new ArrayList<Voice>();
 		List<Voice> voices = null;
 		
-		if (!isWatsonTTSAvailable())
+		if (!isWatsonTTSAvailable()) {
+			logger.debug("getVoices: WatsonTTSAvailable = false");
 			return null;
+		}
 		
 		String localeLang = locale.getLanguage();
 		try {
 			voices = ttsService.getVoices().execute();
 	    } catch (Exception ex) {
+	    	logger.debug("getVoices(): " + ex.getMessage(), ex);
 	    	logService.addException(ex);
 	    	return null;
 	    }
@@ -526,6 +535,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 				FileUtils.copyInputStreamToFile(inStream, audioFile);
 			}
 		} catch (Exception ex) {
+			logger.debug("createFile(): " + ex.getMessage(), ex);
 			logService.addException(ex);
 			result = false;
 		} finally {
@@ -554,7 +564,12 @@ public class SpeechUtilImpl implements SpeechUtil {
 		if (!isWatsonSTTAvailable())
 			return token;
 		
-		token = sttService.getToken().execute();			
+		try {
+			token = sttService.getToken().execute();			
+		} catch (Exception ex) {
+			logger.debug("getSTTToken(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+		}
 		
 		return token;
 	}
@@ -568,7 +583,12 @@ public class SpeechUtilImpl implements SpeechUtil {
 		if (!isWatsonConvAvailable())
 			return response;
 		
-		response = convService.message(watsonConvWorkspaceId, message).execute();
+		try {
+			response = convService.message(watsonConvWorkspaceId, message).execute();
+		} catch (Exception ex) {
+			logger.debug("sendWatsonRequest(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+		}
 
 		return response;
 	}

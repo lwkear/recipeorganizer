@@ -13,7 +13,6 @@ import net.kear.recipeorganizer.resolver.CustomCookieLocaleResolver;
 import net.kear.recipeorganizer.security.HttpHeadFilter;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
-import net.kear.recipeorganizer.util.SpeechUtil;
 import net.kear.recipeorganizer.util.SpeechUtilImpl;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileActionsImpl;
@@ -215,6 +214,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Bean 
 	public CharacterEncodingFilter encodingFilter() {
+		logger.debug("CharacterEncodingFilter");
 		CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
 	    characterEncodingFilter.setEncoding("UTF-8");
 	    characterEncodingFilter.setForceEncoding(true);
@@ -246,6 +246,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
+		logger.debug("addFormatters");
 		registry.addFormatter(actionFormatter);
 		registry.addFormatter(reasonFormatter);
 		super.addFormatters(registry);
@@ -254,6 +255,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	/*** system maintenance configuration ***/
 	@Bean
 	public MaintenanceProperties maintProps() {
+		logger.debug("MaintenanceProperties");
 		return new MaintenanceProperties(servletContext);
 	}
 	
@@ -316,6 +318,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	
 	@Bean
 	public FreeMarkerConfigurationFactoryBean freemarkerConfig() {
+		logger.debug("FreeMarkerConfigurationFactoryBean");
 		FreeMarkerConfigurationFactoryBean config = new FreeMarkerConfigurationFactoryBean();
 		config.setTemplateLoaderPath("WEB-INF/emails");
 		config.setDefaultEncoding("UTF-8");
@@ -326,6 +329,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     /*** jasper reports configuration ***/
 	@Bean
 	public ReportGenerator reportGenerator() {
+		logger.debug("ReportGenerator");
 		ReportGenerator generator = new ReportGenerator();
 		generator.configureReports(servletContext, env.getProperty("file.directory.pdfs"));
 		return generator;
@@ -333,7 +337,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
     /*** Watson SST and TTS configuration ***/
 	@Bean
-	public SpeechUtil speechUtil() {
+	public SpeechUtilImpl speechUtil() {
+		logger.debug("SpeechUtil");
 		SpeechUtilImpl speech = new SpeechUtilImpl();
 		speech.setWatsonTTSAccount(env.getProperty("company.watson.tts.username"), env.getProperty("company.watson.tts.password"));
 		speech.setWatsonSTTAccount(env.getProperty("company.watson.stt.username"), env.getProperty("company.watson.stt.password"));

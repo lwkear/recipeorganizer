@@ -2,6 +2,8 @@ package net.kear.recipeorganizer.config;
 
 //import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +48,8 @@ import net.kear.recipeorganizer.security.UserSecurityService;
 @ComponentScan(basePackageClasses=UserSecurityService.class)
 @EnableGlobalMethodSecurity( prePostEnabled = true )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	//used for persistent rememberMe token
 	//@Autowired
@@ -57,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth, UserSecurityService userSecurityService) throws Exception {
+		logger.debug("SecurityConfig:configureGlobal");
 		auth
 		.userDetailsService(userSecurityService)
 		.passwordEncoder(encoder());
@@ -154,11 +159,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 	
 	@Override
-	public void configure(WebSecurity web) throws Exception
-	{
+	public void configure(WebSecurity web) throws Exception {
+		logger.debug("SecurityConfig:configure.web");
 		web
 		.ignoring()
-			.antMatchers("/resources/**", "/robots.txt", "/favicon.ico")
+			.antMatchers("/resources/**", "/robots.txt", "/favicon.ico", "/.well-known/acme-challenge/**")
 		;
 	}
 
@@ -167,18 +172,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	//Note: use hasAuthority instead of hasRole, otherwise the role is prepended with ROLE_
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
+		logger.debug("SecurityConfig:configure.http");
     	http
-    	.securityContext()
-    		.securityContextRepository(contextRepository())
-    		.and()
+    	//.securityContext()
+    	//	.securityContextRepository(contextRepository())
+    	//	.and()
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()
-    	.requiresChannel()
-    		.anyRequest().requiresSecure()
+    	//.requiresChannel()
+    		//.anyRequest().requiresSecure()
     		//.antMatchers("/user/login").requiresSecure()
-    		.and()
+    		//.and()
     	.addFilterBefore(encodingFilter, CsrfFilter.class)
     	.addFilterAfter(httpHeadFilter(), FilterSecurityInterceptor.class)
     	.authorizeRequests()
@@ -229,8 +234,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     		.expiredUrl("/expiredSession")
     		//.maxSessionsPreventsLogin(false)	//when enabled it prevents a user from logging in before the session expires
     	;
-    	
-    	//"/postWatsonResult**"
     	
     	http.apply(new DatabaseConnectionConfigurer<HttpSecurity>(dbConnectionFilter()));
     }

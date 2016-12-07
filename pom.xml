@@ -21,6 +21,7 @@
 		<jasper-version>6.2.0</jasper-version>
 		<jackson-version>2.7.2</jackson-version>
 		<freemarker-version>2.3.23</freemarker-version>
+		<acme4j.version>0.8</acme4j.version>
 	</properties>
 
 	<dependencyManagement>
@@ -307,6 +308,20 @@
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>${jasper-version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>bcmail-jdk14</artifactId>
+					<groupId>bouncycastle</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>bcprov-jdk14</artifactId>
+					<groupId>bouncycastle</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>bctsp-jdk14</artifactId>
+					<groupId>org.bouncycastle</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -321,22 +336,39 @@
 			<version>${freemarker-version}</version>
 		</dependency>
 
-		<!-- Watson TTS & STT -->
-		<dependency>
+		<!-- Watson Services -->
+		<!-- <dependency>
 			<groupId>com.ibm.watson.developer_cloud</groupId>
 				<artifactId>conversation</artifactId>
-			<version>3.4.0</version>
+			<version>3.5.0</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.ibm.watson.developer_cloud</groupId>
 				<artifactId>speech-to-text</artifactId>
-			<version>3.4.0</version>
+			<version>3.5.0</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.ibm.watson.developer_cloud</groupId>
 				<artifactId>text-to-speech</artifactId>
-			<version>3.4.0</version>
+			<version>3.5.0</version>
+		</dependency> -->		
+		<dependency>
+			<groupId>com.ibm.watson.developer_cloud</groupId>
+				<artifactId>java-sdk</artifactId>
+			<version>3.5.1</version>
 		</dependency>		
+
+		<!-- SSL Certificate -->
+        <dependency>
+            <groupId>org.shredzone.acme4j</groupId>
+            <artifactId>acme4j-client</artifactId>
+            <version>${acme4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.shredzone.acme4j</groupId>
+            <artifactId>acme4j-utils</artifactId>
+            <version>${acme4j.version}</version>
+        </dependency>
 	</dependencies>
 
      <build>
