@@ -57,30 +57,30 @@
 						<span class="glyphicon glyphicon-paperclip"></span>
 					</button>
 					<span class="pull-right">
-						<button type="button" class="btn mic-btn-link btn-sm collapse <c:if test="${privateRecipe}">disabled</c:if>" id="startSpeech" style="margin-left:30px;font-size:20px"
+						<button type="button" class="btn mic-btn-link btn-sm collapse" id="startSpeech" style="margin-left:30px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.microphone"></spring:message>">
 							<span class="fa fa-microphone fa-fw"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="htmlPrint" style="margin-left:5px;font-size:20px" 
+						<button type="button" class="btn btn-link btn-sm" id="htmlPrint" style="margin-left:5px;font-size:20px" 
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.print"></spring:message>">
 							<span class="glyphicon glyphicon-print"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="share" onclick="shareRecipe(${viewerId}, ${recipe.id}, 
+						<button type="button" class="btn btn-link btn-sm" id="share" onclick="shareRecipe(${viewerId}, ${recipe.id}, 
 							'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.email"></spring:message>">
 							<span class="glyphicon glyphicon-envelope"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm favorite <c:if test="${privateRecipe}">disabled</c:if>" id="favRight" 
+						<button type="button" class="btn btn-link btn-sm favorite" id="favRight" 
 							onclick="addFavorite(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.favorite"></spring:message>">
 							<span class="glyphicon glyphicon-star"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="madeRight" 
+						<button type="button" class="btn btn-link btn-sm" id="madeRight" 
 							onclick="selectMadeDate(${viewerId}, ${recipe.id})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.make"></spring:message>">
 							<span class="glyphicon glyphicon-cutlery"></span>
 						</button>
-						<button type="button" class="btn btn-link btn-sm <c:if test="${privateRecipe}">disabled</c:if>" id="noteRight" 
+						<button type="button" class="btn btn-link btn-sm" id="noteRight" 
 							onclick="addNote(${fn:escapeXml(jsonNote)})" style="margin-left:5px;font-size:20px"
 							data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.note"></spring:message>">
 							<span class="glyphicon glyphicon-paperclip"></span>
@@ -107,14 +107,7 @@
 				</h5>
 				<c:if test="${privateRecipe}">
 					<h5 class="spacer-vert-xs">
-						<c:choose>
-							<c:when test="${allowEmail}">
-								<span><spring:message code="recipe.view.copyright"></spring:message></span>
-							</c:when>
-							<c:otherwise>
-								<span><spring:message code="recipe.view.copyright.noemail"></spring:message></span>
-							</c:otherwise>
-						</c:choose>
+						<span><spring:message code="recipe.view.copyright"></spring:message></span>
 					</h5>
 				</c:if>
 			</div>
@@ -156,7 +149,7 @@
 				<%@include file="recipeContent.jsp" %>
 			
 			</div>
-			<div id="commentSection" class="<c:if test="privateRecipe">transparent</c:if>">
+			<div id="commentSection">
 			
 				<%@include file="comments.jsp" %>
 			

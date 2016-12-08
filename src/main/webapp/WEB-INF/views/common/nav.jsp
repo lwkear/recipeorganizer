@@ -63,7 +63,6 @@
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="<c:url value="/admin/approval" />"><spring:message code="menu.approval"></spring:message></a></li>
 							<li><a href="<c:url value="/admin/comments" />"><spring:message code="menu.comments"></spring:message></a></li>
-							<li role="separator" class="divider"></li>
 							<li><a href="<c:url value="/admin/ingredients" />"><spring:message code="menu.ingredients"></spring:message></a></li>
 							<c:if test="${isAdmin}">
 								<li><a href="<c:url value="/admin/category" />"><spring:message code="menu.categories"></spring:message></a></li>							
@@ -90,6 +89,23 @@
 						<c:if test="${isAdmin}">
 							<li><a href="<c:url value="/test/testpage" />">Test</a></li>
 						</c:if>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+							<spring:message code="menu.search"></spring:message><span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li>
+							<c:url var="searchUrl" value="/submitSearch"/>
+							<form:form class="navbar-form" id="searchForm" action="${searchUrl}" method="post">
+								<div class="input-group">
+									<input class="form-control" type="text" style="min-width:400px" placeholder="<spring:message code="common.search"></spring:message>" name="searchTerm" id="searchTerm" autocomplete="off"/>	
+									<div class="input-group-btn">
+										<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+									</div>
+								</div>
+							</form:form>
+						</li>
 					</ul>
 				</li>
 			</ul>
@@ -128,17 +144,6 @@
 				    </ul>
 				</c:otherwise>
 			</c:choose>
-			<div class="col-sm-3 pull-right">
-				<c:url var="searchUrl" value="/submitSearch"/>
-				<form:form class="navbar-form" id="searchForm" action="${searchUrl}" method="post">
-					<div class="input-group">
-						<input type="text" class="searchbox" placeholder=<spring:message code="common.search"></spring:message> name="searchTerm" id="searchTerm" autocomplete="off"/>	
-						<div class="input-group-btn">
-							<button class="btn btn-default btn-sm" style="padding:3px 10px" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-						</div>
-					</div>
-				</form:form>
-			</div>
 		</div>
 	</div>
 </nav>

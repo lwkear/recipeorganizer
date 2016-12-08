@@ -134,6 +134,11 @@ img {
 .select-placeholder option:first-child{color: #999; display: none;}
 .select-placeholder option{color: #555;} /* bootstrap default color */
 
+.form-control::-webkit-input-placeholder { font-style: italic; }
+.form-control:-moz-placeholder { font-style: italic; }
+.form-control::-moz-placeholder { font-style: italic; }
+.form-control:-ms-input-placeholder { font-style: italic; }
+
 /* vertical spacers */
 .spacer-vert-lg {
 	margin-top:60px;

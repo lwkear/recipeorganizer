@@ -98,7 +98,7 @@
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.play.sample"></spring:message>">
 								<span class="glyphicon glyphicon-play"></span>
 							</button>
-							<audio id="sampleVoice"></audio>
+							<audio class="audioCtl" id="sampleVoice"></audio>
 						</div>
 					</div>
 					<div class="col-sm-12">
@@ -184,6 +184,7 @@
 </body>
 
 <script src="<c:url value="/resources/custom/typeahead.js" />"></script>
+<script src="<c:url value="/resources/custom/audio.js" />"></script>
 <script src="<c:url value="/resources/custom/userprofile.js" />"></script>
 
 </html>

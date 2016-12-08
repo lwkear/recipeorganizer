@@ -21,12 +21,44 @@
 				<h5 class="bold-maroon text-center"><em>${warningMaint}</em></h5>
 			</c:if>
 			<div class="page-header">
-				<h3>
-					<c:if test="${not empty user.userProfile.avatar}">
-						<span><img src="<c:url value="/user/avatar?id=${user.id}&filename=${user.userProfile.avatar}"/>" alt="" style="width:50px;height:50px;"/></span>
+				<div class="row">
+					<div class="col-sm-9">
+						<h3>
+							<c:if test="${not empty user.userProfile.avatar}">
+								<span><img src="<c:url value="/user/avatar?id=${user.id}&filename=${user.userProfile.avatar}"/>" alt="" style="width:50px;height:50px;"/></span>
+							</c:if>
+							<spring:message code="dashboard.title"></spring:message>,&nbsp;${user.firstName}
+						</h3>
+					</div>
+					<c:if test="${(!isAuthor && !isEditor && !isAdmin)}">
+						<div class="col-sm-3 spacer-vert-xs">
+							<div class="row">
+								<div class="col-sm-12">
+									<p style="margin:0"><spring:message code="dashboard.membersince"></spring:message>&nbsp;
+										<span style="color:#333;"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></p>
+									<p style="margin:0"><spring:message code="dashboard.memberlevel"></spring:message>&nbsp;
+										<span style="color:#333;"><spring:message code="roles.${role.name}"></spring:message></span></p>
+								</div>
+							</div>
+						</div>
 					</c:if>
-					<spring:message code="dashboard.title"></spring:message>,&nbsp;${user.firstName}
-				</h3>
+					<c:if test="${(isAuthor || isEditor || isAdmin)}">
+						<div class="col-sm-3 spacer-vert-xs">
+							<div class="row">
+								<div class="col-sm-12">
+									<p style="margin:0"><spring:message code="dashboard.membersince"></spring:message>&nbsp;
+										<span style="color:#333;"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></p>
+									<p style="margin:0"><spring:message code="dashboard.memberlevel"></spring:message>&nbsp;
+										<span style="color:#333;"><spring:message code="roles.${role.name}"></spring:message></span></p>
+									<p style="margin:0"><spring:message code="dashboard.recipessubmitted"></spring:message>&nbsp;
+										<span style="color:#333;">${recipeCount}</span></p>
+									<p style="margin:0"><spring:message code="dashboard.viewcount"></spring:message>&nbsp;
+										<span style="color:#333;">${viewCount}</span></p>
+								</div>
+							</div>
+						</div>
+					</c:if>
+				</div>
 			</div>
 		</div>
 		<c:if test="${not empty nextMaint}">
@@ -43,44 +75,38 @@
 				</div>
 			</div>
 		</c:if>
-		
 		<div class="row col-sm-12">
-			<div class="col-sm-4">
-				<h5><strong><spring:message code="dashboard.membersince"></spring:message></strong>&nbsp;
-					<span class="bold-maroon"><fmt:formatDate type="date" value="${user.dateAdded}"/></span></h5>
-				<h5><strong><spring:message code="dashboard.memberlevel"></spring:message></strong>&nbsp;
-					<span class="bold-maroon"><spring:message code="roles.${role.name}"></spring:message></span></h5>
-			</div>
-			<c:if test="${(isAuthor || isEditor || isAdmin)}">
-				<div class="col-sm-4">
-					<h5><strong><spring:message code="dashboard.recipessubmitted"></spring:message></strong>&nbsp;
-						<span class="bold-maroon">${recipeCount}</span></h5>
-					<h5><strong><spring:message code="dashboard.viewcount1" arguments=""></spring:message></strong>&nbsp;
-						<span class="bold-maroon">${viewCount}</span>&nbsp;
-						<strong><spring:message code="dashboard.viewcount2"></spring:message></strong></h5>
-				</div>
-			</c:if>
-			<c:if test="${(isEditor || isAdmin)}">
-				<div class="col-sm-4">
-					<h5><a class="btn btn-link btn-xs" href="<c:url value='/admin/approval'/>"><span class="badge" style="background-color:#538cc6">${recipeApprovals}</span></a>
-					<strong><spring:message code="dashboard.approvalrequired"></spring:message></strong>&nbsp;						
-					</h5>	
-					<h5><a class="btn btn-link btn-xs" href="<c:url value='/admin/comments'/>"><span class="badge" style="background-color:#538cc6">${flaggedComments}</span></a>
-					<strong><spring:message code="dashboard.flaggedcomments"></spring:message></strong>&nbsp;						
-					</h5>
-					<h5><a class="btn btn-link btn-xs" href="<c:url value='/admin/ingredients'/>"><span class="badge" style="background-color:#538cc6">${ingredientReviews}</span></a>
-					<strong><spring:message code="dashboard.ingredientreview"></spring:message></strong>&nbsp;						
-					</h5>
-				</div>
-			</c:if>
-		</div>
-
-		<div class="row col-sm-12">
-			<div class="col-sm-12">
+			<div class="col-sm-10">
 				<h4><em><spring:message code="dashboard.whatsnew" arguments="${whatsnewUrl}"></spring:message></em></h4>
 			</div>
+			<c:if test="${(isEditor || isAdmin)}">
+				<div class="col-sm-2">			
+					<div class="btn-group">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<spring:message code="dashboard.editorreview"></spring:message>&nbsp;<span class="caret"></span>
+						</button>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="btn-link" href="<c:url value='/admin/approval'/>">
+							<span class="badge text-left" style="background-color:#538cc6">${recipeApprovals}</span>
+							<spring:message code="dashboard.approvalrequired"></spring:message></a>
+						</li>
+						<li>
+							<a class="btn-link" href="<c:url value='/admin/comments'/>">
+							<span class="badge" style="background-color:#538cc6">${flaggedComments}</span>
+							<spring:message code="dashboard.flaggedcomments"></spring:message></a>
+						</li>
+						<li>
+							<a class="btn-link" href="<c:url value='/admin/ingredients'/>">
+							<span class="badge" style="background-color:#538cc6">${ingredientReviews}</span>
+							<spring:message code="dashboard.ingredientreview"></spring:message></a>
+						</li>
+					</ul>
+					</div>
+				</div>
+			</c:if>
 		</div>
-
+		
 		<c:set var="viewIter" value="1"/>
 		<c:if test="${fn:length(viewedRecipes) gt 6}">
 			<c:set var="viewIter" value="2"/>
