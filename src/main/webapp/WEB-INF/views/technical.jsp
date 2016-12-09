@@ -32,6 +32,8 @@
 					<li>Freemarker v2.3.23 - <a href="http://freemarker.org/">freemarker.org</a></li>
 					<li>SolrJ v5.5.0 - <a href="http://lucene.apache.org/solr/">lucene.apache.org/solr</a></li>					
 					<li>Tomcat v8.0.33 - <a href="http://tomcat.apache.org/">tomcat.apache.org</a></li>
+					<li>LetsEncrypt CA - <a href="https://letsencrypt.org/">letsencrypt.org</a></li>
+					<li>ACME Java Client - <a href="https://github.com/shred/acme4j">github.com/shred/acme4j</a></li>
 					<li>IBM Watson Text to Speech - <a href="https://console.ng.bluemix.net/catalog/services/text-to-speech/">console.ng.bluemix.net/catalog/services/text-to-speech</a></li>
 					<li>IBM Watson Speech to Text - <a href="https://console.ng.bluemix.net/catalog/services/speech-to-text/">console.ng.bluemix.net/catalog/services/speech-to-text</a></li>
 					<li>IBM Watson Conversation - <a href="https://console.ng.bluemix.net/catalog/services/conversation/">console.ng.bluemix.net/catalog/services/conversation</a></li>
@@ -63,7 +65,6 @@
 				<ul>
 					<li>Spring STS v3.6.4 - <a href="https://spring.io/tools/sts">spring.io/tools/sts</a></li>
 					<li>Subversion v1.8.10 - <a href="https://subversion.apache.org/">subversion.apache.org/</a></li>
-					<li>Firebug v2.0.16 - <a href="https://getfirebug.com/">getfirebug.com</a></li>
 					<li>Papercut v4.5.0 - <a href="http://papercut.codeplex.com/">papercut.codeplex.com</a></li>
 					<li>GIMP v2.8.14 - <a href="http://www.gimp.org">gimp.org</a></li>
 					<li>TIBCO Jaspersoft Studio v6.2.0 - <a href="http://community.jaspersoft.com/project/jaspersoft-studio">community.jaspersoft.com/project/jaspersoft-studio</a></li>

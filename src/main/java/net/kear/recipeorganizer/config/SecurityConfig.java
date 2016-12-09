@@ -174,9 +174,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		logger.debug("SecurityConfig:configure.http");
     	http
-    	//.securityContext()
-    	//	.securityContextRepository(contextRepository())
-    	//	.and()
+    	.securityContext()
+    		.securityContextRepository(contextRepository())
+    		.and()
     	.headers()
     		.frameOptions().sameOrigin()
     		.and()

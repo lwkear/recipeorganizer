@@ -21,9 +21,8 @@
 	 	<div class="col-sm-8 col-sm-offset-2 text-center std-maroon">
 			<h4><spring:message code="recipe.cancel.message1"></spring:message></h4>
 		</div>
-	 	<div class="col-sm-6 col-sm-offset-3 text-center spacer-vert-sm">
-			<h5 class="text-center"><spring:message code="recipe.cancel.message2"></spring:message>&nbsp;&nbsp;
-				<spring:message code="recipe.cancel.message3" arguments="${properties['company.email.feedback']}"></spring:message></h5>
+	 	<div class="col-sm-6 col-sm-offset-3 spacer-vert-sm">
+			<h5><spring:message code="recipe.cancel.message2" arguments="${properties['company.email.feedback']}"></spring:message></h5>
 		</div>
 	</div>
 
