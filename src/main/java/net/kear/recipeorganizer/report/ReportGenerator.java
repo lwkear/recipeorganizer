@@ -109,18 +109,18 @@ public class ReportGenerator {
 		List<Recipe> list = new ArrayList<Recipe>();
 		Recipe recipe = recipeService.getRecipe(recipeId);
 		recipe.setPrivateNotes(null);
+		//get the notes for this user, if any
 		RecipeNote recipeNote = recipeService.getRecipeNote(userId, recipeId);
 		if (recipeNote != null)
 			recipe.setPrivateNotes(recipeNote.getNote());
-
+		//do not print the background for a copyrighted recipe, if the user did not submit the recipe
+		if (recipe.getCopyrighted() && (userId != recipe.getUser().getId()))
+			recipe.setBackground(null);
 		
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);
 
     	try {
-        	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
-        	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
-
         	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale); 
         	params.put("logoPath", logoHtmlImagePath);
         	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
@@ -164,6 +164,10 @@ public class ReportGenerator {
 		
 		List<Recipe> list = new ArrayList<Recipe>();
 		Recipe recipe = recipeService.getRecipe(recipeId);
+		//do not include the background for a copyrighted recipe; this assume the user is not emailing
+		//the recipe to him/herself
+		if (recipe.getCopyrighted())
+			recipe.setBackground(null);
 		list.add(recipe);
     	JRDataSource src = new JRBeanCollectionDataSource(list);    	
     	

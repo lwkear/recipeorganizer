@@ -139,6 +139,22 @@ img {
 .form-control::-moz-placeholder { font-style: italic; }
 .form-control:-ms-input-placeholder { font-style: italic; }
 
+/* added a default color for the email page */
+.table > thead > tr > td.default,
+.table > tbody > tr > td.default,
+.table > tfoot > tr > td.default,
+.table > thead > tr > th.default,
+.table > tbody > tr > th.default,
+.table > tfoot > tr > th.default,
+.table > thead > tr.default > td,
+.table > tbody > tr.default > td,
+.table > tfoot > tr.default > td,
+.table > thead > tr.default > th,
+.table > tbody > tr.default > th,
+.table > tfoot > tr.default > th {
+  background-color: #e6e6e6;
+}
+
 /* vertical spacers */
 .spacer-vert-lg {
 	margin-top:60px;

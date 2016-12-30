@@ -76,7 +76,14 @@ function setSource() {
 function adjustSourceFields() {
 	var ndx = $('#inputSource option:selected').index();
 	var option = "";
-	if (ndx == 0 || ndx == 7)
+	var locale = $('#localeCode').val();
+	if (ndx == 0)
+		$('#inputSource').val(null);
+	else
+	if (locale == 'en' && ndx == 4)
+		$('#inputSource').val(null);
+	else
+	if (locale == 'fr' && ndx == 1)
 		$('#inputSource').val(null);
 	else
 		option = $('#inputSource').val();

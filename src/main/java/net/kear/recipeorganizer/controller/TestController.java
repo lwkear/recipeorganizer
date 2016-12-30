@@ -24,6 +24,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.Address;
+import javax.mail.Message;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -77,6 +79,7 @@ import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail;
 import net.kear.recipeorganizer.util.email.AccountChangeEmail.ChangeType;
 import net.kear.recipeorganizer.util.email.EmailDetail;
+import net.kear.recipeorganizer.util.email.EmailReceiver;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.InvitationEmail;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
@@ -127,6 +130,8 @@ public class TestController {
 	SpeechUtil speechUtil;
 	@Autowired
 	RecipeService recipeService;
+	@Autowired
+	EmailReceiver emailReceiver;
 
 	/*****************/
 	/*** test page ***/
@@ -209,11 +214,43 @@ public class TestController {
 	    }	      	   
 	}*/
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/test/testpage", method = RequestMethod.GET)
 	public String getTestpage(Model model, HttpServletRequest request, HttpSession session, Locale locale) {
 		logger.debug("getTestpage");
 
+		/*Message[] messages = emailReceiver.getMessages();
+		try {
+			for (int i = 0; i < messages.length; i++) {
+				Message msg = messages[i];
+				String subj = msg.getSubject();
+				Address[] fromAddr = msg.getFrom();
+				String from = fromAddr[0].toString();
+				String contentType = msg.getContentType();
+				logger.debug("subj:" + subj);
+				logger.debug("from:" + from);
+				logger.debug("type:" + contentType);				
+			}
+		} catch (Exception ex) {
+			logger.debug(ex.getMessage());
+		}
+		
+		try {
+			for (Message msg : messages) {
+				String subj = msg.getSubject();
+				Address[] fromAddr = msg.getFrom();
+				String from = fromAddr[0].toString();
+				String contentType = msg.getContentType();
+				logger.debug("subj:" + subj);
+				logger.debug("from:" + from);
+				logger.debug("type:" + contentType);				
+			}
+		} catch (Exception ex) {
+			logger.debug(ex.getMessage());
+		}*/
+		
+		//emailReceiver.getMessages();
+		
 		/*WatsonConversation wc = new WatsonConversation();
 
 		Map<String, Object> contextMap = new HashMap<String, Object>();
@@ -255,7 +292,8 @@ public class TestController {
 		model.addAttribute("watsonEntities", entities);
 		model.addAttribute("watsonIntents", intents);
 		model.addAttribute("watsonOutput", output);*/
-		return "test/testpage";
+		//return "test/testpage";
+		return "test/blankpage";
 	}
 
 	@SuppressWarnings("unchecked")

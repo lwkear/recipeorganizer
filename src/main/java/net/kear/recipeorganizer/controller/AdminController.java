@@ -46,6 +46,7 @@ import net.kear.recipeorganizer.event.UpdateSolrRecipeEvent;
 import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
+import net.kear.recipeorganizer.persistence.dto.EmailDto;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.dto.InvitationDto;
@@ -75,6 +76,7 @@ import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
 import net.kear.recipeorganizer.util.email.EmailDetail;
+import net.kear.recipeorganizer.util.email.EmailReceiver;
 import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.InvitationEmail;
 import net.kear.recipeorganizer.util.file.FileActions;
@@ -126,6 +128,8 @@ public class AdminController {
     private ApplicationEventPublisher eventPublisher;
 	@Autowired
 	private EmailSender emailSender;
+	@Autowired
+	private EmailReceiver emailReceiver;
 	@Autowired
 	private InvitationEmail invitationEmail; 
 	@Autowired
@@ -821,4 +825,29 @@ public class AdminController {
         response.setStatus(HttpServletResponse.SC_OK);
 		return obj;
 	}
+
+	/*********************/
+	/*** Email handler ***/
+	/*********************/
+	@MaintAware
+	@RequestMapping(value = "/admin/emails", method = RequestMethod.GET)
+	public String getEmails(Model model, HttpServletRequest request) {
+		logger.info("admin/emails GET");
+
+		String contextPath = request.getServletContext().getContextPath();
+		logger.info("contextPath: " + contextPath);
+		
+		List<EmailDto> emails = emailReceiver.getMessages(contextPath);
+		model.addAttribute("emails", emails);
+		
+		return "admin/emails";
+	}
+	
+	@RequestMapping(value = "admin/attachment", method = RequestMethod.GET)
+	public void getAttachment(@RequestParam("id") final long id, @RequestParam("filename") final String fileName, HttpServletResponse response) {
+		logger.info("admin/attachment GET: filename=" + fileName);
+		
+		//errors are not fatal and will be logged by FileAction
+		fileAction.downloadFile(FileType.EMAIL, id, fileName, response);
+	}	
 }

@@ -50,6 +50,7 @@ public class FileActionsImpl implements FileActions {
 	
 	private String avatarDir;	
 	private String recipeDir;
+	private String emailDir;
 	
 	public FileActionsImpl() {}
 	
@@ -69,6 +70,14 @@ public class FileActionsImpl implements FileActions {
 		return this.recipeDir;
 	}
 	
+	public String getEmailDir() {
+		return emailDir;
+	}
+
+	public void setEmailDir(String emailDir) {
+		this.emailDir = emailDir;
+	}
+
 	public FileResult uploadFile(Recipe recipe, RequestContext requestContext) {
 		logger.info("uploadFile: recipeId=" + recipe.getId());
 
@@ -232,7 +241,8 @@ public class FileActionsImpl implements FileActions {
 	    }
 		
 	    try {
-	    	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + file.getOriginalFilename();
+	    	String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+	    	String filePath = dir + id + "." + file.getOriginalFilename();
 	    	logger.debug("originalname = " + file.getOriginalFilename());
 	    	logger.debug("filePath = " + filePath);
 	        	    	
@@ -269,7 +279,8 @@ public class FileActionsImpl implements FileActions {
 		logger.info("downloadFile: type/id=" + fileType + "/" + id);
 
         try {
-        	String filePath = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;
+        	String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+        	String filePath = dir + id + "." + fileName;
         	File file = new File(filePath);
         	Path path = file.toPath();
         	ServletOutputStream stream = response.getOutputStream();
@@ -289,8 +300,9 @@ public class FileActionsImpl implements FileActions {
 		logger.info("renameFile: type/name=" + fileType + "/" + oldName);
 
 		try {
-			String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + oldName;
-			String newFile = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + newName;
+			String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+			String file = dir + oldName;
+			String newFile = dir + newName;
 			File srcFile = new File(file);
 			Path srcPath = srcFile.toPath();
 			Files.move(srcPath, srcPath.resolveSibling(newFile));
@@ -306,7 +318,8 @@ public class FileActionsImpl implements FileActions {
 		logger.info("deleteFile: type/id=" + fileType + "/" + id);
 
 		try {
-			String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;
+			String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+			String file = dir + id + "." + fileName;
 			File srcFile = new File(file);
 			Path srcPath = srcFile.toPath();
 			Files.delete(srcPath);
@@ -319,8 +332,8 @@ public class FileActionsImpl implements FileActions {
 	}
 
 	public String fileExists(FileType fileType, long id) {
-
-		String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + ".*";
+		String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+		String file = dir + id + ".*";
 		File testfile = new File(file);
 		FileFilter filter = new WildcardFileFilter(file);
 		File files[] = testfile.listFiles(filter);
@@ -330,8 +343,8 @@ public class FileActionsImpl implements FileActions {
 	}
 
 	public boolean fileExists(FileType fileType, long id, String fileName) {
-
-		String file = (fileType == FileType.RECIPE ? recipeDir : avatarDir) + id + "." + fileName;
+		String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
+		String file = dir + id + "." + fileName;
 		File testfile = new File(file);
 		if (!testfile.exists())
 			return false;
