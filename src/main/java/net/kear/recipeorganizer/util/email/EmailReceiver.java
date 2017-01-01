@@ -1,7 +1,11 @@
 package net.kear.recipeorganizer.util.email;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Folder;
@@ -40,7 +44,25 @@ public class EmailReceiver {
 	private String password;
 	private String defaultEncoding;
 	private String emailDir;
-	
+	private static final Map<String, String> docTypes;
+	static {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("doc","application/msword");
+		map.put("pdf","application/octet-stream");
+		map.put("txt","text/plain");
+		map.put("xls","application/vnd.ms-excel");
+		docTypes = Collections.unmodifiableMap(map);
+	}
+	private static final List<String> mimeTypes;
+	static {
+		List<String> list = new ArrayList<String>();
+		list.add("image/*");
+		list.add("application/octet-stream");
+		list.add("application/vnd.ms-excel");
+		list.add("application/msword");
+		list.add("text/plain");
+		mimeTypes = Collections.unmodifiableList(list);
+	}	
 	public EmailReceiver() {}
 
 	public boolean connect() {
@@ -125,12 +147,20 @@ public class EmailReceiver {
 	public void setEmailDir(String emailDir) {
 		this.emailDir = emailDir;
 	}
+	
+	public boolean isValidDocType(String extension) {
+		String ext = StringUtils.substring(extension, 0, 3);
+		return (docTypes.containsKey(ext));
+	}
+	
+	public String getDocContentType(String extension) {
+		return (docTypes.get(extension));
+	}
 
 	public List<EmailDto> getMessages(String contextPath) {
 		List<EmailDto> emails = new AutoPopulatingList<EmailDto>(EmailDto.class);
 		Message[] messages = null;
 		IMAPFolder folder = null;
-		//int cnt = 0;
 		
 		try {
 			folder = getFolder("INBOX");
@@ -151,24 +181,29 @@ public class EmailReceiver {
 				email.setBcc(msg.getRecipients(RecipientType.BCC));
 				email.setSentDate(msg.getSentDate());
 				email.setFlags(msg.getFlags());
-				boolean hasAttach = hasFile(msg.getMessageNumber(), msg.getSubject(), msg, Part.ATTACHMENT);
-				if (hasAttach)
-					email.setFileNames(getFileNames(msg, Part.ATTACHMENT));
+
+				//check for attached or inline files; currently only handling images
+				boolean hasAttach = hasFile(msg, Part.ATTACHMENT);
+				String fileNames = "";
+				if (hasAttach) {
+					fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.ATTACHMENT);
+					email.setFileNames(fileNames);
+				}
 				email.setHasAttachment(hasAttach);
-				boolean hasInline = hasFile(msg.getMessageNumber(), msg.getSubject(), msg, Part.INLINE);
-				String inlineFileNames = "";
+				boolean hasInline = hasFile(msg, Part.INLINE);
+				fileNames = "";
 				if (hasInline)
-					inlineFileNames = getFileNames(msg, Part.INLINE);
-				String text = fixContent(getText(msg), hasInline, inlineFileNames, email.getSortDate(), contextPath);
+					fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.INLINE);
+				
+				//fix the Outlook email issue with the menu and replace any inline file src 
+				String text = fixContent(getText(msg), hasInline, fileNames, email.getSortDate(), contextPath);
 				email.setContent(text);
 				MimeMessage mime = (MimeMessage)msg;
 				email.setMimeId(mime.getMessageID());
 				emails.add(email);
 				
-				//parseParts(msg.getMessageNumber(), msg.getSubject(), msg);
-				//cnt++;
-				//if (cnt > 5)
-				//	break;					
+				//if (msg.getMessageNumber() > 40)
+				//	parseParts(msg.getMessageNumber(), msg.getSubject(), msg);
 			}
 			
             folder.close(false);
@@ -202,68 +237,95 @@ public class EmailReceiver {
 		return folder;
 	}
 
-	private boolean hasFile(int num, String subj, Part part, String disposition) throws MessagingException, IOException {
-		
-		String type = part.getContentType();
+	private boolean hasFile(Part part, String disposition) throws MessagingException, IOException {
 		String dispos = part.getDisposition();
 		if (dispos == null)
 			dispos = "n/a";
 
-		String debug = String.format("MainPart msg# %d; subj: %s; content type: %s; disposition %s", num, subj, type, dispos);
-		//logger.debug(debug);
+		if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
+			String type = part.getContentType();
+			if (isValidMimeType(type))
+				return true;
+			logger.debug("found invalid" + disposition + " file:" + type);
+		}				
 		
-		boolean foundAttachment = false;
-		
-		if ((part.isMimeType("multipart/mixed")) || (part.isMimeType("multipart/related"))) {
-
+		if (part.isMimeType("multipart/*")) {
 			Multipart parts = (Multipart) part.getContent();
 			int numParts = parts.getCount();
 			for (int i=0;i<numParts;i++) {
 				Part p = parts.getBodyPart(i);
-
-				type = p.getContentType();
 				dispos = p.getDisposition();
 				if (dispos == null)
 					dispos = "n/a";
 
-				debug = String.format("BodyPart msg# %d; subj: %s; content type: %s; disposition %s", num, subj, type, dispos);
-				//logger.debug(debug);
-				
 				if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
-					debug = String.format("dispo %s: msg# %d; subj: %s; content type: %s; disposition %s", dispos, num, subj, type, dispos);
-					logger.debug(debug);
-					foundAttachment = true;
+					String type = p.getContentType();
+					if (isValidMimeType(type))
+						return true;
+					logger.debug("found invalid" + disposition + " file:" + type);
 				}				
 				
-				if ((p.isMimeType("multipart/mixed")) || (p.isMimeType("multipart/related"))) {
-					return hasFile(num, subj, p, disposition);
+				if (p.isMimeType("multipart/*")) {
+					boolean foundFile = hasFile(p, disposition);
+					if (foundFile)
+						return true;
 				}
 			}
 		}
 		
-		return foundAttachment;
+		return false;
 	}
 
-	//TODO: this may not account for nested parts with attachments
-	private String getFileNames(Message msg, String disposition) throws MessagingException, IOException {
-		String fileNames = "";
-		String separator = "";
-		Multipart parts = (Multipart) msg.getContent();
-		int numParts = parts.getCount();
-		for (int i=0;i<numParts;i++) {
-			MimeBodyPart part = (MimeBodyPart)parts.getBodyPart(i);
-			String dispos = part.getDisposition(); 
-			if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
-				String fileName = part.getFileName();
-				long id = msg.getSentDate().getTime();
+	private String getFileNames(Part part, long id, String names, String disposition) throws MessagingException, IOException {
+		String dispos = part.getDisposition();
+		if (dispos == null)
+			dispos = "n/a";
+
+		if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
+			String type = part.getContentType();
+			if (isValidMimeType(type)) {
+				MimeBodyPart bp = (MimeBodyPart)part;
+				String fileName = bp.getFileName();
 				String filePath = emailDir + id + "." + fileName;
-				fileNames += separator + fileName;
-				separator = ",";
-				part.saveFile(filePath);
+				bp.saveFile(filePath);
+				logger.debug("fileName:" + fileName);
+				if (!StringUtils.isEmpty(names))
+					fileName = "," + fileName;
+				return names + fileName;
+			}
+		}				
+		
+		if (part.isMimeType("multipart/*")) {
+			Multipart parts = (Multipart) part.getContent();
+			int numParts = parts.getCount();
+			for (int i=0;i<numParts;i++) {
+				Part p = parts.getBodyPart(i);
+				dispos = p.getDisposition();
+				if (dispos == null)
+					dispos = "n/a";
+
+				if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
+					String type = p.getContentType();
+					if (isValidMimeType(type)) {
+						MimeBodyPart bp = (MimeBodyPart)p;
+						String fileName = bp.getFileName();
+						String filePath = emailDir + id + "." + fileName;
+						bp.saveFile(filePath);
+						logger.debug("fileName:" + fileName);
+						if (!StringUtils.isEmpty(names))
+							fileName = "," + fileName;
+						names = names + fileName;
+					}
+				}				
+				
+				if (p.isMimeType("multipart/*")) {
+					names = names + getFileNames(p, id, names, disposition);
+					
+				}
 			}
 		}
 		
-		return fileNames;
+		return names;
 	}	
 
 	/*getText lifted from http://www.oracle.com/technetwork/java/javamail/faq/index.html*/	
@@ -324,11 +386,10 @@ public class EmailReceiver {
 		if (StringUtils.contains(text, "a:visited, "))
 			text = StringUtils.replace(text, "a:visited, ", "");
 		
-		//email INLINE: <img id="Picture_x0020_1" src="cid:image001.jpg@01D25AC9.0AEF7FC0" width="853" height="640">
-		//recipe example: <img class="img-responsive center-block" src="/recipeorganizer/recipe/photo?id=4&amp;filename=MacAndCheese.JPG" alt="No photo">
-		//outlook inline: <img originalsrc="cid:edbae9bb-12c7-4ab1-ba6f-1c9b5fadd597" data-custom="AQMkADAwATM0MDAAMS1hZGQAZS1hNjc1LTAwAi0wMAoARgAAA9Kr6IbgTyBAiSRBdO1YQT0HAKhZcJx8%2BFJCmhIVJmHCh0cAAAIBDAAAAKhZcJx8%2BFJCmhIVJmHCh0cAAACEmsbVAAAAARIAEAAn5oEJTKhNSLiMu%2FmDek3U" naturalheight="2448" naturalwidth="3264" src="https://attachment.outlook.office.net/owa/lkear@outlook.com/service.svc/s/GetFileAttachment?id=AQMkADAwATM0MDAAMS1hZGQAZS1hNjc1LTAwAi0wMAoARgAAA9Kr6IbgTyBAiSRBdO1YQT0HAKhZcJx8%2BFJCmhIVJmHCh0cAAAIBDAAAAKhZcJx8%2BFJCmhIVJmHCh0cAAACEmsbVAAAAARIAEAAn5oEJTKhNSLiMu%2FmDek3U&amp;X-OWA-CANARY=wrNoV-hpw0ikakuFs2j0EBBjwxxOLtQYBbYVAYl_nzTl03dyDHhfAsQn1bO4Xt9mlMBaDxQMWOg.&amp;token=b0d0b4ee-6d87-4c16-ad89-24b835ab2750&amp;owa=outlook.live.com&amp;isc=1" id="x_ymail_attachmentId107" class="x_inline-image-global x_inlined-image-cid-edbae9bb-12c7-4ab1-ba6f-1c9b5fadd597" style="width: 100%; max-width: 800px;">
-		//outlook inline: <img originalsrc="cid:f1584c18-3cbc-f684-0a0c-72fac1e953ed@yahoo.com" data-custom="AQMkADAwATM0MDAAMS1hZGQAZS1hNjc1LTAwAi0wMAoARgAAA9Kr6IbgTyBAiSRBdO1YQT0HAKhZcJx8%2BFJCmhIVJmHCh0cAAAIBDAAAAKhZcJx8%2BFJCmhIVJmHCh0cAAACFKNtoAAAAARIAEAAkccfeSfCMT5TiKpfbl8Ae" naturalheight="800" naturalwidth="618" src="https://attachment.outlook.office.net/owa/lkear@outlook.com/service.svc/s/GetFileAttachment?id=AQMkADAwATM0MDAAMS1hZGQAZS1hNjc1LTAwAi0wMAoARgAAA9Kr6IbgTyBAiSRBdO1YQT0HAKhZcJx8%2BFJCmhIVJmHCh0cAAAIBDAAAAKhZcJx8%2BFJCmhIVJmHCh0cAAACFKNtoAAAAARIAEAAkccfeSfCMT5TiKpfbl8Ae&amp;X-OWA-CANARY=pvyBaouKP0-hV5px-DboHxBq6IJPLtQY8Jm4A7ofKdJ__HMJ4iV40iumnlZaKsDSYeIn-JYx0tA.&amp;token=51486cbe-95bc-4b63-bb64-f3c3a2b7e795&amp;owa=outlook.live.com&amp;isc=1" class="x_ymail-preserve-class x_inline-image-guid-2e06d212-412b-8f5c-73e0-ad130fe8af66 x_rte-inline-saved-image" alt="Inline image" id="x_yui_3_16_0_ym19_1_1482755864019_131019" style="width: 100%; max-width: 618px; max-height: 800px;">
 		if (hasInline) {
+			if (StringUtils.isEmpty(inlineFileNames))
+				return text;
+			
 			String[] names = inlineFileNames.split(",");
 			
 			int imgBegin = 0;
@@ -370,7 +431,16 @@ public class EmailReceiver {
 		return text;
 	}
 
-	/*private void parseParts(int num, String subj, Part part) throws MessagingException, IOException {
+	//this app only handles a small set of mime types
+	private boolean isValidMimeType(String type) {
+		String mimeType = StringUtils.substringBefore(type, ";");
+		String wildcardType = StringUtils.substringBefore(mimeType, "/");
+		wildcardType += "/*";
+		return (mimeTypes.contains(mimeType.toLowerCase()) || mimeTypes.contains(wildcardType.toLowerCase()));
+	}
+	
+	@SuppressWarnings("unused")
+	private void parseParts(int num, String subj, Part part) throws MessagingException, IOException {
 		String type = part.getContentType();
 		String dispos = part.getDisposition();
 		if (dispos == null)
@@ -383,5 +453,50 @@ public class EmailReceiver {
 			for (int i = 0; i < mp.getCount(); i++)
 				parseParts(num, subj, mp.getBodyPart(i));
 		}
-	}*/
+	}
+
+	@SuppressWarnings("unused")
+	private boolean hasFileDebug(int num, int count, String subj, Part part, String disposition) throws MessagingException, IOException {
+		String type = part.getContentType();
+		String dispos = part.getDisposition();
+		if (dispos == null)
+			dispos = "n/a";
+
+		String debug = String.format("msg# %d; count %d; subj: %s; content type: %s; disposition %s", num, count, subj, type, dispos);
+		logger.debug(debug);
+
+		if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
+			if (part.isMimeType("image/*") || part.isMimeType("application/octet-stream"))
+				return true;
+		}				
+		
+		if (part.isMimeType("multipart/*")) {
+			Multipart parts = (Multipart) part.getContent();
+			int numParts = parts.getCount();
+			for (int i=0;i<numParts;i++) {
+				Part p = parts.getBodyPart(i);
+				type = p.getContentType();
+				dispos = p.getDisposition();
+				if (dispos == null)
+					dispos = "n/a";
+
+				debug = String.format("msg# %d; count %d; subj: %s; content type: %s; disposition %s", num, count, subj, type, dispos);
+				logger.debug(debug);
+				
+				if (dispos != null && dispos.equalsIgnoreCase(disposition)) {
+					if (p.isMimeType("image/*") || p.isMimeType("application/octet-stream"))
+						return true;
+				}				
+				
+				if (p.isMimeType("multipart/*")) {
+					int n = count+1;
+					boolean foundFile = hasFileDebug(num, n, subj, p, disposition);
+					if (foundFile)
+						return true;
+				}
+			}
+		}
+		
+		return false;
+	}
 }

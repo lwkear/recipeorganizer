@@ -12,8 +12,19 @@ function displayEmail(data, index, count) {
 		var filenames = names.split(',');
 		var displaynames = "";
 		var separator = "";
-		filenames.forEach(function(file){
-			var btn = "<button class='btn btn-link btn-image' style='margin:0;padding:0'>" + file + "</button>";	//btn-xs
+		filenames.forEach(function(file) {
+			var btn = "";
+			var fileExt = file.toLowerCase();
+			if (fileExt.includes('.pdf')	||
+				fileExt.includes('.xls')	||
+				fileExt.includes('.doc')	||
+				fileExt.includes('.txt')) {
+				var src = $('#imageSrc').val();
+				src += "?id=" + timestamp + "&filename=" + file;
+				btn = "<a class='btn btn-link' href='" + src + "' target='_blank' style='margin:0;padding:0'>" + file + "</a>";
+			}
+			else
+				btn = "<button class='btn btn-link btn-image' style='margin:0;padding:0'>" + file + "</button>";
 			displaynames += separator + btn;
 			separator = "&nbsp;&nbsp;";
 		})
@@ -158,7 +169,8 @@ $(function() {
 			var src = $('#imageSrc').val();
 			src += "?id=" + id + "&filename=" + name;
 			$('#image').attr('src', src);
-			$('#imageModal').modal({backdrop: 'static', keyboard: false, show: false});
+			//$('#imageModal').modal({backdrop: 'static', keyboard: false, show: false});	--static = can't close modal by clicking outside of it
+			$('#imageModal').modal({backdrop: true, keyboard: true, show: false});
 			$("#imageModal").modal('show');
-		});
+		})
 })

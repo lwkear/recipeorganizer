@@ -20,8 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 import net.kear.recipeorganizer.enums.FileType;
 import net.kear.recipeorganizer.persistence.model.Recipe;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
+import net.kear.recipeorganizer.util.email.EmailReceiver;
 import net.kear.recipeorganizer.util.file.FileResult;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +49,8 @@ public class FileActionsImpl implements FileActions {
 	private ExceptionLogService logService;
 	@Autowired
 	private MessageSource messages;
+	@Autowired
+	private EmailReceiver emailReceiver;
 	
 	private String avatarDir;	
 	private String recipeDir;
@@ -276,7 +280,7 @@ public class FileActionsImpl implements FileActions {
 	}	
 	
 	public boolean downloadFile(FileType fileType, long id, String fileName, HttpServletResponse response) {
-		logger.info("downloadFile: type/id=" + fileType + "/" + id);
+		logger.info("downloadFile: type/id/name=" + fileType + "/" + id + "/" + fileName);
 
         try {
         	String dir = fileType == FileType.RECIPE ? recipeDir : (fileType == FileType.AVATAR ? avatarDir : emailDir);
@@ -287,6 +291,12 @@ public class FileActionsImpl implements FileActions {
         	Files.copy(path, stream);
         	stream.flush();
         	stream.close();
+        	String ext = FilenameUtils.getExtension(fileName);
+        	if (emailReceiver.isValidDocType(ext)) {
+        	   	String contentType = emailReceiver.getDocContentType(ext);
+        		response.setContentType(contentType);
+        		response.setHeader("Content-disposition", "filename=" + fileName);
+        	}        	
         	logger.debug("Successful download");                
         } catch (IOException ex) {
         	logService.addException(ex);

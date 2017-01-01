@@ -76,7 +76,23 @@ tr {
 			</table>
 		</div>
 		<div class="col-sm-12 collapse" id="emailSingle">
-			<div class="col-sm-9 spacer-vert-xs">
+			<div class="col-sm-12">
+				<span class="pull-right">
+					<button type="button" class="btn btn-link btn-sm" id="prevEmail"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.table.paginate.previous"></spring:message>">
+						<span class="glyphicon glyphicon-chevron-left"></span>
+					</button>
+					<button type="button" class="btn btn-link btn-sm" id="nextEmail"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.table.paginate.next"></spring:message>">
+						<span class="glyphicon glyphicon-chevron-right"></span>
+					</button>
+					<button type="button" class="btn btn-link btn-sm" id="closeEmail"
+						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.close"></spring:message>">
+						<span class="glyphicon glyphicon-remove"></span>
+					</button>
+				</span>
+			</div>
+			<div class="col-sm-12">
 				<div class="row">
 					<div class="col-sm-2">
 						<label class="control-label"><spring:message code="emails.column.to"></spring:message>:</label>
@@ -137,30 +153,14 @@ tr {
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-3 spacer-vert-xs">
-				<span class="pull-right">
-					<button type="button" class="btn btn-link btn-sm" id="prevEmail"
-						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.table.paginate.previous"></spring:message>">
-						<span class="glyphicon glyphicon-chevron-left"></span>
-					</button>
-					<button type="button" class="btn btn-link btn-sm" id="nextEmail"
-						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.table.paginate.next"></spring:message>">
-						<span class="glyphicon glyphicon-chevron-right"></span>
-					</button>
-					<button type="button" class="btn btn-link btn-sm" id="closeEmail"
-						data-toggle="tooltip" data-placement="top" title="<spring:message code="common.close"></spring:message>">
-						<span class="glyphicon glyphicon-remove"></span>
-					</button>
-				</span>
-			</div>
-			<div class="row spacer-vert-xs">
-				<div class="col-sm-12">
+			<div class="col-sm-12">
+				<div class="row spacer-vert-xs">
 					<div class="col-sm-12 hr-black">
 						<div class="row spacer-vert-xs">
 							<div class="col-sm-12" id="content"></div>
 						</div>
 					</div>
-				</div>					
+				</div>
 			</div>
 			<c:url var="imageUrl" value="/admin/attachment"/>
 			<input type="hidden" id="fileId"/>
@@ -171,9 +171,9 @@ tr {
 	<div id="imageModal" class="modal fade" tabindex="-1" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-body">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<img id="image" style="width: 100%"><!-- class="img-responsive"> -->
+				<div class="modal-body" style="padding:0;">
+					<!-- <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+					<img id="image" style="width: 100%">
 				</div>
 			</div>
 		</div>

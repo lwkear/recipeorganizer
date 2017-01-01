@@ -293,7 +293,8 @@ public class TestController {
 		model.addAttribute("watsonIntents", intents);
 		model.addAttribute("watsonOutput", output);*/
 		//return "test/testpage";
-		return "test/blankpage";
+		//return "test/blankpage";
+		return "test/pdfpage";
 	}
 
 	@SuppressWarnings("unchecked")
