@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.mail.Message.RecipientType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -47,6 +48,7 @@ import net.kear.recipeorganizer.exception.AccessUserException;
 import net.kear.recipeorganizer.exception.RestException;
 import net.kear.recipeorganizer.interceptor.MaintenanceInterceptor;
 import net.kear.recipeorganizer.persistence.dto.EmailDto;
+import net.kear.recipeorganizer.persistence.dto.EmailMessageDto;
 import net.kear.recipeorganizer.persistence.dto.FlaggedCommentDto;
 import net.kear.recipeorganizer.persistence.dto.IngredientReviewDto;
 import net.kear.recipeorganizer.persistence.dto.InvitationDto;
@@ -75,6 +77,7 @@ import net.kear.recipeorganizer.util.EncryptionUtil;
 import net.kear.recipeorganizer.util.ResponseObject;
 import net.kear.recipeorganizer.util.UserInfo;
 import net.kear.recipeorganizer.util.db.ConstraintMap;
+import net.kear.recipeorganizer.util.email.AdminEmail;
 import net.kear.recipeorganizer.util.email.EmailDetail;
 import net.kear.recipeorganizer.util.email.EmailReceiver;
 import net.kear.recipeorganizer.util.email.EmailSender;
@@ -132,6 +135,8 @@ public class AdminController {
 	private EmailReceiver emailReceiver;
 	@Autowired
 	private InvitationEmail invitationEmail; 
+	@Autowired
+	private AdminEmail adminEmail; 
 	@Autowired
 	EncryptionUtil encryptUtil;
 
@@ -837,8 +842,20 @@ public class AdminController {
 		String contextPath = request.getServletContext().getContextPath();
 		logger.info("contextPath: " + contextPath);
 		
-		List<EmailDto> emails = emailReceiver.getMessages(contextPath);
+		List<EmailDto> emails = null;
+		List<String> folders = null;
+		try {
+			emails = emailReceiver.getMessages("INBOX", contextPath);
+			folders = emailReceiver.getFolders();
+		}
+		catch (Exception ex) {
+			//TODO: add an email exception to the Exception handler
+			logService.addException(ex);			
+		}
+		
 		model.addAttribute("emails", emails);
+		model.addAttribute("folders", folders);
+		model.addAttribute("currentFolder", "Inbox");
 		
 		return "admin/emails";
 	}
@@ -849,5 +866,85 @@ public class AdminController {
 		
 		//errors are not fatal and will be logged by FileAction
 		fileAction.downloadFile(FileType.EMAIL, id, fileName, response);
+	}
+	
+	@RequestMapping(value = "/admin/sendEmail", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseObject sendEmail(@RequestBody EmailMessageDto emailMessageDto, BindingResult result, HttpServletResponse response, Locale locale) 
+			throws RestException {
+		logger.info("admin/sendEmail POST");
+		
+    	EmailDetail emailDetail = new EmailDetail(locale);
+    	//only set the sender email (defaults to RecipeOrganizer as the sender name)
+    	//some spam emails do not contain a "To" so the "From" when responding will be empty; defaults to support@
+    	if (!emailMessageDto.getFrom().isEmpty())
+    	   	emailDetail.setSenderEmail(emailMessageDto.getFrom().get(0).getEmail());
+    	emailDetail.setRecipients(emailMessageDto.getTo(), RecipientType.TO);
+    	emailDetail.setRecipients(emailMessageDto.getCc(), RecipientType.CC);
+    	emailDetail.setUserMessage(emailMessageDto.getMessage());
+    	emailDetail.setOriginalEmail(emailMessageDto.getContent());
+	
+    	try {
+    		adminEmail.constructEmail(emailDetail);
+			emailSender.sendHtmlEmail(emailDetail);
+		} catch (Exception ex) {
+			throw new RestException("exception.sendEmail", ex);
+		}
+
+    	response.setStatus(HttpServletResponse.SC_OK);
+		return new ResponseObject();
+	}
+
+	@RequestMapping(value = "/admin/deleteEmail", method = RequestMethod.POST)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public ResponseObject deleteEmail(@RequestParam("folderName") String folderName, @RequestParam("UID") Long UID) throws RestException {
+		logger.info("admin/deleteEmail POST: folder/UID=" + folderName + "/" + UID);
+		
+		try {
+			emailReceiver.deleteMessage(folderName, UID);
+		} catch (Exception ex) {
+			throw new RestException("exception.deleteEmail", ex);
+		}
+		
+		return new ResponseObject();
+	}
+		
+	/*@RequestMapping(value = "/admin/getFolder", method = RequestMethod.GET)
+	@ResponseBody
+	@ResponseStatus(value=HttpStatus.OK)
+	public List<EmailDto> getFolder(@RequestParam("folderName") String folderName, HttpServletRequest request) throws RestException {
+		logger.info("admin/getFolder GET: folderName=" + folderName);
+
+		String contextPath = request.getServletContext().getContextPath();
+		List<EmailDto> emails = null;
+		try {
+			emails = emailReceiver.getMessages(folderName, contextPath);
+		} catch (Exception ex) {
+			throw new RestException("exception.getFolder", ex);
+		}
+		
+		return emails;
+	}*/
+	
+	@RequestMapping(value = "/admin/getFolder", method = RequestMethod.GET)
+	@ResponseStatus(value=HttpStatus.OK)
+	public String getFolder(Model model, @RequestParam("folderName") String folderName, HttpServletRequest request, HttpServletResponse response) 
+			throws RestException {
+		logger.info("admin/getFolder GET: folderName=" + folderName);
+
+		String contextPath = request.getServletContext().getContextPath();
+		List<EmailDto> emails = null;
+		try {
+			emails = emailReceiver.getMessages(folderName, contextPath);
+		} catch (Exception ex) {
+			throw new RestException("exception.getFolder", ex);
+		}
+		
+		response.setContentType("text/html");
+		response.setCharacterEncoding("utf-8");
+		model.addAttribute("emails", emails);
+		
+		return "admin/emailDatatable"; 
 	}	
 }

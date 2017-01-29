@@ -84,6 +84,7 @@ import net.kear.recipeorganizer.util.email.EmailSender;
 import net.kear.recipeorganizer.util.email.InvitationEmail;
 import net.kear.recipeorganizer.util.email.PasswordEmail;
 import net.kear.recipeorganizer.util.email.RegistrationEmail;
+import net.kear.recipeorganizer.util.email.AdminEmail;
 import net.kear.recipeorganizer.util.email.ShareRecipeEmail;
 import net.kear.recipeorganizer.util.maint.MaintenanceUtil;
 
@@ -116,6 +117,8 @@ public class TestController {
 	private ShareRecipeEmail shareRecipeEmail;
 	@Autowired
 	private InvitationEmail invitationEmail;
+	@Autowired
+	private AdminEmail replyEmail;
 	@Autowired
 	private ServletContext servletContext;
 	@Autowired
@@ -219,6 +222,14 @@ public class TestController {
 	public String getTestpage(Model model, HttpServletRequest request, HttpSession session, Locale locale) {
 		logger.debug("getTestpage");
 
+		EmailDetail emailDetail = new EmailDetail("Gene Kear", "kear.larry@gmail.com", locale);
+		emailDetail.setUserMessage("This is the body of the email reply");
+		emailDetail.setOriginalEmail("This is where the original email goes");
+        try {
+        	replyEmail.constructEmail(emailDetail);
+        	emailSender.sendHtmlEmail(emailDetail);
+        } catch (Exception ex) {}
+		
 		/*Message[] messages = emailReceiver.getMessages();
 		try {
 			for (int i = 0; i < messages.length; i++) {
@@ -293,8 +304,8 @@ public class TestController {
 		model.addAttribute("watsonIntents", intents);
 		model.addAttribute("watsonOutput", output);*/
 		//return "test/testpage";
-		//return "test/blankpage";
-		return "test/pdfpage";
+		return "test/blankpage";
+		//return "test/pdfpage";
 	}
 
 	@SuppressWarnings("unchecked")

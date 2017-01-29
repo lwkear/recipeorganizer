@@ -51,7 +51,7 @@
 							<td>
 								<button class="btn btn-danger btn-xs" type="button" id="delete${comment.id}" onclick="deleteComment(${comment.id})"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
-								<span class="glyphicon glyphicon-remove"></span></button>
+								<span class="glyphicon glyphicon-trash"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

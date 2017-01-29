@@ -354,7 +354,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         emailReceiver.setMailProperties(mailProperties);
         emailReceiver.setEmailDir(env.getProperty("file.directory.email"));
         //open a session to the email server
-        emailReceiver.connect();
+        if (!server.equalsIgnoreCase("papercut")) {
+        	emailReceiver.connect();
+        }
         return emailReceiver;		
 	}
 	

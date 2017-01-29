@@ -326,7 +326,8 @@ $(function() {
 	findFirstError();
 
     $('[data-toggle="tooltip"]').tooltip({
-    	container : 'body'
+    	container : 'body',
+    	trigger: 'hover'
     });
    	$('#submittedCarousel').carousel({
    		interval: 20000	//: false

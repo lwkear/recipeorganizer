@@ -337,7 +337,6 @@ public class DisplayController {
 
 		response.setContentType("text/html");
 		response.setCharacterEncoding("utf-8");
-		/*model.addAttribute("recipeNote", recipeNote.getNote());*/
 		model.addAttribute("recipeNote", recipeNote);
 		
 		return "recipe/privateNotes";

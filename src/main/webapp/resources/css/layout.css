@@ -18,9 +18,22 @@ html {
 body {
 	margin-bottom: 50px;
 	box-sizing: border-box;
-	/* background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%); */
+	/* replaced with body::after */
+	/* background: url("../images/recipes.jpg") no-repeat center center fixed;
+	background-size: cover; */
+}
+
+body::after {
+	content: "";
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
 	background-size: cover;
+	opacity: 0.75;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	position: absolute;
+	z-index: -1;   	
 }
 
 h4 {
@@ -395,4 +408,8 @@ fieldset[disabled] .btn-link:focus {
   color: #cc0000;
   text-decoration: underline;
   background-color: transparent;
+}
+
+#accountmenu .glyphicon {
+  font-size: 10px;
 }

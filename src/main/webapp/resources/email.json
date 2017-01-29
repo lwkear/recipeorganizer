@@ -1,0 +1,32 @@
+[
+    {
+    	"id": 1,
+        "name": "account@recipeorganizer.net",
+        "shortName": "account"
+    },
+    {
+        "id": 2,
+        "name": "feedback@recipeorganizer.net",
+        "shortName": "feedback"
+    },
+    {
+        "id": 3,
+        "name": "lkear@recipeorganizer.net",
+        "shortName": "lkear"
+    },
+    {
+        "id": 4,
+        "name": "photo@recipeorganizer.net",
+        "shortName": "photo"
+    },
+    {
+        "id": 5,
+        "name": "support@recipeorganizer.net",
+        "shortName": "support"
+    },
+    {
+        "id": 6,
+        "name": "technical@recipeorganizer.net",
+        "shortName": "technical"
+    }
+]

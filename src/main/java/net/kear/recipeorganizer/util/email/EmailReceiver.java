@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -16,7 +17,6 @@ import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ public class EmailReceiver {
 	private Properties mailProperties = new Properties();
 	private Session session = null;
 	private IMAPStore store = null;
+	private IMAPFolder folder = null;
 	private String protocol;
 	private String host;
 	private int port;
@@ -73,9 +74,6 @@ public class EmailReceiver {
 		try {
 			store = (IMAPStore) session.getStore();
 			store.connect(host, port, username, password);
-			/*if (!store.hasCapability("IDLE")) {
-				logger.debug("NO IDLE CAPABILITY!");
-			}*/
 			return true;
 		} catch (MessagingException ex) {
 			logger.debug(ex.getMessage());
@@ -157,61 +155,90 @@ public class EmailReceiver {
 		return (docTypes.get(extension));
 	}
 
-	public List<EmailDto> getMessages(String contextPath) {
+	public List<String> getFolders() throws MessagingException {
+		if (!isConnected())
+			return null;
+		
+		//list() lists all of the folders in my home directory on the Sun box, most not related to email!!!
+		//there is a file, .mailboxlist, that contains the names of the actual email folders
+		//listSubscribed() lists only actual mail folders 
+		Folder[] subFolders = store.getDefaultFolder().listSubscribed();
+		List<String> folders = new ArrayList<String>(); 
+		folders.add("Inbox");
+		for (Folder folder : subFolders)
+			folders.add(folder.getName());
+		
+		return folders;
+	}
+	
+	public List<EmailDto> getMessages(String folderName, String contextPath) throws MessagingException, IOException {
+		if (!isConnected())
+			return null;
+
 		List<EmailDto> emails = new AutoPopulatingList<EmailDto>(EmailDto.class);
 		Message[] messages = null;
-		IMAPFolder folder = null;
 		
-		try {
-			folder = getFolder("INBOX");
-			if (folder == null)
-				return emails;
-			
-			int count = folder.getMessageCount();
-			logger.debug("msg count:" + count);
-			folder.open(Folder.READ_WRITE);
-			messages = folder.getMessages();
-			for (Message msg : messages) {
-				EmailDto email = new EmailDto();
-				email.setMsgNum(msg.getMessageNumber());
-				email.setSubject(msg.getSubject());
-				email.setFrom(msg.getFrom());
-				email.setTo(msg.getRecipients(RecipientType.TO));
-				email.setCc(msg.getRecipients(RecipientType.CC));
-				email.setBcc(msg.getRecipients(RecipientType.BCC));
-				email.setSentDate(msg.getSentDate());
-				email.setFlags(msg.getFlags());
-
-				//check for attached or inline files; currently only handling images
-				boolean hasAttach = hasFile(msg, Part.ATTACHMENT);
-				String fileNames = "";
-				if (hasAttach) {
-					fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.ATTACHMENT);
-					email.setFileNames(fileNames);
-				}
-				email.setHasAttachment(hasAttach);
-				boolean hasInline = hasFile(msg, Part.INLINE);
-				fileNames = "";
-				if (hasInline)
-					fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.INLINE);
-				
-				//fix the Outlook email issue with the menu and replace any inline file src 
-				String text = fixContent(getText(msg), hasInline, fileNames, email.getSortDate(), contextPath);
-				email.setContent(text);
-				MimeMessage mime = (MimeMessage)msg;
-				email.setMimeId(mime.getMessageID());
-				emails.add(email);
-				
-				//if (msg.getMessageNumber() > 40)
-				//	parseParts(msg.getMessageNumber(), msg.getSubject(), msg);
+		folder = getFolder(folderName);
+		if (folder == null)
+			return emails;
+		
+		int count = folder.getMessageCount();
+		logger.debug("msg count:" + count);
+		messages = folder.getMessages();
+		for (Message msg : messages) {
+			EmailDto email = new EmailDto();
+			email.setUID(folder.getUID(msg));
+			email.setMsgNum(msg.getMessageNumber());
+			email.setSubject(msg.getSubject());
+			email.setFrom(msg.getFrom());
+			email.setTo(msg.getRecipients(RecipientType.TO));
+			email.setCc(msg.getRecipients(RecipientType.CC));
+			email.setSentDate(msg.getSentDate());
+			email.setFlags(msg.getFlags());
+			//check for attached or inline files; currently only handling images
+			boolean hasAttach = hasFile(msg, Part.ATTACHMENT);
+			String fileNames = "";
+			if (hasAttach) {
+				fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.ATTACHMENT);
+				email.setFileNames(fileNames);
+				//email.setFileNames("");
 			}
+			email.setHasAttachment(hasAttach);
+			boolean hasInline = hasFile(msg, Part.INLINE);
+			fileNames = "";
+			if (hasInline)
+				fileNames = getFileNames(msg, msg.getSentDate().getTime(), fileNames, Part.INLINE);
 			
-            folder.close(false);
-		} catch (MessagingException | IOException ex) {
-			logger.debug(ex.getMessage());
-		}		
+			//fix the Outlook email issue with the menu and replace any inline file src 
+			String text = fixContent(getText(msg), hasInline, fileNames, email.getSortDate(), contextPath);
+			email.setContent(text);
+			//email.setContent("");
+			emails.add(email);
+			
+			//if (msg.getMessageNumber() > 40)
+			//	parseParts(msg.getMessageNumber(), msg.getSubject(), msg);
+		}
 		
 		return emails;
+	}
+	
+	public boolean deleteMessage(String folderName, long UID) throws MessagingException {
+		if (!isConnected())
+			return false;
+
+		folder = getFolder(folderName);
+		if (folder == null)
+			return false;
+		
+		Message msg = folder.getMessageByUID(UID);
+		if (msg != null) {
+			msg.setFlag(Flag.DELETED, true);
+			Message[] msgs = new Message[1];
+			msgs[0] = msg;
+			//folder.expunge(msgs);
+		}
+		
+		return true;
 	}
 	
 	private boolean isConnected() {
@@ -220,21 +247,23 @@ public class EmailReceiver {
 		return true;
 	}
 	
-	private IMAPFolder getFolder(String folderName) {
-		IMAPFolder folder = null;
-		
-		try {
-			if (!isConnected())
+	private IMAPFolder getFolder(String folderName) throws MessagingException {
+		if (!isConnected())
+			return null;
+		if (folder != null) {
+			if (folderName.equalsIgnoreCase(folder.getName())) {
+				if (folder.isOpen())
+					return folder;
+				folder.open(Folder.READ_WRITE);
 				return folder;
-			
-			folder = (IMAPFolder) store.getFolder(folderName);
-			if (folder.exists())
-				return folder;
-		} catch (MessagingException ex) {
-			logger.debug(ex.getMessage());
-		}		
-
-		return folder;
+			}
+		}
+		folder = (IMAPFolder) store.getFolder(folderName);
+		if (folder.exists()) {
+			folder.open(Folder.READ_WRITE);
+			return folder;
+		}
+		return null;
 	}
 
 	private boolean hasFile(Part part, String disposition) throws MessagingException, IOException {

@@ -73,7 +73,7 @@
 										<button class="btn btn-danger btn-xs" type="button" id="fav${recipe.id}" onclick="removeFavorite(${userId}, ${recipe.id}, 
 										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
 										data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.remove"></spring:message>">
-										<span class="glyphicon glyphicon-remove"></span></button>
+										<span class="glyphicon glyphicon-trash"></span></button>
 									</td>
 								</c:when>
 								<c:otherwise>
@@ -81,7 +81,7 @@
 										<button class="btn btn-danger btn-xs" type="button" id="delete${recipe.id}" onclick="deleteRecipe(${recipe.id}, 
 										'<spring:escapeBody javaScriptEscape="true">${recipe.name}</spring:escapeBody>')"
 										data-toggle="tooltip" data-container="body" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
-										<span class="glyphicon glyphicon-remove"></span></button>
+										<span class="glyphicon glyphicon-trash"></span></button>
 									</td>
 								</c:otherwise>
 							</c:choose>

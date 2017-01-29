@@ -71,7 +71,7 @@
 								<button class="btn btn-danger btn-xs" type="button" id="delete${ingred.id}" onclick="deleteIngredient(${ingred.id}, ${ingred.usage}, 
 								'<spring:escapeBody javaScriptEscape="true">${ingred.name}</spring:escapeBody>')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
-								<span class="glyphicon glyphicon-remove"></span></button>
+								<span class="glyphicon glyphicon-trash"></span></button>
 							</td>
 						</tr>
 					</c:forEach>
