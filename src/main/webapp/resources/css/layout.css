@@ -8,6 +8,7 @@
 	blue:	336699 (focus), 538cc6, 79a6d2
 	gray:	e6e6e6, f2f2f2
 	red:	d9534f (comment flag)
+	logo:	9e6b60 - maroon; 5f6d62 green
 */
 
 html {
@@ -33,7 +34,7 @@ body::after {
 	bottom: 0;
 	right: 0;
 	position: absolute;
-	z-index: -1;   	
+	z-index: -10;
 }
 
 h4 {
@@ -78,7 +79,7 @@ img {
     top:0;
     left:0;
     right:0;
-    z-index: -9999;
+    z-index: -1;
     background-color: #ffffff;
 }
 
@@ -349,7 +350,7 @@ table.dataTable thead .sorting_desc:after {
 /* used by the browse recipe datatable where the columns are drawn dynamically after an Ajax call */
 .dt_col_hide{display: none;}
 
-.carousel-control {
+/* .carousel-control {
   padding-top:10%;
   width:1%;
 }
@@ -362,7 +363,34 @@ table.dataTable thead .sorting_desc:after {
 	color:#336699;
 	margin-top:5px;
 	margin-bottom:5px;
+} */
+
+/* this is the single photo css */
+@media (min-width: 1024px) {
+    .slider-size {
+        height: 300px;
+    }
+    .slider-size > img {
+        width: auto;
+    }
 }
+
+/* this is the caption overlay */
+/* .desc{
+    background-color: #000;
+    bottom: 0;
+    color: #fff;
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    width: 100%;
+    text-shadow: none;
+} */
+
+/* .carousel.slide img {
+    width:100%;
+    height:auto;
+} */
 
 .mic-btn-link {
   font-weight: normal;

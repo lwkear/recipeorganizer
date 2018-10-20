@@ -191,10 +191,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/submitSearch", "/searchResults", "/system*", "/error", "/message", "/getSessionTimeout", "/expiredSession", "/accessDenied").permitAll()
     		.antMatchers("/lookupUser", "/user/login**", "/user/signup**", "/user/resetPassword", "/user/newPassword", "/user/join").permitAll()
     		.antMatchers("/user/fatalError", "/user/tokenError", "/user/optout**", "/user/resendRegistrationToken", "/user/resendPasswordToken").permitAll()
-    		.antMatchers("/recipe/photo**").permitAll()
+    		.antMatchers("/recipe/photo**", "/recipe/browseRecipes", "/recipe/categoryRecipes").permitAll()
     		.regexMatchers("/confirmRegistration.*", "/confirmPassword.*", "/questions/.*").permitAll()
     		.antMatchers("user/changeAccountLevel", "user/upgradeAccount", "user/newMember").hasAuthority(Role.TYPE_GUEST)
-    		.antMatchers("/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes").hasAuthority(Role.TYPE_GUEST)
+    		/*.antMatchers("/recipe/favorites", "/recipe/browseRecipes", "/recipe/categoryRecipes").hasAuthority(Role.TYPE_GUEST)*/
+    		.antMatchers("/recipe/favorites").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/getRecipeAudio**", "/getAudio**", "/getSample**", "/getWatsonToken", "/postWatsonResult", "/getWatsonKeywords").hasAuthority(Role.TYPE_GUEST)
     		.regexMatchers("/recipe/viewRecipe/.*", "/report/getHtmlRpt/.*", "/report/getPdfRpt/.*", "/recipe/categoryRecipes/.*").hasAuthority(Role.TYPE_GUEST)
     		.antMatchers("/recipe", "/recipe/**", "/recipe/recipeList").hasAuthority(Role.TYPE_AUTHOR)

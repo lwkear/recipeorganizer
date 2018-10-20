@@ -24,9 +24,33 @@
 <!-- Note: path is required for AJAX url's -->
 <script>var appContextPath = "${pageContext.request.contextPath}"</script>
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
-	<div class="container">
-		<div class="navbar-header">
+<div class="navbar-default navbar-fixed-top container">
+	<div class="navbar-header">
+		<!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button> -->
+		<!-- <div class="col-sm-6"> -->
+			<c:choose>				
+				<c:when test="${isAuth}">
+					<%-- <a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a> --%>
+					<a class="navbar-brand" href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/images/logo.png"/>" height=75 style="padding:0px 15px"></a>
+				</c:when>
+				<c:otherwise>
+					<%-- <a href="<c:url value="/home" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a> --%>
+					<a class="navbar-brand" href="<c:url value="/home" />"><img src="<c:url value="/resources/images/logo.png"/>" height=75 style="padding:0px 15px"></a>
+				</c:otherwise>
+			</c:choose>
+		<!-- </div> -->
+		<!-- <div class="col-sm-6 pull-right">
+			Your online recipe box
+		</div> -->			
+	</div>
+</div>
+<div class="container" style="margin-top:75px">
+	<!-- <div class="navbar"> -->
+		<%-- <div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
@@ -35,13 +59,15 @@
 			<c:choose>				
 				<c:when test="${isAuth}">
 					<a href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a class="navbar-brand" href="<c:url value="/user/dashboard" />"><img src="<c:url value="/resources/images/logo.png"/>" height=75 style="padding:0px 15px"></a>
 				</c:when>
 				<c:otherwise>
 					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/images/logo.png"/>" height=36 style="margin-top:7px"></a>
+					<a href="<c:url value="/home" />"><img src="<c:url value="/resources/images/logo.png"/>" height=75 style="padding:0px 15px"></a>
 				</c:otherwise>
 			</c:choose>			
-		</div>
-		<div id="navbar" class="navbar-collapse collapse">
+		</div> --%>
+		<div id="navbar" class="navbar-inverse navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<c:if test="${isGuest}">
 					<li class="dropdown">
@@ -77,21 +103,7 @@
 						</ul>
 					</li>
 				</c:if>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu">
-						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
-						<li><a href="<c:url value="/whatsnew" />"><spring:message code="menu.whatsnew"></spring:message></a></li>
-						<li role="separator" class="divider"></li>
-						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
-						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
-						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
-						<c:if test="${isAdmin}">
-							<li><a href="<c:url value="/test/testpage" />">Test</a></li>
-						</c:if>
-					</ul>
-				</li>
+				<li><a href="<c:url value="/recipe/browseRecipes" />"><spring:message code="menu.browse"></spring:message></a></li>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 							<spring:message code="menu.search"></spring:message><span class="caret"></span></a>
@@ -107,6 +119,21 @@
 								</div>
 							</form:form>
 						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+							<spring:message code="menu.info"></spring:message><span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+						<li><a href="<c:url value="/faq" />"><spring:message code="menu.faq"></spring:message></a></li>
+						<li><a href="<c:url value="/whatsnew" />"><spring:message code="menu.whatsnew"></spring:message></a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="<c:url value="/contact" />"><spring:message code="menu.contact"></spring:message></a></li>							
+						<li><a href="<c:url value="/policies" />"><spring:message code="menu.policies"></spring:message></a></li>
+						<li><a href="<c:url value="/about" />"><spring:message code="menu.about"></spring:message></a></li>
+						<c:if test="${isAdmin}">
+							<li><a href="<c:url value="/test/testpage" />">Test</a></li>
+						</c:if>
 					</ul>
 				</li>
 			</ul>
@@ -146,8 +173,8 @@
 				</c:otherwise>
 			</c:choose>
 		</div>
-	</div>
-</nav>
+	<!-- </div> -->
+</div>
 
 <c:if test="${empty vertFiller}">
 	<div class="container verticalFiller"></div>

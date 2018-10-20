@@ -119,6 +119,7 @@ public class AdminController {
 	private ConstraintMap constraintMap;
 	@Autowired
 	MaintenanceUtil maintUtil;
+	/*TODO: ContextLoader failing on this in new version*/
 	@Autowired
 	private MaintenanceInterceptor maintInterceptor;
 	@Autowired
@@ -675,7 +676,8 @@ public class AdminController {
 	@RequestMapping(value = "/admin/maintenance", method = RequestMethod.GET)
 	public String getMaintenance(Model model, Locale locale) {
 		logger.info("admin/maintenance GET");
-				
+		
+		//TODO: fix?
 		MaintenanceDto maintDto = new MaintenanceDto();
 		maintDto.setMaintenanceEnabled(maintInterceptor.isMaintenanceEnabled());
 		maintDto.setEmergencyMaintenance(maintInterceptor.isEmergencyMaintenance());
@@ -695,6 +697,7 @@ public class AdminController {
 		logger.info("admin/maintenance POST");
 		logger.debug("MaintenanceDto: " + maintenanceDto);
 		
+		//TODO: fix?
 		//must re-add attribute(s) in case of an error
 		model.addAttribute("dayMap", maintUtil.getWeekMap(locale));
 		model.addAttribute("maintWindow", maintInterceptor.getNextStartWindow(false, "sysmaint.nextwindow", locale));

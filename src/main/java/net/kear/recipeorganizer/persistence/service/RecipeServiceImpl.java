@@ -285,6 +285,10 @@ public class RecipeServiceImpl implements RecipeService {
     public List<RecipeDisplayDto> viewedRecipes(Long userId) {
     	return recipeRepository.viewedRecipes(userId);
     }
+    
+    public List<RecipeDisplayDto> mostViewedRecipes() {
+    	return recipeRepository.mostViewedRecipes();
+    }
  
     public List<RecipeDisplayDto> categoryRecipes(Long categoryId) {
     	return recipeRepository.categoryRecipes(categoryId);

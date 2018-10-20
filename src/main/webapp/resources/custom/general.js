@@ -330,10 +330,13 @@ $(function() {
     	trigger: 'hover'
     });
    	$('#submittedCarousel').carousel({
-   		interval: 20000	//: false
+   		interval: 20000,
+   		//interval: false
+   		//wrap:true
    	});
    	$('#viewedCarousel').carousel({
-   		interval: 20000	//: false
+   		//interval: 20000
+   		interval: false
    	});
    	
    	/*this option applies to all datatables, hiding the footer if there is less than two pages of information*/

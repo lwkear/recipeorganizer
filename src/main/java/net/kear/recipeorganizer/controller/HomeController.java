@@ -31,6 +31,7 @@ import net.kear.recipeorganizer.persistence.dto.QuestionDto;
 import net.kear.recipeorganizer.persistence.dto.RecipeDisplayDto;
 import net.kear.recipeorganizer.persistence.dto.TopicDto;
 import net.kear.recipeorganizer.persistence.dto.WhatsNewDto;
+import net.kear.recipeorganizer.persistence.model.User;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 import net.kear.recipeorganizer.persistence.service.RecipeService;
 import net.kear.recipeorganizer.util.CookieUtil;
@@ -61,8 +62,38 @@ public class HomeController {
 	@RequestMapping(value = {"/", "/home"}, method = RequestMethod.GET)
 	public String getHome(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		logger.info("home GET");
+		
+		User currentUser = (User)userInfo.getUserDetails();
 
+		/*User user = null;
+		try {
+			user = userService.getUser(currentUser.getId());
+		} 
+		catch (Exception ex) {
+			throw new AccessUserException(ex);
+		}
+
+		//get returns null if the object is not found in the db; no exception is thrown until you try to use the object
+		if (user == null) {
+			throw new AccessUserException();
+		}*/		
+		
+		List<RecipeDisplayDto> recentRecipes = null;
+		//List<RecipeDisplayDto> viewedRecipes = null;
+		List<RecipeDisplayDto> mostViewedRecipes = null;
+		RecipeDisplayDto mostViewedRecipe = null;
 		RecipeDisplayDto featuredRecipe = null;
+		
+		try {
+			recentRecipes = recipeService.recentRecipes();
+			mostViewedRecipes = recipeService.mostViewedRecipes();
+			//viewedRecipes = recipeService.viewedRecipes(user.getId());
+			mostViewedRecipe = recipeService.getMostViewedRecipe(true);
+		} 
+		catch (Exception ex) {
+			//do nothing - these are not a fatal errors
+			logService.addException(ex);
+		}
 
 		String recipeIdStr = messages.getMessage("featuredrecipe", null, "0", locale);
 		long recipeId = Long.parseLong(recipeIdStr);
@@ -71,13 +102,16 @@ public class HomeController {
 			featuredRecipe = recipeService.getFeaturedRecipe(recipeId);
 		} 
 		catch (Exception ex) {
-			//do nothing - this is not a fatal errors
+			//do nothing - these are not a fatal errors
 			logService.addException(ex);
 		}
 		
 		//tell the page to not include the white vertical filler
-		model.addAttribute("vertFiller", "1");
+		//model.addAttribute("vertFiller", "1");
+		model.addAttribute("recentRecipes", recentRecipes);
+		model.addAttribute("mostViewedRecipes", mostViewedRecipes);
 		model.addAttribute("featuredRecipe", featuredRecipe);
+		model.addAttribute("mostViewedRecipe", mostViewedRecipe);		
 		
 		if (!cookieUtil.authCookieExists(request))
 			cookieUtil.setAuthCookie(request, response, userInfo.getName());

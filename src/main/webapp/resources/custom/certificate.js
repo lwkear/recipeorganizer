@@ -1,27 +1,37 @@
 $(function() {
 	blurInputFocus();
+
+	$('#btnAccountKey').prop('disabled', true);
+	$('#btnDomainKey').prop('disabled', true);
+	$('#btnAcceptTOS').prop('disabled', true);
+	$('#btnRegister').prop('disabled', true);
+	$('#btnAuthorized').prop('disabled', true);
+	$('#btnCertificate').prop('disabled', true);
 	
 	var accountKey = $('#accountKey').val();
-	if (accountKey === "true")
-		$('#btnAccountKey').prop('disabled', true);
 	var domainKey = $('#domainKey').val();
-	if (domainKey === "true")
-		$('#btnDomainKey').prop('disabled', true);
-	var registered = $('#registered').val();
-	if (registered === "true")
-		$('#btnRegister').prop('disabled', true);
 	var agreement = $('#agreement').val();
-	if (agreement === "true")
-		$('#btnAcceptTOS').prop('disabled', true);
-	var challengeDone = true;
-    $('.challengedState').each(function() {
-		var state = $(this).html();
-		if (state === "No" || state === "Non")
-			challengeDone = false;
-	});	    
+	var registered = $('#registered').val();
+	var authorized = $('#authorized').val();
 	var certificate = $('#certificate').val();
-	if (certificate === "true" || challengeDone === false)
-		$('#btnCertificate').prop('disabled', true);
+	
+	if (accountKey === "false")
+		$('#btnAccountKey').prop('disabled', false);
+	else	
+	if (domainKey === "false")
+		$('#btnDomainKey').prop('disabled', false);
+	else
+	if (agreement === "false")
+		$('#btnAcceptTOS').prop('disabled', false);
+	else
+	if (registered === "false")
+		$('#btnRegister').prop('disabled', false);
+	else
+	if (authorized === "false")
+		$('#btnAuthorized').prop('disabled', false);
+	else
+	if (certificate === "false")
+		$('#btnCertificate').prop('disabled', false);
 	
 	$(document)
 	.on('click', '#btnAccountKey', function(e){
@@ -29,9 +39,9 @@ $(function() {
 		document.forms["certForm"].action = $('#genAccountKey').val();
 		document.forms["certForm"].submit();
 	})
-	.on('click', '#btnRegister', function(e){
+	.on('click', '#btnDomainKey', function(e){
 		e.preventDefault();
-		document.forms["certForm"].action = $('#registerAccount').val();
+		document.forms["certForm"].action = $('#genDomainKey').val();
 		document.forms["certForm"].submit();
 	})
 	.on('click', '#btnAcceptTOS', function(e){
@@ -39,16 +49,21 @@ $(function() {
 		document.forms["certForm"].action = $('#acceptAgreement').val();
 		document.forms["certForm"].submit();
 	})
-	.on('click', '.btnChallenge', function(e){
+	.on('click', '#btnRegister', function(e){
+		e.preventDefault();
+		document.forms["certForm"].action = $('#registerAccount').val();
+		document.forms["certForm"].submit();
+	})
+	.on('click', '#btnAuthorized', function(e){
+		e.preventDefault();
+		document.forms["certForm"].action = $('#authorizeDomains').val();
+		document.forms["certForm"].submit();
+	})
+	/*.on('click', '.btnChallenge', function(e){
 		e.preventDefault();
 		document.forms["certForm"].action = $('#testChallenge').val();
 		document.forms["certForm"].submit();
-	})
-	.on('click', '#btnDomainKey', function(e){
-		e.preventDefault();
-		document.forms["certForm"].action = $('#genDomainKey').val();
-		document.forms["certForm"].submit();
-	})
+	})*/
 	.on('click', '#btnCertificate', function(e){
 		e.preventDefault();
 		document.forms["certForm"].action = $('#getCertificate').val();
