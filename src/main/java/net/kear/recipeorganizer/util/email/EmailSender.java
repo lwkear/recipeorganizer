@@ -1,12 +1,9 @@
 package net.kear.recipeorganizer.util.email;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.mail.Address;
 import javax.mail.Message;
-import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.AddressException;
@@ -40,39 +37,14 @@ public class EmailSender {
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-		InternetAddress fromAddress = null;
-		if (emailDetail.getFromRecipient() != null)
-			fromAddress = emailDetail.getFromRecipient().getFromAddress();
-		else
-			fromAddress = new InternetAddress(emailDetail.getSenderEmail(), emailDetail.getSenderName());
-		mimeMessage.setFrom(fromAddress);
+		mimeMessage.setFrom(new InternetAddress(emailDetail.getSenderEmail(), emailDetail.getSenderName()));
+		Address address = new InternetAddress(emailDetail.getRecipientEmail(), emailDetail.getRecipientName());
+		((InternetAddress)address).validate();
+		logger.debug("address.validate() w/ personal passed");
 		
-		List<InternetAddress> addresses = null;
-		if (emailDetail.getToRecipients() != null)
-			addresses = emailDetail.getInternetAddresses(RecipientType.TO);
-		else {
-			addresses = new ArrayList<InternetAddress>();
-			addresses.add(new InternetAddress(emailDetail.getRecipientEmail(), emailDetail.getRecipientName()));
-		}
-		Address[] array = addresses.toArray(new Address[addresses.size()]);
-		mimeMessage.setRecipients(Message.RecipientType.TO, array);
-		
-		addresses = null;
-		if (emailDetail.getToRecipients() != null)
-			addresses = emailDetail.getInternetAddresses(RecipientType.CC);
-		else {
-			addresses = new ArrayList<InternetAddress>();
-			addresses.add(new InternetAddress(emailDetail.getRecipientEmail(), emailDetail.getRecipientName()));
-		}
-		if (addresses != null) {
-			array = addresses.toArray(new Address[addresses.size()]);
-			mimeMessage.setRecipients(Message.RecipientType.CC, array);
-		}
-		
-		//((InternetAddress)toAddress).validate();
-		//logger.debug("address.validate() w/ personal passed");
-				
+		mimeMessage.setRecipient(Message.RecipientType.TO, address);
 		mimeMessage.setSubject(emailDetail.getSubject());
+
 		MimeBodyPart messageBodyPart = new MimeBodyPart();
 		messageBodyPart.setContent(emailDetail.getBody(), "text/html");
 
@@ -83,14 +55,14 @@ public class EmailSender {
 		// adds inline image attachments
         MimeBodyPart imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "<rologo>");
-        //imagePart.setDisposition(MimeBodyPart.INLINE);
+        imagePart.setDisposition(MimeBodyPart.INLINE);
         String imageFilePath = servletContext.getRealPath("/resources/images/logo.png");
        	imagePart.attachFile(imageFilePath);
         multipart.addBodyPart(imagePart);
 
         imagePart = new MimeBodyPart();
         imagePart.setHeader("Content-ID", "<cleargif>");
-        //imagePart.setDisposition(MimeBodyPart.INLINE);
+        imagePart.setDisposition(MimeBodyPart.INLINE);
         imageFilePath = servletContext.getRealPath("/resources/images/clear.png");
        	imagePart.attachFile(imageFilePath);
         multipart.addBodyPart(imagePart);

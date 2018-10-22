@@ -28,10 +28,10 @@
 		<div class="col-sm-12">
 			<input type="hidden" id="changeMode" value="<c:url value="/admin/changeMode"/>"/>
 			<input type="hidden" id="genAccountKey" value="<c:url value="/admin/genAccountKey"/>"/>
-			<input type="hidden" id="genDomainKey" value="<c:url value="/admin/genDomainKey"/>"/>
+			<input type="hidden" id="registerAccount" value="<c:url value="/admin/registerAccount"/>"/>
 			<input type="hidden" id="acceptAgreement" value="<c:url value="/admin/acceptAgreement"/>"/>
-			<input type="hidden" id="registerAccount" value="<c:url value="/admin/registerAccount"/>"/>			
-			<input type="hidden" id="authorizeDomains" value="<c:url value="/admin/authorizeDomains"/>"/>
+			<input type="hidden" id="testChallenge" value="<c:url value="/admin/testChallenge"/>"/>
+			<input type="hidden" id="genDomainKey" value="<c:url value="/admin/genDomainKey"/>"/>
 			<input type="hidden" id="getCertificate" value="<c:url value="/admin/getCertificate"/>"/>
 
 			<form:form name="certForm" id="certForm" role="form" method="post" modelAttribute="certificateDto">
@@ -39,11 +39,10 @@
 				<form:hidden id="accountKeyFile" path="accountKeyFile"/>
 				<form:hidden id="domainKey" path="domainKey"/>
 				<form:hidden id="domainKeyFile" path="domainKeyFile"/>
-				<form:hidden id="agreement" path="agreement"/>
-				<form:hidden id="agreementUri" path="agreementUri"/>
 				<form:hidden id="registered" path="registered"/>
 				<form:hidden id="registrationUri" path="registrationUri"/>
-				<form:hidden id="authorized" path="authorized"/>
+				<form:hidden id="agreement" path="agreement"/>
+				<form:hidden id="agreementUri" path="agreementUri"/>
 				<form:hidden id="certificate" path="certificate"/>
 				<form:hidden id="domainCsrFile" path="domainCsrFile"/>
 				<form:hidden id="domainCertFile" path="domainCertFile"/>
@@ -120,28 +119,6 @@
 						<div class="col-sm-2">
 							<div class="row">
 								<div class="col-sm-8">
-		            				<label class="control-label"><spring:message code="certificate.agreement"></spring:message></label>
-		            			</div>
-								<div class="col-sm-4">
-									<span>${certificateDto.agreement ? yesLabel : noLabel}</span>
-								</div>
-		            		</div>
-		            	</div>
-						<div class="col-sm-8">
-							<c:if test="${not empty certificateDto.agreementUri}">
-								<span><a href="${certificateDto.agreementUri}" target="_blank"><spring:message code="certificate.termsofservice"></spring:message></a></span>
-							</c:if>
-						</div>
-						<div class="col-sm-2">
-		            		<button class="btn btn-primary btn-sm btn-block" type="submit" id="btnAcceptTOS" name="btnAcceptTOS"><spring:message code="certificate.acceptTOS"></spring:message></button>
-		            	</div>
-					</div>
-				</div>
-				<div class="col-sm-12">
-					<div class="row spacer-vert-md">				
-						<div class="col-sm-2">
-							<div class="row">
-								<div class="col-sm-8">
 		            				<label class="control-label"><spring:message code="certificate.registration"></spring:message></label>
 		            			</div>
 								<div class="col-sm-4">
@@ -162,22 +139,24 @@
 						<div class="col-sm-2">
 							<div class="row">
 								<div class="col-sm-8">
-		            				<label class="control-label"><spring:message code="certificate.authorization"></spring:message></label>
+		            				<label class="control-label"><spring:message code="certificate.agreement"></spring:message></label>
 		            			</div>
 								<div class="col-sm-4">
-									<span>${certificateDto.authorized ? yesLabel : noLabel}</span>
+									<span>${certificateDto.agreement ? yesLabel : noLabel}</span>
 								</div>
 		            		</div>
 		            	</div>
 						<div class="col-sm-8">
-							<div>${certificateDto.authDomains}</div>
+							<c:if test="${not empty certificateDto.agreementUri}">
+								<span><a href="${certificateDto.agreementUri}" target="_blank"><spring:message code="certificate.termsofservice"></spring:message></a></span>
+							</c:if>
 						</div>
 						<div class="col-sm-2">
-		            		<button class="btn btn-primary btn-sm btn-block" type="submit" id="btnAuthorized" name="btnAuthorized"><spring:message code="certificate.authorize"></spring:message></button>
+		            		<button class="btn btn-primary btn-sm btn-block" type="submit" id="btnAcceptTOS" name="btnAcceptTOS"><spring:message code="certificate.acceptTOS"></spring:message></button>
 		            	</div>
 					</div>
 				</div>
-				<%-- <div class="col-sm-12 spacer-vert-md">
+				<div class="col-sm-12 spacer-vert-md">
 					<c:forEach var="domainChallenge" items="${certificateDto.domainChallengeList}" varStatus="loop">
 						<form:hidden path="domainChallengeList[${loop.index}].challenged"/>
 						<form:hidden path="domainChallengeList[${loop.index}].domain"/>
@@ -211,7 +190,7 @@
 			            	</div>
 			        	</div>
 			        </c:forEach>
-				</div> --%>
+				</div>
 				<div class="col-sm-12">
 					<div class="row spacer-vert-md">				
 						<div class="col-sm-2">
@@ -224,9 +203,14 @@
 								</div>
 		            		</div>
 		            	</div>
-						<div class="col-sm-8">
-							<%-- <div style="overflow-wrap: break-word">${certificateDto.domainCertChainFile}</div> --%>
+						<div class="col-sm-2">
+							<div style="overflow-wrap: break-word">${certificateDto.domainCsrFile}</div>
+						</div>
+						<div class="col-sm-3">
 							<div style="overflow-wrap: break-word">${certificateDto.domainCertFile}</div>
+						</div>
+						<div class="col-sm-3">
+							<div style="overflow-wrap: break-word">${certificateDto.domainCertChainFile}</div>
 						</div>
 						<div class="col-sm-2">
 		            		<button class="btn btn-primary btn-sm btn-block" type="submit" id="btnCertificate" name="btnCertificate"><spring:message code="certificate.genCertificate"></spring:message></button>

@@ -188,7 +188,7 @@ $(function() {
 			if ( data[0] == 'false') {
 				$(row).addClass('active'); 
 			}
-		}
+		},
 		//stateSave : false
 	});
 })

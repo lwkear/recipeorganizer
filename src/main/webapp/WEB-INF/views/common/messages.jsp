@@ -87,10 +87,4 @@
 	<p id="messages.table.infoFiltered"/><spring:message code="messages.table.infoFiltered"></spring:message>
 	<p id="messages.table.lengthMenu"/><spring:message code="messages.table.lengthMenu"></spring:message>
 	<p id="messages.table.zeroRecords"/><spring:message code="messages.table.zeroRecords"></spring:message>
-	<p id="emails.table.emptyTable"/><spring:message code="emails.table.emptyTable"></spring:message>
-	<p id="emails.table.info"/><spring:message code="emails.table.info"></spring:message>
-	<p id="emails.table.infoEmpty"/><spring:message code="emails.table.infoEmpty"></spring:message>
-	<p id="emails.table.infoFiltered"/><spring:message code="emails.table.infoFiltered"></spring:message>
-	<p id="emails.table.lengthMenu"/><spring:message code="emails.table.lengthMenu"></spring:message>
-	<p id="emails.table.zeroRecords"/><spring:message code="emails.table.zeroRecords"></spring:message>
 </div>

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 
-import org.shredzone.acme4j.Account;
-import org.shredzone.acme4j.Session;
 import org.springframework.util.AutoPopulatingList;
 
 import net.kear.recipeorganizer.enums.CertMode;
@@ -19,12 +17,10 @@ public class CertificateDto implements Serializable {
 	private String accountKeyFile;
 	private boolean domainKey;
 	private String domainKeyFile;
-	private boolean agreement;
-	private URI agreementUri;
 	private boolean registered;
 	private URI registrationUri;
-	private boolean authorized;
-	private String authDomains;
+	private boolean agreement;
+	private URI agreementUri;
 	private boolean certificate;
     private String domainCsrFile;
     private String domainCertFile;
@@ -88,8 +84,8 @@ public class CertificateDto implements Serializable {
 		return registrationUri;
 	}
 
-	public void setRegistrationUri(URI uri) {
-		this.registrationUri = uri;
+	public void setRegistrationUri(URI registrationUri) {
+		this.registrationUri = registrationUri;
 	}
 
 	public boolean isAgreement() {
@@ -178,21 +174,5 @@ public class CertificateDto implements Serializable {
 	
 	public void setDomainChallenge(int ndx, DomainChallenge domainChallenge) {
 		this.domainChallengeList.set(ndx, domainChallenge);
-	}
-
-	public boolean isAuthorized() {
-		return authorized;
-	}
-
-	public void setAuthorized(boolean authorized) {
-		this.authorized = authorized;
-	}
-
-	public String getAuthDomains() {
-		return authDomains;
-	}
-
-	public void setAuthDomains(String authDomains) {
-		this.authDomains = authDomains;
 	}
 }

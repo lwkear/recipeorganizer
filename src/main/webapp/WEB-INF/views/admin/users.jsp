@@ -63,7 +63,7 @@
 							<td>
 								<button class="btn btn-danger btn-xs" type="button" id="delete${user.id}" onclick="checkRecipeCount(${user.id},'${user.firstName}','${user.lastName}')"
 								data-toggle="tooltip" data-placement="top" title="<spring:message code="tooltip.delete"></spring:message>">
-								<span class="glyphicon glyphicon-trash"></span></button>
+								<span class="glyphicon glyphicon-remove"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

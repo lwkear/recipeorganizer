@@ -3,8 +3,6 @@ package net.kear.recipeorganizer.config;
 import java.util.List;
 import java.util.Properties;
 
-
-//import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 
 import net.kear.recipeorganizer.enums.ApprovalActionFormatter;
@@ -16,7 +14,6 @@ import net.kear.recipeorganizer.security.HttpHeadFilter;
 import net.kear.recipeorganizer.solr.SolrUtil;
 import net.kear.recipeorganizer.solr.SolrUtilImpl;
 import net.kear.recipeorganizer.util.SpeechUtilImpl;
-import net.kear.recipeorganizer.util.email.EmailReceiver;
 import net.kear.recipeorganizer.util.file.FileActions;
 import net.kear.recipeorganizer.util.file.FileActionsImpl;
 import net.kear.recipeorganizer.util.maint.MaintenanceProperties;
@@ -138,7 +135,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		FileActionsImpl actions = new FileActionsImpl();
 		actions.setAvatarDir(env.getProperty("file.directory.avatar"));
 		actions.setRecipeDir(env.getProperty("file.directory.recipe"));
-		actions.setEmailDir(env.getProperty("file.directory.email"));
 		return actions;
 	}
 	
@@ -296,13 +292,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         mailSenderImpl.setProtocol(env.getProperty("smtp.protocol"));
         mailSenderImpl.setUsername(env.getProperty("smtp.username"));
         mailSenderImpl.setPassword(env.getProperty("smtp.password"));
-        mailSenderImpl.setDefaultEncoding("UTF-8");
-        
-        final Properties javaMailProps = mailSenderImpl.getJavaMailProperties(); 
+        final Properties javaMailProps = new Properties();
         javaMailProps.put("mail.debug", "true");
         javaMailProps.put("mail.smtp.elho", "false");
+        javaMailProps.put("mail.smtp.host", env.getProperty("smtp.host"));
+        javaMailProps.put("mail.smtp.port", env.getProperty("smtp.port"));
         javaMailProps.put("mail.smtp.auth", env.getProperty("mail.smtp.auth"));
-        javaMailProps.put("mail.smtp.starttls.enable", env.getProperty("smtp.starttls.enable"));        
+        javaMailProps.put("mail.smtp.localhost", env.getProperty("smtp.host"));
+        javaMailProps.put("mail.smtp.starttls.enable", env.getProperty("smtp.starttls.enable"));
+        
         mailSenderImpl.setJavaMailProperties(javaMailProps);
         mailSenderImpl.getSession().setDebug(true);
         
@@ -317,48 +315,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         
         return mailSenderImpl;
     }
-	
-	@Bean
-	public EmailReceiver emailReceiver() {
-		logger.debug("EmailReceiver");
-        final EmailReceiver emailReceiver = new EmailReceiver();
-        Properties mailProperties = new Properties();
-        String server = env.getProperty("mailserver");
-        if (server.equalsIgnoreCase("gmail")) {
-            mailProperties.put("mail.store.protocol", env.getProperty("mail.store.protocol"));
-            mailProperties.put("mail.imaps.host", env.getProperty("mail.imaps.host"));
-            mailProperties.put("mail.imaps.port", env.getProperty("mail.imaps.port"));
-            mailProperties.put("mail.imaps.timeout", env.getProperty("mail.imaps.timeout"));
-        	mailProperties.put("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        	mailProperties.put("mail.imaps.socketFactory.fallback", "false");
-        	mailProperties.put("mail.imaps.socketFactory.port", env.getProperty("mail.imaps.port"));
-            emailReceiver.setHost(env.getProperty("mail.imaps.host"));
-            String port = env.getProperty("mail.imaps.port");
-            emailReceiver.setPort(Integer.parseInt(port));
-            emailReceiver.setUsername(env.getProperty("mail.imaps.username"));
-            emailReceiver.setPassword(env.getProperty("mail.imaps.password"));
-        }
-        if (server.equalsIgnoreCase("recipeorganizer")) {
-            mailProperties.put("mail.store.protocol", env.getProperty("mail.store.protocol"));
-            mailProperties.put("mail.imap.host", env.getProperty("mail.imap.host"));
-            mailProperties.put("mail.imap.port", env.getProperty("mail.imap.port"));
-            mailProperties.put("mail.imap.timeout", env.getProperty("mail.imap.timeout"));
-            mailProperties.put("mail.imap.starttls.enable", "false");
-            mailProperties.put("mail.imap.ssl.enable", "false");
-            emailReceiver.setHost(env.getProperty("mail.imap.host"));
-            String port = env.getProperty("mail.imap.port");
-            emailReceiver.setPort(Integer.parseInt(port));
-            emailReceiver.setUsername(env.getProperty("mail.imap.username"));
-            emailReceiver.setPassword(env.getProperty("mail.imap.password"));
-        }
-        emailReceiver.setMailProperties(mailProperties);
-        emailReceiver.setEmailDir(env.getProperty("file.directory.email"));
-        //open a session to the email server
-        if (!server.equalsIgnoreCase("papercut")) {
-        	emailReceiver.connect();
-        }
-        return emailReceiver;		
-	}
 	
 	@Bean
 	public FreeMarkerConfigurationFactoryBean freemarkerConfig() {

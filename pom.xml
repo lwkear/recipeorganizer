@@ -9,23 +9,11 @@
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 
 	<properties>
-		<!-- new version -->
-		<!-- <spring-framework-version>5.1.0.RELEASE</spring-framework-version>
-		<webflow-version>2.5.0.RELEASE</webflow-version>		
-		<springsecurity-version>5.1.0.RELEASE</springsecurity-version>
-		<slf4j-version>1.7.25</slf4j-version>
-		<log4j-version>2.11.1</log4j-version>
-		<hibernate-version>5.3.6.Final</hibernate-version>
-		<apache-connection-pooling-version>2.5.0</apache-connection-pooling-version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jasper-version>6.7.0</jasper-version>
-		<jackson-version>2.9.7</jackson-version>
-		<freemarker-version>2.3.28</freemarker-version>
-		<acme4j.version>2.3</acme4j.version> -->
-			<spring-framework-version>4.3.4.RELEASE</spring-framework-version>
-		<webflow-version>2.4.4.RELEASE</webflow-version>		
-		<springsecurity-version>4.2.0.RELEASE</springsecurity-version>
-			<slf4j-version>1.7.18</slf4j-version>
+		<spring-framework-version>4.2.5.RELEASE</spring-framework-version>
+		<webflow-version>2.4.2.RELEASE</webflow-version>		
+		<springsecurity-version>4.1.0.RELEASE</springsecurity-version>
+		<!-- <aspectj-version>1.8.9</aspectj-version> -->
+		<slf4j-version>1.7.18</slf4j-version>
 		<log4j-version>2.5</log4j-version>
 		<hibernate-version>5.1.0.Final</hibernate-version>
 		<apache-connection-pooling-version>2.1.1</apache-connection-pooling-version>
@@ -33,7 +21,7 @@
 		<jasper-version>6.2.0</jasper-version>
 		<jackson-version>2.7.2</jackson-version>
 		<freemarker-version>2.3.23</freemarker-version>
-		<acme4j.version>2.3</acme4j.version>
+		<acme4j.version>0.8</acme4j.version>
 	</properties>
 
 	<dependencyManagement>
@@ -110,8 +98,6 @@
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-js</artifactId>
-			<!-- new version - not same as webflow version -->
-			<!-- <version>2.4.8.RELEASE</version> -->
 			<version>${webflow-version}</version>
 			<exclusions>
 				<exclusion>
@@ -120,6 +106,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${springsecurity-version}</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
@@ -136,9 +127,9 @@
 			<version>${springsecurity-version}</version>					
         </dependency>	
 		<!-- <dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-mail</artifactId>
-			<version>${springintegration-version}</version>					
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj-version}</version>					
         </dependency> -->	
 
 		<!-- Logging -->
@@ -194,16 +185,14 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.2.4.Final</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.4</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<!-- new version -->
-			<!-- <version>3.23.1-GA</version> -->
 			<version>3.20.0-GA</version>
 		</dependency>
 		<dependency>
@@ -216,16 +205,11 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<!-- new version -->
-			<!-- <version>4.0.1</version> -->
 			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
-			<!-- new version -->
-			<!-- <artifactId>javax.servlet.jsp-api</artifactId> -->			
-			<!-- <version>2.3.3</version> -->
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
 			<scope>provided</scope>
@@ -235,17 +219,15 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.4.7</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
-			<!-- new version -->
-			<!-- <version>1.6.2</version> -->
-			<version>1.5.6</version>
+			<version>1.5.5</version>
 		</dependency>
 
 		<!-- support (caching & date/time) -->
@@ -253,11 +235,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>com.google.zxing</groupId>
-		    <artifactId>core</artifactId>
-		    <version>3.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -288,37 +265,6 @@
 		</dependency>
 
 		<!-- commons -->
-		<!-- new version -->
-		<!-- <dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.8.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<version>${apache-connection-pooling-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-configuration2</artifactId>
-			<version>2.3</version>
-		</dependency>		
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.11</version>
-		</dependency> -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -348,14 +294,12 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
-		</dependency>
+		</dependency>		
 
 		<!-- Solr -->
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
-			<!-- new version -->
-			<!-- <version>7.5.0</version> -->
 			<version>5.5.0</version>
 		</dependency>
 
@@ -408,11 +352,6 @@
 				<artifactId>text-to-speech</artifactId>
 			<version>3.5.0</version>
 		</dependency> -->		
-		<!-- <dependency>
-			<groupId>com.ibm.watson.developer_cloud</groupId>
-				<artifactId>java-sdk</artifactId>
-			<version>6.8.0</version>
-		</dependency> -->		
 		<dependency>
 			<groupId>com.ibm.watson.developer_cloud</groupId>
 				<artifactId>java-sdk</artifactId>
@@ -437,10 +376,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
@@ -449,7 +388,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>2.6</version>
 				<configuration>
 					<packagingExcludes>
 						WEB-INF/maintenance.properties,

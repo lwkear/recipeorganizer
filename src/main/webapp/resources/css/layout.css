@@ -8,7 +8,6 @@
 	blue:	336699 (focus), 538cc6, 79a6d2
 	gray:	e6e6e6, f2f2f2
 	red:	d9534f (comment flag)
-	logo:	9e6b60 - maroon; 5f6d62 green
 */
 
 html {
@@ -19,22 +18,9 @@ html {
 body {
 	margin-bottom: 50px;
 	box-sizing: border-box;
-	/* replaced with body::after */
-	/* background: url("../images/recipes.jpg") no-repeat center center fixed;
-	background-size: cover; */
-}
-
-body::after {
-	content: "";
+	/* background-image: linear-gradient(to bottom, #f1e9da 0%, #f8f4ed 100%); */
 	background: url("../images/recipes.jpg") no-repeat center center fixed;
 	background-size: cover;
-	opacity: 0.75;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	position: absolute;
-	z-index: -10;
 }
 
 h4 {
@@ -79,7 +65,7 @@ img {
     top:0;
     left:0;
     right:0;
-    z-index: -1;
+    z-index: -9999;
     background-color: #ffffff;
 }
 
@@ -152,22 +138,6 @@ img {
 .form-control:-moz-placeholder { font-style: italic; }
 .form-control::-moz-placeholder { font-style: italic; }
 .form-control:-ms-input-placeholder { font-style: italic; }
-
-/* added a default color for the email page */
-.table > thead > tr > td.default,
-.table > tbody > tr > td.default,
-.table > tfoot > tr > td.default,
-.table > thead > tr > th.default,
-.table > tbody > tr > th.default,
-.table > tfoot > tr > th.default,
-.table > thead > tr.default > td,
-.table > tbody > tr.default > td,
-.table > tfoot > tr.default > td,
-.table > thead > tr.default > th,
-.table > tbody > tr.default > th,
-.table > tfoot > tr.default > th {
-  background-color: #e6e6e6;
-}
 
 /* vertical spacers */
 .spacer-vert-lg {
@@ -350,7 +320,7 @@ table.dataTable thead .sorting_desc:after {
 /* used by the browse recipe datatable where the columns are drawn dynamically after an Ajax call */
 .dt_col_hide{display: none;}
 
-/* .carousel-control {
+.carousel-control {
   padding-top:10%;
   width:1%;
 }
@@ -363,34 +333,7 @@ table.dataTable thead .sorting_desc:after {
 	color:#336699;
 	margin-top:5px;
 	margin-bottom:5px;
-} */
-
-/* this is the single photo css */
-@media (min-width: 1024px) {
-    .slider-size {
-        height: 300px;
-    }
-    .slider-size > img {
-        width: auto;
-    }
 }
-
-/* this is the caption overlay */
-/* .desc{
-    background-color: #000;
-    bottom: 0;
-    color: #fff;
-    left: 0;
-    opacity: 0.5;
-    position: absolute;
-    width: 100%;
-    text-shadow: none;
-} */
-
-/* .carousel.slide img {
-    width:100%;
-    height:auto;
-} */
 
 .mic-btn-link {
   font-weight: normal;
@@ -436,8 +379,4 @@ fieldset[disabled] .btn-link:focus {
   color: #cc0000;
   text-decoration: underline;
   background-color: transparent;
-}
-
-#accountmenu .glyphicon {
-  font-size: 10px;
 }

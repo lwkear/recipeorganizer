@@ -9,9 +9,6 @@ import javax.servlet.ServletContext;
 import net.kear.recipeorganizer.persistence.dto.MaintenanceDto;
 import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
-//import org.apache.commons.configuration2.ex.ConfigurationException;
-//import org.apache.commons.configuration2.PropertiesConfiguration;
-//import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
@@ -25,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 //maint.daysofweek=1,3,5
 //maint.starttime=01:00
 //maint.duration=60
-
-//TODO: changed daysofweek to 1 - error parsing 1,3,5
 
 public class MaintenanceProperties {
 
@@ -66,19 +61,6 @@ public class MaintenanceProperties {
 		
 		File propFile = new File(filePath);
 		
-		/*
-		//TODO: this process changed in commons 2.3
-		Configurations configs = new Configurations();
-		
-		try {
-			propConfig = configs.properties(propFile);
-		} catch (ConfigurationException ex) {
-			logger.error(ex.getClass().toString(), ex);
-			logService.addException(ex);
-			return false;
-		}
-		*/
-		
 		try {
 			propConfig = new PropertiesConfiguration(propFile);
 		} catch (ConfigurationException ex) {
@@ -87,7 +69,6 @@ public class MaintenanceProperties {
 			return false;
 		}
 		
-		//TODO: this process changed in commons 2.3
 		FileChangedReloadingStrategy fileStrategy = new FileChangedReloadingStrategy();
 		propConfig.setReloadingStrategy(fileStrategy);
 		
@@ -139,14 +120,13 @@ public class MaintenanceProperties {
 	}
 	
 	public boolean saveConfig() {
-		//TODO: this process changed in commons 2.3
-		/*try {			
+		try {
 			propConfig.save();
 		} catch (ConfigurationException ex) {
 			logger.error(ex.getClass().toString(), ex);
 			logService.addException(ex);
 			return false;
-		}*/
+		}
 		
 		return true;
 	}

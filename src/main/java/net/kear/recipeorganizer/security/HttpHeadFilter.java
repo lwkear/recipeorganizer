@@ -12,7 +12,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -105,19 +104,5 @@ public class HttpHeadFilter implements Filter {
         public void write(byte buf[], int offset, int len) throws IOException {
             contentLength += len;
         }
-
-        //TODO: these are new methods - check out what they require
-        /*
-		@Override
-		public boolean isReady() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public void setWriteListener(WriteListener writeListener) {
-			// TODO Auto-generated method stub
-			
-		}*/
     }
 }

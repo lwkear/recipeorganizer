@@ -17,15 +17,18 @@
 				<h3>Test Page</h3>
 			</div>
 		</div>
-		<!-- <div class="col-sm-12 spacer-vert-md">
+		<div class="col-sm-12 spacer-vert-md">
 			<div class="col-sm-2">
     			<button id="startConv">Start</button>
     		</div>
+    		<!-- <div class="col-sm-2">
+    			<button id="stop">Stop</button>
+    		</div> -->
 		</div>
 		<div class="col-sm-12 spacer-vert-md">
 			<h4>Audio:</h4>
 			<audio class="audioCtl" controls></audio>
-		</div> -->
+		</div>
 		<%-- <div class="col-sm-12 spacer-vert-md">
 			<form:form role="form" modelAttribute="watsonConversation" method="post">
 				<div class="row col-sm-12">
@@ -362,13 +365,13 @@ function listen(token) {
 
 $(function() {
 
-	/* var url = appContextPath + '/getWatsonKeywords';
+	var url = appContextPath + '/getWatsonKeywords';
 	$.getJSON(url)
 		.done(function (data) {
 			console.log("get keywords: " + data);
 			keywordsArray = $.makeArray(data);
 			console.log("mapped json: " + keywordsArray);
-	 	}); */
+	 	});
 	
 	$(document)
 		.on('click', '#startConv', function(e) {

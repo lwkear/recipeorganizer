@@ -279,7 +279,7 @@ function shareRecipe(viewerId, recipeId, recipeName) {
 	$("#shareRecipeDlg").modal('show');
 }
 
-//request server to email a pdf of the recipe
+//request server to update the note
 function postShare(e) {
 	console.log('postShare: viewer=' + e.data.viewerId + ' recipe='+ e.data.recipeId);
 

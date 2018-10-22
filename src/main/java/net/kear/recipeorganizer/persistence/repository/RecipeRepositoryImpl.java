@@ -366,7 +366,6 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
     		.add(Restrictions.eq("status", ApprovalStatus.APPROVED))
-    		.add(Restrictions.ne("r.photoName", ""))
     		.add(Restrictions.eq("allowShare", true))
     		.setProjection(Projections.projectionList()
     			.add(Projections.property("r.id").as("id"))
@@ -446,33 +445,6 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>) criteria.list();
     	return recipes;
     }
-
-    @SuppressWarnings("unchecked")
-	public List<RecipeDisplayDto> mostViewedRecipes() {
-    	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
-    		.createAlias("user", "u")
-    		.add(Restrictions.gt("r.views", 0))
-    		.add(Restrictions.eq("allowShare", true))
-    		.add(Restrictions.eq("status", ApprovalStatus.APPROVED))
-    		.add(Restrictions.ne("r.photoName", ""))
-    		.setProjection(Projections.projectionList()
-    			.add(Projections.property("r.id").as("id"))
-    			.add(Projections.property("u.id").as("userId"))
-    			.add(Projections.property("r.name").as("name"))
-    			.add(Projections.property("r.description").as("description"))
-        		.add(Projections.property("r.photoName").as("photo"))
-        		.add(Projections.property("r.views").as("views"))
-        		.add(Projections.property("r.dateAdded").as("submitted"))
-    			.add(Projections.property("r.allowShare").as("allowShare"))
-    			.add(Projections.property("r.status").as("status")))
-    		.addOrder(Order.desc("r.views"))
-    		.addOrder(Order.desc("r.dateUpdated"))
-    		.setMaxResults(10)
-    		.setResultTransformer(Transformers.aliasToBean(RecipeDisplayDto.class));
-
-    	List<RecipeDisplayDto> recipes = (List<RecipeDisplayDto>)criteria.list();
-    	return recipes;
-	}
     
     @SuppressWarnings("unchecked")
 	public RecipeDisplayDto getMostViewedRecipe(boolean hasPhoto) {
@@ -505,7 +477,7 @@ public class RecipeRepositoryImpl implements RecipeRepository {
     		recipe = recipes.get(0);
     	return recipe;
 	}
-   
+	
     public RecipeDisplayDto getFeaturedRecipe(Long recipeId) {
     	Criteria criteria = getSession().createCriteria(Recipe.class, "r")
     		.createAlias("user", "u")
