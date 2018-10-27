@@ -21,7 +21,9 @@ target/
 .springBeans
 .springWebflow
 
-# Individual files
+# Individual files and folders
+Unused Code/
+XML Config/
 LinkedInPics.docx
 Notes.txt
 RECIPE_DDL_SCRIPT
