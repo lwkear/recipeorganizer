@@ -19,7 +19,7 @@
 		<apache-connection-pooling-version>2.1.1</apache-connection-pooling-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jasper-version>6.2.0</jasper-version>
-		<jackson-version>2.7.2</jackson-version>
+		<jackson-version>2.8.11</jackson-version>
 		<freemarker-version>2.3.23</freemarker-version>
 		<acme4j.version>0.8</acme4j.version>
 	</properties>
