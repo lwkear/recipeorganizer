@@ -340,10 +340,13 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	public SpeechUtilImpl speechUtil() {
 		logger.debug("SpeechUtil");
 		SpeechUtilImpl speech = new SpeechUtilImpl();
-		speech.setWatsonTTSAccount(env.getProperty("company.watson.tts.username"), env.getProperty("company.watson.tts.password"));
-		speech.setWatsonSTTAccount(env.getProperty("company.watson.stt.username"), env.getProperty("company.watson.stt.password"));
-		speech.setWatsonConvAccount(env.getProperty("company.watson.conv.username"), env.getProperty("company.watson.conv.password"), 
+		speech.setWatsonTTSAccount(env.getProperty("company.watson.tts.username"), env.getProperty("company.watson.tts.password"), "https://stream.watsonplatform.net/text-to-speech/api");
+		speech.setWatsonSTTAccount(env.getProperty("company.watson.stt.username"), env.getProperty("company.watson.stt.password"), "https://stream.watsonplatform.net/speech-to-text/api");
+		speech.setWatsonAsstAccount("Q_Nc9DJSS786fozDvdLmWeo5oNPqFssuix93exH7zJ1s", "2018-07-10", "https://gateway.watsonplatform.net/assistant/api", "ca052329-b5c4-47e9-965f-bace816ffa58");
+		/*speech.setWatsonConvAccount(env.getProperty("company.watson.conv.username"), env.getProperty("company.watson.conv.password"), 
 				env.getProperty("company.watson.conv.workspace"));
+		"2018-09-20"
+		*/
 		speech.setSpeechDir(env.getProperty("file.directory.speech"));
 		return speech;
 	}

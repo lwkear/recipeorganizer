@@ -24,6 +24,4 @@ target/
 # Individual files and folders
 src/main/resources
 src/test/
-misc
-Unused Code/
-XML Config/
+misc/

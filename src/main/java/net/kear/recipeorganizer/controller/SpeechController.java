@@ -49,13 +49,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.ibm.watson.developer_cloud.conversation.v1.model.Entity;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.KeywordsResult;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechAlternative;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
+import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
+import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
+import com.ibm.watson.developer_cloud.assistant.v1.model.OutputData;
+import com.ibm.watson.developer_cloud.assistant.v1.model.RuntimeEntity;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.KeywordResult;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResult;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionAlternative;
 import com.ibm.watson.developer_cloud.util.GsonSingleton;
 
 @Controller
@@ -74,8 +78,9 @@ public class SpeechController {
 	@Autowired
 	private ExceptionLogService logService;
 	
-	private static final Voice defaultVoiceEN = Voice.EN_ALLISON;
-	private static final Voice defaultVoiceFR = Voice.FR_RENEE;
+	private static final String defaultVoiceEN = "en-US_AllisonVoice";
+	private static final String defaultVoiceFR = "fr-FR_ReneeVoice";
+	
 	private static final Map<String, Integer> setNumberMap;
 	static {
 		Map<String, Integer> map = new HashMap<String, Integer>();
@@ -94,9 +99,9 @@ public class SpeechController {
 			@RequestParam("section") final Integer section, @RequestParam("type") final AudioType type, HttpServletResponse response, Locale locale) {
 		logger.debug("getRecipeAudio:requestparam");
 
-		Voice voice = defaultVoiceEN; 
+		Voice voice = speechUtil.getVoice(defaultVoiceEN); 
 		if (locale.getLanguage().equals(new Locale("fr").getLanguage()))
-			voice = defaultVoiceFR;
+			voice = speechUtil.getVoice(defaultVoiceFR);
 		
 		User user = null;
 		try {
@@ -109,8 +114,9 @@ public class SpeechController {
 		if (user != null) {
 			UserProfile userProfile = user.getUserProfile();
 			if (userProfile != null) {
-				if (userProfile.getTtsVoice() != null)
-					voice = Voice.getByName(userProfile.getTtsVoice());
+				if (userProfile.getTtsVoice() != null) {
+					voice = speechUtil.getVoice(userProfile.getTtsVoice());
+				}				
 			}
 		}		
 	
@@ -136,7 +142,7 @@ public class SpeechController {
 		
 		String fileName = speechUtil.getSpeechDir() + "sample." + voiceName + ".ogg";
 		if (!speechUtil.getSample(fileName, response)) {
-			Voice voice = Voice.getByName(voiceName);
+			Voice voice = speechUtil.getVoice(voiceName);
 			speechUtil.watsonUnavailable(voice, response);
 		}
 	}
@@ -147,7 +153,7 @@ public class SpeechController {
 	public String getWatsonToken() throws RestException {
 		logger.info("getWatsonToken");
 	
-		if (!speechUtil.isWatsonConvAvailable() || !speechUtil.isWatsonSTTAvailable()) {
+		if (!speechUtil.isWatsonAsstAvailable() || !speechUtil.isWatsonSTTAvailable()) {
 			throw new RestException("exception.watsonUnavailable", new WatsonUnavailableException());
 		}
 		
@@ -218,7 +224,7 @@ public class SpeechController {
 	//	do not use @RequestBody
 	//	the Watson result must be captured by the 'receive-json' event, not the 'data' event
 	//Note: the first call will not have a message (="") so that Watson will return the initial greeting
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/postWatsonResult", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
 	public void postWatsonResult(@RequestParam("userId") Long userId, @RequestParam("recipeId") Long recipeId, @RequestParam("message") String message, 
 			HttpServletResponse response, HttpSession session, Locale locale) throws RestException {
@@ -230,9 +236,9 @@ public class SpeechController {
 		
 		Voice voice = (Voice)session.getAttribute("watsonVoice");
 		if (voice == null) {
-			voice = defaultVoiceEN;
+			voice = speechUtil.getVoice(defaultVoiceEN);
 			if (locale.getLanguage().equals(new Locale("fr").getLanguage()))
-				voice = defaultVoiceFR;
+				voice = speechUtil.getVoice(defaultVoiceFR);
 		}
 		
 		User user = null;
@@ -252,8 +258,9 @@ public class SpeechController {
 		}
 
 		//getUser() returns null if the object is not found in the db; no exception is thrown until you try to use the object
-		//getRecipe() will throw an exception since it does more than just return the recipe object  
-		if ((user == null) || (recipe == null) || !speechUtil.isWatsonConvAvailable() || !speechUtil.isWatsonSTTAvailable()) {
+		//getRecipe() will throw an exception since it does more than just return the recipe object
+		//TODO: watsonUnavailable is not returning an audio file correctly to be played
+		if ((user == null) || (recipe == null) || !speechUtil.isWatsonAsstAvailable() || !speechUtil.isWatsonSTTAvailable()) {
 			speechUtil.watsonUnavailable(voice, response);			
 			return;
 		}
@@ -280,9 +287,9 @@ public class SpeechController {
 
 		//following code lifted from Watson Java SDK WebSocketManager
 		JsonObject json = new JsonParser().parse(message).getAsJsonObject();
-		SpeechResults results = null;
+		SpeechRecognitionResults results = null;
 		if (json.has("results")) {
-			results = GSON.fromJson(message, SpeechResults.class);
+			results = GSON.fromJson(message, SpeechRecognitionResults.class);
 			if (results == null) {
 				speechUtil.watsonUnavailable(voice, response);
 				return;
@@ -296,7 +303,8 @@ public class SpeechController {
 			session.removeAttribute("watsonCommand");
 		}
 
-		Map<String, Object> context = (Map<String, Object>)session.getAttribute("watsonContext");
+		Context context = (Context)session.getAttribute("watsonContext");
+		//HashMap<String, Object> context = (HashMap<String, Object>)session.getAttribute("watsonContext");
 		//the context will be null for the initial call
 		if (context == null) {
 			//get the recipe info for the conversation context map
@@ -323,8 +331,8 @@ public class SpeechController {
 					(priorCommand == ConversationType.INSTRUCTSET)		||
 					(priorCommand == ConversationType.INGREDSET_BAD)	||
 					(priorCommand == ConversationType.INSTRUCTSET_BAD)) {
-					keywordText = parseKeywordResults(context, priorCommand, results.getResults().get(0).getKeywordsResult(),
-							results.getResults().get(0).getAlternatives());
+					SpeechRecognitionResult result = results.getResults().get(0);
+					keywordText = parseKeywordResults(context, priorCommand, result.getKeywordsResult(), result.getAlternatives());
 					logger.debug("keywordText: " + keywordText);
 				}
 			}
@@ -338,10 +346,10 @@ public class SpeechController {
 		//send what the user said to Watson Conversation
 		MessageResponse resp = null;
 		try {
-			MessageRequest req = new MessageRequest.Builder()
-				.context(context)
-				.inputText(speechText)
-				.build();
+			InputData input = new InputData.Builder(speechText).build();
+			MessageRequest req = new MessageRequest();
+			req.setInput(input);
+			req.setContext(context);
 			resp = speechUtil.sendWatsonRequest(req);
 		} catch (Exception ex) {
 			logService.addException(ex);
@@ -360,8 +368,10 @@ public class SpeechController {
 		//Watson Conversation returns a "command" (see ConversationType enum) instead of a phrase to be read by Watson TTS
 		String command = null;
 		if (resp.getOutput() != null) {
-			String outputText = resp.getTextConcatenated(";");
-			command = StringUtils.substringBefore(outputText, ";");
+			OutputData data = resp.getOutput();
+			List<String> text = data.getText();
+			if (!text.isEmpty())
+				command = text.get(0); 			
 		}
 		logger.debug("command: " + command);
 		
@@ -373,15 +383,14 @@ public class SpeechController {
 		voice = (Voice)session.getAttribute("watsonVoice");
 		//the voice will be null for the initial call
 		if (voice == null) {
-			voice = defaultVoiceEN;
+			voice = speechUtil.getVoice(defaultVoiceEN);
 			if (locale.getLanguage().equals(new Locale("fr").getLanguage()))
-				voice = defaultVoiceFR;
-
+				voice = speechUtil.getVoice(defaultVoiceFR);
 			if (user != null) {
 				UserProfile userProfile = user.getUserProfile();
 				if (userProfile != null) {
 					if (userProfile.getTtsVoice() != null)
-						voice = Voice.getByName(userProfile.getTtsVoice());
+						voice = speechUtil.getVoice(userProfile.getTtsVoice());
 				}
 			}
 
@@ -389,9 +398,9 @@ public class SpeechController {
 			String voiceLang = voice.getLanguage().substring(0, 2);
 			if (!StringUtils.equals(voiceLang, recipe.getLang())) {
 				if (recipe.getLang().equals(new Locale("fr").getLanguage()))
-					voice = defaultVoiceFR;
+					voice = speechUtil.getVoice(defaultVoiceFR);
 				if (recipe.getLang().equals(new Locale("en").getLanguage())) {
-					voice = defaultVoiceEN;
+					voice = speechUtil.getVoice(defaultVoiceEN);
 				}
 			}
 			
@@ -402,7 +411,7 @@ public class SpeechController {
 		//save off the current command
 		session.setAttribute("watsonCommand", type);
 		
-		List<Entity> entities = resp.getEntities();
+		List<RuntimeEntity> entities = resp.getEntities();
 		//turn the command into an audio file
 		boolean result = translateWatsonCommand(type, entities, speechText, recipe, user, voice, response, locale);
 		if (!result) {
@@ -419,9 +428,9 @@ public class SpeechController {
 		
 		String voiceLang = voice.getLanguage().substring(0, 2);
 		if (!StringUtils.equals(voiceLang, recipe.getLang())) {
-			voice = defaultVoiceEN;
-			if (recipe.getLang().equals(new Locale("fr").getLanguage()))
-				voice = defaultVoiceFR;
+			voice = speechUtil.getVoice(defaultVoiceEN);
+			if (locale.getLanguage().equals(new Locale("fr").getLanguage()))
+				voice = speechUtil.getVoice(defaultVoiceFR);
 		}
 
 		Date recipeDate;
@@ -493,7 +502,7 @@ public class SpeechController {
 		return text;
 	}
 	
-	private Map<String, Object> setContextMap(Recipe recipe) {
+	private Context setContextMap(Recipe recipe) {
 		//for multiple sets of ingredients or instructions the context must indicate how many sets
 		//and a regex of words from the set name must be constructed with common words removed plus
 		//the entire set name; for example the set names "for the cake" and "for the icing" will return
@@ -548,7 +557,11 @@ public class SpeechController {
 		
 		contextMap.put("ingredSetName", ingredNameList);
 		contextMap.put("instructSetName", instructNameList);
-		return contextMap;
+		
+		Context context = new Context();
+		//context = (Context)contextMap;
+		context.putAll(contextMap);
+		return context;
 	}
 
 	private String parseSectionName(String sectionName) {
@@ -588,7 +601,7 @@ public class SpeechController {
 		return names;
 	}
 	
-	private boolean translateWatsonCommand(ConversationType converseType, List<Entity> entities, String spokenText, Recipe recipe, 
+	private boolean translateWatsonCommand(ConversationType converseType, List<RuntimeEntity> entities, String spokenText, Recipe recipe, 
 			User user, Voice voice, HttpServletResponse response, Locale locale) {
 		String watsonText = "";
 		String fileName = "";
@@ -648,7 +661,7 @@ public class SpeechController {
 		return result;
 	}
 
-	private AudioType getAudioType(List<Entity> entities) {
+	private AudioType getAudioType(List<RuntimeEntity> entities) {
 		AudioType type = null;
 		
 		if (entities.size() == 1) {
@@ -666,7 +679,7 @@ public class SpeechController {
 			//private notes may return two entity values
 			boolean foundPrivate = false;
 			boolean foundNote = false;
-			for (Entity entity : entities) {
+			for (RuntimeEntity entity : entities) {
 				String value = entity.getValue();
 				if (StringUtils.equalsIgnoreCase(value, "private")) {
 					foundPrivate = true;
@@ -684,10 +697,10 @@ public class SpeechController {
 		return type;
 	}
 
-	private int getSetIndex(List<Entity> entities, String watsonText, AudioType audioType, Recipe recipe) {
+	private int getSetIndex(List<RuntimeEntity> entities, String watsonText, AudioType audioType, Recipe recipe) {
 		//check for an entity match and return the appropriate index
 		//for example, the user says "second" and the returned entity will be "two" 
-		for (Entity entity : entities) {
+		for (RuntimeEntity entity : entities) {
 			String ent = entity.getValue();
 			if (setNumberMap.containsKey(ent))
 				return setNumberMap.get(ent); 
@@ -785,25 +798,26 @@ public class SpeechController {
 		return names;
 	}
 	
-	private String parseKeywordResults(Map<String, Object> context, ConversationType priorCommand, Map<String, List<KeywordsResult>> keywordMap, 
-			List<SpeechAlternative> alternatives) {
+	private String parseKeywordResults(Map<String, Object> context, ConversationType priorCommand, Map<String, List<KeywordResult>> keywordMap, 
+			List<SpeechRecognitionAlternative> alternatives) {
 		String text = "";
 		String normalText = "";
 		double confidence = 0;
 		double startTime = 0;
-		KeywordsResultComparator keywordComparator = new KeywordsResultComparator();
-		SpeechAlternativeComparator speechComparator = new SpeechAlternativeComparator(); 
+		
+		KeywordResultComparator keywordComparator = new KeywordResultComparator();		
+		SpeechRecognitionAlternativeComparator speechComparator = new SpeechRecognitionAlternativeComparator(); 
 
-		List<KeywordsResult> keywordList = new ArrayList<KeywordsResult>();
+		List<KeywordResult> keywordList = new ArrayList<KeywordResult>();
 		//add all of the KeywordsResult objects to a single array
-		for (Map.Entry<String, List<KeywordsResult>> resultObj : keywordMap.entrySet()) {
-			List<KeywordsResult> resultList = resultObj.getValue();
+		for (Map.Entry<String, List<KeywordResult>> resultObj : keywordMap.entrySet()) {
+			List<KeywordResult> resultList = resultObj.getValue();
 			keywordList.addAll(resultList);
 		}
 		//sort the array
 		Collections.sort(keywordList, keywordComparator);
 		//piece together a phrase
-		for (KeywordsResult result : keywordList) {
+		for (KeywordResult result : keywordList) {
 			normalText = result.getNormalizedText();
 			confidence = result.getConfidence();
 			startTime = result.getStartTime();
@@ -833,10 +847,10 @@ public class SpeechController {
 			return text;
 
 		//try the alternative words
-		List<SpeechAlternative> speechList = new ArrayList<SpeechAlternative>();
+		List<SpeechRecognitionAlternative> speechList = new ArrayList<SpeechRecognitionAlternative>();
 		//sort the array
 		Collections.sort(speechList, speechComparator);
-		for (SpeechAlternative alternative : speechList) {
+		for (SpeechRecognitionAlternative alternative : speechList) {
 			normalText = alternative.getTranscript();
 			confidence = alternative.getConfidence();
 			//there may be multiple occurrences of the word - sort on the first one
@@ -857,13 +871,13 @@ public class SpeechController {
 		
 		if (text.matches(setNameList))
 			return text;
-		
+
 		return text;
 	}
 	
-	private static class KeywordsResultComparator implements Comparator<KeywordsResult> {
+	private static class KeywordResultComparator implements Comparator<KeywordResult> {
 		@Override
-		public int compare(KeywordsResult kr1, KeywordsResult kr2) {
+		public int compare(KeywordResult kr1, KeywordResult kr2) {
 			return compare(kr1.getStartTime(), kr2.getStartTime());
 		}
 		
@@ -874,9 +888,9 @@ public class SpeechController {
 		}
 	}
 
-	private static class SpeechAlternativeComparator implements Comparator<SpeechAlternative> {
+	private static class SpeechRecognitionAlternativeComparator implements Comparator<SpeechRecognitionAlternative> {
 		@Override
-		public int compare(SpeechAlternative sa1, SpeechAlternative sa2) {
+		public int compare(SpeechRecognitionAlternative sa1, SpeechRecognitionAlternative sa2) {
 			return compare(sa1.getTimestamps().get(0).getStartTime(), sa2.getTimestamps().get(0).getStartTime());
 		}
 		
@@ -887,6 +901,7 @@ public class SpeechController {
 		}
 	}
 }
+
 /*
 "context":{
 	"ingredSetName":"for|the|cake|icing",

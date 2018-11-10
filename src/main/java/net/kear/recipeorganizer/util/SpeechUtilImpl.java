@@ -24,14 +24,19 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 
-import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1.model.MessageResponse;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
+import com.ibm.watson.developer_cloud.assistant.v1.*;
+import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
+import com.ibm.watson.developer_cloud.assistant.v1.model.InputData;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageOptions;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageRequest;
+import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
+import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
-import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.GetVoiceOptions;
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.SynthesizeOptions;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
-
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voices;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import net.kear.recipeorganizer.enums.AudioType;
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
@@ -39,7 +44,7 @@ import net.kear.recipeorganizer.persistence.service.ExceptionLogService;
 
 public class SpeechUtilImpl implements SpeechUtil {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());	
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private MessageSource messages;
@@ -49,23 +54,26 @@ public class SpeechUtilImpl implements SpeechUtil {
 	private final static String speakTagOpen = "<speak version='1.0'>";
 	private final static String speakTagClose = "</speak>";
 	private final static String breakTag = " <break time='%ds'/>";
+	private final static String audioFormat = "audio/ogg;codecs=vorbis";
 	private final static int defaultInterval = 3;
-	private final static AudioFormat audioFormat = AudioFormat.OGG_VORBIS;
 	private final static String[] keywords = {"ingredient","ingredients","instruction","instructions","note","notes","private"};
 	private String watsonTTSUsername = "";
 	private String watsonTTSPassword = "";
+	private String watsonTTSUrl = "";
 	private String watsonSTTUsername = "";
 	private String watsonSTTPassword = "";
-	private String watsonConvUsername = "";
-	private String watsonConvPassword = "";
-	private String watsonConvWorkspaceId = "";
+	private String watsonSTTUrl = "";
+	private String watsonAsstApiKey = "";
+	private String watsonAsstUrl = "";
+	private String watsonAsstVersion = "";
+	private String watsonAsstWorkspaceId = "";
 	private boolean watsonInitialized = false;
 	private boolean watsonTTSAvailable = true;
 	private boolean watsonSTTAvailable = true;
-	private boolean watsonConvAvailable = true;
+	private boolean watsonAsstAvailable = true;
 	private TextToSpeech ttsService = null;
 	private SpeechToText sttService = null;
-	private ConversationService convService = null; 
+	private Assistant assistant = null;
 	private String speechDir = "";
 	
 	public SpeechUtilImpl() {}
@@ -76,6 +84,7 @@ public class SpeechUtilImpl implements SpeechUtil {
 		//retaining the try/catch anyway
 		try {
 			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
+			ttsService.setEndPoint(watsonTTSUrl);
 		} catch (Exception ex) {
 			logger.debug("TextToSpeech init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
@@ -84,19 +93,33 @@ public class SpeechUtilImpl implements SpeechUtil {
 
 		try {
 			sttService = new SpeechToText(watsonSTTUsername, watsonSTTPassword);
+			sttService.setEndPoint(watsonSTTUrl);
 		} catch (Exception ex) {
 			logger.debug("SpeechToText init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
 			watsonSTTAvailable = false;
 		}
-
+		
 		try {
+			IamOptions options = new IamOptions.Builder()
+					//.url(watsonAsstUrl)
+				    .apiKey(watsonAsstApiKey)
+				    .build();
+			assistant = new Assistant(watsonAsstVersion, options);
+			assistant.setEndPoint(watsonAsstUrl);
+		} catch (Exception ex) {
+			logger.debug("Conversation init(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+			watsonAsstAvailable = false;
+		}
+
+		/*try {
 			convService = new ConversationService(ConversationService.VERSION_DATE_2016_09_20, watsonConvUsername, watsonConvPassword);
 		} catch (Exception ex) {
 			logger.debug("Conversation init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
 			watsonConvAvailable = false;
-		}
+		}*/
 	}
 	
 	@EventListener
@@ -111,20 +134,23 @@ public class SpeechUtilImpl implements SpeechUtil {
 		watsonInitialized = true;
     }	
 
-	public void setWatsonTTSAccount(String username, String password) {
+	public void setWatsonTTSAccount(String username, String password, String url) {
 		this.watsonTTSUsername = username;
 		this.watsonTTSPassword = password;
+		this.watsonTTSUrl = url; 
 	}
 
-	public void setWatsonSTTAccount(String username, String password) {
+	public void setWatsonSTTAccount(String username, String password, String url) {
 		this.watsonSTTUsername = username;
 		this.watsonSTTPassword = password;
+		this.watsonSTTUrl = url;
 	}
 
-	public void setWatsonConvAccount(String username, String password, String workspaceId) {
-		this.watsonConvUsername = username;
-		this.watsonConvPassword = password;
-		this.watsonConvWorkspaceId = workspaceId;
+	public void setWatsonAsstAccount(String apiKey, String version, String url, String workspaceId) {
+		this.watsonAsstApiKey = apiKey;
+		this.watsonAsstUrl = url;
+		this.watsonAsstVersion = version;
+		this.watsonAsstWorkspaceId = workspaceId;
 	}
 	
 	public void setSpeechDir(String dir) {
@@ -147,8 +173,8 @@ public class SpeechUtilImpl implements SpeechUtil {
 		return this.watsonSTTAvailable;
 	}
 	
-	public boolean isWatsonConvAvailable() {
-		return this.watsonConvAvailable;
+	public boolean isWatsonAsstAvailable() {
+		return this.watsonAsstAvailable;
 	}
 
 	public void setWatsonTTSAvailable(boolean watsonTTSAvailable) {
@@ -159,8 +185,8 @@ public class SpeechUtilImpl implements SpeechUtil {
 		this.watsonSTTAvailable = watsonSTTAvailable;
 	}
 
-	public void setWatsonConvAvailable(boolean watsonConvAvailable) {
-		this.watsonConvAvailable = watsonConvAvailable;
+	public void setWatsonAsstAvailable(boolean watsonAsstAvailable) {
+		this.watsonAsstAvailable = watsonAsstAvailable;
 	}
 
 	/**********************/
@@ -218,7 +244,13 @@ public class SpeechUtilImpl implements SpeechUtil {
 		if (isWatsonTTSAvailable()) {
 			//get audio from Watson then save it to a file and copy it to the response
 			try {
-				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
+				SynthesizeOptions options = new SynthesizeOptions.Builder()
+						.text(text)
+						.accept(audioFormat)
+						.voice(voice.getName())
+						.build();
+					
+				inStream = ttsService.synthesize(options).execute();
 				if (inStream != null) {
 					FileUtils.copyInputStreamToFile(inStream, audioFile);
 					outStream = response.getOutputStream();
@@ -278,7 +310,13 @@ public class SpeechUtilImpl implements SpeechUtil {
 		if (isWatsonTTSAvailable()) {
 			//get audio from Watson and copy to response
 			try {
-				inStream = ttsService.synthesize(text, voice, audioFormat).execute();
+				SynthesizeOptions options = new SynthesizeOptions.Builder()
+					.text(text)
+					.accept(audioFormat)
+					.voice(voice.getName())
+					.build();
+				
+				inStream = ttsService.synthesize(options).execute();
 				if (inStream != null) {
 					if (saveFile) {
 						FileUtils.copyInputStreamToFile(inStream, audioFile);
@@ -491,7 +529,8 @@ public class SpeechUtilImpl implements SpeechUtil {
 	
 	public List<Voice> getVoices(Locale locale) {
 		List<Voice> localeVoices = new ArrayList<Voice>();
-		List<Voice> voices = null;
+		List<Voice> voiceList = null;
+		Voices voices = null;
 		
 		if (!isWatsonTTSAvailable()) {
 			logger.debug("getVoices: WatsonTTSAvailable = false");
@@ -500,20 +539,30 @@ public class SpeechUtilImpl implements SpeechUtil {
 		
 		String localeLang = locale.getLanguage();
 		try {
-			voices = ttsService.getVoices().execute();
+			voices = ttsService.listVoices().execute();
 	    } catch (Exception ex) {
 	    	logger.debug("getVoices(): " + ex.getMessage(), ex);
 	    	logService.addException(ex);
 	    	return null;
 	    }
 		
-		for (Voice voice : voices) {
+		voiceList = voices.getVoices();		
+		for (Voice voice : voiceList) {
 			String voiceLang = voice.getLanguage().substring(0, 2);
 			if (StringUtils.equalsIgnoreCase(localeLang, voiceLang))
 				localeVoices.add(voice);
 		}
 		
 		return localeVoices;
+	}
+	
+	public Voice getVoice(String name) {
+		GetVoiceOptions options = new GetVoiceOptions.Builder()
+				.voice(name)
+				.build();
+		
+		Voice voice = ttsService.getVoice(options).execute();
+		return voice;
 	}
 
 	private boolean createFile(String text, String fileName, Voice voice) {
@@ -530,7 +579,13 @@ public class SpeechUtilImpl implements SpeechUtil {
 		
 		//get audio from Watson then save it to a file
 		try {
-			inStream = ttsService.synthesize(text, voice, audioFormat).execute();
+			SynthesizeOptions options = new SynthesizeOptions.Builder()
+					.text(text)
+					.accept(audioFormat)
+					.voice(voice.getName())
+					.build();
+				
+			inStream = ttsService.synthesize(options).execute();
 			if (inStream != null) {
 				FileUtils.copyInputStreamToFile(inStream, audioFile);
 			}
@@ -577,14 +632,45 @@ public class SpeechUtilImpl implements SpeechUtil {
 	/********************/
 	/*** Conversation ***/
 	/********************/
-	public MessageResponse sendWatsonRequest(MessageRequest message) {
+	/*public MessageResponse sendWatsonRequest(Context context, String speechText) {
 		MessageResponse response = null;
 
-		if (!isWatsonConvAvailable())
+		if (!isWatsonAsstAvailable())
 			return response;
 		
 		try {
-			response = convService.message(watsonConvWorkspaceId, message).execute();
+			InputData input = new InputData.Builder(speechText).build();
+			MessageOptions options = new MessageOptions.Builder(watsonAsstWorkspaceId)
+					.context(context)
+					.input(input)
+					.build();
+			response = assistant.message(options).execute();
+		} catch (Exception ex) {
+			logger.debug("sendWatsonRequest(): " + ex.getMessage(), ex);
+			logService.addException(ex);
+		}
+
+		return response;
+	}*/
+	
+	public MessageResponse sendWatsonRequest(MessageRequest message) {
+		MessageResponse response = null;
+
+		if (!isWatsonAsstAvailable())
+			return response;
+		
+		try {
+			//response = convService.message(watsonConvWorkspaceId, message).execute();
+			//InputData input = new InputData.Builder(speechText).build();
+			Context context = message.getContext();
+			InputData input = message.getInput();
+			MessageOptions options = new MessageOptions.Builder(watsonAsstWorkspaceId)
+					//.context(message.getContext())
+					//.input(message.getInput())
+					.context(context)
+					.input(input)
+					.build();
+			response = assistant.message(options).execute();
 		} catch (Exception ex) {
 			logger.debug("sendWatsonRequest(): " + ex.getMessage(), ex);
 			logService.addException(ex);
@@ -592,4 +678,5 @@ public class SpeechUtilImpl implements SpeechUtil {
 
 		return response;
 	}
+	
 }

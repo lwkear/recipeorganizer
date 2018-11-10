@@ -173,7 +173,8 @@ function getGreeting() {
 
 function listen(token) {
     stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
-        token: token,
+    	token: token,
+    	keepMicrophone: true,
         readableObjectMode: true,
         objectMode: true,
         word_confidence: true,
@@ -190,7 +191,6 @@ function listen(token) {
 		//TODO: SPEECH: handle this error?
         console.log('stream.on(error): ' + err);
         alert('stream.on(error): ' + err);
-        //alert('stream.on error');
 	});
 
 	stream.on('receive-json', function(msg) {
