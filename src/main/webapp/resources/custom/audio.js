@@ -66,15 +66,6 @@ function getPermission() {
 	.catch(function(err) {
 		alert(err);
 	});	
-	/*try {
-		navigator.mediaDevices
-		.getUserMedia({
-			video: false, audio: true
-		});		
-	}
-	catch(err) {
-		alert('try/catch: ' + err);
-	};*/
 }
 
 function startListening() {
@@ -173,16 +164,16 @@ function getGreeting() {
 
 function listen(token) {
     stream = WatsonSpeech.SpeechToText.recognizeMicrophone({
-    	token: token,
+    	access_token: token,
+    	continuous : true,
+    	format: false,
+    	inactivity_timeout : -1,
     	keepMicrophone: true,
-        readableObjectMode: true,
-        objectMode: true,
-        word_confidence: true,
-        format: false,
-        keywords: keywordsArray,
-        keywords_threshold : 0.2,
-        continuous : true,
-        inactivity_timeout : -1,
+    	keywords: keywordsArray,
+    	keywords_threshold : 0.2,
+    	objectMode: true,
+    	readableObjectMode: true,
+    	word_confidence: true,
     });
 
 	stream.setEncoding('utf8');    
@@ -193,16 +184,17 @@ function listen(token) {
         alert('stream.on(error): ' + err);
 	});
 
-	stream.on('receive-json', function(msg) {
-		console.log(msg);
+	stream.on('message', function(message, object) {
+        console.log('stream.on(message): ' + message);
+        console.log('stream.on(obj): ' + object);
 		console.log('receive-json: recording='+recording);
 		console.log('receive-json: micOn='+micOn);		
 		if (!micOn) {
 			return;
 		}
 		if (!recording) {
-			if (msg.results) {
-				var words = msg.results[0].alternatives[0].transcript;
+			if (object.results) {
+				var words = object.results[0].alternatives[0].transcript;
 				if (words) {
 					console.log('receive-json: words='+words);
 					var command = words.match(/pause|continue|replay|stop/g);
@@ -226,13 +218,13 @@ function listen(token) {
 			return;
 		}
 		else {
-			if (msg.state !== 'listening') {
-				if (msg.results) {
-					console.log(msg.results[0].alternatives[0].transcript);
-					if (msg.results[0].final) {
-						console.log('receive-json: ' + msg);
+			if (object.state !== 'listening') {
+				if (object.results) {
+					console.log(object.results[0].alternatives[0].transcript);
+					if (object.results[0].final) {
+						console.log('receive-json: ' + object);
 						recording = false;
-						postResults(msg);				
+						postResults(object);				
 					}
 				}
 			}
@@ -338,9 +330,7 @@ $(function() {
 				stream.stop();
 		}
 		else {
-			//getPermission();			
-			//if (permissionGranted === true)
-				getKeywords();
+			getKeywords();
 		}
 	})
 })

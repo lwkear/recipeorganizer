@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
 
-import com.ibm.watson.developer_cloud.assistant.v1.model.Context;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
@@ -19,8 +18,8 @@ import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
 public interface SpeechUtil {
 
 	public void initWatson();
-	public void setWatsonTTSAccount(String username, String password, String url);
-	public void setWatsonSTTAccount(String username, String password, String url);
+	public void setWatsonTTSAccount(String apiKey, String url);
+	public void setWatsonSTTAccount(String apiKey, String url);
 	public void setWatsonAsstAccount(String apiKey, String version, String url, String workspaceId);
 	public void setSpeechDir(String dir);
 	public String getSpeechDir();
@@ -41,6 +40,5 @@ public interface SpeechUtil {
 	public List<Voice> getVoices(Locale locale);
 	public Voice getVoice(String name);
 	public String getSTTToken();
-	//public MessageResponse sendWatsonRequest(Context context, String speechText);
 	public MessageResponse sendWatsonRequest(MessageRequest message);
 }

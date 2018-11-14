@@ -31,12 +31,14 @@ import com.ibm.watson.developer_cloud.assistant.v1.model.MessageOptions;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageRequest;
 import com.ibm.watson.developer_cloud.assistant.v1.model.MessageResponse;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
+import com.ibm.watson.developer_cloud.service.security.IamTokenManager;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.GetVoiceOptions;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.SynthesizeOptions;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voices;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
+
 import net.kear.recipeorganizer.enums.AudioType;
 import net.kear.recipeorganizer.persistence.model.Instruction;
 import net.kear.recipeorganizer.persistence.model.RecipeIngredient;
@@ -57,11 +59,9 @@ public class SpeechUtilImpl implements SpeechUtil {
 	private final static String audioFormat = "audio/ogg;codecs=vorbis";
 	private final static int defaultInterval = 3;
 	private final static String[] keywords = {"ingredient","ingredients","instruction","instructions","note","notes","private"};
-	private String watsonTTSUsername = "";
-	private String watsonTTSPassword = "";
+	private String watsonTTSApiKey = "";
 	private String watsonTTSUrl = "";
-	private String watsonSTTUsername = "";
-	private String watsonSTTPassword = "";
+	private String watsonSTTApiKey = "";
 	private String watsonSTTUrl = "";
 	private String watsonAsstApiKey = "";
 	private String watsonAsstUrl = "";
@@ -83,7 +83,10 @@ public class SpeechUtilImpl implements SpeechUtil {
 		//testing appears to show that no exception is thrown initializing a service
 		//retaining the try/catch anyway
 		try {
-			ttsService = new TextToSpeech(watsonTTSUsername, watsonTTSPassword);
+			IamOptions options = new IamOptions.Builder()
+				    .apiKey(watsonTTSApiKey)
+				    .build();
+			ttsService = new TextToSpeech(options);
 			ttsService.setEndPoint(watsonTTSUrl);
 		} catch (Exception ex) {
 			logger.debug("TextToSpeech init(): " + ex.getMessage(), ex);
@@ -92,7 +95,10 @@ public class SpeechUtilImpl implements SpeechUtil {
 		}
 
 		try {
-			sttService = new SpeechToText(watsonSTTUsername, watsonSTTPassword);
+			IamOptions options = new IamOptions.Builder()
+				    .apiKey(watsonSTTApiKey)
+				    .build();
+			sttService = new SpeechToText(options);
 			sttService.setEndPoint(watsonSTTUrl);
 		} catch (Exception ex) {
 			logger.debug("SpeechToText init(): " + ex.getMessage(), ex);
@@ -102,24 +108,15 @@ public class SpeechUtilImpl implements SpeechUtil {
 		
 		try {
 			IamOptions options = new IamOptions.Builder()
-					//.url(watsonAsstUrl)
 				    .apiKey(watsonAsstApiKey)
 				    .build();
 			assistant = new Assistant(watsonAsstVersion, options);
 			assistant.setEndPoint(watsonAsstUrl);
 		} catch (Exception ex) {
-			logger.debug("Conversation init(): " + ex.getMessage(), ex);
+			logger.debug("Assistant init(): " + ex.getMessage(), ex);
 			logService.addException(ex);
 			watsonAsstAvailable = false;
 		}
-
-		/*try {
-			convService = new ConversationService(ConversationService.VERSION_DATE_2016_09_20, watsonConvUsername, watsonConvPassword);
-		} catch (Exception ex) {
-			logger.debug("Conversation init(): " + ex.getMessage(), ex);
-			logService.addException(ex);
-			watsonConvAvailable = false;
-		}*/
 	}
 	
 	@EventListener
@@ -134,15 +131,13 @@ public class SpeechUtilImpl implements SpeechUtil {
 		watsonInitialized = true;
     }	
 
-	public void setWatsonTTSAccount(String username, String password, String url) {
-		this.watsonTTSUsername = username;
-		this.watsonTTSPassword = password;
+	public void setWatsonTTSAccount(String apiKey, String url) {
+		this.watsonTTSApiKey = apiKey;
 		this.watsonTTSUrl = url; 
 	}
 
-	public void setWatsonSTTAccount(String username, String password, String url) {
-		this.watsonSTTUsername = username;
-		this.watsonSTTPassword = password;
+	public void setWatsonSTTAccount(String apiKey, String url) {
+		this.watsonSTTApiKey = apiKey;
 		this.watsonSTTUrl = url;
 	}
 
@@ -615,44 +610,19 @@ public class SpeechUtilImpl implements SpeechUtil {
 	/**********************/
 	public String getSTTToken() {
 		String token = "";
-
-		if (!isWatsonSTTAvailable())
-			return token;
 		
-		try {
-			token = sttService.getToken().execute();			
-		} catch (Exception ex) {
-			logger.debug("getSTTToken(): " + ex.getMessage(), ex);
-			logService.addException(ex);
-		}
+		IamOptions options = new IamOptions.Builder()
+			    .apiKey(watsonSTTApiKey)
+			    .build();
+		IamTokenManager tokenMgr = new IamTokenManager(options);
+		token = tokenMgr.getToken();
 		
-		return token;
+		return token;		
 	}
 	
 	/********************/
-	/*** Conversation ***/
+	/*** Assistant ***/
 	/********************/
-	/*public MessageResponse sendWatsonRequest(Context context, String speechText) {
-		MessageResponse response = null;
-
-		if (!isWatsonAsstAvailable())
-			return response;
-		
-		try {
-			InputData input = new InputData.Builder(speechText).build();
-			MessageOptions options = new MessageOptions.Builder(watsonAsstWorkspaceId)
-					.context(context)
-					.input(input)
-					.build();
-			response = assistant.message(options).execute();
-		} catch (Exception ex) {
-			logger.debug("sendWatsonRequest(): " + ex.getMessage(), ex);
-			logService.addException(ex);
-		}
-
-		return response;
-	}*/
-	
 	public MessageResponse sendWatsonRequest(MessageRequest message) {
 		MessageResponse response = null;
 
@@ -660,13 +630,9 @@ public class SpeechUtilImpl implements SpeechUtil {
 			return response;
 		
 		try {
-			//response = convService.message(watsonConvWorkspaceId, message).execute();
-			//InputData input = new InputData.Builder(speechText).build();
 			Context context = message.getContext();
 			InputData input = message.getInput();
 			MessageOptions options = new MessageOptions.Builder(watsonAsstWorkspaceId)
-					//.context(message.getContext())
-					//.input(message.getInput())
 					.context(context)
 					.input(input)
 					.build();
@@ -678,5 +644,4 @@ public class SpeechUtilImpl implements SpeechUtil {
 
 		return response;
 	}
-	
 }
