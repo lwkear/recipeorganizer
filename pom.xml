@@ -18,7 +18,7 @@
 		<hibernate-version>5.1.0.Final</hibernate-version>
 		<apache-connection-pooling-version>2.1.1</apache-connection-pooling-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jasper-version>6.2.0</jasper-version>
+		<jasper-version>6.7.0</jasper-version>
 		<jackson-version>2.8.11</jackson-version>
 		<freemarker-version>2.3.23</freemarker-version>
 		<acme4j.version>0.8</acme4j.version>
@@ -294,8 +294,13 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
-		</dependency>		
-
+		</dependency>	
+		<dependency>
+		    <groupId>com.google.zxing</groupId>
+		    <artifactId>core</artifactId>
+		    <version>3.3.3</version>
+		</dependency>
+			
 		<!-- Solr -->
 		<dependency>
 			<groupId>org.apache.solr</groupId>
@@ -337,21 +342,6 @@
 		</dependency>
 
 		<!-- Watson Services -->
-		<!-- <dependency>
-			<groupId>com.ibm.watson.developer_cloud</groupId>
-				<artifactId>conversation</artifactId>
-			<version>3.5.0</version>
-		</dependency>		
-		<dependency>
-			<groupId>com.ibm.watson.developer_cloud</groupId>
-				<artifactId>speech-to-text</artifactId>
-			<version>3.5.0</version>
-		</dependency>		
-		<dependency>
-			<groupId>com.ibm.watson.developer_cloud</groupId>
-				<artifactId>text-to-speech</artifactId>
-			<version>3.5.0</version>
-		</dependency> -->		
 		<dependency>
 			<groupId>com.ibm.watson.developer_cloud</groupId>
 				<artifactId>java-sdk</artifactId>
