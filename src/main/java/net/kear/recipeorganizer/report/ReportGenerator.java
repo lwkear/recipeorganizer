@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,16 +26,21 @@ import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.FileHtmlResourceHandler;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.type.WhenNoDataTypeEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.SimpleFileResolver;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.repo.FileRepositoryPersistenceServiceFactory;
+import net.sf.jasperreports.repo.FileRepositoryService;
+import net.sf.jasperreports.repo.PersistenceServiceFactory;
+import net.sf.jasperreports.repo.RepositoryService;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -55,7 +61,6 @@ public class ReportGenerator {
 	private String pdfReportDirPath = "";
 	private File recipeHtmlFile = null;
 	private File recipePdfFile = null;
-	private File reportsDir = null;
 	private JasperReport recipeHtmlReport = null;
 	private JasperReport recipePdfReport = null;	
 
@@ -74,12 +79,12 @@ public class ReportGenerator {
 		this.recipeHtmlReportFilePath = servletContext.getRealPath("/jasper/recipeHtml.jasper");
 		this.recipePdfReportFilePath = servletContext.getRealPath("/jasper/recipePdf.jasper");
 		this.logoHtmlImagePath = servletContext.getContextPath() + "/resources/images/logo.png";
+		//this.logoHtmlImagePath = servletContext.getRealPath("/resources/images/logo.png");
 		this.logoPdfImagePath = servletContext.getRealPath("/resources/images/logo.png");
 		this.jasperReportDirPath = servletContext.getRealPath("/jasper/");
 		this.pdfReportDirPath = pdfDir; 
 		recipeHtmlFile = new File(this.recipeHtmlReportFilePath);
 		recipePdfFile = new File(this.recipePdfReportFilePath);
-		reportsDir = new File(this.jasperReportDirPath);
 		
 		logger.debug("recipeHtmlReportFilePath: " + this.recipeHtmlReportFilePath);
 		logger.debug("recipePdfReportFilePath: " + this.recipePdfReportFilePath);
@@ -121,12 +126,19 @@ public class ReportGenerator {
         	//recipeHtmlReport = (JasperReport)JRLoader.loadObjectFromFile(recipeHtmlFile.getPath());
         	//recipeHtmlReport.setWhenNoDataType(WhenNoDataTypeEnum.ALL_SECTIONS_NO_DETAIL);
 
-        	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale); 
+    		SimpleJasperReportsContext context = new SimpleJasperReportsContext();
+    	    FileRepositoryService fileRepository = new FileRepositoryService(context, jasperReportDirPath, false);
+    	    context.setExtensions(RepositoryService.class, Collections.singletonList(fileRepository));
+    	    context.setExtensions(PersistenceServiceFactory.class, Collections.singletonList(FileRepositoryPersistenceServiceFactory.getInstance()));
+    	    MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
+    	    
+    	    //String logopath = this.getClass().getResource(logoHtmlImagePath).getPath();
+    	    //logger.debug("logopath: " + logopath);
+    	    
         	params.put("logoPath", logoHtmlImagePath);
-        	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
         	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
-        	JasperPrint jasperPrint = JasperFillManager.fillReport(recipeHtmlReport, params, src);
-        	
+        	JasperPrint jasperPrint = JasperFillManager.getInstance(context).fill(recipeHtmlReport, params, src);
+    	    
         	HtmlExporter exporter = new HtmlExporter();
 
         	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
@@ -135,6 +147,7 @@ public class ReportGenerator {
             exporter.setConfiguration(reportExportConfiguration);
             
             SimpleHtmlExporterOutput htmlOutput = new SimpleHtmlExporterOutput(baos);
+            //htmlOutput.setImageHandler(new FileHtmlResourceHandler(new File("html_images"), logoHtmlImagePath));
             exporter.setExporterOutput(htmlOutput);
             exporter.exportReport();
 
@@ -185,14 +198,17 @@ public class ReportGenerator {
     			if (recipeDateTime.isBefore(fileDateTime))
     				return pdfFileName;
     		}
-    	}
-		
-    	MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
+    	} 
+    	
+		SimpleJasperReportsContext context = new SimpleJasperReportsContext();
+	    FileRepositoryService fileRepository = new FileRepositoryService(context, jasperReportDirPath, false);
+	    context.setExtensions(RepositoryService.class, Collections.singletonList(fileRepository));
+	    context.setExtensions(PersistenceServiceFactory.class, Collections.singletonList(FileRepositoryPersistenceServiceFactory.getInstance()));
+	    MessageSourceResourceBundle bundle = new MessageSourceResourceBundle(messages, locale);
     	params.put("logoPath", logoPdfImagePath);
-    	params.put("REPORT_FILE_RESOLVER", new SimpleFileResolver(reportsDir));
     	params.put(JRParameter.REPORT_RESOURCE_BUNDLE, bundle);
-    	JasperPrint jasperPrint = JasperFillManager.fillReport(recipePdfReport, params, src);
-    	        	
+    	JasperPrint jasperPrint = JasperFillManager.getInstance(context).fill(recipePdfReport, params, src);
+	    
     	SimpleExporterInput expInput = new SimpleExporterInput(jasperPrint);
         exporter.setExporterInput(expInput);
         exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfFile));

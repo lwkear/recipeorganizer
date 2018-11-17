@@ -22,13 +22,13 @@
 			<h4><spring:message code="technical.server"></spring:message></h4>
 			<div>
 				<ul>
-					<li>Java v1.7.0_80 <a href="http://www.oracle.com/technetwork/java/javase/overview/index.html">www.oracle.com/technetwork/java/javase/overview/index.html</a></li>
+					<li>Java v1.8 - <a href="http://www.oracle.com/technetwork/java/javase/overview/index.html">www.oracle.com/technetwork/java/javase/overview/index.html</a></li>
 					<li>Spring Framework v4.2.5 - <a href="http://projects.spring.io/spring-framework/">projects.spring.io/spring-framework</a></li>
 					<li>Spring Security v4.0.4 - <a href="http://projects.spring.io/spring-security/">projects.spring.io/spring-security</a></li>
 					<li>Spring Webflow v2.4.2 - <a href="http://projects.spring.io/spring-webflow/">projects.spring.io/spring-webflow</a></li>
 					<li>PostgreSQL v9.5.2 - <a href="http://www.postgresql.org/">www.postgresql.org</a></li>
 					<li>Hibernate v5.1.0 - <a href="http://hibernate.org/orm/">hibernate.org/orm</a></li>					
-					<li>Jasper Reports v6.2.0 - <a href="http://community.jaspersoft.com/project/jasperreports-library">community.jaspersoft.com/project/jasperreports-library</a></li>
+					<li>Jasper Reports v6.7.0 - <a href="http://community.jaspersoft.com/project/jasperreports-library">community.jaspersoft.com/project/jasperreports-library</a></li>
 					<li>Freemarker v2.3.23 - <a href="http://freemarker.org/">freemarker.org</a></li>
 					<li>SolrJ v5.5.0 - <a href="http://lucene.apache.org/solr/">lucene.apache.org/solr</a></li>					
 					<li>Tomcat v8.0.33 - <a href="http://tomcat.apache.org/">tomcat.apache.org</a></li>
