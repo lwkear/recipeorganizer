@@ -23,7 +23,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -102,8 +101,6 @@ public class AdminController {
 	private RoleService roleService;
 	@Autowired
 	private CommentService commentService;
-	@Autowired
-	private SessionRegistry sessionRegistry;
 	@Autowired
 	private FileActions fileAction;
 	@Autowired
